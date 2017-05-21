@@ -131,6 +131,10 @@ msbuild /t:DistClean /p:BuildFlavour=Release /verbosity:minimal /nologo /p:Platf
 msbuild /t:DistClean /p:BuildFlavour=Debug /verbosity:minimal /nologo /p:Platform="Any CPU"
 goto :main
 
+:ngen-release
+%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\ngen.exe install bin\Release\ipy.exe
+goto :exit
+
 :main
 msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU"
 goto :exit

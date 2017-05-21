@@ -57,7 +57,6 @@ configuration: Release
 # scripts to run before build
 before_build:
   - git submodule update --init --recursive
-  - set DLR_ROOT=%APPVEYOR_BUILD_FOLDER%
   - ps: $xml = [xml] (Get-Content CurrentVersion.props); $major = $xml.Project.PropertyGroup.MajorVersion; $minor = $xml.Project.PropertyGroup.MinorVersion; $micro = $xml.Project.PropertyGroup.MicroVersion; $serial = $xml.Project.PropertyGroup.ReleaseSerial; Update-AppveyorBuild -Version "$($major).$($minor).$($micro).$($serial)-$($env:APPVEYOR_BUILD_NUMBER)".replace(" ","")
 
 # scripts to run *after* solution is built and *before* automatic packaging occurs (web apps, NuGet packages, Azure Cloud Services)
@@ -68,22 +67,20 @@ after_build:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - msbuild /t:Build /p:BaseConfiguration=%CONFIGURATION% /verbosity:minimal /nologo
+  - .\make.cmd release
 
 # to disable automatic builds
 #build: off
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  - set DLR_BIN=%APPVEYOR_BUILD_FOLDER%\bin\%CONFIGURATION%
-  - make ngen-release
-  - make testall
-  #- Test\test-ipy-tc.cmd /category:Languages\IronPython\IronPython\2.X
+  - .\make.cmd ngen-release
+  - .\make.cmd test-all-release
 
 # to run custom scripts after tests
-after_test:
-  - make package-release
-  - ps: Get-ChildItem -recurse .\Packages\Release\* -Include *.zip,*.msi | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+#after_test:
+#  - make package-release
+#  - ps: Get-ChildItem -recurse .\Packages\Release\* -Include *.zip,*.msi | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 
 #---------------------------------#
 #      artifacts configuration    #
@@ -133,12 +130,12 @@ after_test:
 # on successful build
 on_success:
   # upload test results to AppVeyor
-  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\Test\TestResult.xml))
+  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\Release\all-result.xml))
 
 # on build failure
 on_failure:
   # upload test results to AppVeyor
-  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\Test\TestResult.xml))
+  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\Release\all-result.xml))
 
 # after build failure or success
 #on_finish:
