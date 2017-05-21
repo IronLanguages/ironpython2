@@ -27,8 +27,7 @@ def always_true():
     AreEqual(1/2, 0.5)
     AreEqual(eval("1/2"), 0.5)
 
-if is_silverlight==False:
-    tempfile = path_combine(testpath.temporary_dir, "temp_future.py")
+tempfile = path_combine(testpath.temporary_dir, "temp_future.py")
 
 assert_code = '''
 def CustomAssert(c):
@@ -53,24 +52,18 @@ CustomAssert(1/2 == 0)
 CustomAssert(eval('1/2') == 0)
 '''
 
-if is_silverlight==False:
-    def f1(): execfile(tempfile)
-    def f2(): exec(compile(code, tempfile, "exec"))
-else:
-    def f1(): pass
-    def f2(): pass
+def f1(): execfile(tempfile)
+def f2(): exec(compile(code, tempfile, "exec"))
 def f3(): exec(code)
 
 always_true()
 try:
     import sys
     save = sys.path[:]
-    if is_silverlight==False:
-        sys.path.append(testpath.temporary_dir)
+    sys.path.append(testpath.temporary_dir)
     
     for code in (code1, code2) :
-        if is_silverlight==False:
-            write_to_file(tempfile, code)
+        write_to_file(tempfile, code)
         
         for f in (f1, f2, f3):
             f()
@@ -79,9 +72,6 @@ try:
 
     ## test import from file
     for code in (code0, code2):
-        if is_silverlight:
-            break
-        
         write_to_file(tempfile, code)
         
         import temp_future
@@ -91,8 +81,7 @@ try:
     
 finally:
     sys.path = save
-    if is_silverlight==False:
-        delete_files(tempfile)
+    delete_files(tempfile)
     
 ## carry context over class def
 class C:
@@ -113,7 +102,7 @@ class mycomplex(complex): pass
 
 l = [2, 10L, (1+2j), 3.4, myint(7), mylong(5), myfloat(2.32), mycomplex(3, 2), True]
 
-if is_cli or is_silverlight:
+if is_cli:
     import System
     l.append(System.Int64.Parse("9"))
 
@@ -129,7 +118,7 @@ for a in l:
 threes = [ 3, 3L, 3.0 ]
 zeroes = [ 0, 0L, 0.0 ]
 
-if is_cli or is_silverlight:
+if is_cli:
     import System
     threes.append(System.Int64.Parse("3"))
     zeroes.append(System.Int64.Parse("0"))

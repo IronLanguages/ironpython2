@@ -51,7 +51,7 @@ def test_raw_unicode_escape_dashes():
 def test_raw_unicode_escape_trailing_backslash():
     AreEqual(unicode('\\', 'raw_unicode_escape'), u'\\')
 
-@skip("silverlight")
+
 @skip("mono") # throws an exception within Mono, needs debug see https://github.com/IronLanguages/main/issues/1617
 def test_unicode_error():
     
@@ -64,7 +64,7 @@ def test_unicode_error():
     for mode in ip_supported_encodings:  unichr(0xac00).encode(mode, "test_unicode_error")
 
 
-@skip("silverlight") # only UTF8, no encoding fallbacks...
+ # only UTF8, no encoding fallbacks...
 def test_ignore():
     AreEqual(unicode('', 'ascii', 'ignore'), '')
     AreEqual(unicode('\xff', 'ascii', 'ignore'), '')

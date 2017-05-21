@@ -19,7 +19,7 @@ Tests the _bytesio standard module.
 #--IMPORTS---------------------------------------------------------------------
 import sys
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 if sys.winver == '2.6':
     import _bytesio

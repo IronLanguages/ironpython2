@@ -29,7 +29,7 @@ Work Item number.
 #--Imports
 from iptest.assert_util import *
 skiptest("win32")
-skiptest("silverlight")
+
 skiptest("posix")
 
 if not is_net40:

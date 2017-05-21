@@ -49,7 +49,7 @@ import gc
 # the generator was left. This can introduce some nondeterminism in the tests.
 
 # Note that silverlight doesn't support finalizers, so we don't test Generator.__del__ on that platform.
-skiptest("silverlight")
+
 def test_del():
   global l
   l=[0]

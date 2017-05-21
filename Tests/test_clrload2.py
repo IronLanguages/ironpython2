@@ -20,18 +20,9 @@ skiptest("win32")
 """Test cases for CLR types that don't involve actually loading CLR into the module
 using the CLR types"""
 
-@skip("silverlight")
 def test_clrload2():
-    if not is_silverlight:
-        sys.path.append(testpath.test_inputs_dir)
-    else:
-        #if System.Windows.Forms is ever supported by silverlight...
-        for p in sys.path:
-            if not p.lower().endswith("\\languages\\ironpython\\tests"): continue
-            sys.path.append(p + "\\Inputs")
-            break
+    sys.path.append(testpath.test_inputs_dir)
 
-@skip("silverlight")
 def test_nested_classes():
     import UseCLI
 

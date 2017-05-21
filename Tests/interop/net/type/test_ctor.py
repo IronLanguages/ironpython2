@@ -17,7 +17,7 @@ Calls to constructor.
 '''
 #------------------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 add_clr_assemblies("methodargs", "typesamples")
 

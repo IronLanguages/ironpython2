@@ -14,7 +14,7 @@
 #####################################################################################
 
 from iptest.assert_util import *
-skiptest("silverlight", "posix")
+skiptest("posix")
 from iptest.file_util import *
 import _random
 from exceptions import IOError
@@ -432,7 +432,7 @@ def test_tempnam():
             Assert(temp_dir != dir_name)
             Assert(file_name.startswith(prefix_name))
 
-@skip("cli", "silverlight") #CodePlex 24299
+@skip("cli") #CodePlex 24299
 def test_tempnam_warning():
     with stderr_trapper() as trapper:
         temp = nt.tempnam()

@@ -19,7 +19,7 @@ Ensures we can import from .NET 2.0 namespaces and types
 
 #--IMPORTS---------------------------------------------------------------------
 from iptest.assert_util import skiptest, is_cli, run_test, is_posix
-skiptest("win32", "silverlight")
+skiptest("win32")
 skiptest("netstandard") # references are different in netstandard
 
 import clr

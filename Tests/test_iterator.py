@@ -112,7 +112,7 @@ def test_itertools_islice_end():
     for x in it:
         AreEqual(x, (4,6))
 
-@skip("silverlight")
+
 def test_iterator_for():
     """test various iterable objects with multiple incomplete iterations"""
     def generator():
@@ -132,16 +132,15 @@ def test_iterator_for():
     l = [2, 3]
     s = set([2, 3, 4])
     
-    if not is_silverlight:
-        f = file('test_file.txt', 'w+')
-        f.write('abc\n')
-        f.write('def')
-        f.close()
+    f = file('test_file.txt', 'w+')
+    f.write('abc\n')
+    f.write('def')
+    f.close()
+
+    f = file('test_file.txt')
     
-        f = file('test_file.txt')
-        
-        import os    
-        stat = os.stat(__file__)
+    import os    
+    stat = os.stat(__file__)
 
     class x(object):
         abc = 2
@@ -174,9 +173,8 @@ def test_iterator_for():
                      (dictproxy,        dictlist[0],   dictlist[0]),
                     ]
         
-        if not is_silverlight:
-            iterators.append((f,                'abc\n',        'def'))
-            iterators.append((stat,             stat[0],        stat[0]))
+        iterators.append((f,                'abc\n',        'def'))
+        iterators.append((stat,             stat[0],        stat[0]))
 
         for iterator, res0, res1 in iterators:
             for x in iterator: 

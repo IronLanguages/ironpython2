@@ -57,7 +57,7 @@ if is_cpython: #http://ironpython.codeplex.com/workitem/28215
 else:
     AreEqual(str(12345678901.25), "12345678901.3")
     AreEqual(str(123456789012.5), "123456789013.0")
-if (is_cli or is_silverlight):
+if is_cli:
     AreEqual(str(1.234567890125), "1.23456789013")
 else:
     AreEqual(str(1.234567890125), "1.23456789012")
@@ -136,7 +136,7 @@ for v in values:
 ######################################################################################
 # Formatting of System.Single
 
-if is_cli or is_silverlight:
+if is_cli:
     load_iron_python_test()
     import IronPythonTest
     f = IronPythonTest.DoubleToFloat.ToFloat(1.0)

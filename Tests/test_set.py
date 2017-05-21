@@ -167,7 +167,7 @@ def test_cmp():
     AreEqual(cmp(abig,b), 1)
 
 def test_deque():
-    if is_cli or is_silverlight:
+    if is_cli:
         from _collections import deque
     else:
         from collections import deque
@@ -225,7 +225,7 @@ def test_singleton():
     x = frozenset([1, 2, 3])
     AreEqual(x is frozenset(x), True)
 
-@skip("silverlight") # no random
+ # no random
 def test_iteration_no_mutation_bad_hash():
     """create a set w/ objects with a bad hash and enumerate through it.  No exceptions should be thrown"""
        

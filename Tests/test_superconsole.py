@@ -14,7 +14,7 @@
 #####################################################################################
 
 from iptest.assert_util import *
-skiptest("silverlight")
+
 skiptest("win32")
 
 from   time import sleep

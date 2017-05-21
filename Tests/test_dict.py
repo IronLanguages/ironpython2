@@ -386,7 +386,7 @@ def repeat_on_class(C):
     
         l1 = len(d)
         d[int] = 4     # object as key
-        if is_cli or is_silverlight:
+        if is_cli:
             print "CodePlex 16811"
             return
         AreEqual(len(d), l1+1)
@@ -897,8 +897,7 @@ def test_stdtypes_dict():
                     object,
                 ] #+ [eval("types." + x) for x in dir(types) if x.endswith("Type")]
     
-    if not is_silverlight:
-        temp_types.append(file)
+    temp_types.append(file)
     
     
     temp_keys = [ None, -1, 0, 1, 2.34, "", "None", int, object, test_stdtypes_dict, [], (None,)]
@@ -909,7 +908,7 @@ def test_stdtypes_dict():
             AssertError(TypeError, tFunc)
     
 
-@skip("silverlight")
+
 def test_main_dict():
     import __main__
     #just make sure this doesn't throw...

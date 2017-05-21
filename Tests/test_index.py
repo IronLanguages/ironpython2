@@ -16,7 +16,7 @@
 import sys
 from iptest.assert_util import *
 
-if is_cli or is_silverlight:
+if is_cli:
     import System
     import System.Collections
     load_iron_python_test()
@@ -32,13 +32,12 @@ def test_string():
 
 @skip('win32')
 def test_hashtable():
-    hashtables = [System.Collections.Generic.Dictionary[object, object]()]
-    if not is_silverlight: # Hashtable isn't available in Silverlight
-        if is_netstandard:
-            import clr
-            clr.AddReference("System.Collections.NonGeneric")
-        hashtables.append(System.Collections.Hashtable())
-    
+    hashtables = [System.Collections.Generic.Dictionary[object, object]()]    
+    if is_netstandard:
+        import clr
+        clr.AddReference("System.Collections.NonGeneric")
+    hashtables.append(System.Collections.Hashtable())
+
     for x in hashtables:
         x["Hi"] = "Hello"
         x[1] = "Python"

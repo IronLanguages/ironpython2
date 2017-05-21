@@ -140,7 +140,7 @@ def test_sanity():
     result = F.__cmp__(f, 20)
     result = f.__cmp__(20)
 
-@skip("silverlight")
+
 def test_system_drawing():
     if is_netstandard:
         clr.AddReference("System.Drawing.Primitives")
@@ -236,26 +236,23 @@ def test_types():
         if not binding is CharType:
             AreEqual(expect | BindResult.Ref, result)
     
-        # MakeArrayType and MakeByRefType are SecurityCritical and thus cannot be called via reflection in silverlight,
-        # so disable these in interpreted mode.
-        if not (is_silverlight):
-            # Select using Array type
-            arrtype = System.Type.MakeArrayType(type)
-            select = BindTest.Bind.Overloads[arrtype]
-            array  = System.Array.CreateInstance(type, 1)
-            array[0] = value
-            result = select(array)
-            AreEqual(expect | BindResult.Array, result)
-    
-            # Select using ByRef type
-            reftype = System.Type.MakeByRefType(type)
-            select = BindTest.Bind.Overloads[reftype]
-            result, output = select()
-            AreEqual(expect | BindResult.Out, result)
-    
-            select = BindTest.BindRef.Overloads[reftype]
-            result, output = select(value)
-            AreEqual(expect | BindResult.Ref, result)
+        # Select using Array type
+        arrtype = System.Type.MakeArrayType(type)
+        select = BindTest.Bind.Overloads[arrtype]
+        array  = System.Array.CreateInstance(type, 1)
+        array[0] = value
+        result = select(array)
+        AreEqual(expect | BindResult.Array, result)
+
+        # Select using ByRef type
+        reftype = System.Type.MakeByRefType(type)
+        select = BindTest.Bind.Overloads[reftype]
+        result, output = select()
+        AreEqual(expect | BindResult.Out, result)
+
+        select = BindTest.BindRef.Overloads[reftype]
+        result, output = select(value)
+        AreEqual(expect | BindResult.Ref, result)
 
     type = saveType
 
@@ -1101,7 +1098,7 @@ def test_function():
     AreEqual(type(BindTest.ReturnTest('char')), System.Char)
     AreEqual(type(BindTest.ReturnTest('null')), type(None))
     AreEqual(type(BindTest.ReturnTest('object')), object)
-    if not is_silverlight and not is_net40: #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=25897
+    if not is_net40: #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=25897
         Assert(repr(BindTest.ReturnTest("com")).startswith('<System.__ComObject'))
 
 #####################################################################
@@ -1214,17 +1211,13 @@ def test_multicall_generator():
     #        public int M4(int arg1, int arg2, int arg3, int arg4) { return 1; }
     #        public int M4(object arg1, object arg2, object arg3, object arg4) { return 2; }
     
-    if not is_silverlight:
-        one = [t.Parse("5") for t in [System.Byte, System.SByte, System.UInt16, System.Int16, System.UInt32, System.Int32,
-                System.UInt32, System.Int32, System.UInt64, System.Int64,
-                System.Char, System.Decimal, System.Single, System.Double] ]
-    else: one = []
+    one = [t.Parse("5") for t in [System.Byte, System.SByte, System.UInt16, System.Int16, System.UInt32, System.Int32,
+            System.UInt32, System.Int32, System.UInt64, System.Int64,
+            System.Char, System.Decimal, System.Single, System.Double] ]
     
     one.extend([True, False, 5L, DispatchHelpers.Color.Red ])
     
-    if not is_silverlight:
-        two = [t.Parse("5.5") for t in [ System.Decimal, System.Single, System.Double] ]
-    else: two = []
+    two = [t.Parse("5.5") for t in [ System.Decimal, System.Single, System.Double] ]
     
     two.extend([None, "5", "5.5", maxint * 2, ])
     
@@ -1340,15 +1333,13 @@ def test_multicall_generator():
     # doc for this method should have the out & ref params as return values
     AreEqual(a.M98.__doc__, 'M98(self: Dispatch, a: str, b: str, c: str, d: str, di: Dispatch) -> (int, Dispatch)%s' % os.linesep)
     
-    #DDB 76340
-    if not is_silverlight:
-        # call type.InvokeMember on String.ToString - all methods have more arguments than max args.
-        res = clr.GetClrType(str).InvokeMember('ToString',
-                                               System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.InvokeMethod,
-                                               None,
-                                               'abc',
-                                               ())
-        AreEqual(res, 'abc')
+    # call type.InvokeMember on String.ToString - all methods have more arguments than max args.
+    res = clr.GetClrType(str).InvokeMember('ToString',
+                                            System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.InvokeMethod,
+                                            None,
+                                            'abc',
+                                            ())
+    AreEqual(res, 'abc')
 
 
 # verify calling a generic method w/o args throws a reasonable exception
@@ -1398,7 +1389,7 @@ def test_explicit():
     AreEqual(IExplicitTest3.M(x), 3)
     AreEqual(IExplicitTest4.M(x, 7), 4)
 
-@skip("silverlight")
+
 def test_security_crypto():
     if is_netstandard:
         clr.AddReference("System.Security.Cryptography.Algorithms")
@@ -1410,14 +1401,14 @@ def test_security_crypto():
         AreEqual(type(System.Security.Cryptography.MD5.Create()),
                  System.Security.Cryptography.MD5CryptoServiceProvider)
 
-@skip("silverlight") #no AssertErrorWithMessage
+ #no AssertErrorWithMessage
 def test_array_error_message():
     import clr
     
     x = BinderTest.CNoOverloads()
     AssertErrorWithMessage(TypeError, 'expected Array[int], got Array[Byte]', x.M500, System.Array[System.Byte]([1,2,3]))
 
-@skip("silverlight") #no AssertErrorWithMessage
+ #no AssertErrorWithMessage
 def test_max_args():
     """verify the correct number of max args are reported, this may need to be updated if file ever takes more args"""
     AssertErrorWithMatch(TypeError, '.*takes at most 4 arguments.*', file, 2, 3, 4, 5, 6, 7, 8, 9)

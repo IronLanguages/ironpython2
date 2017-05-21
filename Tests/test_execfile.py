@@ -15,7 +15,7 @@
 
 from iptest.assert_util import *
 from iptest.file_util import path_combine
-skiptest("silverlight")
+
 
 import os
 

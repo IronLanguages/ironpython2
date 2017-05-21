@@ -23,7 +23,7 @@ from iptest.type_util import *
 
 import sys
 
-if is_cli or is_silverlight:
+if is_cli:
     load_iron_python_test()
     import System
     from IronPythonTest import *
@@ -193,7 +193,7 @@ def test_override_hierarchy():
     AreEqual(D11().VirtualMethod(1), 10)
 
 @skip("netstandard") # no System.MarshalByRefObject in netstandard
-@skip("win32", "silverlight") # remoting not supported in Silverlight
+@skip("win32")
 def test_mbr_inheritance():
     class InheritFromMarshalByRefObject(System.MarshalByRefObject):
         pass
@@ -322,7 +322,7 @@ def test_metaclass():
     
     MC = MetaClass('Foo', (), {})
     # vs CPython missing: ['__class__', '__delattr__', '__getattribute__', '__hash__', '__reduce__', '__reduce_ex__', '__setattr__', '__str__']
-    if is_cli or is_silverlight:
+    if is_cli:
         attrs = ['__dict__', '__doc__', '__init__', '__module__', '__new__', '__repr__', '__weakref__']
         
         has = dir(MC)
@@ -437,7 +437,7 @@ def test_oldstyle_inheritance_dir():
     Assert('Func' in dir(PythonDerivedClass))
     Assert('Func' in dir(PythonDerivedClass()))
 
-if is_cli or is_silverlight:
+if is_cli:
     def test_cli_inheritance_dir():
         class PythonDerivedFromCLR(System.Collections.Generic.List[int]): pass
         #
@@ -897,8 +897,7 @@ def test_conversions():
         AreEqual(used.Use_UInt64(), System.UInt64.MaxValue)
         AreEqual(used.Use_UInt16(), System.UInt16.MaxValue)
         #See Merlin Work Item 294586 for details on why this isn't supported
-        if not (is_silverlight):
-            AreEqual(used.Use_Type(), System.Type.GetType("System.Int32"))
+        AreEqual(used.Use_Type(), System.Type.GetType("System.Int32"))
         AreEqual(used.Use_RtEnum(), RtEnum.A)
         AreEqual(used.Use_RtDelegate().Invoke(30), 30 * 2)
         AreEqual(used.Use_RtStruct().F, 1)
@@ -932,8 +931,6 @@ def test_inherit_returntypes():
             def M_UInt16(self): return System.UInt16.MinValue
             def M_Type(self):
                 #See Merlin Work Item 294586 for details on this
-                if is_silverlight:
-                    return System.Int64
                 return System.Type.GetType("System.Int64")
             def M_RtEnum(self): return RtEnum.B
             def M_RtDelegate(self): return func
@@ -959,8 +956,7 @@ def test_inherit_returntypes():
         AreEqual(used.Use_UInt16(), System.UInt16.MinValue)
 
         #See Merlin Work Item 294586 for details on why this isn't supported
-        if not (is_silverlight):
-            AreEqual(used.Use_Type(), System.Type.GetType("System.Int64"))
+        AreEqual(used.Use_Type(), System.Type.GetType("System.Int64"))
         AreEqual(used.Use_RtEnum(), RtEnum.B)
         AreEqual(used.Use_RtDelegate().Invoke(100), 100)
         AreEqual(used.Use_RtStruct().F, 20)
@@ -968,7 +964,7 @@ def test_inherit_returntypes():
         AreEqual(list(used.Use_IEnumerator()), [1, 2, 3, 4, 5])
         AreEqual(reduce(add, used.Use_IEnumerable()), 66)
     
-if is_silverlight or is_cli:
+if is_cli:
     ## return a class whose derived methods returns the same specified object
     def create_class(retObj):
         class NewC(CReturnTypes):
@@ -1099,7 +1095,7 @@ if is_silverlight or is_cli:
         check_behavior(python_new_class())
     
     #System.Char.Parse('') does not exist in silverlight
-    @skip("silverlight")
+    
     def test_return_interesting():
         #############################################
         ## inherited all, but with more interesting return types
@@ -1227,9 +1223,6 @@ if is_silverlight or is_cli:
                 def M_UInt64(self): return System.UInt64.MinValue
                 def M_UInt16(self): return System.UInt16.MinValue
                 def M_Type(self):
-                    #See Merlin Work Item 294586 for details on this
-                    if is_silverlight:
-                        return System.Int64
                     return System.Type.GetType("System.Int64")
                 def M_RtEnum(self): return RtEnum.B
                 def M_RtDelegate(self): return lambda arg: arg * 5
@@ -1254,9 +1247,7 @@ if is_silverlight or is_cli:
             AreEqual(used.Use_UInt32(), System.UInt32.MinValue)
             AreEqual(used.Use_UInt64(), System.UInt64.MinValue)
             AreEqual(used.Use_UInt16(), System.UInt16.MinValue)
-            #See Merlin Work Item 294586 for details on why this isn't supported
-            if not (is_silverlight):
-                AreEqual(used.Use_Type(), System.Type.GetType("System.Int64"))
+            AreEqual(used.Use_Type(), System.Type.GetType("System.Int64"))
             AreEqual(used.Use_RtEnum(), RtEnum.B)
             AreEqual(used.Use_RtDelegate().Invoke(100), 100 * 5)
             AreEqual(used.Use_RtStruct().F, 20)

@@ -718,7 +718,6 @@ def test_empty_split():
     for expr, result in cases:
         AreEqual(re.split(":*", expr), result)
 
-@skip("silverlight")
 def test_cp15298():
     regex = "^" + "\d\.\d\.\d \(IronPython \d\.\d(\.\d)? ((Alpha )|(Beta )|())\(\d\.\d\.\d\.\d{3,4}\) on \.NET \d(\.\d{1,5}){3}\)" * 15 + "$"
     match_str = "2.5.0 (IronPython 2.0 Beta (2.0.0.1000) on .NET 2.0.50727.1433)" * 15
@@ -800,7 +799,7 @@ def test_conditional():
     p = re.compile(r'(?P<first>a)?(b)((?(first)c))')
     AreEqual(p.match('abc').groups(), ('a', 'b', 'c'))
     s = r'((?(a)ab|cd))'
-    if is_cli or is_silverlight:
+    if is_cli:
         p = re.compile(s)
         AreEqual(p.match('ab').groups(), ('ab',))
     else:

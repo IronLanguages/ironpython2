@@ -14,8 +14,7 @@
 #####################################################################################
 
 from iptest.assert_util import *
-if not is_silverlight:
-    from iptest.file_util import *
+from iptest.file_util import *
 
 import sys
 import imp
@@ -39,7 +38,7 @@ def test_imp_new_module():
     import xyz
     AreEqual(xyz.foo, 'foo')
 
-@skip("silverlight")
+
 def test_imp_in_exec():
     _imfp    = 'impmodfrmpkg'
     _f_imfp_init = path_combine(testpath.public_testdir, _imfp, "__init__.py")
@@ -72,16 +71,15 @@ else:
     exec 'from mod import *' in glb, loc
     #Assert('value' in loc)         # TODO: Fix me
     
-    if is_cli or is_silverlight:
+    if is_cli:
         loc = {}
         exec 'from System import *' in globals(), loc
         
         Assert('Int32' in loc)
         Assert('Int32' not in globals())
         
-        if is_cli or is_silverlight:
-            exec 'from System import *'
-            Assert('Int32' in dir())
+        exec 'from System import *'
+        Assert('Int32' in dir())
 
     delete_files(_f_imfp_start)
     clean_directory(path_combine(testpath.public_testdir, _imfp), remove=True)
@@ -95,12 +93,9 @@ def test_imp_basic():
         AreEqual(len(suffix), 3)
     Assert((".py", "U", 1) in suffixes)
 
-if not is_silverlight:
-    _testdir = "ImpTest"
-    _imptestdir = path_combine(testpath.public_testdir, _testdir)
-    _f_init = path_combine(_imptestdir, "__init__.py")
-
-
+_testdir = "ImpTest"
+_imptestdir = path_combine(testpath.public_testdir, _testdir)
+_f_init = path_combine(_imptestdir, "__init__.py")
 
 temp_name = ["os",
              "os.P_WAIT",
@@ -137,10 +132,8 @@ def test_imp_package():
     module = imp.load_module(_testdir, pf, pp, (px, pm, pt))
     AreEqual(module.my_name, 'imp package test')
 
-if is_silverlight==False:
-    _f_module  = path_combine(_imptestdir, "imptestmod.py")
+_f_module  = path_combine(_imptestdir, "imptestmod.py")
 
-@skip('silverlight')
 def test_imp_module():
     write_to_file(_f_module, "value = 'imp test module'")
     pf, pp, (px, pm, pt) = imp.find_module("imptestmod", [_imptestdir])
@@ -289,17 +282,16 @@ def test_is_builtin():
     AreEqual(imp.is_builtin("_random"),1)
         
     # nt module disabled in Silverlight
-    if not is_silverlight:
-        if is_posix:
-            AreEqual(imp.is_builtin("posix"),1)
-        else:
-            AreEqual(imp.is_builtin("nt"),1)
+    if is_posix:
+        AreEqual(imp.is_builtin("posix"),1)
+    else:
+        AreEqual(imp.is_builtin("nt"),1)
         
     AreEqual(imp.is_builtin("thread"),1)
     
     
     # there are a several differences between ironpython and cpython
-    if is_cli or is_silverlight:
+    if is_cli:
         AreEqual(imp.is_builtin("copy_reg"),1)
     else:
         AreEqual(imp.is_builtin("copy_reg"),0)
@@ -346,7 +338,7 @@ def test_sys_path_none_builtins():
         sys.path = prevPath
 
 
-@skip("silverlight")
+
 def test_sys_path_none_userpy():
     prevPath = sys.path
 
@@ -595,7 +587,7 @@ def test_import_relative_error():
     AssertError(ValueError, f)
 
 @disabled
-@skip("silverlight") #No access to CPython stdlib
+ #No access to CPython stdlib
 def test_import_hooks_import_precence():
     """__import__ takes precedence over import hooks"""
     global myimpCalled
@@ -922,7 +914,7 @@ def test_import_list_empty_string():
     x = __import__('testpkg1', {}, {}, [''])
     Assert(not '' in dir(x))
 
-@skip("silverlight") #BUG?
+ #BUG?
 def test_cp7050():
     '''
     This test case complements CPython's test_import.py
@@ -965,7 +957,7 @@ def test_meta_path_before_builtins():
     
     import time
 
-@skip("silverlight") # no nt module on silverlight
+ # no nt module on silverlight
 def test_file_coding():
     try:
         import os
@@ -1096,7 +1088,7 @@ def test_load_package():
     AreEqual(sys.modules['some_new_pkg'], pkg)
 
 # NullImporter isn't used on Silverlight because we cannot detect the presence dirs
-@skip("silverlight") 
+ 
 def test_NullImporter():
     def f():
         class x(imp.NullImporter): pass
@@ -1136,7 +1128,7 @@ def test_module_getattribute():
     for x in dir(type(sys)):
         AreEqual(mymod.__getattribute__(x), getattr(mymod, x))
     
-@skip("silverlight", "win32")
+@skip("win32")
 def test_import_lookup_after():
     import os
     try:
@@ -1156,7 +1148,7 @@ sys.modules['y'] = newmod
         os.unlink(_x_mod)
         os.unlink(_y_mod)
 
-@skip("silverlight", "win32")
+@skip("win32")
 def test_imp_load_source():
     import os
     try:
@@ -1175,7 +1167,7 @@ X = 3.14
     finally:
         os.unlink(_x_mod)
 
-@skip("silverlight")        
+        
 def test_imp_load_compiled():
     #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=17459
     if not is_cpython:
@@ -1188,7 +1180,7 @@ def test_imp_load_compiled():
         finally:
             os.unlink(_x_mod)
 
-@skip("silverlight") 
+ 
 def test_imp_load_dynamic():
     #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=17459
     if not is_cpython:
@@ -1295,7 +1287,7 @@ def test_override_dict():
     AssertErrorWithMessage(TypeError, "can't delete __class__ attribute", m.__delattr__, '__class__')
     AssertErrorWithMessage(TypeError, "readonly attribute", m.__delattr__, '__dict__')
     
-@skip("silverlight")
+
 def test_ximp_load_module():
     mod = imp.new_module('my_module_test')
     mod.__file__ = 'does_not_exist.py'
@@ -1313,12 +1305,12 @@ def test_ximp_load_module():
         
     AreEqual(mod.x, 42)
     
-@skip("silverlight") # no stdlib in silverlight
+ # no stdlib in silverlight
 def test_import_string_from_list_cp26098():
     AreEqual(__import__('email.mime.application', globals(), locals(), 'MIMEApplication').__name__, 'email.mime.application')
 
 
-@skip("win32", "silverlight")
+@skip("win32")
 def test_new_builtin_modules():
     import clr
     clr.AddReference('IronPythonTest')
@@ -1361,5 +1353,4 @@ def test_new_builtin_modules():
 
 #------------------------------------------------------------------------------
 run_test(__name__)
-if not is_silverlight:
-    delete_all_f(__name__, remove_folders=True)
+delete_all_f(__name__, remove_folders=True)

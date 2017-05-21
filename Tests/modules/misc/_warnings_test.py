@@ -18,7 +18,7 @@ CPython's _warnings module. http://docs.python.org/library/warnings.html
 
 #--IMPORTS---------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 import _warnings
 from iptest.assert_util import stderr_trapper as output_trapper

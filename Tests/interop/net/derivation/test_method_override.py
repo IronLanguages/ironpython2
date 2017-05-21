@@ -18,7 +18,6 @@ How to re-define a method in Python.
 #------------------------------------------------------------------------------
 
 from iptest.assert_util import *
-skiptest("silverlight")
 
 add_clr_assemblies("baseclasscs", "typesamples")
 

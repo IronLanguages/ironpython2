@@ -17,7 +17,7 @@
 #------------------------------------------------------------------------------
 from iptest import *
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 add_clr_assemblies("fieldtests", "typesamples", "baseclasscs")
 if options.RUN_TESTS: #TODO - bug when generating Pydoc

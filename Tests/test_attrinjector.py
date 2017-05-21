@@ -17,7 +17,7 @@ import sys
 from iptest.assert_util import *
 
 #System.Xml is unavailable in silverlight
-skiptest("silverlight")
+
 skiptest("win32")
 
 load_iron_python_test()

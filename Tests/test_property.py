@@ -16,13 +16,12 @@
 from iptest.assert_util import *
 
 array_list_options = []
-if is_cli or is_silverlight:
+if is_cli:
     array_list_options.append(System.Collections.Generic.List[int])
-    if not is_silverlight:
-        if is_netstandard:
-            import clr
-            clr.AddReference("System.Collections.NonGeneric")
-        array_list_options.append(System.Collections.ArrayList)
+    if is_netstandard:
+        import clr
+        clr.AddReference("System.Collections.NonGeneric")
+    array_list_options.append(System.Collections.ArrayList)
 
 for ArrayList in array_list_options:
     l = ArrayList()

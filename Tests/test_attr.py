@@ -145,7 +145,7 @@ def test_decorators():
 # __getattribute__, __setattr__, __delattr__ on builtins
 @skip("multiple_execute")
 def test_meta_attrs():
-    if is_cli or is_silverlight:
+    if is_cli:
         import System
         dateTime = System.DateTime()
     
@@ -166,7 +166,7 @@ def test_meta_attrs():
         def foo(self): pass
     
     # C.foo is "unbound method" on IronPython but "function" on CPython
-    if is_cli or is_silverlight:
+    if is_cli:
         AreEqual(C.foo, C.__getattribute__(C, "foo"))
     else:
         AreEqual(C.foo.im_func, C.__getattribute__(C, "foo"))
@@ -248,7 +248,7 @@ def test_access_checks():
     attr_access(OldStyleClass())
     attr_access(C())
 
-@skip("silverlight", "multiple_execute")
+@skip("multiple_execute")
 def test_cp13686():
     import toimport
     import sys

@@ -15,7 +15,7 @@
 
 from iptest.assert_util import *
 
-skiptest("silverlight")
+
 skiptest("win32")
 
 # set this flag to True to have the test trace progress

@@ -15,7 +15,7 @@
 
 import sys
 from iptest.assert_util import *
-skiptest("silverlight")
+
 skiptest("win32")
 from iptest.process_util import *
 

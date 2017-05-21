@@ -393,12 +393,11 @@ def test_charmap_encode():
              ('ABC', 3))
 
                  
-    if not is_silverlight:
-        #Sanity Negative
-        AssertError(UnicodeEncodeError, codecs.charmap_encode, "abc", "strict", {})
+    #Sanity Negative
+    AssertError(UnicodeEncodeError, codecs.charmap_encode, "abc", "strict", {})
 
 
-@skip("silverlight", "posix") # only UTF8 on Silverlight/posix - mbcs_decode/encode only exist on windows versions of python
+@skip("posix") # only UTF8 on Silverlight/posix - mbcs_decode/encode only exist on windows versions of python
 def test_mbcs_decode():
     '''
     '''
@@ -413,7 +412,7 @@ def test_mbcs_decode():
         AreEqual(codecs.mbcs_encode(codecs.mbcs_decode(allchars, mode)[0])[0], allchars)
 
 
-@skip("silverlight", "posix") # only UTF8 on Silverlight/posix - mbcs_decode/encode only exist on windows versions of python
+@skip("posix") # only UTF8 on Silverlight/posix - mbcs_decode/encode only exist on windows versions of python
 def test_mbcs_encode():
     '''
     '''
@@ -453,15 +452,13 @@ def test_utf_16_encode():
 
 
 def test_misc_encodings():
-    if not is_silverlight:
-        # codec not available on silverlight
-        AreEqual('abc'.encode('utf-16'), '\xff\xfea\x00b\x00c\x00')
-        AreEqual('abc'.encode('utf-16-be'), '\x00a\x00b\x00c')
+    # codec not available on silverlight
+    AreEqual('abc'.encode('utf-16'), '\xff\xfea\x00b\x00c\x00')
+    AreEqual('abc'.encode('utf-16-be'), '\x00a\x00b\x00c')
     for unicode_escape in ['unicode-escape', 'unicode escape']:
         AreEqual('abc'.encode('unicode-escape'), 'abc')
         AreEqual('abc\u1234'.encode('unicode-escape'), 'abc\\\\u1234')
 
-@skip("silverlight")
 def test_file_encodings():
     '''
     Once this gets fixed, we should use *.py files in the correct encoding instead
@@ -496,7 +493,7 @@ def test_file_encodings():
         os.rmdir(path_combine(os.getcwd(), "tmp_encodings"))
 
 # https://github.com/IronLanguages/main/issues/1608
-@skip("silverlight", "posix", "netstandard") # netstandard because sys.executable isn't an executable
+@skip("posix", "netstandard") # netstandard because sys.executable isn't an executable
 def test_cp11334():
     
     #--Test that not using "# coding ..." results in a warning
@@ -528,7 +525,7 @@ def test_cp11334():
     AreEqual(len(t_out_lines), 1)
 
 
-@skip("silverlight", "multiple_execute")
+@skip("multiple_execute")
 def test_file_encodings_negative():
     '''
     TODO:
@@ -595,7 +592,7 @@ def test_lookup_encodings():
         # make sure we're failing because we don't have encodings
         AssertError(ImportError, __import__, 'encodings')
 
-@skip("silverlight cli") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=1019
+@skip("cli") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=1019
 def test_cp1019():
     #--Test that bogus encodings fail properly
     t_in, t_out, t_err = os.popen3(sys.executable + " " + path_combine(os.getcwd(), "encoded_files", "cp1019.py"))
@@ -609,7 +606,6 @@ def test_cp1019():
     Assert(t_err_lines[0].startswith("  File"))
     Assert(t_err_lines[1].startswith("SyntaxError: encoding problem: with BOM"))
 
-@skip("silverlight")
 def test_cp20302():
     import _codecs
     for encoding in ip_supported_encodings:

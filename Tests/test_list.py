@@ -41,7 +41,7 @@ def test_append_self():
     Assert(fo.read() == repr(a))
     fo.close()
 
-if is_cli or is_silverlight:
+if is_cli:
     import clr
     x = [1,2,3]
     y = []

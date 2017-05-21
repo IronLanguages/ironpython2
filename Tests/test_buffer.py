@@ -140,7 +140,7 @@ def test_buffer_bytes():
         AreEqual(str(buffer(x)), 'abc')
         AreEqual(buffer(x)[0:1], b'a')
         
-@skip("silverlight")
+
 def test_write_file():
     inputs = [buffer('abcdef'), buffer(b'abcdef'), buffer(bytearray(b'abcdef')), buffer(array.array('b', 'abcdef'))]
     text_inputs = [array.array('b', 'abcdef'), array.array('c', 'abcdef')]

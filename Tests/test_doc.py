@@ -181,7 +181,7 @@ def test_builtin_nones():
     for x in [Ellipsis, None, NotImplemented, ]:
         Assert(x.__doc__==None, str(x) + ".__doc__ != None")
 
-@skip("silverlight")
+
 def test_builtin_nones_cpy_site():
     for x in [exit, quit, ]:
         Assert(x.__doc__ is None, str(x) + ".__doc__ != None")
@@ -217,7 +217,7 @@ def test_exception_doc_cp20251():
         Assert(hasattr(e, "__doc__"))
         e.__doc__
 
-@skip("silverlight")
+
 def test_module_doc_cp21360():
     from iptest.file_util import write_to_file, delete_files
     

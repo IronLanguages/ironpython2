@@ -33,8 +33,7 @@ def test_z_cli_tests():    # runs last to prevent tainting the module w/ CLR nam
 
     sys.stdout = stdout_reader()
     help(WriteOnly)
-    if is_silverlight==False:
-        help(System.IO.Compression)
+    help(System.IO.Compression)
     help(System.Int64)
     sys.stdout = sys.__stdout__
 
@@ -50,11 +49,10 @@ def test_z_cli_tests():    # runs last to prevent tainting the module w/ CLR nam
     help('u.u'.Split('u'))
     x = sys.stdout.text
     sys.stdout = sys.__stdout__
-    if not is_silverlight:
-        # requires std lib
-        Assert('Help on Array[str] object' in x)
-        if not is_net40: #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=24508
-            Assert('Clear(...)' in x)
+    # requires std lib
+    Assert('Help on Array[str] object' in x)
+    if not is_net40: #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=24508
+        Assert('Clear(...)' in x)
 
     #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=4190
     from System.IO import MemoryStream
@@ -72,11 +70,7 @@ def test_z_cli_tests():    # runs last to prevent tainting the module w/ CLR nam
     finally:
         sys.stdout = sys.__stdout__        
 
-    if not is_silverlight:        
-        AreEqual(x_class, x_instance.replace("built-in function Write", "method_descriptor"))
-    else:
-        AreEqual(x_class.replace(" |", "|"), 
-                 x_instance.replace("built-in function", "method-descriptor").replace(" |", "|"))
+    AreEqual(x_class, x_instance.replace("built-in function Write", "method_descriptor"))
 
     #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=11883
     AreEqual(dir(System).count('Action'), 1)
@@ -96,8 +90,7 @@ def test_module():
     x = sys.stdout.text
     sys.stdout = sys.__stdout__
     
-    if is_silverlight==False:
-        Assert(x.find('clock(...)') != -1)      # should have help for our stuff
+    Assert(x.find('clock(...)') != -1)      # should have help for our stuff
     Assert(x.find('unichr(...)') == -1)     # shouldn't have bulit-in help
     Assert(x.find('AscTime') == -1)         # shouldn't display CLI names
     Assert(x.find('static') == -1)          # methods shouldn't be displayed as static
@@ -120,8 +113,7 @@ def test_splat():
     x = sys.stdout.text
     sys.stdout = sys.__stdout__
     Assert(x.find('foo(*args)') != -1)
-    if not is_silverlight:
-        Assert(x.find('Help on function foo in module __main__:') != -1)
+    Assert(x.find('Help on function foo in module __main__:') != -1)
     
     def foo(**kwargs): pass
     sys.stdout = stdout_reader()
@@ -305,8 +297,7 @@ def test_user_function():
     out = run_help(f)
     
     Assert(out.find('f()') != -1)
-    if is_silverlight==False:
-        Assert(out.find('in module __main__:') != -1)
+    Assert(out.find('in module __main__:') != -1)
     
     # list
     def f(*args): pass
@@ -352,8 +343,7 @@ def test_user_method():
     out = run_help(x.f)
     
     Assert(out.find('f()') != -1)
-    if is_silverlight==False:
-        Assert(out.find('in module __main__:') != -1)
+    Assert(out.find('in module __main__:') != -1)
     
     # list
     class x:
@@ -389,8 +379,7 @@ def test_user_method():
     out = run_help(x.f)
     Assert(out.find('f(a=abc)') != -1)
     
-    if is_silverlight==False:
-        Assert(out.find('unbound __main__.x method') != -1)
+    Assert(out.find('unbound __main__.x method') != -1)
     
 def test_bound_user_method():
     class x:
@@ -398,8 +387,7 @@ def test_bound_user_method():
     out = run_help(x().f)
     
     Assert(out.find('f()') != -1)
-    if is_silverlight==False:
-        Assert(out.find('in module __main__:') != -1)
+    Assert(out.find('in module __main__:') != -1)
     
     # list
     class x:
@@ -435,8 +423,7 @@ def test_bound_user_method():
     out = run_help(x().f)
     Assert(out.find('f(a=abc)') != -1)
 
-    if is_silverlight==False:
-        Assert(out.find('method of __main__.x instance') != -1)
+    Assert(out.find('method of __main__.x instance') != -1)
 
 @skip("stdlib") #CodePlex 17577
 def test_bound_builtin_func():
@@ -456,7 +443,7 @@ def test_clr_addreference():
     
     Assert(x.find("Adds a reference to a .NET assembly.") != -1)
 
-@skip("win32", "silverlight", "cli64", "posix") # this is windows specific?
+@skip("win32", "cli64", "posix") # this is windows specific?
 def test_paramrefs():
     # System.DateTime.Parse (for example) has a paramrefs in its help text which get substitued
     # by paramnames.
@@ -468,7 +455,7 @@ def test_paramrefs():
     
     Assert(x.find("equivalent to the date and time contained in s") != -1)
 
-@skip("silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=20236#
+ #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=20236#
 def test_type():        
     sys.stdout = stdout_reader()
     help(type)

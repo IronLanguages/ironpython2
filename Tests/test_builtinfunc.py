@@ -445,7 +445,6 @@ def test_ord():
     
     AreEqual(ord(foo('A')), 65)
     
-@skip("silverlight", "Merlin bug #404247: this test doesn't work when the file is executed from non-Python host (thost)" )
 def test_top_level_dir():
     Assert("__name__" in top_level_dir)
     Assert("__builtins__" in top_level_dir)

@@ -14,7 +14,7 @@
 #####################################################################################
 
 from iptest.assert_util import *
-if is_cli or is_silverlight:
+if is_cli:
     from _collections import *
 else:
     from collections import *
@@ -255,257 +255,255 @@ AreEqual(f().abc, 2)
 
 ######################################################################################
 
-# TODO: weakref support in Silverlight
-if not is_silverlight:
-    def nop():
-        pass
-    
-    class gc:
-        pass
-    
-    try:
-        import System
-        from System import GC
-    
-        gc.collect = GC.Collect
-        gc.WaitForPendingFinalizers = GC.WaitForPendingFinalizers
-    except ImportError:
-        import gc
-        gc.collect = gc.collect
-        gc.WaitForPendingFinalizers = nop
-    
-    
-    def FullCollect():
-        gc.collect()
-        gc.WaitForPendingFinalizers()
-    
-    def Hello():
-        global res
-        res = 'Hello finalizer'
-    
-    #########################################
-    # class implements finalizer
-    
-    class Foo:
-        def __del__(self):
-                global res
-                res = 'Foo finalizer'
-    
-    #########################################
-    # class doesn't implement finalizer
-    
-    class Bar:
-        pass
-    
-    ######################
-    # simple case
-    
-    def SimpleTest():
-        global res
-    
-        res = ''
-        f = Foo()
-        del(f)
-        FullCollect()
-    
-        Assert(res == 'Foo finalizer')
-    
-    
-    ######################
-    # Try to delete a builtin name. This should fail since "del" should not
-    # lookup the builtin namespace
-    
-    def DoDelBuiltin():
-        global pow
-        del(pow)
-    
-    def DelBuiltin():
-        # Check that "pow" is defined
-        global pow
-        p = pow
-    
-        AssertError(NameError, DoDelBuiltin)
-        AssertError(NameError, DoDelBuiltin)
-    
-    ######################
-    # Try to delete a builtin name. This should fail since "del" should not
-    # lookup the builtin namespace
-    
-    def DoDelGlobal():
-        global glb
-        del(glb)
-        return True
-    
-    def DelUndefinedGlobal():
-        AssertError(NameError, DoDelGlobal)
-        AssertError(NameError, DoDelGlobal)
-    
-    def DelDefinedGlobal():
-        # Check that "glb" is defined
-        global glb
-        l = glb
-    
-        Assert(DoDelGlobal() == True)
-        AssertError(NameError, DoDelGlobal)
-        AssertError(NameError, DoDelGlobal)
-    
-    ######################
-    # Try to delete a name from an enclosing function. This should fail since "del" should not
-    # lookup the enclosing namespace
-    
-    def EnclosingFunction():
-        val = 1
-        def DelEnclosingName():
-            del val
-        DelEnclosingName()
-    
-    ######################
-    # per-instance override
-    def PerInstOverride():
-    
-        global res
-        res = ''
-        def testIt():
-            f = Foo()
-    
-            f.__del__ = Hello
-    
-            Assert(hasattr(Foo, '__del__'))
-    
-            Assert(hasattr(f, '__del__'))
-    
-            del(f)
-        
-        testIt()
-        FullCollect()
-    
-        Assert(res == 'Hello finalizer')
-    
-    ##################################
-    # per-instance override & remove
-    
-    def PerInstOverrideAndRemove():
-        global res
-    
-        def testit():
+def nop():
+    pass
+
+class gc:
+    pass
+
+try:
+    import System
+    from System import GC
+
+    gc.collect = GC.Collect
+    gc.WaitForPendingFinalizers = GC.WaitForPendingFinalizers
+except ImportError:
+    import gc
+    gc.collect = gc.collect
+    gc.WaitForPendingFinalizers = nop
+
+
+def FullCollect():
+    gc.collect()
+    gc.WaitForPendingFinalizers()
+
+def Hello():
+    global res
+    res = 'Hello finalizer'
+
+#########################################
+# class implements finalizer
+
+class Foo:
+    def __del__(self):
             global res
-            global Hello
-            res = ''
-            f = Foo()
-            f.__del__ = Hello
-            Assert(hasattr(Foo, '__del__'))
-        
-            Assert(hasattr(f, '__del__'))
-        
-            del(f.__del__)
-            Assert(hasattr(Foo, '__del__'))
-            Assert(hasattr(f, '__del__'))
-        
-            del(f)
-        
-        testit()
-        FullCollect()
-        Assert(res == 'Foo finalizer')
+            res = 'Foo finalizer'
+
+#########################################
+# class doesn't implement finalizer
+
+class Bar:
+    pass
+
+######################
+# simple case
+
+def SimpleTest():
+    global res
+
+    res = ''
+    f = Foo()
+    del(f)
+    FullCollect()
+
+    Assert(res == 'Foo finalizer')
+
+
+######################
+# Try to delete a builtin name. This should fail since "del" should not
+# lookup the builtin namespace
+
+def DoDelBuiltin():
+    global pow
+    del(pow)
+
+def DelBuiltin():
+    # Check that "pow" is defined
+    global pow
+    p = pow
+
+    AssertError(NameError, DoDelBuiltin)
+    AssertError(NameError, DoDelBuiltin)
+
+######################
+# Try to delete a builtin name. This should fail since "del" should not
+# lookup the builtin namespace
+
+def DoDelGlobal():
+    global glb
+    del(glb)
+    return True
+
+def DelUndefinedGlobal():
+    AssertError(NameError, DoDelGlobal)
+    AssertError(NameError, DoDelGlobal)
+
+def DelDefinedGlobal():
+    # Check that "glb" is defined
+    global glb
+    l = glb
+
+    Assert(DoDelGlobal() == True)
+    AssertError(NameError, DoDelGlobal)
+    AssertError(NameError, DoDelGlobal)
+
+######################
+# Try to delete a name from an enclosing function. This should fail since "del" should not
+# lookup the enclosing namespace
+
+def EnclosingFunction():
+    val = 1
+    def DelEnclosingName():
+        del val
+    DelEnclosingName()
+
+######################
+# per-instance override
+def PerInstOverride():
+
+    global res
+    res = ''
+    def testIt():
+        f = Foo()
+
+        f.__del__ = Hello
+
+        Assert(hasattr(Foo, '__del__'))
+
+        Assert(hasattr(f, '__del__'))
+
+        del(f)
     
-    
-    ##################################
-    # per-instance override & remove both
-    
-    def PerInstOverrideAndRemoveBoth():
-    
+    testIt()
+    FullCollect()
+
+    Assert(res == 'Hello finalizer')
+
+##################################
+# per-instance override & remove
+
+def PerInstOverrideAndRemove():
+    global res
+
+    def testit():
+        global res
+        global Hello
         res = ''
         f = Foo()
-        Assert(hasattr(Foo, '__del__'))
-        Assert(hasattr(f, '__del__'))
-    
         f.__del__ = Hello
-    
         Assert(hasattr(Foo, '__del__'))
-        Assert(hasattr(f, '__del__'))
     
-        FullCollect()
-        FullCollect()
-    
-        del(Foo.__del__)
-        Assert(hasattr(Foo, '__del__') == False)
         Assert(hasattr(f, '__del__'))
     
         del(f.__del__)
-        dir(f)
-    
-        Assert(hasattr(Foo, '__del__') == False)
-        Assert(hasattr(f, '__del__') == False)
-    
-        FullCollect()
-        FullCollect()
+        Assert(hasattr(Foo, '__del__'))
+        Assert(hasattr(f, '__del__'))
     
         del(f)
-        FullCollect()
     
-        Assert(res == '')
+    testit()
+    FullCollect()
+    Assert(res == 'Foo finalizer')
+
+
+##################################
+# per-instance override & remove both
+
+def PerInstOverrideAndRemoveBoth():
+
+    res = ''
+    f = Foo()
+    Assert(hasattr(Foo, '__del__'))
+    Assert(hasattr(f, '__del__'))
+
+    f.__del__ = Hello
+
+    Assert(hasattr(Foo, '__del__'))
+    Assert(hasattr(f, '__del__'))
+
+    FullCollect()
+    FullCollect()
+
+    del(Foo.__del__)
+    Assert(hasattr(Foo, '__del__') == False)
+    Assert(hasattr(f, '__del__'))
+
+    del(f.__del__)
+    dir(f)
+
+    Assert(hasattr(Foo, '__del__') == False)
+    Assert(hasattr(f, '__del__') == False)
+
+    FullCollect()
+    FullCollect()
+
+    del(f)
+    FullCollect()
+
+    Assert(res == '')
+
+
+##################################
+# define finalizer after instance creation
+def NoFinAddToInstance():
+
+    global res
+    res = ''
     
-    
-    ##################################
-    # define finalizer after instance creation
-    def NoFinAddToInstance():
-    
-        global res
-        res = ''
-        
-        def inner():
-            b = Bar()
-            Assert(hasattr(Bar, '__del__') == False)
-    
-            Assert(hasattr(b, '__del__') == False)
-    
-            b.__del__ = Hello
-            Assert(hasattr(Bar, '__del__') == False)
-            Assert(hasattr(b, '__del__'))
-    
-            del(b)
-    
-        inner()
-        FullCollect()
-    
-        Assert(res == 'Hello finalizer')
-    
-    
-    ##################################
-    # define & remove finalizer after instance creation
-    def NoFinAddToInstanceAndRemove():
-        global res
-        res = ''
+    def inner():
         b = Bar()
         Assert(hasattr(Bar, '__del__') == False)
-    
+
         Assert(hasattr(b, '__del__') == False)
-    
+
         b.__del__ = Hello
         Assert(hasattr(Bar, '__del__') == False)
         Assert(hasattr(b, '__del__'))
-    
-        del(b.__del__)
-        Assert(hasattr(Bar, '__del__') == False)
-        Assert(hasattr(b, '__del__') == False)
-    
+
         del(b)
-        FullCollect()
-    
-        Assert(res == '')
-    
-    
-    if not is_posix: # Finalizers run differently on mono
-        SimpleTest()
-    DelBuiltin()
-    AssertError(UnboundLocalError, EnclosingFunction)
-    DelUndefinedGlobal()
-    glb = 100
-    DelDefinedGlobal()
-    PerInstOverride()
-    PerInstOverrideAndRemove()
-    PerInstOverrideAndRemoveBoth()
-    NoFinAddToInstance()
-    NoFinAddToInstanceAndRemove()
+
+    inner()
+    FullCollect()
+
+    Assert(res == 'Hello finalizer')
+
+
+##################################
+# define & remove finalizer after instance creation
+def NoFinAddToInstanceAndRemove():
+    global res
+    res = ''
+    b = Bar()
+    Assert(hasattr(Bar, '__del__') == False)
+
+    Assert(hasattr(b, '__del__') == False)
+
+    b.__del__ = Hello
+    Assert(hasattr(Bar, '__del__') == False)
+    Assert(hasattr(b, '__del__'))
+
+    del(b.__del__)
+    Assert(hasattr(Bar, '__del__') == False)
+    Assert(hasattr(b, '__del__') == False)
+
+    del(b)
+    FullCollect()
+
+    Assert(res == '')
+
+
+if not is_posix: # Finalizers run differently on mono
+    SimpleTest()
+DelBuiltin()
+AssertError(UnboundLocalError, EnclosingFunction)
+DelUndefinedGlobal()
+glb = 100
+DelDefinedGlobal()
+PerInstOverride()
+PerInstOverrideAndRemove()
+PerInstOverrideAndRemoveBoth()
+NoFinAddToInstance()
+NoFinAddToInstanceAndRemove()
 
 #####################################################################################
 
@@ -1063,19 +1061,18 @@ def f():
 
 AssertError(NameError, f)
 
-if not is_silverlight:
-    def f():
-        import os
-        f = file('temptest.py', 'w+')
-        f.write('foo = 42')
-        f.close()
-        try:
-            execfile('temptest.py')
-        finally:
-            os.unlink('temptest.py')
-        return foo
-    
-    AssertError(NameError, f)
+def f():
+    import os
+    f = file('temptest.py', 'w+')
+    f.write('foo = 42')
+    f.close()
+    try:
+        execfile('temptest.py')
+    finally:
+        os.unlink('temptest.py')
+    return foo
+
+AssertError(NameError, f)
 
 def f():
     exec "foo = 42"
@@ -1083,19 +1080,18 @@ def f():
 
 AreEqual(f(), 42)
 
-if not is_silverlight:
-    def f():
-        import os
-        f = file('temptest.py', 'w+')
-        f.write('foo = 42')
-        f.close()
-        try:
-            from temptest import *
-        finally:
-            os.unlink('temptest.py')
-        return foo
-    
-    AreEqual(f(), 42)
+def f():
+    import os
+    f = file('temptest.py', 'w+')
+    f.write('foo = 42')
+    f.close()
+    try:
+        from temptest import *
+    finally:
+        os.unlink('temptest.py')
+    return foo
+
+AreEqual(f(), 42)
 
 
 def f():

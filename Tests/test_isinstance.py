@@ -17,7 +17,7 @@ from iptest.assert_util import *
 
 import sys
 
-@skip("silverlight")
+
 def test_file_io():
     def verify_file(ff):
         cnt = 0
@@ -70,7 +70,7 @@ def test_file_io():
     os.remove("testfile.tmp")
 
 # more tests for 'open'
-@skip("silverlight")
+
 def test_open():
     AssertError(TypeError, open, None) # arg must be string
     AssertError(TypeError, open, [])
@@ -94,7 +94,7 @@ def test_compile():
     
     AssertError(SyntaxError, eval, "a=2")
 
-@skip("silverlight")
+
 def test_redirect():
     # stdin, stdout redirect and input, raw_input tests
     
@@ -256,7 +256,7 @@ def test_eval_dicts():
     
     Assert(eval_using_locals())
     
-    if is_cli or is_silverlight:
+    if is_cli:
         if System.BitConverter.IsLittleEndian == True:
             Assert(sys.byteorder == "little")
         else:
@@ -341,7 +341,7 @@ def test_inheritance_ctor():
         AreEqual(type(inst), nt)
     
 # sub classing built-ins works correctly..
-@skip("silverlight")
+
 def test_subclassing_builtins():
     class MyFile(file):
         myfield = 0
@@ -378,7 +378,7 @@ def test_extensible_types_hashing():
 
 
 # can use kw-args w/ file
-@skip("silverlight")
+
 def test_kwargs_file():
     f = file(name='temporary.deleteme', mode='w')
     f.close()
@@ -508,15 +508,13 @@ def test_cli_types():
         for x in arrayMapping.keys():
             # construct from DynamicType
             y = System.Array[arrayMapping[x]](*args)
-            if not is_silverlight: #BUG DDB #76340
-                AreEqual(y.GetType().GetElementType(), arrayMapping[x]().GetType())
+            AreEqual(y.GetType().GetElementType(), arrayMapping[x]().GetType())
             validate(y, *args)
     
             # construct from CLR type
-            if not is_silverlight: #BUG DDB #76340
-                y = System.Array[y.GetType().GetElementType()](*args)
-                AreEqual(y.GetType().GetElementType(), arrayMapping[x]().GetType())
-                validate(y, *args)
+            y = System.Array[y.GetType().GetElementType()](*args)
+            AreEqual(y.GetType().GetElementType(), arrayMapping[x]().GetType())
+            validate(y, *args)
                 
     
     def tryConstructSize(validate, *args):
@@ -524,15 +522,13 @@ def test_cli_types():
             # construct from DynamicType
             y = System.Array.CreateInstance(arrayMapping[x], *args)
             
-            if not is_silverlight: #BUG DDB #76340
-                AreEqual(y.GetType().GetElementType(), arrayMapping[x]().GetType())
+            AreEqual(y.GetType().GetElementType(), arrayMapping[x]().GetType())
             validate(y, *args)
         
             # construct from CLR type
-            if not is_silverlight: #BUG DDB #76340
-                y = System.Array.CreateInstance(y.GetType().GetElementType(), *args)
-                AreEqual(y.GetType().GetElementType(), arrayMapping[x]().GetType())
-                validate(y, *args)
+            y = System.Array.CreateInstance(y.GetType().GetElementType(), *args)
+            AreEqual(y.GetType().GetElementType(), arrayMapping[x]().GetType())
+            validate(y, *args)
                 
     
     def validateLen(res, *args):
@@ -1080,7 +1076,6 @@ try:
 except NameError:
     pass
 
-@skip("silverlight", "Merlin bug #404247: this test doesn't work when the file is executed from non-Python host (thost)" )
 def test_file():
     AreEqual(file_var_present, 1)
 

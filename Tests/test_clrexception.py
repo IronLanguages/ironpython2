@@ -66,9 +66,8 @@ py_to_clr_positive(IOError, System.IO.IOException, msg = "IOError -> System.IO.I
 clr_to_py_positive(System.MissingMemberException, AttributeError, msg ="System.MissingMemberException -> AttributeError")
 py_to_clr_positive(AttributeError, System.MissingMemberException, msg = "AttributeError -> System.MissingMemberException")
 
-if not is_silverlight:
-    clr_to_py_positive(System.ComponentModel.Win32Exception, WindowsError, msg ="System.ComponentModel.Win32Exception -> WindowsError")
-    py_to_clr_positive(WindowsError, System.ComponentModel.Win32Exception, msg = "WindowsError -> System.ComponentModel.Win32Exception")
+clr_to_py_positive(System.ComponentModel.Win32Exception, WindowsError, msg ="System.ComponentModel.Win32Exception -> WindowsError")
+py_to_clr_positive(WindowsError, System.ComponentModel.Win32Exception, msg = "WindowsError -> System.ComponentModel.Win32Exception")
 
 clr_to_py_positive(System.IO.EndOfStreamException, EOFError, msg="System.IO.EndOfStreamException -> EOFError")
 py_to_clr_positive(EOFError, System.IO.EndOfStreamException, msg = "EOFError -> System.IO.EndOfStreamException")
@@ -91,22 +90,20 @@ py_to_clr_positive(ZeroDivisionError, System.DivideByZeroException, msg = "ZeroD
 clr_to_py_positive(System.ArgumentException, ValueError, msg = "System.ArgumentException -> ValueError")
 py_to_clr_positive(ValueError, System.ArgumentException, msg = "ValueError-> System.ArgumentException")
 
-if not is_silverlight:
-    clr_to_py_positive(System.Text.DecoderFallbackException, UnicodeDecodeError)
-    py_to_clr_positive_with_args(UnicodeDecodeError, System.Text.DecoderFallbackException, ('abc','abc',3,4,'abc'))
+clr_to_py_positive(System.Text.DecoderFallbackException, UnicodeDecodeError)
+py_to_clr_positive_with_args(UnicodeDecodeError, System.Text.DecoderFallbackException, ('abc','abc',3,4,'abc'))
 
-    clr_to_py_positive(System.Text.EncoderFallbackException, UnicodeEncodeError)
-    py_to_clr_positive_with_args(UnicodeEncodeError, System.Text.EncoderFallbackException, ('abc','abc',3,4,'abc'))
+clr_to_py_positive(System.Text.EncoderFallbackException, UnicodeEncodeError)
+py_to_clr_positive_with_args(UnicodeEncodeError, System.Text.EncoderFallbackException, ('abc','abc',3,4,'abc'))
 
-if not is_silverlight:
-    if is_netstandard: # no FEATURE_WARNING_EXCEPTION
-        clr.AddReference("IronPython")
-        import IronPython
-        clr_to_py_positive(IronPython.Runtime.Exceptions.WarningException, Warning, msg = "IronPython.Runtime.Exceptions.WarningException -> Warning")
-        py_to_clr_positive(Warning, IronPython.Runtime.Exceptions.WarningException, msg = "Warning -> IronPython.Runtime.Exceptions.WarningException")
-    else:
-        clr_to_py_positive(System.ComponentModel.WarningException, Warning, msg = "System.ComponentModel.WarningException -> Warning")
-        py_to_clr_positive(Warning, System.ComponentModel.WarningException, msg = "Warning -> System.ComponentModel.WarningException")
+if is_netstandard: # no FEATURE_WARNING_EXCEPTION
+    clr.AddReference("IronPython")
+    import IronPython
+    clr_to_py_positive(IronPython.Runtime.Exceptions.WarningException, Warning, msg = "IronPython.Runtime.Exceptions.WarningException -> Warning")
+    py_to_clr_positive(Warning, IronPython.Runtime.Exceptions.WarningException, msg = "Warning -> IronPython.Runtime.Exceptions.WarningException")
+else:
+    clr_to_py_positive(System.ComponentModel.WarningException, Warning, msg = "System.ComponentModel.WarningException -> Warning")
+    py_to_clr_positive(Warning, System.ComponentModel.WarningException, msg = "Warning -> System.ComponentModel.WarningException")
 
 clr_to_py_positive(System.OutOfMemoryException, MemoryError, msg = "System.OutOfMemoryException -> MemoryError")
 py_to_clr_positive(MemoryError, System.OutOfMemoryException, msg = "MemoryError -> System.OutOfMemoryException")

@@ -247,7 +247,7 @@ def test_api_version():
     AreEqual(sys.api_version, 0)
 
 @skip("netstandard") # IRuntimeVariables
-@skip("silverlight")
+
 def test_settrace():
     """TODO: now that sys.settrace has been implemented this test case needs to be fully revisited"""
     # settrace
@@ -375,7 +375,7 @@ def test_ps1():
 def test_ps2():
     Assert(not hasattr(sys, "ps2"))    
 
-@skip("silverlight")
+
 def test_getsizeof():
     '''TODO: revisit'''
     if is_cpython:
@@ -384,7 +384,7 @@ def test_getsizeof():
         AreEqual(sys.getsizeof(1), sys.getsizeof(1.0))
 
 @skip("netstandard") # IRuntimeVariables
-@skip("silverlight")
+
 def test_gettrace():
     '''TODO: revisit'''
     AreEqual(sys.gettrace(), None)
@@ -397,7 +397,7 @@ def test_gettrace():
     sys.settrace(None)
     AreEqual(sys.gettrace(), None)
 
-@skip("silverlight")
+
 def test_cp24242():
     # This test requires -X:FullFrames, run it in separate instance of IronPython.
     global testDelGetFrame
@@ -424,7 +424,7 @@ def test_cp24242():
 
 
 CP24381_MESSAGES = []
-@skip("silverlight", "cli")
+@skip("cli")
 def test_cp24381():
     import sys
     orig_sys_trace_func = sys.gettrace()

@@ -642,8 +642,7 @@ def test_datetime():
     #Similar to Merlin Work Item 148470
     AreEqual(x.strftime("%H:%M:%S"), "02:28:03")
     #Similar to Merlin Work Item 148470
-    if not is_silverlight:
-        AreEqual(x.strftime("%a %A %b %B %c %d %H %I %j %m %M %p %S %U %w %W %x %X %y %Y %Z %%"), "Tue Tuesday Mar March 03/22/05 02:28:03 22 02 02 081 03 28 AM 03 12 2 12 03/22/05 02:28:03 05 2005  %")
+    AreEqual(x.strftime("%a %A %b %B %c %d %H %I %j %m %M %p %S %U %w %W %x %X %y %Y %Z %%"), "Tue Tuesday Mar March 03/22/05 02:28:03 22 02 02 081 03 28 AM 03 12 2 12 03/22/05 02:28:03 05 2005  %")
     
 def test_timedelta():
     #CodePlex Work Item 4871
@@ -1086,7 +1085,7 @@ def test_cp13704():
     '''
     min_args = 3
 
-    if not (is_cli or is_silverlight):
+    if not is_cli:
         AssertErrorWithMessage(TypeError, "Required argument 'year' (pos 1) not found", 
                                datetime.datetime)
         AssertErrorWithMessage(TypeError, "an integer is required",  
@@ -1113,7 +1112,7 @@ def test_pickle():
     nowstr = cPickle.dumps(now)
     AreEqual(now, cPickle.loads(nowstr))
 
-@skip("silverlight")
+
 def test_datetime_datetime_pickled_by_cpy():
     import cPickle
     with open(r"pickles/cp18666.pickle", "rb") as f:

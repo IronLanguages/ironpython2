@@ -18,7 +18,6 @@ How to re-define a property in Python.
 #------------------------------------------------------------------------------
 
 from iptest.assert_util import *
-skiptest("silverlight")
 
 if is_posix:
     add_clr_assemblies("baseclasscs", "typesamples")

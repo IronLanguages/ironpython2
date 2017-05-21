@@ -377,7 +377,7 @@ class skip:
             return _do_nothing(msg)
 		
         
-        platforms = 'cli64', interactive', 'multiple_execute', 'stdlib', 'posix', 'netstandard', 'mono', 'osx'
+        platforms = 'cli64', 'interactive', 'multiple_execute', 'stdlib', 'posix', 'netstandard', 'mono', 'osx'
         for to_skip in platforms:
             platform_test = getattr(self, to_skip + '_test')
             if to_skip in self.platforms and platform_test():

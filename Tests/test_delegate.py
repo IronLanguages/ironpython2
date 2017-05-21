@@ -29,24 +29,12 @@ class TimerProxy: pass
 
 def MyTick(state):
     global superTimer
-    if is_silverlight==False:
-        AreEqual(state, superTimer)
-    else:
-        AreEqual(state.superTimer, superTimer)
+    AreEqual(state, superTimer)
     are.Set()
 
 def SimpleHandler(sender, args):
     global superTimer
-    if not is_silverlight:
-        superTimer = Timer(MyTick)
-    else:
-        tp = TimerProxy()
-        superTimer = Timer.__new__.Overloads[(TimerCallback,
-                                              System.Object,
-                                              int,
-                                              int)](Timer, MyTick, tp, Timeout.Infinite, Timeout.Infinite)
-        tp.superTimer = superTimer
-
+    superTimer = Timer(MyTick)
     superTimer.Change(1000, 0)
         
 
@@ -275,15 +263,14 @@ class foo(object):
         globalSelf = self
         globalArg = arg
 
-if not is_silverlight:
-    # try parameterized thread
-    a = foo()
-    t = Thread(ParameterizedThreadStart(foo.bar))
-    t.Start(a)
-    t.Join()
+# try parameterized thread
+a = foo()
+t = Thread(ParameterizedThreadStart(foo.bar))
+t.Start(a)
+t.Join()
 
-    AreEqual(called, True)
-    AreEqual(globalSelf, a)
+AreEqual(called, True)
+AreEqual(globalSelf, a)
 
 # try non-parameterized
 a = foo()
@@ -296,26 +283,24 @@ t.Join()
 AreEqual(called, True)
 AreEqual(globalSelf, a)
 
-if not is_silverlight:
-    # parameterized w/ self
-    a = foo()
-    called = False
+# parameterized w/ self
+a = foo()
+called = False
 
-    t = Thread(ParameterizedThreadStart(a.baz))
-    t.Start('hello')
-    t.Join()
+t = Thread(ParameterizedThreadStart(a.baz))
+t.Start('hello')
+t.Join()
 
-    AreEqual(called, True)
-    AreEqual(globalSelf, a)
-    AreEqual(globalArg, 'hello')
+AreEqual(called, True)
+AreEqual(globalSelf, a)
+AreEqual(globalArg, 'hello')
 
-if not is_silverlight:
-    # parameterized w/ self & extra arg, should throw
-    try:
-        pts = ParameterizedThreadStart(foo.baz)
-        pts("Hello")
-        AssertUnreachable()
-    except TypeError: pass
+# parameterized w/ self & extra arg, should throw
+try:
+    pts = ParameterizedThreadStart(foo.baz)
+    pts("Hello")
+    AssertUnreachable()
+except TypeError: pass
 
 # SuperDelegate Tests
 
@@ -596,8 +581,6 @@ def test_handler_get_invoked():
     for target in [myotherfunc, myclass().myotherfunc, myoldclass().myotherfunc]:
         myfuncCalled = False
         passedarg = None
-        if is_silverlight:
-            break
             
         ParameterizedThreadStart(target)(1)
         AreEqual(myfuncCalled, True)
@@ -693,7 +676,7 @@ def test_event_as_attribute_disallowed_ops():
     for x in [f1, f2, f3]:
         AssertError(AttributeError, x)
 
-@skip("silverlight") # no weakref module
+ # no weakref module
 def test_event_lifetime():
     """ensures that circular references between an event on an instance
        and the handling delegate don't call leaks and don't release too soon"""

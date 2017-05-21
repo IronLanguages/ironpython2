@@ -18,7 +18,7 @@ Tests for CPython's array module.
 
 #--IMPORTS---------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 import array
 

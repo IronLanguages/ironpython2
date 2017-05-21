@@ -128,7 +128,7 @@ def simpleTester(a, b, c):
 #------------------------------------------------------------------------------
 #--TESTS
 
-@skip("silverlight")
+
 def test_sanity():
     simpleTester(1, 2, 3)
     #if it worked once, it should work again...
@@ -136,7 +136,7 @@ def test_sanity():
     #None
     simpleTester(None, None, None)
 
-@skip("silverlight")
+
 # TODO: skip this test for now until Global namespace is implemented in DLR
 def __test_modified_module():
     test_name = "test_modified_module.py"

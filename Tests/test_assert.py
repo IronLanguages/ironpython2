@@ -76,9 +76,7 @@ def test_doesnt_fail_on_curly():
   
   
 #--Main------------------------------------------------------------------------
-if is_silverlight:
-    run_test(__name__, noOutputPlease=True)
-elif is_cli and '-O' in System.Environment.GetCommandLineArgs():
+if is_cli and '-O' in System.Environment.GetCommandLineArgs():
     from iptest.process_util import *
     AreEqual(0, launch_ironpython_changing_extensions(__file__, remove=["-O"]))
 else:

@@ -14,7 +14,7 @@
 #####################################################################################
 
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 import _weakref
 import gc
@@ -42,12 +42,11 @@ def test_proxy_dir():
             return b
             
         prxy = run_test()
-        if not is_silverlight:
-            gc.collect()
-            # gc collection seems to take longer on OSX
-            if is_osx: time.sleep(2)
-            #This will fail if original object has not been garbage collected.
-            AreEqual(dir(prxy), [])
+        gc.collect()
+        # gc collection seems to take longer on OSX
+        if is_osx: time.sleep(2)
+        #This will fail if original object has not been garbage collected.
+        AreEqual(dir(prxy), [])
 
 def test_special_methods():
     for cls in [NonCallableClass, CallableClass]:

@@ -14,13 +14,11 @@
 #####################################################################################
 
 from iptest.assert_util import *
-if not is_silverlight:
-    from iptest.file_util import *
+from iptest.file_util import *
 
 import marshal
 
-if is_silverlight==False:
-    tfn = path_combine(testpath.temporary_dir, 'tempfile.bin')
+tfn = path_combine(testpath.temporary_dir, 'tempfile.bin')
 
 # a couple of lines are disabled due to 1032
 
@@ -54,7 +52,7 @@ def test_functionality():
                 frozenset([1, (2.1, 3L), frozenset([5]), 'x'])
             ]
     
-    if is_cli or is_silverlight:
+    if is_cli:
         import System
         objects.extend(
             [
@@ -77,9 +75,6 @@ def test_functionality():
 
     # dump / load
     for x in objects:
-        if is_silverlight:
-            break
-            
         f = file(tfn, 'wb')
         marshal.dump(x, f)
         f.close()
@@ -95,9 +90,6 @@ def test_buffer():
         AreEqual(marshal.loads(x), s)
 
     for s in ['', ' ', 'abc ', 'abcdef']:
-        if is_silverlight:
-            break
-            
         f = file(tfn, 'wb')
         marshal.dump(buffer(s), f)
         f.close()
@@ -118,7 +110,6 @@ def test_negative():
     class my: pass
     AssertError(ValueError, marshal.dumps, my())  ## unmarshallable object
 
-@skip("silverlight") # file IO    
 def test_file_multiple_reads():
     """calling load w/ a file should only advance the length of the file"""
     l = []

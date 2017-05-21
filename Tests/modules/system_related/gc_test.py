@@ -29,7 +29,7 @@ debug_list = [ 1, #DEBUG_STATS
 
 #get_objects
 def test_get_objects():
-    if is_cli or is_silverlight:
+    if is_cli:
         AssertError(NotImplementedError, gc.get_objects)
     else:
         gc.get_objects()
@@ -93,7 +93,7 @@ def test_set_threshold():
     
 #get_referrers
 def test_get_referrers():
-    if is_cli or is_silverlight:
+    if is_cli:
         AssertError(NotImplementedError, gc.get_referrers,1,"hello",True)
         AssertError(NotImplementedError, gc.get_referrers)
     else:
@@ -107,7 +107,7 @@ def test_get_referrers():
     
 #get_referents
 def test_get_referents():
-    if is_cli or is_silverlight:
+    if is_cli:
         AssertError(NotImplementedError, gc.get_referents,1,"hello",True)
         AssertError(NotImplementedError, gc.get_referents)
     else:
@@ -125,7 +125,7 @@ def test_enable():
     
 #disable
 def test_disable():
-    if is_cli or is_silverlight:
+    if is_cli:
         from iptest.warning_util import warning_trapper
         w = warning_trapper()
         w.hook()
@@ -143,13 +143,13 @@ def test_isenabled():
     result = gc.isenabled()
     Assert(result,"enable Method can't set gc.isenabled as true.")
     
-    if not is_cli and not is_silverlight:
+    if not is_cli:
         gc.disable()
         result = gc.isenabled()
         Assert(result == False,"enable Method can't set gc.isenabled as false.")
 
 #collect
-@skip("silverlight")
+
 def test_collect():
     if is_cli:
         i = gc.collect() # returns # of bytes collected, could be anything
@@ -165,7 +165,7 @@ def test_collect():
     
 #set_dubug,get_debug
 def test_setdebug():
-    if is_cli or is_silverlight:
+    if is_cli:
         for debug in debug_list:
             AssertError(NotImplementedError, gc.set_debug,debug)
             AreEqual(0,gc.get_debug())
@@ -195,7 +195,7 @@ def test_debug_stats():
     AreEqual(62,gc.DEBUG_LEAK)
  
 
-@skip("cli", "silverlight") #CodePlex Work Item 8202
+@skip("cli") #CodePlex Work Item 8202
 def test_get_debug():
     state = [0,gc.DEBUG_STATS,gc.DEBUG_COLLECTABLE,gc.DEBUG_UNCOLLECTABLE,gc.DEBUG_INSTANCES,gc.DEBUG_OBJECTS,gc.DEBUG_SAVEALL,gc.DEBUG_LEAK]
     result = gc.get_debug()

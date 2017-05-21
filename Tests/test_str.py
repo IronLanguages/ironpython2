@@ -112,7 +112,7 @@ def test_endswith():
         AreEqual("abcdef".endswith("de", x, 5), False)
         AreEqual("abcdef".endswith("de", x, -1), False)
 
-@skip("silverlight") # CoreCLR bug xxxx found in build 30324 from silverlight_w2
+ # CoreCLR bug xxxx found in build 30324 from silverlight_w2
 def test_rfind():
     AreEqual("abcdbcda".rfind("cd", 1), 5)
     AreEqual("abcdbcda".rfind("cd", 3), 5)
@@ -166,10 +166,7 @@ def test_rsplit():
 
 
 def test_codecs():
-    if is_silverlight:
-        encodings = [ 'ascii', 'utf-8', 'utf-16-le', 'raw-unicode-escape']
-    else:
-        encodings = [ x for x in ip_supported_encodings]
+    encodings = [ x for x in ip_supported_encodings]
         
     for encoding in encodings: Assert('abc'.encode(encoding).decode(encoding)=='abc', encoding + " failed!")
     
@@ -204,7 +201,7 @@ def test_string_escape():
         else:
             AreEqual(chr(i).encode('string-escape'), repr(chr(i))[1:-1])
 
-@skip("silverlight") # not implemented exception on Silverlight
+ # not implemented exception on Silverlight
 def test_encoding_backslashreplace():
                 # codec, input, output
     tests =   [ ('ascii',      u"a\xac\u1234\u20ac\u8000", "a\\xac\\u1234\\u20ac\\u8000"),
@@ -216,7 +213,7 @@ def test_encoding_backslashreplace():
         if is_mono and test[0] in ['latin-1', 'iso-8859-15']: continue
         AreEqual(test[1].encode(test[0], 'backslashreplace'), test[2])
 
-@skip("silverlight") # not implemented exception on Silverlight
+ # not implemented exception on Silverlight
 def test_encoding_xmlcharrefreplace():
                 # codec, input, output
     tests =   [ ('ascii',      u"a\xac\u1234\u20ac\u8000", "a&#172;&#4660;&#8364;&#32768;"),
@@ -268,10 +265,7 @@ def test_str_subclass():
 def test_str_char_hash():
     import System
     #System.Char.Parse('a') is not available in Silverlight mscorlib
-    if is_silverlight:
-        a = 'a'.ToCharArray()[0]
-    else:
-        a = System.Char.Parse('a')
+    a = 'a'.ToCharArray()[0]
         
     for x in [{'a':'b'}, set(['a']), 'abc', ['a'], ('a',)]:
         AreEqual(a in x, True)

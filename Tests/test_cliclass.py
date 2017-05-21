@@ -151,22 +151,11 @@ def test_bases():
     class MyIncompatibleExceptionComparer(System.Exception, System.Collections.IComparer, System.IDisposable):
         def Compare(self, x, y): return 0
         def Displose(self): pass
-    if not is_silverlight:
-        AssertErrorWithMatch(TypeError, "__bases__ assignment: 'MyExceptionComparer' object layout differs from 'IronPython.NewTypes.System.Exception#IComparer#IDisposable_*",
-                             setattr, MyExceptionComparer, "__bases__", MyIncompatibleExceptionComparer.__bases__)
-        AssertErrorWithMatch(TypeError, "__class__ assignment: 'MyExceptionComparer' object layout differs from 'IronPython.NewTypes.System.Exception#IComparer#IDisposable_*",
-                             setattr, MyExceptionComparer(), "__class__", MyIncompatibleExceptionComparer().__class__)
-    else:
-        try:
-            setattr(MyExceptionComparer, "__bases__", MyIncompatibleExceptionComparer.__bases__)
-        except TypeError, e:
-            Assert(e.args[0].startswith("__bases__ assignment: 'MyExceptionComparer' object layout differs from 'IronPython.NewTypes.System.Exception#IComparer#IDisposable_"))
-        
-        try:
-            setattr(MyExceptionComparer(), "__class__", MyIncompatibleExceptionComparer().__class__)
-        except TypeError, e:
-            Assert(e.args[0].startswith("__class__ assignment: 'MyExceptionComparer' object layout differs from 'IronPython.NewTypes.System.Exception#IComparer#IDisposable_"))
-
+    
+    AssertErrorWithMatch(TypeError, "__bases__ assignment: 'MyExceptionComparer' object layout differs from 'IronPython.NewTypes.System.Exception#IComparer#IDisposable_*",
+                            setattr, MyExceptionComparer, "__bases__", MyIncompatibleExceptionComparer.__bases__)
+    AssertErrorWithMatch(TypeError, "__class__ assignment: 'MyExceptionComparer' object layout differs from 'IronPython.NewTypes.System.Exception#IComparer#IDisposable_*",
+                            setattr, MyExceptionComparer(), "__class__", MyIncompatibleExceptionComparer().__class__)    
 
 def test_open_generic():    
     # Inherting from an open generic instantiation should fail with a good error message
@@ -273,12 +262,9 @@ def test_generic_TypeGroup():
     import IronPythonTest
     genericTypes = IronPythonTest.NestedClass.InnerGenericClass
     
-    # IsAssignableFrom is SecurityCritical and thus cannot be called via reflection in silverlight,
-    # so disable this in interpreted mode.
-    if not (is_silverlight):
-        # converstion to Type
-        Assert(System.Type.IsAssignableFrom(System.IComparable, int))
-        AssertError(TypeError, System.Type.IsAssignableFrom, object, genericTypes)
+    # converstion to Type
+    Assert(System.Type.IsAssignableFrom(System.IComparable, int))
+    AssertError(TypeError, System.Type.IsAssignableFrom, object, genericTypes)
 
     # Test illegal type instantiation
     try:
@@ -303,12 +289,9 @@ def test_generic_TypeGroup():
         pass
 
     # Test constructor
-    if not is_silverlight:
-        # GetType is SecurityCritical; can't call via reflection on silverlight
-        AreEqual(System.EventHandler(handler).GetType(), System.Type.GetType("System.EventHandler"))
+    AreEqual(System.EventHandler(handler).GetType(), System.Type.GetType("System.EventHandler"))
         
-        # GetGenericTypeDefinition is SecuritySafe, can't call on Silverlight.
-        AreEqual(System.EventHandler[System.EventArgs](handler).GetType().GetGenericTypeDefinition(), System.Type.GetType("System.EventHandler`1"))
+    AreEqual(System.EventHandler[System.EventArgs](handler).GetType().GetGenericTypeDefinition(), System.Type.GetType("System.EventHandler`1"))
     
     # Test inheritance
     class MyComparable(System.IComparable):
@@ -348,7 +331,7 @@ def test_autodoc():
     
 
 #IronPythonTest.TypeDescTests is not available for silverlight
-@skip("silverlight")    
+    
 def test_type_descs():
     if is_netstandard:
         clr.AddReference("System.ComponentModel.Primitives")
@@ -501,7 +484,7 @@ def test_type_descs():
         AssertUnreachable()
 
 #silverlight does not support System.Char.Parse
-@skip("silverlight")
+
 def test_char():
     for x in range(256):
         c = System.Char.Parse(chr(x))
@@ -519,16 +502,15 @@ def test_char():
         if not chr(x) == c: Assert(False)
 
 def test_repr():
-    if not is_silverlight:
-        if is_netstandard:
-            clr.AddReference('System.Drawing.Primitives')
-        else:
-            clr.AddReference('System.Drawing')
-    
-        from System.Drawing import Point
-    
-        AreEqual(repr(Point(1,2)).startswith('<System.Drawing.Point object'), True)
-        AreEqual(repr(Point(1,2)).endswith('[{X=1,Y=2}]>'),True)
+    if is_netstandard:
+        clr.AddReference('System.Drawing.Primitives')
+    else:
+        clr.AddReference('System.Drawing')
+
+    from System.Drawing import Point
+
+    AreEqual(repr(Point(1,2)).startswith('<System.Drawing.Point object'), True)
+    AreEqual(repr(Point(1,2)).endswith('[{X=1,Y=2}]>'),True)
     
     # these 3 classes define the same repr w/ different \r, \r\n, \n versions
     a = UnaryClass(3)
@@ -652,7 +634,7 @@ def test_strange_inheritance():
     a.CallIntParamsWithContext(2, 3)   
 
 #lib.process_util, file, etc are not available in silverlight
-@skip("silverlight")
+
 def test_nondefault_indexers():
     from iptest.process_util import *
 
@@ -724,7 +706,7 @@ End Class
               
         os.unlink('vbproptest1.vb')
 
-@skip("silverlight")
+
 def test_nondefault_indexers_overloaded():
     from iptest.process_util import *
 
@@ -945,7 +927,7 @@ def test_virtual_event():
             a.MyRaise()
             AreEqual(UseEvent.Called, False)
 
-@skip("silverlight")
+
 def test_property_get_set():
     if is_netstandard:
         clr.AddReference("System.Drawing.Primitives")
@@ -979,7 +961,7 @@ def test_constructor_function():
     AreEqual(System.DateTime.__new__.__name__, '__new__')
     Assert(System.DateTime.__new__.__doc__.find('__new__(cls: type, year: int, month: int, day: int)') != -1)
                 
-    if not is_silverlight and not is_netstandard: # no System.AssemblyLoadEventArgs in netstandard
+    if not is_netstandard: # no System.AssemblyLoadEventArgs in netstandard
         Assert(System.AssemblyLoadEventArgs.__new__.__doc__.find('__new__(cls: type, loadedAssembly: Assembly)') != -1)
 
 def test_class_property():
@@ -998,7 +980,7 @@ def test_keyword_construction_readonly():
     AssertError(AttributeError, System.Version, 1, 0, Build=100)  
     AssertError(AttributeError, ClassWithLiteral, Literal=3)
 
-@skip("silverlight") # no FileSystemWatcher in Silverlight
+ # no FileSystemWatcher in Silverlight
 def test_kw_construction_types():
     if is_netstandard:
         clr.AddReference("System.IO.FileSystem.Watcher")
@@ -1064,7 +1046,7 @@ def test_as_bool():
         
     
     
-@skip("silverlight") # no Stack on Silverlight
+ # no Stack on Silverlight
 def test_generic_getitem():
     if is_netstandard:
         clr.AddReference("System.Collections")
@@ -1082,7 +1064,7 @@ def test_generic_getitem():
     AreEqual(type.__getitem__(System.Collections.Generic.List, int), System.Collections.Generic.List[int])
     
 
-@skip("silverlight") # no WinForms on Silverlight
+ # no WinForms on Silverlight
 @skip("netstandard") # no System.Windows.Forms in netstandard
 def test_multiple_inheritance():
     """multiple inheritance from two types in the same hierarchy should work, this is similar to class foo(int, object)"""
@@ -1214,7 +1196,7 @@ def test_explicit_interface_impl():
     Assert(not hasattr(oneConflict, "A"))
     Assert(hasattr(oneConflict, "B"))
     
-@skip("silverlight") # no ArrayList on Silverlight
+ # no ArrayList on Silverlight
 def test_interface_isinstance():
     if is_netstandard:
         clr.AddReference("System.Collections.NonGeneric")
@@ -1222,7 +1204,7 @@ def test_interface_isinstance():
     l = System.Collections.ArrayList()
     AreEqual(isinstance(l, System.Collections.IList), True)
 
-@skip("silverlight") # no serialization support in Silverlight
+ # no serialization support in Silverlight
 @skip("netstandard") # no ClrModule.Serialize/Deserialize in netstandard
 def test_serialization():
     """
@@ -1376,7 +1358,7 @@ def test_decimal_bool():
     AreEqual(bool(System.Decimal(0)), False)
     AreEqual(bool(System.Decimal(1)), True)
 
-@skip("silverlight") # no Char.Parse
+ # no Char.Parse
 def test_add_str_char():
     AreEqual('bc' + System.Char.Parse('a'), 'bca')
     AreEqual(System.Char.Parse('a') + 'bc', 'abc')
@@ -1385,7 +1367,7 @@ def test_import_star_enum():
     from System.AttributeTargets import *
     Assert('ReturnValue' in dir())
 
-@skip("silverlight")
+
 def test_cp11971():
     old_syspath = [x for x in sys.path]
     try:
@@ -1413,7 +1395,7 @@ if not hasattr(A, 'Rank'):
     finally:
         sys.path = old_syspath
 
-@skip("silverlight") # no Stack on Silverlight
+ # no Stack on Silverlight
 def test_ienumerable__getiter__():
     
     #--empty list
@@ -1508,14 +1490,13 @@ def test_dir():
     for attr in dir(System):
         dir(getattr(System, attr))
 
-    if not is_silverlight:
-        if is_netstandard:
-            clr.AddReference("System.Collections")
-    
-        for x in [System.Collections.Generic.SortedList,
-                  System.Collections.Generic.Dictionary,
-                  ]:
-            temp = dir(x)
+    if is_netstandard:
+        clr.AddReference("System.Collections")
+
+    for x in [System.Collections.Generic.SortedList,
+                System.Collections.Generic.Dictionary,
+                ]:
+        temp = dir(x)
 
 def test_family_or_assembly():
     class my(FamilyOrAssembly): pass
@@ -1534,7 +1515,7 @@ def test_valuetype_iter():
     AreEqual(it.next().Key, 'a')
     AreEqual(it.next().Key, 'b')
 
-@skip("silverlight", "posix")
+@skip("posix")
 def test_abstract_class_no_interface_impl():
     # this can't be defined in C# or VB, it's a class which is 
     # abstract and therefore doesn't implement the interface method
@@ -1722,11 +1703,11 @@ def test_convert_int64_to_float():
     AreEqual(float(System.Int64(42)), 42.0)
     AreEqual(type(float(System.Int64(42))), float)
 
-@skip("silverlight")
+
 def test_cp24004():
     Assert(System.Array.__dict__.has_key("Find"))
 
-@skip("silverlight")
+
 def test_cp23772():
     a = System.Array
     x = a[int]([1, 2, 3])
@@ -1778,7 +1759,7 @@ def test_silverlight_access_isolated_storage():
         # IsolatedStorage may not actually be available
         pass
     
-@skip("silverlight", "posix", "netstandard") # no WPF in netstandard
+@skip("posix", "netstandard") # no WPF in netstandard
 def test_xaml_support():
     text = """<custom:XamlTestObject 
    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -1858,7 +1839,7 @@ def test_xaml_support():
         os.unlink('test.xaml')
 
 
-@skip("silverlight")
+
 def test_extension_methods():
     import clr, imp
     if is_netstandard:

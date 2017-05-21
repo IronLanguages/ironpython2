@@ -46,7 +46,7 @@ def test_common_attributes():
         # Non-existent attribute
         AssertError(AttributeError, i.__getattribute__, "foo")
         
-        if (is_cli or is_silverlight) and i == None: # !!! Need to expose __reduce__ on all types
+        if is_cli and i == None: # !!! Need to expose __reduce__ on all types
             AssertError(TypeError, i.__reduce__)
             AssertError(TypeError, i.__reduce_ex__)
     
@@ -54,7 +54,7 @@ def test_common_attributes():
         AreEqual(hash(i), i.__hash__())
             
     for i in builtin_types:
-          if (is_cli or is_silverlight) and i == type(None):
+          if is_cli and i == type(None):
               continue
           # __init__ and __new__ are implemented by IronPython.Runtime.Operations.InstanceOps
           # We do repr to ensure that we can map back the functions properly
@@ -125,13 +125,12 @@ def test_getattr():
     
     tmpfile = "tmpfile.txt"
     
-    if not is_silverlight:
-        c=C(tmpfile, "w")
-        c.write("Hello\n")
-        c.close()
-        c=C(tmpfile, "r")
-        Assert(c.readline() == "Hello\n")
-        c.close()
+    c=C(tmpfile, "w")
+    c.write("Hello\n")
+    c.close()
+    c=C(tmpfile, "r")
+    Assert(c.readline() == "Hello\n")
+    c.close()
 
     try:
         import os
@@ -1330,7 +1329,7 @@ def test_slots():
     AreEqual(hasattr(B, 'c'), True)
     
     # slots & metaclass
-    if is_cli or is_silverlight:          # INCOMPATBILE: __slots__ not supported for subtype of type
+    if is_cli:          # INCOMPATBILE: __slots__ not supported for subtype of type
         class foo(type):
             __slots__ = ['abc']
     
@@ -1396,7 +1395,7 @@ def test_slots():
     # weird case, including __weakref__ and __dict__ and we allow
     # a subtype to inherit from both
 
-    if is_cli or is_silverlight: types = [object, dict, tuple]    # INCOMPATBILE: __slots__ not supported for tuple
+    if is_cli: types = [object, dict, tuple]    # INCOMPATBILE: __slots__ not supported for tuple
     else: types = [object,dict]
     
     for x in types:
@@ -1931,9 +1930,8 @@ def test_slots_counter():
     
     testit()
     #collect not defined for silverlight
-    if not is_silverlight:
-        gc.collect()
-        AreEqual(Counter.c, 0)
+    gc.collect()
+    AreEqual(Counter.c, 0)
 
 def test_override_container_contains():
     for x in (dict, list, tuple):
@@ -3687,7 +3685,7 @@ def test_cp22832():
     Assert("KOldStuff" in dir(KNew))
 
 # mono's GC apparently behaves differently...
-@skip("silverlight", "posix")
+@skip("posix")
 def test_cp23564():
     global A
     A = 0

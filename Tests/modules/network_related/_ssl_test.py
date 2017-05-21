@@ -17,7 +17,7 @@ Tests for the _ssl module.  See http://docs.python.org/library/ssl.html
 '''
 #--IMPORTS---------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=24266
 import _ssl as real_ssl
@@ -38,72 +38,72 @@ SSL_RESPONSE = "Microsoft Corporation"
 
 
 #--TEST CASES------------------------------------------------------------------
-@skip("silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
+ #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
 def test_CERT_NONE():
     AreEqual(real_ssl.CERT_NONE,
              0)
 
-@skip("silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
+ #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
 def test_CERT_OPTIONAL():
     AreEqual(real_ssl.CERT_OPTIONAL,
              1)
 
-@skip("silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
+ #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
 def test_CERT_REQUIRED():
     AreEqual(real_ssl.CERT_REQUIRED,
              2)
 
-@skip("silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
+ #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
 def test_PROTOCOL_SSLv2():
     AreEqual(real_ssl.PROTOCOL_SSLv2,
              0)
 
-@skip("silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
+ #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
 def test_PROTOCOL_SSLv23():
     AreEqual(real_ssl.PROTOCOL_SSLv23,
              2)
 
-@skip("silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
+ #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
 def test_PROTOCOL_SSLv3():
     AreEqual(real_ssl.PROTOCOL_SSLv3,
              1)
 
-@skip("silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
+ #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
 def test_PROTOCOL_TLSv1():
     AreEqual(real_ssl.PROTOCOL_TLSv1,
              3)
 
-@skip("silverlight")
+
 def test_PROTOCOL_TLSv1_1():
     AreEqual(real_ssl.PROTOCOL_TLSv1_1,
              4)
 
-@skip("silverlight")
+
 def test_PROTOCOL_TLSv1_2():
     AreEqual(real_ssl.PROTOCOL_TLSv1_2,
              5)
 
-@skip("silverlight")
+
 def test_OP_NO_SSLv2():
     AreEqual(real_ssl.OP_NO_SSLv2,
              0x0000000)
 
-@skip("silverlight")
+
 def test_OP_NO_SSLv3():
     AreEqual(real_ssl.OP_NO_SSLv3,
              0x2000000)
 
-@skip("silverlight")
+
 def test_OP_NO_TLSv1():
     AreEqual(real_ssl.OP_NO_TLSv1,
              0x4000000)
 
-@skip("silverlight")
+
 def test_OP_NO_TLSv1_1():
     AreEqual(real_ssl.OP_NO_TLSv1_1,
              0x10000000)
 
-@skip("silverlight")
+
 def test_OP_NO_TLSv1_2():
     AreEqual(real_ssl.OP_NO_TLSv1_2,
              0x8000000)
@@ -182,7 +182,7 @@ def test_SSL_ERROR_ZERO_RETURN():
     AreEqual(real_ssl.SSL_ERROR_ZERO_RETURN, 6)
 
 
-@skip("silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
+ #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21411
 def test___doc__():
     expected_doc = """Implementation module for SSL socket operations.  See the socket module
 for documentation."""

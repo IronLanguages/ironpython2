@@ -21,7 +21,7 @@ Python-based modules.
 
 import sys
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 if not is_stdlib():
     print "Need access to CPython's libraries to run this test"
@@ -269,7 +269,7 @@ def test_cp21929():
 def test_cp34188():
     import locale
     locale.setlocale(locale.LC_COLLATE,"de_CH")
-    Assert(sorted([u'a', u'z', u'ä'], cmp=locale.strcoll) == sorted([u'a', u'z', u'ä'], key=locale.strxfrm))
+    Assert(sorted([u'a', u'z', u'ï¿½'], cmp=locale.strcoll) == sorted([u'a', u'z', u'ï¿½'], key=locale.strxfrm))
 
 def test_gh1144():
     from collections import deque

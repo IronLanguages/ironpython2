@@ -17,7 +17,7 @@ Operations on property.
 '''
 #------------------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 add_clr_assemblies("propertydefinitions", "typesamples")
 
 from Merlin.Testing import *

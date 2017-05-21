@@ -260,7 +260,7 @@ def test_catch_MyException():
         assert_traceback([(Line260+8, 0, FILE, 'test_catch_MyException'), (Line260+2, 0, FILE, 'catch_MyException'), _retb])
 
 Line263 = 263
-@skip("silverlight")
+
 def test_cp11923_first():
     try:
         _t_test = path_combine(testpath.public_testdir, "cp11923.py")
@@ -283,7 +283,7 @@ def test_cp11923_first():
 ###############################################################################
 ##TESTS BEYOND THIS POINT SHOULD NOT DEPEND ON LINE NUMBERS IN THIS FILE#######
 ###############################################################################
-@skip("silverlight")
+
 def test_cp11923_second():
     import os
     import sys

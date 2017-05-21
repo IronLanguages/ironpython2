@@ -434,7 +434,7 @@ def test_reverse():
     b.reverse()
     AreEqual(b, b'cba')    
     
-@skip("silverlight") # CoreCLR bug xxxx found in build 30324 from silverlight_w2
+ # CoreCLR bug xxxx found in build 30324 from silverlight_w2
 def test_rfind():
     for testType in types:
         AreEqual(testType(b"abcdbcda").rfind(b"cd", 1), 5)

@@ -23,7 +23,7 @@ results produced by the operators implemented on the .NET types.
 from iptest.assert_util import *
 from operator import add, sub, mul, div, mod, and_, or_, xor, floordiv, truediv, lshift, rshift, neg, pos, abs, invert
 
-if is_cli or is_silverlight:
+if is_cli:
     from System import Boolean, Byte, UInt16, UInt32, UInt64, SByte, Int16, Int32, Int64, Single, Double
     import clr
 
@@ -342,7 +342,7 @@ def validate_constructors(values):
             total += 1
     return total
 
-if is_cli or is_silverlight:
+if is_cli:
     values = [-2, -3, -5, 2, 3, 5, 0]
     itypes = [Byte, UInt16, UInt32, UInt64, SByte, Int16, Int32, Int64]
     ftypes = [Single, Double]

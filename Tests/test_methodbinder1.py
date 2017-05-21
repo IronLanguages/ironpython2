@@ -176,22 +176,21 @@ def test_this_matrix():
     )
 
     
-    if is_silverlight==False:
-        InvariantCulture = System.Globalization.CultureInfo.InvariantCulture
-        matrix = list(matrix)
-        ##################################################  pass in char    #########################################################
-        ####                                     M201   M680   M202   M203   M204   M205   M301   M302   M303   M304   M310   M311   M312   M313   M320   M321   M400
-        ####                                     int    int?   double bigint bool   str    sbyte  i16    i64    single byte   ui16   ui32   ui64   char   decm   obj
-        matrix.append((System.Char.Parse('A'), TypeE, TypeE, TypeE, TypeE, True,  True,  TypeE, TypeE, TypeE, TypeE, TypeE, TypeE, TypeE, TypeE, True,  True, True,  ))
-        
-        ##################################################  pass in float   #########################################################
-        ####    single/double becomes Int32, but this does not apply to other primitive types
-        ####                                                           int    int?  double  bigint bool   str    sbyte i16   i64   single byte   ui16   ui32   ui64   char   decm   obj
-        matrix.append((System.Single.Parse("8.01", InvariantCulture), True,  True, True,  True,  True,  TypeE, True, True, True, True,  True,  True,  True,  True,  TypeE, True,  True,  ))
-        matrix.append((System.Double.Parse("10.2", InvariantCulture), True,  True, True,  True,  True,  TypeE, True, True, True, True,  True,  True,  True,  True,  TypeE, True,  True,  ))
-        matrix.append((System.Single.Parse("-8.1", InvariantCulture), True,  True, True,  True,  True,  TypeE, True, True, True, True,  OverF, OverF, OverF, OverF, TypeE, True,  True,  ))
-        matrix.append((System.Double.Parse("-1.8", InvariantCulture), True,  True, True,  True,  True,  TypeE, True, True, True, True,  OverF, OverF, OverF, OverF, TypeE, True,  True,  ))
-        matrix = tuple(matrix)
+    InvariantCulture = System.Globalization.CultureInfo.InvariantCulture
+    matrix = list(matrix)
+    ##################################################  pass in char    #########################################################
+    ####                                     M201   M680   M202   M203   M204   M205   M301   M302   M303   M304   M310   M311   M312   M313   M320   M321   M400
+    ####                                     int    int?   double bigint bool   str    sbyte  i16    i64    single byte   ui16   ui32   ui64   char   decm   obj
+    matrix.append((System.Char.Parse('A'), TypeE, TypeE, TypeE, TypeE, True,  True,  TypeE, TypeE, TypeE, TypeE, TypeE, TypeE, TypeE, TypeE, True,  True, True,  ))
+    
+    ##################################################  pass in float   #########################################################
+    ####    single/double becomes Int32, but this does not apply to other primitive types
+    ####                                                           int    int?  double  bigint bool   str    sbyte i16   i64   single byte   ui16   ui32   ui64   char   decm   obj
+    matrix.append((System.Single.Parse("8.01", InvariantCulture), True,  True, True,  True,  True,  TypeE, True, True, True, True,  True,  True,  True,  True,  TypeE, True,  True,  ))
+    matrix.append((System.Double.Parse("10.2", InvariantCulture), True,  True, True,  True,  True,  TypeE, True, True, True, True,  True,  True,  True,  True,  TypeE, True,  True,  ))
+    matrix.append((System.Single.Parse("-8.1", InvariantCulture), True,  True, True,  True,  True,  TypeE, True, True, True, True,  OverF, OverF, OverF, OverF, TypeE, True,  True,  ))
+    matrix.append((System.Double.Parse("-1.8", InvariantCulture), True,  True, True,  True,  True,  TypeE, True, True, True, True,  OverF, OverF, OverF, OverF, TypeE, True,  True,  ))
+    matrix = tuple(matrix)
     
     for scenario in matrix:
         if isinstance(scenario[0], str):
@@ -272,11 +271,10 @@ def test_bool_asked():
         Assert(Flag.BValue, "argument is %s" % arg)
         Flag.BValue = False
         
-    if is_silverlight==False:
-        for arg in [0, System.Byte.Parse('0'), System.UInt64.Parse('0'), 0.0, 0L, False, None, tuple(), list()]:
-            target.M204(arg)
-            Assert(not Flag.BValue, "argument is %s" % (arg,))
-            Flag.BValue = True
+    for arg in [0, System.Byte.Parse('0'), System.UInt64.Parse('0'), 0.0, 0L, False, None, tuple(), list()]:
+        target.M204(arg)
+        Assert(not Flag.BValue, "argument is %s" % (arg,))
+        Flag.BValue = True
 
 def test_user_defined_conversion():
     class CP1:
@@ -325,8 +323,7 @@ def test_nullable_int():
     _helper(target.M680, [None, 100, 100L, System.Byte.MaxValue, System.UInt32.MinValue, myint1, mylong2, 3.6, ], 680, [(), 3+1j], TypeError)
     
 def test_out_int():
-    if is_silverlight==False:
-        _helper(target.M701, [], 701, [1, 10L, None, System.Byte.Parse('3')], TypeError)    # not allow to pass in anything
+    _helper(target.M701, [], 701, [1, 10L, None, System.Byte.Parse('3')], TypeError)    # not allow to pass in anything
     
 def test_collections():
     arrayInt = array_int((10, 20))
@@ -377,8 +374,7 @@ def test_enum():
     # E1 asked
     _helper(target.M450, [E1.A, ], 450, [10, E2.A], TypeError)
     # E2: ushort asked
-    if is_silverlight==False:
-        _helper(target.M451, [E2.A, ], 451, [10, E1.A, System.UInt16.Parse("3")], TypeError)
+    _helper(target.M451, [E2.A, ], 451, [10, E1.A, System.UInt16.Parse("3")], TypeError)
 
 def _repeat_with_one_arg(goodStr, getArg):
     passSet = _get_funcs(goodStr)
@@ -772,7 +768,7 @@ def test_nullable_parameter():
     AreEqual(result, None)
 
 # Skip on silverlight because the System.Configuration is not available
-@skip("silverlight")
+
 @skip("netstandard") # no System.Configuration in netstandard
 def test_xequals_call_for_optimization():
     """

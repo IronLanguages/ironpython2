@@ -25,7 +25,7 @@ class myCustom2:
     pass
 
 
-@skip("cli", "silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21907
+@skip("cli") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21907
 def test_constructor_neg():
     class KOld: pass
     
@@ -278,7 +278,7 @@ def test_dispatch_table():
 #pickle_complex
 def test_pickle_complex():
     #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21908
-    if not (is_cli or is_silverlight):
+    if not is_cli:
         AreEqual(copy_reg.pickle_complex(1), (complex, (1, 0)))
     
     #negative tests

@@ -19,7 +19,7 @@ This tests what CPythons test_sha.py does not hit.
 from __future__ import absolute_import
 #--IMPORTS---------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 import _sha512
 

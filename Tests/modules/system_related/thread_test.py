@@ -33,13 +33,12 @@ def test_thread():
     def ThreadProcNoParm():
         pass
     
-    def Main():
-        if not is_silverlight:
-            sync = Sync()
-            t = Thread(ParameterizedThreadStart(ThreadProcParm))
-            t.Start(sync)
-            t.Join()
-            Assert(sync.hit == 1)
+    def Main():        
+        sync = Sync()
+        t = Thread(ParameterizedThreadStart(ThreadProcParm))
+        t.Start(sync)
+        t.Join()
+        Assert(sync.hit == 1)
     
         t = Thread(ThreadStart(ThreadProcNoParm))
         t.Start()
@@ -92,7 +91,7 @@ def test_stack_size():
         good_size_list = [4096*10, 4096*100, 4096*1000, 4096*10000]
         for good_size in good_size_list:
             #CodePlex Work Item 7827
-            if (is_cli or is_silverlight) and good_size<=50000: print "Ignoring", good_size, "for CLI"; continue
+            if is_cli and good_size<=50000: print "Ignoring", good_size, "for CLI"; continue
             temp = thread.stack_size(good_size)
             Assert(temp>=32768 or temp==0)
         
@@ -115,7 +114,7 @@ def test_new_thread_is_background():
         Thread.Sleep(100)
     Assert(done)
 
-@skip("silverlight")
+
 def test_threading_waits_for_thread_exit():
     import os
     from iptest.process_util import launch
@@ -238,8 +237,7 @@ def test_start_new_thread():
         
         id = thread.start_new_thread(tempFunc, (), {"my_misspelled_kw_param":9})
         time.sleep(1)
-        if not is_silverlight:
-            se.flush()
+        se.flush()
     finally:
         sys.stderr = se
     

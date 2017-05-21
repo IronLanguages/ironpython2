@@ -17,7 +17,7 @@ Test cases try to access a .NET type.
 '''
 #------------------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 add_clr_assemblies("loadtypesample")
 

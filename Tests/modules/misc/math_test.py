@@ -14,7 +14,7 @@
 #####################################################################################
 
 from iptest.assert_util import *
-if is_cli or is_silverlight:
+if is_cli:
     from System import Int64, Byte, Int16
 import math, itertools
 
@@ -48,7 +48,7 @@ def test_complex():
     AreEqual(pow(0j, 0), 1)
     AreEqual(pow(0j, 0j), 1)
 
-    if is_cli or is_silverlight: AreEqual((1j) + Int64(), 1j)
+    if is_cli: AreEqual((1j) + Int64(), 1j)
 
     AssertError(TypeError, (lambda:(1+1j)+[]))
     AssertError(TypeError, lambda : type(2j).__dict__['real'].__set__, 2j, 0)
@@ -67,12 +67,12 @@ def test_floor_divide():
 def test_more_complex():
     AreEqual((12+3j)/3L, (4+1j))
     AreEqual(3j - 5L, -5+3j)
-    if is_cli or is_silverlight: AreEqual(3j - Int64(), 3j)
+    if is_cli: AreEqual(3j - Int64(), 3j)
     AssertError(TypeError, (lambda:3j-[]))
-    if is_cli or is_silverlight: AreEqual(pow(5j, Int64()), (1+0j))
+    if is_cli: AreEqual(pow(5j, Int64()), (1+0j))
     AreEqual(pow(5j, 0L), (1+0j))
     AssertError(TypeError, (lambda:pow(5j, [])))
-    if is_cli or is_silverlight: AreEqual(5j * Int64(), 0)
+    if is_cli: AreEqual(5j * Int64(), 0)
     AreEqual(5j * 3L, 15j)
     AssertError(TypeError, (lambda:(5j*[])))
 
@@ -446,11 +446,6 @@ def test_other():
     Assert(1 ** 735293857239475 == 1)
     Assert(0 ** 735293857239475 == 0)
     
-    # cpython tries to compute this, takes a long time to finish
-    if is_silverlight:
-        y = 735293857239475
-        AssertError(ValueError, (lambda: 10 ** y))
-
     Assert(2 ** 3.0 == 8.0)
     Assert(2.0 ** 3 == 8.0)
     Assert(4 ** 0.5 == 2.0)

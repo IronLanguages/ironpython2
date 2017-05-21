@@ -15,7 +15,7 @@
 
 from iptest.assert_util import *
 skiptest("win32")
-skiptest("silverlight")  #no time.clock or GetTotalMemory
+  #no time.clock or GetTotalMemory
 
 import clr
 clr.AddReference("Microsoft.Dynamic")

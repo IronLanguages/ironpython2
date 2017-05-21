@@ -20,7 +20,7 @@
 
 from iptest.assert_util import *
 
-skiptest("silverlight")
+
 
 from iptest.file_util import *
 

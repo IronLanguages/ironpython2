@@ -16,8 +16,7 @@
 from iptest.assert_util import *
 from iptest.warning_util import warning_trapper
 import sys
-if not is_silverlight:
-    from iptest.process_util import *
+from iptest.process_util import *
 
 year = 2005
 month = 3
@@ -656,7 +655,7 @@ try:
 except IndentationError, e:
     AreEqual(e.lineno, 2)
 
-@skip("win32", "silverlight") # no encoding.Default
+@skip("win32") # no encoding.Default
 def test_parser_recovery():
     # bunch of test infrastructure...
     

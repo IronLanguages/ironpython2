@@ -18,7 +18,6 @@ Create a Python class which derives from CLR type(s).
 #------------------------------------------------------------------------------
 
 from iptest.assert_util import *
-skiptest("silverlight")
 
 add_clr_assemblies("baseclasscs", "typesamples")
 

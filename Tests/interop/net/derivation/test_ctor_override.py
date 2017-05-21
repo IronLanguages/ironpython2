@@ -18,8 +18,6 @@ How to define new, equivalent constructors.
 #------------------------------------------------------------------------------
 
 from iptest.assert_util import *
-skiptest("silverlight")
-
 add_clr_assemblies("baseclasscs", "typesamples")
 
 from Merlin.Testing import *

@@ -287,7 +287,7 @@ def test_thread_lock():
     
     with thread.allocate_lock(): pass
 
-@skip("silverlight")
+
 def test_with_file():    
     with file('abc.txt', 'w'):
         pass
@@ -1264,7 +1264,7 @@ def test_importwarning():
 def test_overflowwarning():
     AssertError(AttributeError, lambda: exceptions.OverflowWarning)
 
-@skip("silverlight")
+
 def test_cp5609():
     from os import remove
     temp_name = "test_cp5609.txt"

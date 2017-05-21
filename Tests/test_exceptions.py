@@ -35,7 +35,7 @@ def test_exception_line_no_with_finally():
             AreEqual(tb.tb_lineno, expected.pop()) # adding lines will require an update here
             tb = tb.tb_next
             
-if is_cli or is_silverlight:
+if is_cli:
     def test_system_exception():
         import System
         
@@ -46,7 +46,7 @@ if is_cli or is_silverlight:
 
     AreEqual(sys.exc_info(), (None, None, None))
 
-if is_cli or is_silverlight:
+if is_cli:
     def test_raise():
         try:
              Fail("Message")
@@ -189,7 +189,7 @@ def test_sys_exit3():
 
 ################################
 # exception interop tests
-if is_cli or is_silverlight:
+if is_cli:
     def test_interop():
         load_iron_python_test()
         
@@ -315,11 +315,10 @@ if is_cli or is_silverlight:
         # /BUG
         
         # BUG 319 IOError not raised.
-        if is_silverlight==False:
-            try:
-                fp = file('thisfiledoesnotexistatall.txt')
-            except IOError:
-                pass
+        try:
+            fp = file('thisfiledoesnotexistatall.txt')
+        except IOError:
+            pass
         # /BUG
         
         # verify we can raise & catch CLR exceptions
@@ -400,7 +399,7 @@ def test_str2():
 
 #####################################################################
 
-if is_cli or is_silverlight:
+if is_cli:
     def test_array():
         import System
         try:
@@ -460,7 +459,7 @@ def test_syntax_error_exception():
         Assert('offset' in l1)
         Assert('filename' in l1)
         Assert('text' in l1)
-        if is_cli or is_silverlight:
+        if is_cli:
             import clr
             l2 = dir(se.clsException)
             Assert('Line' in l2)
@@ -475,7 +474,7 @@ def test_syntax_error_exception():
             AreEqual(se.text, "else:y=")
         else:
             AreEqual(se.text, "else:y=\n")
-        if is_cli or is_silverlight:
+        if is_cli:
             AreEqual(se.clsException.Line, 2)
             # Bug 1132
             #AreEqual(se.clsException.Column, 7)
@@ -791,35 +790,34 @@ def test_sanity():
             #there is no __getstate__ method of exceptions...
             Assert(not hasattr(t_except, '__getstate__'))
     
-    if not is_silverlight:
-        #special cases
-        encode_except = exceptions.UnicodeEncodeError("1", u"2", 3, 4, "5")
-        AreEqual(encode_except.encoding, "1")
-        AreEqual(encode_except.object, u"2")
-        AreEqual(encode_except.start, 3)
-        AreEqual(encode_except.end, 4)
-        AreEqual(encode_except.reason, "5")
-        AreEqual(encode_except.message, "")
-        
-        #CodePlex Work Item 356
-        #AssertError(TypeError, exceptions.UnicodeDecodeError, "1", u"2", 3, 4, "e")
-        exceptions.UnicodeDecodeError("1", "2", 3, 4, "e")
-        
-        decode_except = exceptions.UnicodeDecodeError("1", "2", 3, 4, "5")
-        AreEqual(decode_except.encoding, "1")
-        AreEqual(decode_except.object, "2")
-        AreEqual(decode_except.start, 3)
-        AreEqual(decode_except.end, 4)
-        AreEqual(decode_except.reason, "5")
-        AreEqual(decode_except.message, "")
-        
-        translate_except = exceptions.UnicodeTranslateError(u"1", 2, 3, "4")
-        AreEqual(translate_except.object, u"1")
-        AreEqual(translate_except.start, 2)
-        AreEqual(translate_except.end, 3)
-        AreEqual(translate_except.reason, "4")
-        AreEqual(translate_except.message, "")
-        AreEqual(translate_except.encoding, None)
+    #special cases
+    encode_except = exceptions.UnicodeEncodeError("1", u"2", 3, 4, "5")
+    AreEqual(encode_except.encoding, "1")
+    AreEqual(encode_except.object, u"2")
+    AreEqual(encode_except.start, 3)
+    AreEqual(encode_except.end, 4)
+    AreEqual(encode_except.reason, "5")
+    AreEqual(encode_except.message, "")
+    
+    #CodePlex Work Item 356
+    #AssertError(TypeError, exceptions.UnicodeDecodeError, "1", u"2", 3, 4, "e")
+    exceptions.UnicodeDecodeError("1", "2", 3, 4, "e")
+    
+    decode_except = exceptions.UnicodeDecodeError("1", "2", 3, 4, "5")
+    AreEqual(decode_except.encoding, "1")
+    AreEqual(decode_except.object, "2")
+    AreEqual(decode_except.start, 3)
+    AreEqual(decode_except.end, 4)
+    AreEqual(decode_except.reason, "5")
+    AreEqual(decode_except.message, "")
+    
+    translate_except = exceptions.UnicodeTranslateError(u"1", 2, 3, "4")
+    AreEqual(translate_except.object, u"1")
+    AreEqual(translate_except.start, 2)
+    AreEqual(translate_except.end, 3)
+    AreEqual(translate_except.reason, "4")
+    AreEqual(translate_except.message, "")
+    AreEqual(translate_except.encoding, None)
 
 def test_nested_exceptions():
     try:

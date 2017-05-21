@@ -116,7 +116,7 @@ def validcollate():
     str2 = _random.Random()
     AssertError(TypeError,_locale.strcoll,str1,str2)
 
-@skip("cli", "silverlight") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21913  
+@skip("cli") #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=21913  
 def test_strcoll():
     _locale.setlocale(_locale.LC_COLLATE,"English")
     validcollate()

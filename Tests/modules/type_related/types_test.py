@@ -19,7 +19,7 @@ This tests what CPythons test_types.py does not hit.
 
 #--IMPORTS---------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 import types
 
 #--GLOBALS---------------------------------------------------------------------

@@ -17,10 +17,9 @@ import toimport
 
 from iptest.assert_util import *
 
-if not is_silverlight:
-    from iptest.file_util import *
-    from iptest.process_util import *
-    import os
+from iptest.file_util import *
+from iptest.process_util import *
+import os
 
 
 try:
@@ -29,7 +28,6 @@ except ImportError: pass
 else:  Fail("should already thrown")
 
 
-@skip("silverlight")
 def test_cp7766():
     if __name__=="__main__":
         AreEqual(type(__builtins__), type(sys))
@@ -49,16 +47,16 @@ def test_cp7766():
         os.unlink(_t_test)
 
 # generate test files on the fly
-if not is_silverlight:
-    _testdir    = 'ImportTestDir'
-    _f_init     = path_combine(testpath.public_testdir, _testdir, '__init__.py')
-    _f_error    = path_combine(testpath.public_testdir, _testdir, 'Error.py')
-    _f_gen      = path_combine(testpath.public_testdir, _testdir, 'Gen.py')
-    _f_module   = path_combine(testpath.public_testdir, _testdir, 'Module.py')
 
-    write_to_file(_f_init)
-    write_to_file(_f_error, 'raise AssertionError()')
-    write_to_file(_f_gen, '''
+_testdir    = 'ImportTestDir'
+_f_init     = path_combine(testpath.public_testdir, _testdir, '__init__.py')
+_f_error    = path_combine(testpath.public_testdir, _testdir, 'Error.py')
+_f_gen      = path_combine(testpath.public_testdir, _testdir, 'Gen.py')
+_f_module   = path_combine(testpath.public_testdir, _testdir, 'Module.py')
+
+write_to_file(_f_init)
+write_to_file(_f_error, 'raise AssertionError()')
+write_to_file(_f_gen, '''
 def gen():
     try:
         yield "yield inside try"
@@ -66,9 +64,9 @@ def gen():
         pass
 ''')
 
-    unique_line = "This is the module to test 'from ImportTestDir import Module'"
+unique_line = "This is the module to test 'from ImportTestDir import Module'"
 
-    write_to_file(_f_module, '''
+write_to_file(_f_module, '''
 value = %r
 
 a = 1
@@ -91,41 +89,37 @@ try:
     import ImportTestDir.Error
 except AssertionError: pass
 except ImportError:
-    if is_silverlight:
-        pass
-    else:
-        Fail("Should have thrown AssertionError from Error.py")
+    Fail("Should have thrown AssertionError from Error.py")
 else:
     Fail("Should have thrown AssertionError from Error.py")
 
 Assert(not sys.modules.__contains__("Error"))
 
-if not is_silverlight:
-    from ImportTestDir import Module
+from ImportTestDir import Module
 
-    filename = Module.__file__.lower()
-    Assert(filename.endswith("module.py") or filename.endswith("module.pyc"))
-    AreEqual(Module.__name__.lower(), "importtestdir.module")
-    AreEqual(Module.value, unique_line)
+filename = Module.__file__.lower()
+Assert(filename.endswith("module.py") or filename.endswith("module.pyc"))
+AreEqual(Module.__name__.lower(), "importtestdir.module")
+AreEqual(Module.value, unique_line)
 
-    from ImportTestDir.Module import (a, b,
-    c
-    ,
-    d, e,
-        f, g, h
-    , i, j)
+from ImportTestDir.Module import (a, b,
+c
+,
+d, e,
+    f, g, h
+, i, j)
 
-    for x in range(ord('a'), ord('j')+1):
-        Assert(chr(x) in dir())
+for x in range(ord('a'), ord('j')+1):
+    Assert(chr(x) in dir())
 
-    # testing double import of generators with yield inside try
+# testing double import of generators with yield inside try
 
-    from ImportTestDir import Gen
-    result = sys.modules
-    #u = sys.modules.pop("iptest")
-    g = sys.modules.pop("ImportTestDir.Gen")
-    from ImportTestDir import Gen
-    AreEqual(Gen.gen().next(), "yield inside try")
+from ImportTestDir import Gen
+result = sys.modules
+#u = sys.modules.pop("iptest")
+g = sys.modules.pop("ImportTestDir.Gen")
+from ImportTestDir import Gen
+AreEqual(Gen.gen().next(), "yield inside try")
 
 #########################################################################################
 # using import in nested blocks
@@ -166,19 +160,17 @@ def f():
         now = time
     except NameError: pass
     else: Fail("time should be undefined")
-if not is_silverlight:
-    f()
+f()
 
 try:
     print time
 except NameError:  pass
 else: Fail("time should be undefined")
 
-if not is_silverlight:
-    try:
-        print clock
-    except NameError:  pass
-    else: Fail("clock should be undefined")
+try:
+    print clock
+except NameError:  pass
+else: Fail("clock should be undefined")
 
 def f():
     from time import clock as c
@@ -191,19 +183,18 @@ def f():
         now = clock
     except NameError:  pass
     else: Fail("clock should be undefined")
-if not is_silverlight:
-    f()
+
+f()
 
 try:
     print time
 except NameError:  pass
 else: Fail("time should be undefined")
 
-if not is_silverlight:
-    try:
-        print clock
-    except NameError:  pass
-    else: Fail("clock should be undefined")
+try:
+    print clock
+except NameError:  pass
+else: Fail("clock should be undefined")
 
 
 # with closures
@@ -212,8 +203,7 @@ def f():
     from time import clock as clock_in_closure
     g()
 
-if not is_silverlight:
-    f()
+f()
 
 
 #########################################################################################
@@ -233,7 +223,7 @@ def compileAndRef(name, filename, *args):
         clr.AddReference(name)
 
 
-@skip("silverlight", "multiple_execute", "win32")
+@skip("multiple_execute", "win32")
 def test_c1cs():
     """verify re-loading an assembly causes the new type to show up"""
     if not has_csc():
@@ -258,7 +248,7 @@ def test_c1cs():
     # ideally we would delete c1.dll, c2.dll here so as to keep them from cluttering up
     # /Public; however, they need to be present for the peverify pass.
 
-@skip("silverlight", "multiple_execute", "win32")
+@skip("multiple_execute", "win32")
 def test_c2cs():
     """verify generic types & non-generic types mixed in the same namespace can
     successfully be used"""
@@ -353,35 +343,33 @@ def test_c2cs():
     AreEqual(x.Test(), 'Foo<T>')
     
     
-if not is_silverlight:
-    Assert(sys.modules.has_key("__main__"))
+Assert(sys.modules.has_key("__main__"))
 
 #########################################################################################
-if not is_silverlight:
-    _testdir        = 'ImportTestDir'
-    _f_init2         = path_combine(testpath.public_testdir, _testdir, '__init__.py')
-    _f_longpath     = path_combine(testpath.public_testdir, _testdir, 'longpath.py')
-    _f_recursive    = path_combine(testpath.public_testdir, _testdir, 'recursive.py')
-    _f_usebuiltin   = path_combine(testpath.public_testdir, _testdir, 'usebuiltin.py')
+_testdir        = 'ImportTestDir'
+_f_init2         = path_combine(testpath.public_testdir, _testdir, '__init__.py')
+_f_longpath     = path_combine(testpath.public_testdir, _testdir, 'longpath.py')
+_f_recursive    = path_combine(testpath.public_testdir, _testdir, 'recursive.py')
+_f_usebuiltin   = path_combine(testpath.public_testdir, _testdir, 'usebuiltin.py')
 
-    write_to_file(_f_init2, '''
+write_to_file(_f_init2, '''
 import recursive
 import longpath
 ''')
 
-    write_to_file(_f_longpath, '''
+write_to_file(_f_longpath, '''
 from iptest.assert_util import *
 import pkg_q.pkg_r.pkg_s.mod_s
 Assert(pkg_q.pkg_r.pkg_s.mod_s.result == "Success")
 ''')
 
-    write_to_file(_f_recursive, '''
+write_to_file(_f_recursive, '''
 from iptest.assert_util import *
 import pkg_a.mod_a
 Assert(pkg_a.mod_a.pkg_b.mod_b.pkg_c.mod_c.pkg_d.mod_d.result == "Success")
 ''')
 
-    write_to_file(_f_usebuiltin, '''
+write_to_file(_f_usebuiltin, '''
 x = max(3,5)
 x = min(3,5)
 min = x
@@ -395,9 +383,9 @@ dir = 'abc'
 del(dir)
 ''')
 
-    _f_pkga_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', '__init__.py')
-    _f_pkga_moda    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'mod_a.py')
-    write_to_file(_f_pkga_init, '''
+_f_pkga_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', '__init__.py')
+_f_pkga_moda    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'mod_a.py')
+write_to_file(_f_pkga_init, '''
 import __builtin__
 
 def new_import(a,b,c,d):
@@ -408,7 +396,7 @@ def new_import(a,b,c,d):
 old_import = __builtin__.__import__
 #__builtin__.__import__ = new_import
 ''')
-    write_to_file(_f_pkga_moda, '''
+write_to_file(_f_pkga_moda, '''
 import __builtin__
 
 def new_import(a,b,c,d):
@@ -422,15 +410,15 @@ old_import = __builtin__.__import__
 import pkg_b.mod_b
 ''')
 
-    _f_pkgb_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b','__init__.py')
-    _f_pkgb_modb    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b','mod_b.py')
-    write_to_file(_f_pkgb_init)
-    write_to_file(_f_pkgb_modb, 'import pkg_c.mod_c')
+_f_pkgb_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b','__init__.py')
+_f_pkgb_modb    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b','mod_b.py')
+write_to_file(_f_pkgb_init)
+write_to_file(_f_pkgb_modb, 'import pkg_c.mod_c')
 
-    _f_pkgc_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b', 'pkg_c', '__init__.py')
-    _f_pkgc_modc    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b', 'pkg_c', 'mod_c.py')
-    write_to_file(_f_pkgc_init)
-    write_to_file(_f_pkgc_modc, '''
+_f_pkgc_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b', 'pkg_c', '__init__.py')
+_f_pkgc_modc    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b', 'pkg_c', 'mod_c.py')
+write_to_file(_f_pkgc_init)
+write_to_file(_f_pkgc_modc, '''
 import __builtin__
 
 def new_import(a,b,c,d):
@@ -444,40 +432,40 @@ old_import = __builtin__.__import__
 import pkg_d.mod_d
 ''')
 
-    _f_pkgd_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b', 'pkg_c', 'pkg_d', '__init__.py')
-    _f_pkgd_modd    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b', 'pkg_c', 'pkg_d', 'mod_d.py')
-    write_to_file(_f_pkgd_init)
-    write_to_file(_f_pkgd_modd, '''result="Success"''')
+_f_pkgd_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b', 'pkg_c', 'pkg_d', '__init__.py')
+_f_pkgd_modd    = path_combine(testpath.public_testdir, _testdir, 'pkg_a', 'pkg_b', 'pkg_c', 'pkg_d', 'mod_d.py')
+write_to_file(_f_pkgd_init)
+write_to_file(_f_pkgd_modd, '''result="Success"''')
 
-    _f_pkgm_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_m', '__init__.py')
-    _f_pkgm_moda    = path_combine(testpath.public_testdir, _testdir, 'pkg_m', 'mod_a.py')
-    _f_pkgm_modb    = path_combine(testpath.public_testdir, _testdir, 'pkg_m', 'mod_b.py')
-    write_to_file(_f_pkgm_init, 'from ImportTestDir.pkg_m.mod_b import value_b')
-    write_to_file(_f_pkgm_moda, 'from ImportTestDir.pkg_m.mod_b import value_b')
-    write_to_file(_f_pkgm_modb, 'value_b = "ImportTestDir.pkg_m.mod_b.value_b"')
+_f_pkgm_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_m', '__init__.py')
+_f_pkgm_moda    = path_combine(testpath.public_testdir, _testdir, 'pkg_m', 'mod_a.py')
+_f_pkgm_modb    = path_combine(testpath.public_testdir, _testdir, 'pkg_m', 'mod_b.py')
+write_to_file(_f_pkgm_init, 'from ImportTestDir.pkg_m.mod_b import value_b')
+write_to_file(_f_pkgm_moda, 'from ImportTestDir.pkg_m.mod_b import value_b')
+write_to_file(_f_pkgm_modb, 'value_b = "ImportTestDir.pkg_m.mod_b.value_b"')
 
-    _f_pkgq_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_q', '__init__.py')
-    _f_pkgr_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_q', 'pkg_r', '__init__.py')
-    _f_pkgs_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_q', 'pkg_r', 'pkg_s', '__init__.py')
-    _f_pkgs_mods    = path_combine(testpath.public_testdir, _testdir, 'pkg_q', 'pkg_r', 'pkg_s', 'mod_s.py')
-    write_to_file(_f_pkgq_init)
-    write_to_file(_f_pkgr_init)
-    write_to_file(_f_pkgs_init)
-    write_to_file(_f_pkgs_mods, 'result="Success"')
+_f_pkgq_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_q', '__init__.py')
+_f_pkgr_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_q', 'pkg_r', '__init__.py')
+_f_pkgs_init    = path_combine(testpath.public_testdir, _testdir, 'pkg_q', 'pkg_r', 'pkg_s', '__init__.py')
+_f_pkgs_mods    = path_combine(testpath.public_testdir, _testdir, 'pkg_q', 'pkg_r', 'pkg_s', 'mod_s.py')
+write_to_file(_f_pkgq_init)
+write_to_file(_f_pkgr_init)
+write_to_file(_f_pkgs_init)
+write_to_file(_f_pkgs_mods, 'result="Success"')
 
-    from ImportTestDir.pkg_m import mod_a
-    AreEqual(mod_a.value_b, "ImportTestDir.pkg_m.mod_b.value_b")
+from ImportTestDir.pkg_m import mod_a
+AreEqual(mod_a.value_b, "ImportTestDir.pkg_m.mod_b.value_b")
 
-    import ImportTestDir.usebuiltin as test
-    AreEqual(dir(test).count('x'), 1)       # defined variable, not a builtin
-    AreEqual(dir(test).count('min'), 1)     # defined name that overwrites a builtin
-    AreEqual(dir(test).count('max'), 0)     # used builtin, never assigned to
-    AreEqual(dir(test).count('cmp'), 0)     # used, assigned to, deleted, shouldn't be visibled
-    AreEqual(dir(test).count('del'), 0)     # assigned to, deleted, never used
+import ImportTestDir.usebuiltin as test
+AreEqual(dir(test).count('x'), 1)       # defined variable, not a builtin
+AreEqual(dir(test).count('min'), 1)     # defined name that overwrites a builtin
+AreEqual(dir(test).count('max'), 0)     # used builtin, never assigned to
+AreEqual(dir(test).count('cmp'), 0)     # used, assigned to, deleted, shouldn't be visibled
+AreEqual(dir(test).count('del'), 0)     # assigned to, deleted, never used
 
 #########################################################################################
 @skip("netstandard") # no System.Windows.Forms in netstandard
-@skip("silverlight")
+
 @skip("win32")
 @skip("posix")
 def test_importwinform():
@@ -489,7 +477,6 @@ def test_importwinform():
     Assert(form.Text == "Hello")
 
 
-#@skip("win32", "silverlight")
 @disabled("Merlin 400941")
 def test_copyfrompackages():
     _f_pkg1 = path_combine(testpath.public_testdir, 'StandAlone\\Packages1.py')
@@ -636,7 +623,7 @@ else:
     
     AreEqual(launch_ironpython(_f_recimp_start), 0)
 
-@skip("silverlight")
+
 def test_import_inside_exec():
     _f_module = path_combine(testpath.public_testdir, 'another.py')
     write_to_file(_f_module, 'a1, a2, a3, _a4 = 1, 2, 3, 4')
@@ -666,7 +653,7 @@ def test_import_inside_exec():
 
     os.unlink(_f_module)
 
-@skip("silverlight")
+
 def test___import___and_packages():
     try:
         mod_backup = dict(sys.modules)
@@ -700,7 +687,7 @@ def test___import___and_packages():
         os.unlink(_f_y)
         os.rmdir(_f_dir)
 
-@skip("silverlight", "multiple_execute")
+@skip("multiple_execute")
 def test_relative_imports():
     try:
         mod_backup = dict(sys.modules)
@@ -791,7 +778,7 @@ from ..temp import foo1
         os.rmdir(path_combine(testpath.public_testdir, _d_test, _subdir))
         os.rmdir(path_combine(testpath.public_testdir, _d_test))
 
-@skip("silverlight")
+
 def test_import_globals():
     _f_dir      = path_combine(testpath.public_testdir, 'the_dir2')
     _f_x        = path_combine(_f_dir, 'x')
@@ -839,7 +826,7 @@ sys.test4 = __import__("y", {}, {'__name__' : 'the_dir2.x.y'}).a
         os.rmdir(_f_x)
         os.rmdir(_f_dir)
 
-@skip("silverlight", "multiple_execute")
+@skip("multiple_execute")
 def test_package_back_patching():
     """when importing a package item the package should be updated with the child"""
     try:
@@ -874,28 +861,27 @@ def test_package_back_patching():
         
     
 #This cannot be placed in a test_* function as it uses 'from mod import *'
-if not is_silverlight: #cp3194
-    try:
-        mod_backup = dict(sys.modules)
-        _f_module2 = path_combine(testpath.public_testdir, 'the_test.py')
+try:
+    mod_backup = dict(sys.modules)
+    _f_module2 = path_combine(testpath.public_testdir, 'the_test.py')
+    
+    # write the files
+    write_to_file(_f_module2, '''def foo(some_obj): return 3.14''')
+    
+    from the_test import *
+    AreEqual(foo(None), 3.14)
+    
+    class Bar:
+        foo = foo
+    AreEqual(foo(None), Bar().foo())
+    
+finally:
+    sys.modules = mod_backup
+    import os
+    os.unlink(_f_module2)
         
-        # write the files
-        write_to_file(_f_module2, '''def foo(some_obj): return 3.14''')
         
-        from the_test import *
-        AreEqual(foo(None), 3.14)
-        
-        class Bar:
-            foo = foo
-        AreEqual(foo(None), Bar().foo())
-        
-    finally:
-        sys.modules = mod_backup
-        import os
-        os.unlink(_f_module2)
-        
-        
-@skip("silverlight", "multiple_execute")
+@skip("multiple_execute")
 def test_pack_module_relative_collision():
     """when importing a package item the package should be updated with the child"""
     try:
@@ -924,7 +910,7 @@ def test_pack_module_relative_collision():
         os.rmdir(_f_foo_dir)
         os.rmdir(_f_dir)
 
-@skip("silverlight", "multiple_execute")
+@skip("multiple_execute")
 def test_from_import_publishes_in_package():
     try:
         mod_backup = dict(sys.modules)
@@ -946,7 +932,7 @@ def test_from_import_publishes_in_package():
         os.unlink(_f_init)
         os.rmdir(_f_dir)
 
-@skip("silverlight", "multiple_execute")
+@skip("multiple_execute")
 def test_from_import_publishes_in_package_relative():
     try:
         mod_backup = dict(sys.modules)
@@ -972,7 +958,7 @@ def test_from_import_publishes_in_package_relative():
         os.unlink(_f_init)
         os.rmdir(_f_dir)
 
-@skip("silverlight", "multiple_execute")
+@skip("multiple_execute")
 def test_from_import_publishes_in_package_relative():
     try:
         mod_backup = dict(sys.modules)
@@ -997,7 +983,7 @@ def test_from_import_publishes_in_package_relative():
         os.unlink(_f_init)
         os.rmdir(_f_dir)
 
-@skip("silverlight", "multiple_execute")
+@skip("multiple_execute")
 def test_from_import_publishes_in_package_relative_self():
     try:
         mod_backup = dict(sys.modules)
@@ -1022,7 +1008,7 @@ def test_from_import_publishes_in_package_relative_self():
         os.unlink(_f_init)
         os.rmdir(_f_dir)
 
-@skip("silverlight")
+
 def test_multiple_relative_imports_and_package():
     try:
         mod_backup = dict(sys.modules)
@@ -1049,7 +1035,7 @@ def test_multiple_relative_imports_and_package():
         os.unlink(_f_init)
         os.rmdir(_f_dir)
 
-@skip("silverlight")
+
 def test_cp34551():
     try:
         mod_backup = dict(sys.modules)
@@ -1145,5 +1131,4 @@ def test_cp35116():
 run_test(__name__)
 
 # remove all test files
-if not is_silverlight:
-    delete_all_f(__name__, remove_folders=True)
+delete_all_f(__name__, remove_folders=True)

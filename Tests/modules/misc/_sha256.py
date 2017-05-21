@@ -20,7 +20,7 @@ from __future__ import absolute_import
 
 #--IMPORTS---------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 import _sha256
 

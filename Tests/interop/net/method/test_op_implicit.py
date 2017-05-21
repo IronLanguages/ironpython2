@@ -17,7 +17,7 @@ See how IronPython treats implicit coversion.
 '''
 #------------------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 
 add_clr_assemblies("userdefinedconversions", "typesamples")
 

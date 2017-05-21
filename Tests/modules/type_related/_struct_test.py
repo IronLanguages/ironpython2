@@ -208,7 +208,7 @@ def test_new_init():
     AreEqual(a.pack(0), '\x00\x00\x00\x00')
     AreEqual(a.unpack('\x00\x00\x00\x00'), (0, ))
 
-@skip("silverlight") # no weak refs on Silverlight
+ # no weak refs on Silverlight
 def test_weakref():
     """weakrefs to struct objects are supported"""
     x = _struct.Struct('i')

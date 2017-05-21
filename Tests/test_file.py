@@ -14,7 +14,7 @@
 #####################################################################################
 
 from iptest.assert_util import *
-skiptest("silverlight")
+
 import sys
 import os
 

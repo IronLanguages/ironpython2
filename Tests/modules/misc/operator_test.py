@@ -20,11 +20,10 @@ if sys.platform!="win32":
     from IronPythonTest import *
     
     import clr
-    if not is_silverlight:
-        if is_netstandard:
-            clr.AddReference("System.Drawing.Primitives")
-        else:
-            clr.AddReference("System.Drawing")
+    if is_netstandard:
+        clr.AddReference("System.Drawing.Primitives")
+    else:
+        clr.AddReference("System.Drawing")
     
 @skip("win32 silverlight")
 def test_sys_drawing():
@@ -261,7 +260,7 @@ def test_num_binary_ops():
     
     l = [2, 10L, (1+2j), 3.4, myint(7), mylong(5), myfloat(2.32), mycomplex(3, 2), True]
     
-    if is_cli or is_silverlight:
+    if is_cli:
         l.append(System.Int64.Parse("5"))
     
     def add(a, b): return a + b
@@ -297,7 +296,7 @@ def test_num_binary_ops():
     threes = [ 3, 3L, 3.0 ]
     zeroes = [ 0, 0L, 0.0 ]
     
-    if is_cli or is_silverlight:
+    if is_cli:
         threes.append(System.Int64.Parse("3"))
         zeroes.append(System.Int64.Parse("0"))
     
@@ -314,7 +313,7 @@ def test_num_binary_ops():
 
 #------------------------------------------------------------------------------
 def test_unary_ops():
-    if is_cli or is_silverlight:
+    if is_cli:
         unary = UnaryClass(9)
         AreEqual(-(unary.value), (-unary).value)
         AreEqual(~(unary.value), (~unary).value)

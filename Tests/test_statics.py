@@ -343,8 +343,7 @@ def test_operator():
     y = G2[int, str].op_Explicit(x)
     z = G2[str, int].op_Explicit(x)
     
-    if not is_silverlight:
-        AreEqual((y.Field1, y.Field2), (456, None))
-        AreEqual((z.Field1, z.Field2), (None, 456))
+    AreEqual((y.Field1, y.Field2), (456, None))
+    AreEqual((z.Field1, z.Field2), (None, 456))
 
 run_test(__name__)

@@ -21,7 +21,7 @@ from iptest.assert_util import *
 
 from cStringIO import StringIO
 
-skiptest("silverlight")
+
 
 # We test IronPython's cPickle bytecode output against CPython's pickle.py
 # output, since pickle.py's output (specifically its memoization behavior) is
@@ -911,14 +911,13 @@ def test_cp945():
             AreEqual(x_unpickled.message, temp_msg)
                         
     #--special cases
-    if not is_silverlight:
-        for e in [  exceptions.UnicodeEncodeError("1", u"2", 3, 4, "5"),
-                    exceptions.UnicodeDecodeError("1", "2", 3, 4, "5"),
-                    exceptions.UnicodeTranslateError(u"1", 2, 3, "4")
-                    ]:
-            x_pickled = cPickle.dumps(e)
-            x_unpickled = cPickle.loads(x_pickled)
-            AreEqual(x_unpickled.object, e.object)
+    for e in [  exceptions.UnicodeEncodeError("1", u"2", 3, 4, "5"),
+                exceptions.UnicodeDecodeError("1", "2", 3, 4, "5"),
+                exceptions.UnicodeTranslateError(u"1", 2, 3, "4")
+                ]:
+        x_pickled = cPickle.dumps(e)
+        x_unpickled = cPickle.loads(x_pickled)
+        AreEqual(x_unpickled.object, e.object)
 
 
 def test_carriage_return_round_trip():

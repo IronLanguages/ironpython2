@@ -58,13 +58,7 @@ def CreateSubType(t):
     class SubType(t): pass
     return SubType
     
-if not is_silverlight:
-    AssertErrorWithMatch(TypeError, ".*\n?.* is not an acceptable base type", CreateSubType, type(foo))
-else:
-    try:
-        CreateSubType(type(foo))
-    except TypeError, e:
-        Assert(e.message.find("is not an acceptable base type") != -1)
+AssertErrorWithMatch(TypeError, ".*\n?.* is not an acceptable base type", CreateSubType, type(foo))
 
 def a(*args): return args
 def b(*args): return a(*args)
@@ -254,17 +248,16 @@ try:
 except TypeError:
     pass
 
-if is_cli or is_silverlight:
+if is_cli:
     import System    
     
     # Test Hashtable and Dictionary on desktop, and just Dictionary in Silverlight
     # (Hashtable is not available)
     htlist = [System.Collections.Generic.Dictionary[System.Object, System.Object]()]
-    if not is_silverlight:
-        if is_netstandard:
-            import clr
-            clr.AddReference("System.Collections.NonGeneric")
-        htlist += [System.Collections.Hashtable()]
+    if is_netstandard:
+        import clr
+        clr.AddReference("System.Collections.NonGeneric")
+    htlist += [System.Collections.Hashtable()]
 
     for ht in htlist:
         def foo(**kwargs):
@@ -293,7 +286,7 @@ foo.__init__(a, target='baz')
 
 # call a params method w/ no params
 
-if is_cli or is_silverlight:
+if is_cli:
     import clr
     AreEqual('abc\ndef'.Split()[0], 'abc') 
     AreEqual('abc\ndef'.Split()[1], 'def')
@@ -430,7 +423,7 @@ AssertErrorWithMessage(TypeError, "this constructor takes no arguments", apply, 
 ###############################################################################################
 # accepts / returns runtype type checking tests
 
-if is_cli or is_silverlight:
+if is_cli:
     import clr
     
     @clr.accepts(object)
@@ -677,7 +670,7 @@ AreEqual(D.classmeth.im_class, MetaType)
 #####################################################################################
 
 from iptest.assert_util import *
-if is_cli or is_silverlight:
+if is_cli:
     from _collections import *
 else:
     from collections import *

@@ -37,7 +37,7 @@ import sys
 #------------------------------------------------------------------------------
 #--Test cases
 @skip("netstandard") # no System.AppDomain in netstandard
-@skip("win32", "silverlight")
+@skip("win32")
 def test_cp18345():
     import System
     import time
@@ -52,7 +52,7 @@ def test_cp18345():
 
 #------------------------------------------------------------------------------
 @skip("netstandard") # TODO: figure out
-@skip("silverlight")
+
 def test_cp17420():
     #Create a temporary Python file
     test_file_name = path_combine(testpath.temporary_dir, "cp17420.py")
@@ -110,7 +110,7 @@ def test_cp17274():
     AreEqual(KNewDerivedSpecial().__doc__, "KNewDerivedSpecial doc")
 
 #------------------------------------------------------------------------------
-@skip("win32", "silverlight")
+@skip("win32")
 def test_cp16831():
     import clr
     clr.AddReference("IronPythonTest")
@@ -228,7 +228,7 @@ def test_re_paren_in_char_list_cp20191():
     
     AreEqual(format_re.match('a3').groups(), ('', '', '', 'a3'))
 
-@skip("silverlight")
+
 def test_struct_uint_bad_value_cp20039():
     class x(object):
         def __init__(self, value):
@@ -295,12 +295,12 @@ def test_reraise_backtrace_cp20051():
         # CPython reports 2 frames, IroPython includes the re-raise and reports 3
         Assert(len(exc2_list) >= 2)
 
-@skip("silverlight", "posix")
+@skip("posix")
 def test_winreg_error_cp17050():
     import _winreg
     AreEqual(_winreg.error, WindowsError)
 
-@skip("win32", "silverlight")
+@skip("win32")
 def test_indexing_value_types_cp20370():
     import clr
     if is_netstandard:
@@ -335,7 +335,7 @@ def test_enumerate_index_increment_cp20016():
     AreEqual(filter( lambda (j, _): j in [0, 1], enumerate([10.0, 27.0])),
              [(0, 10.0), (1, 27.0)])
 
-@skip("silverlight")
+
 def test_invalid_args_cp20616():
     test_cases = {
         lambda: ''.join() : "join() takes exactly one argument (0 given)",
@@ -694,7 +694,7 @@ def test_cp20370():
     AreEqual(id(l[-1]), id(p2))
 
 @skip("netstandard") # PlatformNotSupportedException
-@skip("win32", "silverlight")
+@skip("win32")
 def test_cp23878():
     import clr
     clr.AddReference("rowantest.delegatedefinitions")
@@ -735,7 +735,7 @@ def test_cp23914():
     
     AreEqual(temp_stdout.getvalue(), '1 2 3\n1 2 3\n')
 
-@skip("cli", "silverlight")
+@skip("cli")
 def test_cp23992():
     def f():
         x = 3

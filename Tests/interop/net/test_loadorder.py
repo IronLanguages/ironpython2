@@ -93,7 +93,7 @@ from iptest.assert_util import *
 from iptest.process_util import *
 
 skiptest("netstandard") # none of the test DLLs load in .NET Core
-skiptest("silverlight")
+
 
 def test_all():
     directory = path_combine(testpath.public_testdir, "interop", "net", "loadorder")

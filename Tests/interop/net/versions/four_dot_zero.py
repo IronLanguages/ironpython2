@@ -19,7 +19,7 @@ for Python.
 
 #--IMPORTS---------------------------------------------------------------------
 from iptest.assert_util import *
-skiptest("silverlight")
+
 skiptest("win32")
 
 import System
