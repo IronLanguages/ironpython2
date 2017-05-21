@@ -1,3 +1,0 @@
-LIBRARY _ctypes_test
-EXPORTS
-    GetString @2
