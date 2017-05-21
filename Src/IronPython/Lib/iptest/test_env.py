@@ -84,12 +84,10 @@ else:
     import os
     newline = os.linesep
 
-
 #--Build flavor of Python being tested
 is_debug = False
 if is_cli:
     is_debug = sys.exec_prefix.lower().endswith("debug")
-
 
 #--Are we using peverify to check that all IL generated is valid?
 is_peverify_run = False
@@ -100,10 +98,5 @@ if is_cli:
 is_stress = False
 if get_env_var("THISISSTRESS")!=None: 
     is_stress = True
-
-
-is_win7 = False
-if is_ironpython and not is_posix:  #TODO - what about CPython?
-    is_win7 = System.Environment.OSVersion.Version.Major==6 and System.Environment.OSVersion.Version.Minor==1
 
 #------------------------------------------------------------------------------

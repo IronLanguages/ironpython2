@@ -112,16 +112,6 @@ namespace IronPythonTest.Cases {
             } catch(SystemExitException ex) {
                 object otherCode;
                 res = ex.GetExitCode(out otherCode);
-            } catch(Exception ex) {
-                bool throwIt = true;
-                if(ex.Data.Contains("PythonException")) {
-                    PythonExceptions.BaseException pyEx = ex.Data["PythonException"] as PythonExceptions.BaseException;
-                    if(pyEx != null && PythonOps.GetPythonTypeName(pyEx).Contains("SkipTest")) {
-                        throwIt = false;
-                    }
-                } 
-                if(throwIt)
-                    throw ex;
             }
             return res;
         }

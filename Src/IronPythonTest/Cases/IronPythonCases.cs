@@ -18,6 +18,7 @@ namespace IronPythonTest.Cases {
         [Test, TestCaseSource(typeof(IronPythonCaseGenerator))]
         public int IronPythonTests(TestInfo testcase) {
             try {
+                Console.Error.WriteLine(testcase.Name); // write to the error stream so it appears before the test is run
                 return this.executor.RunTest(testcase);
             } catch (Exception e) {
                 Assert.Fail(this.executor.FormatException(e));
