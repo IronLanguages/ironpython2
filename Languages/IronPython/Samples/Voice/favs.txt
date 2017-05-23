@@ -1,7 +1,0 @@
-Microsoft
-http://www.microsoft.com
-MSN
-http://www.msn.com
-Live
-http://www.live.com
-End

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Settings imported by all *.csproj files. 
+-->
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- These are normally set by Build.proj, except when building from VS. -->
+    <RootDir Condition=" '$(RootDir)' == '' ">$(MSBuildThisFileDirectory)..</RootDir>
+    <BuildSysDir Condition=" '$(BuildSysDir)' == '' ">$(RootDir)\Build</BuildSysDir>
+    <ReferenceDir Condition=" '$(ReferenceDir)' == '' ">$(RootDir)\Util\References</ReferenceDir>
+
+    <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
+    
+    <!-- The following two lines prevent csc.rsp and Microsoft.NETFramework.props from adding
+         additional assembly references. -->
+    <NoConfig>true</NoConfig>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+  </PropertyGroup>
+  
+  <Import Project="$(RootDir)\CurrentVersion.props" />
+
+  <!-- Signing -->
+  <PropertyGroup>
+    <PublicKey>$(MSBuildThisFileDirectory)\Key.snk</PublicKey>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="Exists('$(PublicKey)') and '$(AssemblyOriginatorKeyFile)'==''">
+    <AssemblyOriginatorKeyFile>$(PublicKey)</AssemblyOriginatorKeyFile>
+    <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BeforeTargetFiles>$(BuildSysDir)\Versioning.targets</BeforeTargetFiles>
+    <BeforeTargets>GenerateBuildInfo</BeforeTargets>
+    <AfterTargetFiles>$(BuildSysDir)\After.targets</AfterTargetFiles>
+    <AfterTargets>Stage</AfterTargets>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+
+  <!-- This ensures we have a Release and Debug build configuration in Visual Studio -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+
+  <!-- Normally BuildFlavour and ReferencedPlatform are set by the build system,
+       but they are not when building in Visual Studio (because Build.proj is not
+       used). Fill then in here based on the selected configuration. -->
+  <PropertyGroup Condition=" '$(BuildFlavour)' == '' ">
+    <BuildFlavour>Debug</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'FxCop'">Release</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'Release'">Release</BuildFlavour>
+    <BuildFlavour Condition="'$(Configuration)' == 'v4Release'">Release</BuildFlavour>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ReferencedPlatform)' == ''">
+    <ReferencedPlatform>net45</ReferencedPlatform>
+    <ReferencedPlatform
+        Condition="'$(Configuration)' == 'v4Release' or '$(Configuration)' == 'v4Debug'">net40</ReferencedPlatform>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CSharpTargets Condition="'$(CSharpTargets)' == ''">$(MSBuildBinPath)\Microsoft.CSharp.targets</CSharpTargets>
+    <CSharpTargets Condition="'$(CSharpTargets)' == '' and '$(ReferencedPlatform)' == 'android'">$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets</CSharpTargets>
+    <WpfReferences>$(RootDir)\Util\References\WPF\4.0</WpfReferences>
+  </PropertyGroup>
+
+  <!-- References -->
+  <Import Project="$(BuildSysDir)\$(ReferencedPlatform).props" />
+  
+  <PropertyGroup>
+    <BaseOutputPath>$(RootDir)\bin\$(Configuration)</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>618;429;219;1717;162;414</WarningsNotAsErrors>
+    <NoWarn>1591;1584;1574;1685;1573</NoWarn>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis Condition="'$(Configuration)' == 'FxCop'">true</RunCodeAnalysis>
+  </PropertyGroup>
+
+  <!-- Release -->
+  <PropertyGroup Condition="'$(BuildFlavour)' == 'Release'">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <DefineConstants>$(Features);$(SignedSym);$(PlatformSymbols);TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Debug -->
+  <PropertyGroup Condition="'$(BuildFlavour)' == 'Debug'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- TODO: Python & zlib.net need some work -->
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <DefineConstants>$(Features);$(SignedSym);$(PlatformSymbols);DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+ 
+</Project>
