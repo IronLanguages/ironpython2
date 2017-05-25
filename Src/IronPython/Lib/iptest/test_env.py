@@ -14,7 +14,7 @@
 #####################################################################################
 
 import sys, os
-from iptest.util import get_env_var, get_temp_dir
+#from iptest.util import get_env_var, get_temp_dir
 
 #------------------------------------------------------------------------------
 
@@ -70,13 +70,6 @@ if is_cli:
     is_net45Or46 = is_net40 and version.Minor == 0 and version.Build == 30319
     is_net46 = is_net40 and version.Minor == 0 and version.Build == 30319 and version.Revision == 42000 
 
-is_dlr_in_ndp = False
-if is_net40:
-    try:
-        clr.AddReference("Microsoft.Scripting.Core")
-    except:
-        is_dlr_in_ndp = True    
-
 #--Newlines
 if is_ironpython:
     newline = System.Environment.NewLine
@@ -96,7 +89,7 @@ if is_cli:
 
 #--We only run certain time consuming test cases in the stress lab
 is_stress = False
-if get_env_var("THISISSTRESS")!=None: 
-    is_stress = True
+# if get_env_var("THISISSTRESS")!=None: 
+#     is_stress = True
 
 #------------------------------------------------------------------------------

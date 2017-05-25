@@ -13,14 +13,22 @@
 #
 #####################################################################################
 
-from iptest.assert_util import *
+import clr
+import os
+import sys
 
-if not is_netstandard: # no System.Windows.Forms in netstandard
-    import clr
+from iptest import IronPythonTestCase, is_netstandard
+
+ip_test = os.path.join(sys.prefix, 'IronPythonTest.exe')
+
+if not is_netstandard:
+    clr.AddReference("System.Core")
     clr.AddReference('System.Windows.Forms')
     from System.Windows.Forms import Form, Control
 
-load_iron_python_test()
-
+clr.AddReference("Microsoft.Scripting")
+clr.AddReference("Microsoft.Dynamic")
+clr.AddReference("IronPython")
+clr.AddReferenceToFileAndPath(ip_test)
 
 from IronPythonTest import NestedClass

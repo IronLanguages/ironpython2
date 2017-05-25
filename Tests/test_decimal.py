@@ -1,14 +1,20 @@
-from iptest.assert_util import *
 
+import unittest
 from decimal import *
 
-def test_explicit_from_System_Decimal():
-    import System
+from iptest import is_cli
 
-    #int
-    AreEqual(str(Decimal(System.Decimal.Parse('45'))), '45')
+@unittest.skipUnless(is_cli, 'IronPython specific test case')
+class DecimalTest(unittest.TestCase):
+    def test_explicit_from_System_Decimal(self):
+        import System
 
-    #float
-    AreEqual(str(Decimal(System.Decimal.Parse('45.34'))), '45.34')        
+        #int
+        self.assertEqual(str(Decimal(System.Decimal.Parse('45'))), '45')
 
-run_test(__name__)
+        #float
+        self.assertEqual(str(Decimal(System.Decimal.Parse('45.34'))), '45.34')
+
+if __name__ == '__main__':
+    from test import test_support
+    test_support.run_unittest(__name__)

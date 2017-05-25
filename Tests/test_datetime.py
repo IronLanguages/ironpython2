@@ -14,14 +14,11 @@
 #
 #####################################################################################
 
-import clr
-
 import unittest
 import datetime
 import time
-from test import test_support
 
-from System import DateTime, TimeSpan
+from iptest import is_cli
 
 class TestDatetime(unittest.TestCase):
 
@@ -140,7 +137,10 @@ class TestDatetime(unittest.TestCase):
         ts = 5399410716.777882
         self.assertEqual(datetime.datetime.fromtimestamp(ts).microsecond, 777882)
 
+    @unittest.skipUnless(is_cli, 'IronPython specific test')
     def test_System_DateTime_conversion(self):
+        import clr
+        from System import DateTime
         example = datetime.datetime(2015, 4, 25, 8, 39, 54)
         result = clr.Convert(example, DateTime)
         self.assertIsInstance(result, DateTime)
@@ -148,7 +148,10 @@ class TestDatetime(unittest.TestCase):
         expected = DateTime(2015, 4, 25, 8, 39, 54)
         self.assertEqual(expected, result)
     
+    @unittest.skipUnless(is_cli, 'IronPython specific test')
     def test_System_DateTime_binding(self):
+        import clr
+        from System import DateTime, TimeSpan
         pydt = datetime.datetime(2015, 4, 25, 8, 39, 54)
         netdt = DateTime(2015, 4, 25, 9, 39, 54)
         
@@ -157,11 +160,8 @@ class TestDatetime(unittest.TestCase):
         
         self.assertEqual(expected, result)
 
-def test_main():
-    from unittest import main
-    main(module='test_datetime')
-
-if __name__ == "__main__":
-    test_main()
+if __name__ == '__main__':
+    from test import test_support
+    test_support.run_unittest(__name__)
 
 

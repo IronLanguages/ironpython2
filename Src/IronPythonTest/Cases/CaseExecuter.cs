@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -78,6 +79,9 @@ namespace IronPythonTest.Cases {
                 case TestIsolationLevel.ENGINE:
                     return GetEngineTest(testcase);
 
+                case TestIsolationLevel.PROCESS:
+                    return GetProcessTest(testcase);
+
                 default:
                     throw new ArgumentException(String.Format("IsolationLevel {0} is not supported.", testcase.Options.IsolationLevel.ToString()), "testcase.IsolationLevel");
             }
@@ -93,6 +97,29 @@ namespace IronPythonTest.Cases {
                 testcase.Text, testcase.Path, SourceCodeKind.File);
 
             return GetResult(engine, source);
+        }
+
+        private int GetProcessTest(TestInfo testcase) {
+            int exitCode = -1;
+            using (Process proc = new Process()) {
+                proc.StartInfo.FileName = Executable;
+                proc.StartInfo.Arguments = string.Format("{0} {1}", testcase.Path, testcase.Options.Arguments);
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.RedirectStandardError = true;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.OutputDataReceived += (e, d) => {
+                    Console.Write(d.Data);
+                };
+
+                proc.ErrorDataReceived += (e, d) => {
+                    Console.Error.Write(d.Data);
+                };
+                proc.Start();
+                proc.WaitForExit();
+                exitCode = proc.ExitCode;
+            }
+            return exitCode;
         }
 
         private int GetScopeTest(TestInfo testcase) {

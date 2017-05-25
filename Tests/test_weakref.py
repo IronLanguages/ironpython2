@@ -70,7 +70,7 @@ class WeakrefTest(ipunittest.IronPythonTestCase):
         # for reasons stated in create_weakrefs(), we cannot test on instance equality
         self.assertTrue(r().value == "a") 
 
-        self._force_gc()
+        self.force_gc()
 
         self.assertTrue(r() is None)
 
@@ -82,7 +82,7 @@ class WeakrefTest(ipunittest.IronPythonTestCase):
         r1, r2 = self._create_weakrefs(C("a"), 2)
         self.assertTrue(hash(r1) == hash("a"))
 
-        self._force_gc()
+        self.force_gc()
 
         self.assertTrue(r1() is None)
         self.assertTrue(r2() is None)
@@ -99,7 +99,7 @@ class WeakrefTest(ipunittest.IronPythonTestCase):
         self.assertTrue(r1 == r2)
         self.assertTrue(r1 == r3)
 
-        self._force_gc()
+        self.force_gc()
 
         self.assertTrue(r1() is None)
         self.assertTrue(r3() is None)

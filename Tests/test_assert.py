@@ -16,68 +16,75 @@
 #
 # test assert
 #
-from iptest.assert_util import *
-if is_cli: import System
 
-def test_positive():
-    try:
-        assert True
-    except AssertionError, e:
-        raise "Should have been no exception!"
+import unittest
 
-    try:
-        assert True, 'this should always pass'
-    except AssertionError, e:
-        raise "Should have been no exception!"
+class AssertTest(unittest.TestCase):
+
+    def test_positive(self):
+        try:
+            assert True
+        except AssertionError, e:
+            raise "Should have been no exception!"
+
+        try:
+            assert True, 'this should always pass'
+        except AssertionError, e:
+            raise "Should have been no exception!"
+            
+    def test_negative(self):
+        ok = False
+        try:
+            assert False
+        except AssertionError, e:
+            ok = True
+            self.assertEqual(str(e), "")
+        self.assertTrue(ok)
         
-def test_negative():
-    ok = False
-    try:
-        assert False
-    except AssertionError, e:
-        ok = True
-        AreEqual(str(e), "")
-    Assert(ok)
-    
-    ok = False
-    try:
-        assert False
-    except AssertionError, e:
-        ok = True
-        AreEqual(str(e), "")
-    Assert(ok)
-    
-    ok = False
-    try:
-        assert False, 'this should never pass'
-    except AssertionError, e:
-        ok = True
-        AreEqual(str(e), "this should never pass")
-    Assert(ok)
-    
-    ok = False
-    try:
-        assert None, 'this should never pass'
-    except AssertionError, e:
-        ok = True
-        AreEqual(str(e), "this should never pass")
-    Assert(ok)
+        ok = False
+        try:
+            assert False
+        except AssertionError, e:
+            ok = True
+            self.assertEqual(str(e), "")
+        self.assertTrue(ok)
         
-def test_doesnt_fail_on_curly():
-    """Ensures that asserting a string with a curly brace doesn't choke up the
-    string formatter."""
+        ok = False
+        try:
+            assert False, 'this should never pass'
+        except AssertionError, e:
+            ok = True
+            self.assertEqual(str(e), "this should never pass")
+        self.assertTrue(ok)
+        
+        ok = False
+        try:
+            assert None, 'this should never pass'
+        except AssertionError, e:
+            ok = True
+            self.assertEqual(str(e), "this should never pass")
+        self.assertTrue(ok)
+            
+    def test_doesnt_fail_on_curly(self):
+        """Ensures that asserting a string with a curly brace doesn't choke up the
+        string formatter."""
 
-    ok = False
-    try:
-        assert False, '}'
-    except AssertionError:
-        ok = True
-    Assert(ok)
+        ok = False
+        try:
+            assert False, '}'
+        except AssertionError:
+            ok = True
+        self.assertTrue(ok)
   
   
 #--Main------------------------------------------------------------------------
-if is_cli and '-O' in System.Environment.GetCommandLineArgs():
-    from iptest.process_util import *
-    AreEqual(0, launch_ironpython_changing_extensions(__file__, remove=["-O"]))
-else:
-    run_test(__name__)
+# if is_cli and '-O' in System.Environment.GetCommandLineArgs():
+#     from iptest.process_util import *
+#     self.assertEqual(0, launch_ironpython_changing_extensions(__file__, remove=["-O"]))
+# else:
+#     run_test(__name__)
+
+if __name__ == '__main__':
+    from test import test_support
+    test_support.run_unittest(__name__)
+

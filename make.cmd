@@ -137,6 +137,7 @@ goto :exit
 
 :main
 msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU"
+xcopy /y /q Src\DLR\bin\%_flavour%\*.dll bin\%_flavour%\
 goto :exit
 
 :exit

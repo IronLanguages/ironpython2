@@ -20,7 +20,7 @@ import time
 import cStringIO
 
 from iptest.test_env import *
-from iptest import options, l
+#from iptest import options, l
 
 import os
 from file_util import *
@@ -72,67 +72,51 @@ def remove_ironpython_dlls(targetdir):
         try: System.IO.File.Delete(dst)
         except: pass
 
-class testpath:
-    # find the ironpython root directory
-    rowan_root          = get_environ_variable("dlr_root")
+# class testpath:
+#     # find the ironpython root directory
+#     rowan_root          = get_environ_variable("dlr_root")
 
-    basePyDir = path_combine('Languages', 'IronPython')
-    if not rowan_root:
-        rowan_root = sys.prefix
-        if is_cli:
-            if is_netstandard:
-                import clr
-                clr.AddReference("System.IO.FileSystem")
-            if System.IO.Directory.Exists(path_combine(rowan_root, '../../Src')):
-                basePyDir = '../../Src'
+#     basePyDir = path_combine('Languages', 'IronPython')
+#     if not rowan_root:
+#         rowan_root = sys.prefix
+#         if is_cli:
+#             if is_netstandard:
+#                 import clr
+#                 clr.AddReference("System.IO.FileSystem")
+#             if System.IO.Directory.Exists(path_combine(rowan_root, '../../Src')):
+#                 basePyDir = '../../Src'
 
-    # get some directories and files
-    ip_root             = path_combine(rowan_root, basePyDir)
-    external_dir        = path_combine(rowan_root, 'External.LCA_RESTRICTED/Languages/IronPython')
-    clean_external_dir  = path_combine(rowan_root, 'External.LCA_RESTRICTED/Languages/CPython/27')
-    public_testdir      = path_combine(ip_root, 'Tests')
-    compat_testdir      = path_combine(ip_root, 'Tests/compat')
-    test_inputs_dir     = path_combine(ip_root, 'Tests/Inputs')
-    script_testdir      = path_combine(ip_root, 'Scripts')
+#     # get some directories and files
+#     ip_root             = path_combine(rowan_root, basePyDir)
+#     external_dir        = path_combine(rowan_root, 'External.LCA_RESTRICTED/Languages/IronPython')
+#     clean_external_dir  = path_combine(rowan_root, 'External.LCA_RESTRICTED/Languages/CPython/27')
+#     public_testdir      = path_combine(ip_root, 'Tests')
+#     compat_testdir      = path_combine(ip_root, 'Tests/compat')
+#     test_inputs_dir     = path_combine(ip_root, 'Tests/Inputs')
+#     script_testdir      = path_combine(ip_root, 'Scripts')
 
-    math_testdir        = path_combine(external_dir, 'Math')
-    parrot_testdir      = path_combine(external_dir, 'parrotbench')
-    lib_testdir         = path_combine(external_dir, '27/Lib')
-    private_testdir     = path_combine(external_dir, '27/Lib/test')
+#     math_testdir        = path_combine(external_dir, 'Math')
+#     parrot_testdir      = path_combine(external_dir, 'parrotbench')
+#     lib_testdir         = path_combine(external_dir, '27/Lib')
+#     private_testdir     = path_combine(external_dir, '27/Lib/test')
 
-    temporary_dir   = path_combine(get_temp_dir(), "IronPython")
-    ensure_directory_present(temporary_dir)
+#     if is_cli: 
+#         ipython_executable  = sys.executable
+#         if is_posix:
+#             cpython_executable  = '/usr/bin/python2.7'
+#         else:
+#             cpython_executable  = path_combine(external_dir, '27/python.exe')
+#     else: 
+#         ipython_executable  = path_combine(sys.prefix, 'ipy.exe')
+#         cpython_executable  = sys.executable
     
-    iron_python_test_dll        = path_combine(sys.prefix, 'IronPythonTest.exe')
-
-    if is_cli: 
-        ipython_executable  = sys.executable
-        if is_posix:
-            cpython_executable  = '/usr/bin/python2.7'
-        else:
-            cpython_executable  = path_combine(external_dir, '27/python.exe')
-    else: 
-        ipython_executable  = path_combine(sys.prefix, 'ipy.exe')
-        cpython_executable  = sys.executable
+#     #team_dir            = path_combine(ip_root, r'Team')
+#     #team_profile        = path_combine(team_dir, r'settings.py')
+#     #
+#     #my_name             = os.environ.get(r'USERNAME', None)
+#     #my_dir              = my_name and path_combine(team_dir, my_name) or None
+#     #my_profile          = my_dir and path_combine(my_dir, r'settings.py') or None
     
-    #team_dir            = path_combine(ip_root, r'Team')
-    #team_profile        = path_combine(team_dir, r'settings.py')
-    #
-    #my_name             = os.environ.get(r'USERNAME', None)
-    #my_dir              = my_name and path_combine(team_dir, my_name) or None
-    #my_profile          = my_dir and path_combine(my_dir, r'settings.py') or None
-    
-
-class formatter:
-    Number         = 60
-    TestNameLen    = 40
-    SeparatorEqual = '=' * Number
-    Separator1     = '#' * Number
-    SeparatorMinus = '-' * Number
-    SeparatorStar  = '*' * Number
-    SeparatorPlus  = '+' * Number
-    Space4         = ' ' * 4
-    Greater4       = '>' * 4
 
 # helper functions for sys.path
 _saved_syspath = []
