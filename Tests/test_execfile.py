@@ -16,9 +16,9 @@
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_cli
+from iptest import IronPythonTestCase
 
-@unittest.skipUnless(is_cli, 'IronPython specific test case')
+
 class ExecFileTest(IronPythonTestCase):
     def test_sanity(self):
         root = self.test_dir

@@ -95,6 +95,11 @@ class path_modifier(object):
     def __exit__(self, *args):
         sys.path = [x for x in self._old_path]
 
+def skipUnlessIronPython(func):
+    if is_cli:
+        return func
+    return unittest.skip('IronPython specific test')
+
 def _find_root():
     test_dirs = ['Src', 'Build', 'Package', 'Tests', 'Util']
     root = os.getcwd()
@@ -224,6 +229,17 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
             warnings.simplefilter('always')
             result = callable(*args, **kwds)
             self.assertFalse(any(item.category == warning for item in warning_list))
+
+    def assertDocEqual(self, received, expected):
+        expected = expected.split(newline)
+        received = received.split(newline)
+        for x in received:
+            if not x in expected:
+                self.fail('Extra doc string: ' + x)
+            index = expected.index(x)
+            del expected[index]
+        
+        if expected: self.fail('Missing doc strings: ' + expected.join(', '))
 
     # environment variables
     def get_environ_variable(self, key):

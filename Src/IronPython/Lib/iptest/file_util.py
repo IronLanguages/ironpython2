@@ -76,6 +76,18 @@ class FileUtil(object):
             try:    os.remove(f)
             except: pass
 
+    def clean_directory(self, path, remove=False):
+        for f in os.listdir(path):
+            try: 
+                os.unlink(path_combine(path, f))
+            except: 
+                pass
+        if remove:
+            try:
+                os.rmdir(path)
+            except:
+                pass
+
 # def create_new_file(filename):
 #     f = file(filename, "w")
 #     f.close()
@@ -191,17 +203,7 @@ class FileUtil(object):
 #         if of: of.close()
 #         if nf: nf.close()
         
-# def clean_directory(path, remove=False):
-#     for f in os.listdir(path):
-#         try: 
-#             os.unlink(path_combine(path, f))
-#         except: 
-#             pass
-#     if remove:
-#         try:
-#             os.rmdir(path)
-#         except:
-#             pass
+
 
 # def get_directory_name(file):
 #     file = fullpath(file)
@@ -245,20 +247,20 @@ class FileUtil(object):
     
 #     return ret_val
     
-# def delete_all_f(module_name, remove_folders=False):
-#     module = sys.modules[module_name]
-#     folders = {}
-#     for x in dir(module):
-#         if x.startswith('_f_'):
-#             fn = getattr(module, x)
-#             if isinstance(fn, str):
-#                 try:
-#                     os.unlink(fn)
-#                     name = os.path.dirname(fn)
-#                     if os.path.isdir(name):
-#                         folders[name] = None
-#                 except: pass
-#     if remove_folders:
-#         for x in sorted(folders.iterkeys(), reverse=True):
-#             try: os.rmdir(x)
-#             except: pass
+def delete_all_f(module_name, remove_folders=False):
+    module = sys.modules[module_name]
+    folders = {}
+    for x in dir(module):
+        if x.startswith('_f_'):
+            fn = getattr(module, x)
+            if isinstance(fn, str):
+                try:
+                    os.unlink(fn)
+                    name = os.path.dirname(fn)
+                    if os.path.isdir(name):
+                        folders[name] = None
+                except: pass
+    if remove_folders:
+        for x in sorted(folders.iterkeys(), reverse=True):
+            try: os.rmdir(x)
+            except: pass

@@ -151,7 +151,6 @@ notifications:
   - provider: Email
     to:
       - developers@ironpython.groups.io
-    # use defaults for now
     subject: 'IronPython2 Build {{status}}'
     #message: "{{message}}, {{commitId}}, ..."    # optional
     on_build_status_changed: true

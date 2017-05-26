@@ -286,7 +286,7 @@ class AttrTest(IronPythonTestCase):
         a = x()
         try:
             hasattr(a, 'abc')
-            AssertUnreachable()
+            self.fail('Should not reach this point')
         except SystemExit:
             pass
 
