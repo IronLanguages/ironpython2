@@ -95,9 +95,10 @@ class path_modifier(object):
     def __exit__(self, *args):
         sys.path = [x for x in self._old_path]
 
-def skipUnlessIronPython(func):
+def skipUnlessIronPython(obj):
+    """Skips the test unless currently running on IronPython"""
     if is_cli:
-        return func
+        return obj
     return unittest.skip('IronPython specific test')
 
 def _find_root():

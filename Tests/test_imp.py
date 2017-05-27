@@ -1054,8 +1054,8 @@ class Test(object):
     
     def test_import_path_seperator(self):
         """verify using the path seperator in a direct call will result in an ImportError"""
-        self.assertRaises(ImportError, __import__, 'iptest\\warning_util')
-        __import__('iptest.warning_util')
+        self.assertRaises(ImportError, __import__, 'iptest\\type_util')
+        __import__('iptest.type_util')
     
     
     def test_load_package(self):

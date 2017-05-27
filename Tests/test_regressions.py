@@ -969,9 +969,6 @@ class C:
         self.assertEqual('Bool is 1', 'Bool is {:^}'.format(True))
         self.assertEqual('Bool is     1     ', 'Bool is {:^10}'.format(True))
 
-def test_suite():
-    return unittest.makeSuite(RegressionTest)
-
-
 if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
+    from test import test_support
+    test_support.run_unittest(__name__)
