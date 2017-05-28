@@ -18,8 +18,9 @@
 ## the only thing we care about is that no exception is thrown.
 ##
 
-from iptest.assert_util import *
 import struct
+import unittest
+
 from threading import Thread
 from random import shuffle
 
@@ -54,12 +55,16 @@ class PackThread(Thread):
             return
         self.retval = True
 
-def test_packs():
-    pack_threads = [PackThread() for i in xrange(10)]
-    for t in pack_threads:
-        t.start()
-    for t in pack_threads:
-        t.join()
-    Assert(all(t.retval for t in pack_threads), "struct.pack: Is not threadsafe")
+class StructThreadsafeTest(unittest.TestCase):
 
-run_test(__name__)
+    def test_packs(self):
+        pack_threads = [PackThread() for i in xrange(10)]
+        for t in pack_threads:
+            t.start()
+        for t in pack_threads:
+            t.join()
+        self.assertTrue(all(t.retval for t in pack_threads), "struct.pack: Is not threadsafe")
+
+if __name__ == '__main__':
+    from test import test_support
+    test_support.run_unittest(__name__)

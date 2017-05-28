@@ -31,8 +31,7 @@
 
 import weakref
 
-from test import test_support
-from iptest import ipunittest
+from iptest import IronPythonTestCase
 
 class C(object):
     def __init__(self, value=0):
@@ -44,7 +43,7 @@ class C(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-class WeakrefTest(ipunittest.IronPythonTestCase):
+class WeakrefTest(IronPythonTestCase):
     def _create_weakrefs(self, o, count, cb = None):
         # Helper method to work around the (to me yet unexplicable) fact that
         # 'o = factory(); del o; force_gc();' does not lead to the collection of 'o'.
@@ -106,8 +105,7 @@ class WeakrefTest(ipunittest.IronPythonTestCase):
         self.assertTrue(r1 == r2)
         self.assertTrue(r1 != r3)
 
-def test_main():
-    test_support.run_unittest(WeakrefTest)
 
 if __name__ == '__main__':
-    test_main()
+    from test import test_support
+    test_support.run_unittest(__name__)
