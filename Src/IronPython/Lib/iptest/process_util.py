@@ -17,7 +17,7 @@
 
 import os
 import sys
-from assert_util import is_cli, is_posix, is_netstandard, is_osx
+from .test_env import is_cli, is_posix, is_netstandard, is_osx
 
 class ProcessUtil(object):
     def has_csc(self):

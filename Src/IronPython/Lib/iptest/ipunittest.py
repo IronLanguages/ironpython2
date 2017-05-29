@@ -137,13 +137,23 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
         else: 
             clr.AddReferenceToFileAndPath(self._iron_python_test_dll)
 
-    def load_iron_python_dll():
+    def load_iron_python_dll(self):
         #When assemblies are installed into the GAC, we should not expect
         #IronPython.dll to exist alongside IronPython.dll
         if os.path.exists(os.path.join(sys.prefix, "IronPython.dll")):
             clr.AddReferenceToFileAndPath(os.path.join(sys.prefix, "IronPython.dll"))
         else:
             clr.AddReference("IronPython")
+
+    def add_clr_assemblies(self, *dlls):
+        """Adds test assemblies as references"""
+        import clr
+        prefix = "rowantest."
+        for x in dlls:
+            if x.startswith(prefix):
+                clr.AddReference(x)
+            else:
+                clr.AddReference(prefix + x)
 
     def force_gc(self):
         if is_cpython:
@@ -224,6 +234,15 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
             result = callable(*args, **kwds)
             self.assertTrue(any(item.category == warning for item in warning_list))
 
+    def assertWarnsPartialMessage(self, warning, msg, callable, *args, **kwds):
+        import warnings
+        with warnings.catch_warnings(record=True) as warning_list:
+            warnings.simplefilter('always')
+            result = callable(*args, **kwds)
+            self.assertEqual(len(warning_list), 1)
+            self.assertTrue(any(item.category == warning for item in warning_list))
+            self.assertIn(msg, str(warning_list[0].message))
+
     def assertNotWarns(self, warning, callable, *args, **kwds):
         import warnings
         with warnings.catch_warnings(record=True) as warning_list:
@@ -265,3 +284,71 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
         return self._test_inputs_dir
     test_inputs_dir = property(get_test_inputs_dir)
 
+# class testpath:
+#     # find the ironpython root directory
+#     rowan_root          = get_environ_variable("dlr_root")
+
+#     basePyDir = path_combine('Languages', 'IronPython')
+#     if not rowan_root:
+#         rowan_root = sys.prefix
+#         if is_cli:
+#             if is_netstandard:
+#                 import clr
+#                 clr.AddReference("System.IO.FileSystem")
+#             if System.IO.Directory.Exists(path_combine(rowan_root, '../../Src')):
+#                 basePyDir = '../../Src'
+
+#     # get some directories and files
+#     ip_root             = path_combine(rowan_root, basePyDir)
+#     external_dir        = path_combine(rowan_root, 'External.LCA_RESTRICTED/Languages/IronPython')
+#     clean_external_dir  = path_combine(rowan_root, 'External.LCA_RESTRICTED/Languages/CPython/27')
+#     public_testdir      = path_combine(ip_root, 'Tests')
+#     compat_testdir      = path_combine(ip_root, 'Tests/compat')
+#     test_inputs_dir     = path_combine(ip_root, 'Tests/Inputs')
+#     script_testdir      = path_combine(ip_root, 'Scripts')
+
+#     math_testdir        = path_combine(external_dir, 'Math')
+#     parrot_testdir      = path_combine(external_dir, 'parrotbench')
+#     lib_testdir         = path_combine(external_dir, '27/Lib')
+#     private_testdir     = path_combine(external_dir, '27/Lib/test')
+
+#     if is_cli: 
+#         ipython_executable  = sys.executable
+#         if is_posix:
+#             cpython_executable  = '/usr/bin/python2.7'
+#         else:
+#             cpython_executable  = path_combine(external_dir, '27/python.exe')
+#     else: 
+#         ipython_executable  = path_combine(sys.prefix, 'ipy.exe')
+#         cpython_executable  = sys.executable
+    
+#     #team_dir            = path_combine(ip_root, r'Team')
+#     #team_profile        = path_combine(team_dir, r'settings.py')
+#     #
+#     #my_name             = os.environ.get(r'USERNAME', None)
+#     #my_dir              = my_name and path_combine(team_dir, my_name) or None
+#     #my_profile          = my_dir and path_combine(my_dir, r'settings.py') or None
+
+
+# MAX_FAILURE_RETRY = 3
+
+# def retry_on_failure(f, *args, **kwargs):
+#     '''
+#     Utility function which:
+#     1. Wraps execution of the input function, f
+#     2. If f() fails, it retries invoking it MAX_FAILURE_RETRY times
+#     '''
+#     def t(*args, **kwargs):        
+#         for i in xrange(MAX_FAILURE_RETRY):
+#             try:
+#                 ret_val = f(*args, **kwargs)
+#                 return ret_val
+#             except Exception, e:
+#                 print "retry_on_failure(%s): failed on attempt '%d':" % (f.__name__, i+1)
+#                 print e
+#                 excp_info = sys.exc_info()
+#                 continue
+#         # raise w/ excep info to preverve the original stack trace
+#         raise excp_info[0], excp_info[1], excp_info[2]
+                
+#     return t
