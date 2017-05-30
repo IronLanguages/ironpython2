@@ -12,6 +12,7 @@
 #
 #
 #####################################################################################
+
 '''
 How to re-define operators methods, __hash__, etc.
 
@@ -19,29 +20,30 @@ NOTES:
 - the tests in this module (could) expose some degree of implementation details. 
   Therefore it may be necessary to update the test cases upon failures.
 '''
-#------------------------------------------------------------------------------
 
-from iptest.assert_util import *
+import unittest
 
-add_clr_assemblies("operators", "typesamples")
+from iptest import IronPythonTestCase, skipUnlessIronPython
 
-from Merlin.Testing import *
-from Merlin.Testing.BaseClass import *
+class SpecialMethodTest(IronPythonTestCase):
+    def setUp(self):
+        super(SpecialMethodTest, self).setUp()
+        self.add_clr_assemblies("operators", "typesamples")
 
-# bug 374187
-# TODO: more scenarios
+    def test_basic(self): 
+        from Merlin.Testing.BaseClass import Callback, COperator10
+        class C(COperator10):
+            def __add__(self, other):
+                return C(self.Value * other.Value)
+                
+        x = C(4)
+        y = C(5)
+        z = x + y
+        self.assertEqual(z.Value, 20)
+        
+        z = Callback.On(x, y)
+        #AreEqual(z.Value, 20)  
 
-def test_basic(): 
-    class C(COperator10):
-        def __add__(self, other):
-            return C(self.Value * other.Value)
-            
-    x = C(4)
-    y = C(5)
-    z = x + y
-    AreEqual(z.Value, 20)
-    
-    z = Callback.On(x, y)
-    #AreEqual(z.Value, 20)  
-
-run_test(__name__)
+if __name__ == '__main__':
+    from test import test_support
+    test_support.run_unittest(__name__)
