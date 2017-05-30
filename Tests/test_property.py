@@ -34,8 +34,8 @@ class PropertyTest(IronPythonTestCase):
 
     def test_stdin(self):
         self.assertTrue('<stdin>' in str(sys.stdin))
-        #self.assertTrue('<stdout>' in str(sys.stdout))
-        #self.assertTrue('<stderr>' in str(sys.stderr))
+        self.assertTrue('<stdout>' in str(sys.stdout))
+        self.assertTrue('<stderr>' in str(sys.stderr))
 
     def test_array_list(self):        
         for ArrayList in self.array_list_options:

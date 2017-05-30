@@ -1,4 +1,3 @@
-import clr
 import cStringIO
 import os
 import sys
@@ -7,6 +6,9 @@ import unittest
 from .test_env import *
 from .file_util import FileUtil
 from .process_util import ProcessUtil
+
+if is_cli:
+    import clr
 
 class _AssertRaisesContext(object):
     """A context manager used to implement TestCase.assertRaises* methods."""

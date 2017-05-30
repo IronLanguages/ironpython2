@@ -17,7 +17,7 @@ import sys
 import unittest
 me = sys.modules[__name__]
 
-from iptest import IronPythonTestCase, is_cli, is_posix
+from iptest import IronPythonTestCase, is_cli, is_posix, path_modifier
 
 class AttrTest(IronPythonTestCase):
 
@@ -248,32 +248,33 @@ class AttrTest(IronPythonTestCase):
 
     #TODO: @skip("multiple_execute")
     def test_cp13686(self):
-        import toimport
-        import sys
-        mod_list = [toimport, sys]
-        if is_posix:
-            import posix
-            mod_list.append(posix)
-        else:
-            import nt
-            mod_list.append(nt)
-        
-        mod_names = {}
-        for mod in mod_list:
-            mod_names[mod] = mod.__name__
-        
-        for mod in mod_list:
-            self.assertRaises(AttributeError, getattr, mod, "name")
-            setattr(mod, "name", "xyz")
-            self.assertEqual(getattr(mod, "name"), "xyz")
+        with path_modifier(self.test_dir) as p:
+            import toimport
+            import sys
+            mod_list = [toimport, sys]
+            if is_posix:
+                import posix
+                mod_list.append(posix)
+            else:
+                import nt
+                mod_list.append(nt)
             
-            self.assertEqual(getattr(mod, "__name__"), mod_names[mod])
-            setattr(mod, "__name__", "badname")
-            self.assertEqual(getattr(mod, "__name__"), "badname")
-        
-        if is_cli:
-            import System
-            self.assertRaises(AttributeError, setattr, System, "name", "xyz")
+            mod_names = {}
+            for mod in mod_list:
+                mod_names[mod] = mod.__name__
+            
+            for mod in mod_list:
+                self.assertRaises(AttributeError, getattr, mod, "name")
+                setattr(mod, "name", "xyz")
+                self.assertEqual(getattr(mod, "name"), "xyz")
+                
+                self.assertEqual(getattr(mod, "__name__"), mod_names[mod])
+                setattr(mod, "__name__", "badname")
+                self.assertEqual(getattr(mod, "__name__"), "badname")
+            
+            if is_cli:
+                import System
+                self.assertRaises(AttributeError, setattr, System, "name", "xyz")
 
     @unittest.skipUnless(is_cli, 'IronPython specific test') # 2.6 feature
     def test_hasattr_sys_exit(self):

@@ -13,12 +13,10 @@
 #
 #####################################################################################
 
-#
-# test assert
-#
-
+import sys
 import unittest
 
+@unittest.skipIf(sys.flags.optimize, "should be run without optimize")
 class AssertTest(unittest.TestCase):
 
     def test_positive(self):

@@ -15,11 +15,9 @@
 
 import unittest
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, skipUnlessIronPython
 
-    # from Merlin.Testing.FieldTest import *
-    # from Merlin.Testing.TypeSample import *
-
+@skipUnlessIronPython
 class FieldsInsideEnumTest(IronPythonTestCase):
     def setUp(self):
         super(FieldsInsideEnumTest, self).setUp()

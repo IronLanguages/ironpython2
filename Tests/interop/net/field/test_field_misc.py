@@ -19,8 +19,9 @@ Operations on enum type and its' members
 
 import unittest
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, skipUnlessIronPython
 
+@skipUnlessIronPython
 class FieldMiscTest(IronPythonTestCase):
     def setUp(self):
         super(FieldMiscTest, self).setUp()

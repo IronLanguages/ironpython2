@@ -15,9 +15,9 @@
 
 import unittest
 
-from iptest import is_cli
+from iptest import skipUnlessIronPython
 
-@unittest.skipUnless(is_cli, 'IronPython specific test case')
+
 class IsTest(unittest.TestCase):
     def test_object(self):
         a = object()
@@ -27,7 +27,8 @@ class IsTest(unittest.TestCase):
         self.assertFalse(a is b)
         self.assertFalse(a is not a)
         self.assertTrue(a is not b)
-
+    
+    @skipUnlessIronPython
     def test_bool_nullablebool(self):
         from System import Nullable
         tc = [

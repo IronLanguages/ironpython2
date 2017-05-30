@@ -16,12 +16,10 @@
 import unittest
 import warnings
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, skipUnlessIronPython
 
 
-#    from Merlin.Testing.FieldTest import *
-#    from Merlin.Testing.TypeSample import *
-
+@skipUnlessIronPython
 class InstanceFieldsTest(IronPythonTestCase):
     def setUp(self):
         super(InstanceFieldsTest, self).setUp()

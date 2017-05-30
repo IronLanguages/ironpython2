@@ -50,13 +50,6 @@ class ListCompTest(unittest.TestCase):
         self.assertRaises(NameError, lambda: [(x, z) for x in "iron" if z > x for z in "python" ])
         self.assertRaises(NameError, lambda: [(i, j) for i in range(10) if j < 'c' for j in ['a', 'b', 'c'] if i % 3 == 0])
 
-    def test_negative_flow_checker(self):
-        self.assertRaises(NameError, lambda: [y for x in "python"])
-        self.assertRaises(NameError, lambda: [x for x in "python" if y > 5])
-        self.assertRaises(NameError, lambda: [x for x in "iron" if y > x for y in "python" ])
-        self.assertRaises(NameError, lambda: [(x, y) for x in "iron" if y > x for y in "python" ])
-        self.assertRaises(NameError, lambda: [(i, j) for i in range(10) if j < 'c' for j in ['a', 'b', 'c'] if i % 3 == 0])
-
 if __name__ == '__main__':
     from test import test_support
     test_support.run_unittest(__name__)

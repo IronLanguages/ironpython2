@@ -30,6 +30,7 @@ debug_list = [ 1, #DEBUG_STATS
 
 class GcTest(unittest.TestCase):
 
+    # CodePlex Work Item# 8202
     def test_000_get_debug(self):
         """get_debug should return 0 if set_debug has not been used"""
         self.assertEqual(gc.get_debug(), 0)
@@ -196,11 +197,9 @@ class GcTest(unittest.TestCase):
         state = [0,gc.DEBUG_STATS,gc.DEBUG_COLLECTABLE,gc.DEBUG_UNCOLLECTABLE,gc.DEBUG_INSTANCES,gc.DEBUG_OBJECTS,gc.DEBUG_SAVEALL,gc.DEBUG_LEAK]
         result = gc.get_debug()
         if result not in state:
-            Fail("Returned value of getdebug method is not valid value:" + str(result))
+            self.fail("Returned value of getdebug method is not valid value:" + str(result))
 
 
-#CodePlex Work Item# 8202
-   
 if __name__ == '__main__':
     from test import test_support
     test_support.run_unittest(__name__)

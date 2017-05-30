@@ -15,8 +15,9 @@
 
 import unittest
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, skipUnlessIronPython
 
+@skipUnlessIronPython
 class StaticFieldsTest(IronPythonTestCase):
     def setUp(self):
         super(StaticFieldsTest, self).setUp()

@@ -13,10 +13,13 @@
 #
 #####################################################################################
 
+import os
 import sys
 import unittest
 
-class IsInstanceTest(unittest.TestCase):
+from iptest import IronPythonTestCase, is_cli, is_netstandard, skipUnlessIronPython
+
+class IsInstanceTest(IronPythonTestCase):
 
     def test_file_io(self):
         def verify_file(ff):
@@ -82,7 +85,7 @@ class IsInstanceTest(unittest.TestCase):
         code = compile("max(10, 15)", "<string>", "eval")
         self.assertTrue(eval(code) == 15)
         
-        code = compile("x = [1,2,3,4,5]\nx.reverse()\nAssert(x == [5,4,3,2,1])", "<string>", "exec")
+        code = compile("x = [1,2,3,4,5]\nx.reverse()\nself.assertTrue(x == [5,4,3,2,1])", "<string>", "exec")
         exec(code)
         self.assertTrue(x == [5,4,3,2,1])
         
@@ -171,12 +174,8 @@ class IsInstanceTest(unittest.TestCase):
         
         self.assertRaises(ValueError, int, '1l')
         
-        
-        
         self.assertEqual(int(1e100), 10000000000000000159028911097599180468360808563945281389781327557747838772170381060813469985856815104L)
         self.assertEqual(int(-1e100), -10000000000000000159028911097599180468360808563945281389781327557747838772170381060813469985856815104L)
-        
-        
         
         self.assertEqual(pow(2,3), 8)
 
@@ -234,6 +233,7 @@ class IsInstanceTest(unittest.TestCase):
 
     def test_eval_dicts(self):
         # eval referencing locals / globals
+        import System
         global global_value
         value_a = 13
         value_b = 17
@@ -669,7 +669,7 @@ class IsInstanceTest(unittest.TestCase):
 
 
     @skipUnlessIronPython
-    def test_builtin_attributes():
+    def test_builtin_attributes(self):
         import System
         def AssignMethodOfBuiltin():
             def mylen(): pass
@@ -702,8 +702,8 @@ class IsInstanceTest(unittest.TestCase):
             d.__dict__["attr"] = 1
         self.assertRaises(AttributeError, SetDictElementOfCLIType)
         
-        AssertErrorWithMessage(TypeError, "vars() argument must have __dict__ attribute", vars, list())
-        AssertErrorWithMessage(TypeError, "vars() argument must have __dict__ attribute", vars, System.DateTime())
+        self.assertRaisesMessage(TypeError, "vars() argument must have __dict__ attribute", vars, list())
+        self.assertRaisesMessage(TypeError, "vars() argument must have __dict__ attribute", vars, System.DateTime())
 
 
     @skipUnlessIronPython
@@ -714,7 +714,7 @@ class IsInstanceTest(unittest.TestCase):
 
     @skipUnlessIronPython
     def test_mutable_Valuetypes(self):
-        load_iron_python_test()
+        self.load_iron_python_test()
         from IronPythonTest import MySize, BaseClass
         
         direct_vt = MySize(1, 2)
@@ -1005,20 +1005,6 @@ class IsInstanceTest(unittest.TestCase):
         # TypeError: tuple.__new__(str): str is not a subtype of tuple
         self.assertRaises(TypeError, tuple.__new__, str)
         self.assertRaises(TypeError, tuple.__new__, str, 'abc')
-
-    def test_override_pow(self):
-        """override pow, delete it, and it should be gone"""
-        import operator
-        pow = 7
-        self.assertEqual(pow, 7)
-        del pow
-        self.assertEqual(operator.isCallable(pow), True)
-
-        try:
-            del pow
-            self.fail('Should not reach this point')
-        except NameError:
-            pass
 
 if __name__ == '__main__':
     from test import test_support

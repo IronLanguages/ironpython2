@@ -50,7 +50,7 @@ if is_ironpython:
 
 is_32, is_64 = is_cli32, is_cli64
 if not is_ironpython:
-    cpu = get_env_var("PROCESSOR_ARCHITECTURE")
+    cpu = os.environ["PROCESSOR_ARCHITECTURE"]
     if cpu.lower()=="x86":
         is_32 = True
     elif cpu.lower()=="amd64":

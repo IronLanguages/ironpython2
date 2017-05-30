@@ -15,8 +15,6 @@
 
 import unittest
 
-from iptest.assert_util import *
-
 class SetCompTest(unittest.TestCase):
 
     def test_set_comp(self):
