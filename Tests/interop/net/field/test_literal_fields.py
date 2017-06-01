@@ -15,17 +15,13 @@
 
 import unittest
 
-from iptest import IronPythonTestCase. skipUnlessIronPython
+from iptest import IronPythonTestCase, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class LiteralFieldsTest(IronPythonTestCase):
     def setUp(self):
         super(LiteralFieldsTest, self).setUp()
         self.add_clr_assemblies("fieldtests", "typesamples")
-
-# if options.RUN_TESTS: #TODO - bug when generating Pydoc
-#     from Merlin.Testing.FieldTest.Literal import *
-#     from Merlin.Testing.TypeSample import *
 
     def _test_get_by_instance(self, current_type):
         from Merlin.Testing.TypeSample import EnumInt32

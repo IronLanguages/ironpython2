@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest.assert_util import *
+from iptest import run_test
 
 class DictCompTest(unittest.TestCase):
 
@@ -111,6 +111,4 @@ class DictCompTest(unittest.TestCase):
         r = {k:eval(lambda i: i+v, k+v) for k in xrange(2)}
         self.assertEqual(r, {0:4, 1:5})
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

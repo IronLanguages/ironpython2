@@ -18,10 +18,9 @@ NOTES:
 - seems not a good test?
 '''
 
-
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class ReturnValueTest(IronPythonTestCase):
@@ -29,8 +28,8 @@ class ReturnValueTest(IronPythonTestCase):
         super(ReturnValueTest, self).setUp()
         self.add_clr_assemblies("returnvalues", "typesamples")
 
-        from Merlin.Testing.TypeSample import C
-        self.c = = C()
+        from Merlin.Testing.Call import C
+        self.c = C()
 
     def test_return_null(self):
         for f in [ 
@@ -44,7 +43,8 @@ class ReturnValueTest(IronPythonTestCase):
     def test_return_numbers(self):
         import clr
         import System
-        from Merlin.Testing.TypeSample import EnumInt16
+        from Merlin.Testing.Call import Int32RInt32EventHandler
+        from Merlin.Testing.TypeSample import EnumInt16, SimpleStruct
         for (f, t, val) in [
             (self.c.ReturnByte, System.Byte, 0), 
             (self.c.ReturnSByte, System.SByte, 1), 
@@ -69,40 +69,40 @@ class ReturnValueTest(IronPythonTestCase):
             self.assertEqual(x, val)
             
         # return value type
-        x = c.ReturnStruct()
+        x= self.c.ReturnStruct()
         self.assertEqual(x.Flag, 100)
         
-        x = c.ReturnClass()
+        x= self.c.ReturnClass()
         self.assertEqual(x.Flag, 200)
         
-        x = c.ReturnNullableInt1()
+        x= self.c.ReturnNullableInt1()
         self.assertEqual(x.GetType(), clr.GetClrType(int))
         self.assertEqual(x, 300)
         
-        x = c.ReturnNullableStruct1()
+        x= self.c.ReturnNullableStruct1()
         self.assertEqual(x.GetType(), clr.GetClrType(SimpleStruct))
         self.assertEqual(x.Flag, 400)
         
-        x = c.ReturnInterface()
+        x= self.c.ReturnInterface()
         self.assertEqual(x.Flag, 500)
         
         # return delegate
-        x = c.ReturnDelegate()
+        x= self.c.ReturnDelegate()
         self.assertEqual(x.GetType(), clr.GetClrType(Int32RInt32EventHandler))
         self.assertEqual(x(3), 6)
         self.assertEqual(x(3.0), 6)
         
         # array
-        x = c.ReturnInt32Array()
+        x= self.c.ReturnInt32Array()
         self.assertEqual(x[0], 1)
         self.assertEqual(x[1], 2)
         
-        x = c.ReturnStructArray()
+        x= self.c.ReturnStructArray()
         self.assertEqual(x[0].Flag, 1)
         self.assertEqual(x[1].Flag, 2)
 
     def test_return_from_generic(self):
-        from Merlin.Testing.TypeSample import G
+        from Merlin.Testing.Call import G
         for (t, v) in [
             (int, 2), 
             (str, "python"),
@@ -117,7 +117,4 @@ class ReturnValueTest(IronPythonTestCase):
             self.assertEqual(len(x), 3)
             self.assertEqual(x[2], v)
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
-
+run_test(__name__)

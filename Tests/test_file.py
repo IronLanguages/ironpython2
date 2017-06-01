@@ -20,7 +20,7 @@ import thread
 
 CP16623_LOCK = thread.allocate_lock()
 
-from iptest import IronPythonTestCase, is_cli, is_cpython, is_netstandard, is_posix
+from iptest import IronPythonTestCase, is_cli, is_cpython, is_netstandard, is_posix, run_test
 
 class FileTest(IronPythonTestCase):
 
@@ -837,7 +837,4 @@ class FileTest(IronPythonTestCase):
             self.assertEqual(f.read(), "\xef\xbb\xbf\x42\xc3\x93\x4d\x0d\x0a")
 
 
-
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
