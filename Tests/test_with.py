@@ -17,7 +17,7 @@ import exceptions
 import sys
 import unittest
 
-from iptest import is_cpython
+from iptest import is_cpython, run_test
 
 class MissingEnter:
     def __exit__(self,a,b,c): pass
@@ -323,6 +323,4 @@ class WithTest(unittest.TestCase):
         except Exception: pass
         else: self.fail("Should have raised exception")
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

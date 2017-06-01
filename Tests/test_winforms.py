@@ -17,7 +17,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard, is_posix, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_netstandard, is_posix, run_test, skipUnlessIronPython
 
 class AgeQualifier(object):
     def __get__(self, instance, ctx):
@@ -195,6 +195,4 @@ class WinformsTest(IronPythonTestCase):
         th.Start()
         SWF.Application.Run(form)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

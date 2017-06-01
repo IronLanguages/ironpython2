@@ -31,7 +31,7 @@
 
 import weakref
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, run_test
 
 class C(object):
     def __init__(self, value=0):
@@ -106,6 +106,4 @@ class WeakrefTest(IronPythonTestCase):
         self.assertTrue(r1 != r3)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

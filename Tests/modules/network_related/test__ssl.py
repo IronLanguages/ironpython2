@@ -137,8 +137,7 @@ for documentation."""
         s.connect((SSL_URL, SSL_PORT))
         ssl_s = real_ssl.sslwrap(s._sock, False)
 
-        if not is_cli:
-            ssl_s.shutdown()
+        ssl_s.shutdown()
         s.close()
         
         #sock, keyfile, certfile

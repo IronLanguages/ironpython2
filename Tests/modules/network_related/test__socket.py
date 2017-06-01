@@ -24,7 +24,7 @@ import thread
 import time
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_posix, retryOnFailure, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, retryOnFailure, skipUnlessIronPython
 
 AF_DICT = {"AF_APPLETALK" : 5,
            "AF_DECnet" : 12,
@@ -413,7 +413,7 @@ class SocketTest(IronPythonTestCase):
         f.bufsize = 4096
         self.assertEqual(4096, f.bufsize)
 
-    @unittest.skipIf(is_posix, 'some issue on mono, need to debug further')
+    @unittest.skipIf(is_mono, 'some issue on mono, need to debug further')
     @retryOnFailure
     def test_makefile_refcount(self):
         "Ensures that the _socket stays open while there's still a file associated"

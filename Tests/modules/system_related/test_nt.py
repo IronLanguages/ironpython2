@@ -42,7 +42,7 @@ class NtTest(IronPythonTestCase):
         nt.mkdir("dir_create_test")
         try:
             nt.mkdir("dir_create_test")
-            self.assertTrueUnreachabale("Cannot create the same directory twice")
+            self.assertUnreachabale("Cannot create the same directory twice")
         except WindowsError, e:
             self.assertEqual(e.errno, 17)
             

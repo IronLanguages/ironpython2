@@ -17,7 +17,7 @@
 
 import unittest
 
-from iptest import is_mono, skipUnlessIronPython
+from iptest import is_mono, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class ThreadSafetyTest(unittest.TestCase):
@@ -409,6 +409,4 @@ class ThreadSafetyTest(unittest.TestCase):
         run_many(10,10**6,63)
         self.assertTrue(zeroCount < 3)
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

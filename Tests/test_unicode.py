@@ -16,7 +16,7 @@
 
 import unittest
 
-from iptest import is_mono
+from iptest import is_mono, run_test
 
 class UnicodeTest(unittest.TestCase):
     def test_constructor(self):
@@ -97,6 +97,4 @@ class UnicodeTest(unittest.TestCase):
         self.assertEqual(unicode(''.join(chr(i) for i in range(0x80, 0x100)), 'ascii', 'replace'), u'\ufffd'*0x80)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

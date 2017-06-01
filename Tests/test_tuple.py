@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 class TupleTest(IronPythonTestCase):
 
@@ -222,6 +222,4 @@ class TupleTest(IronPythonTestCase):
         self.assertRaisesMessage(TypeError, "'tuple' object does not support item assignment", setindex)
 
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
