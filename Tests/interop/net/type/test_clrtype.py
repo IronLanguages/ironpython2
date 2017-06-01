@@ -51,7 +51,7 @@ else:
 
 TYPE_COUNTER = 0
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class ClrTypeTest(IronPythonTestCase):
     def setUp(self):
         super(ClrTypeTest, self).setUp()

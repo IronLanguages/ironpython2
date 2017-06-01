@@ -87,7 +87,7 @@ End Module
 '''
 
 @unittest.skipIf(is_mono, 'Test currently has issues on mono')
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class DynamicRegressionTest(IronPythonTestCase):
     def setUp(self):
         super(DynamicRegressionTest, self).setUp()

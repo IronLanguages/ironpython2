@@ -17,7 +17,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class DynamicObjectModelTest(IronPythonTestCase):
     def setUp(self):
         super(DynamicObjectModelTest, self).setUp()

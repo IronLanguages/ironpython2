@@ -18,7 +18,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class ProtectedTest(IronPythonTestCase):
     def setUp(self):
         super(ProtectedTest, self).setUp()

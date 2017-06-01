@@ -21,7 +21,7 @@ import unittest
 
 from iptest import IronPythonTestCase, is_netstandard, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class SimpleDeriveTest(IronPythonTestCase):
     def setUp(self):
         super(SimpleDeriveTest, self).setUp()

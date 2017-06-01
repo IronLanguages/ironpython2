@@ -21,7 +21,7 @@ import unittest
 
 from iptest import IronPythonTestCase, is_netstandard, is_mono, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class PropertyOverrideTest(IronPythonTestCase):
     def setUp(self):
         super(PropertyOverrideTest, self).setUp()

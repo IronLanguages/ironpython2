@@ -19,7 +19,7 @@ from iptest import IronPythonTestCase, skipUnlessIronPython
 
 # http://docs.python.org/ref/customization.html
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class CtorOverrideTest(IronPythonTestCase):
     def setUp(self):
         super(CtorOverrideTest, self).setUp()

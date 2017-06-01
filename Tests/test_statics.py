@@ -17,7 +17,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class StaticsTest(IronPythonTestCase):
     def setUp(self):
         super(StaticsTest, self).setUp()

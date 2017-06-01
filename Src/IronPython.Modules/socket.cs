@@ -2862,23 +2862,23 @@ namespace IronPython.Modules {
                 return String.Empty;
             }
 
-            [Documentation("read([n]) -> buffer_read\n\n"
-                + "If n is present, reads up to n bytes from the SSL connection. Otherwise, reads to EOF."
-                )]
-            public string read(CodeContext/*!*/ context, [DefaultParameterValue(Int32.MaxValue)] int n) {
+            [Documentation(@"read([len]) -> string
+
+Read up to len bytes from the SSL socket.")]
+            public string read(CodeContext/*!*/ context, [DefaultParameterValue(Int32.MaxValue)] int len) {
                 EnsureSslStream(true);
 
                 try {
                     byte[] buffer = new byte[2048];
-                    MemoryStream result = new MemoryStream(n);
+                    MemoryStream result = new MemoryStream(len);
                     while (true) {
-                        int readLength = (n < buffer.Length) ? n : buffer.Length;
+                        int readLength = (len < buffer.Length) ? len : buffer.Length;
                         int bytes = _sslStream.Read(buffer, 0, readLength);
                         if (bytes > 0) {
                             result.Write(buffer, 0, bytes);
-                            n -= bytes;
+                            len -= bytes;
                         }
-                        if (bytes == 0 || n == 0 || bytes < readLength) {
+                        if (bytes == 0 || len == 0 || bytes < readLength) {
                             return result.ToArray().MakeString();
                         }
                     }
@@ -2901,9 +2901,10 @@ namespace IronPython.Modules {
                 return String.Empty;
             }
 
-            [Documentation("write(s) -> bytes_sent\n\n"
-                + "Writes the string s through the SSL connection."
-                )]
+            [Documentation(@"write(s) -> len
+
+Writes the string s into the SSL object.  Returns the number
+of bytes written.")]
             public int write(CodeContext/*!*/ context, string data) {
                 EnsureSslStream(true);
 

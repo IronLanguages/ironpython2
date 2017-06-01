@@ -160,7 +160,7 @@ class DocTest(IronPythonTestCase):
                     dd.m_1, dd.m_2, dd.m_3, dd.m_4):
             x()
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_clr_doc(self):
         import System
         self.assertTrue(System.Collections.Generic.List.__doc__.find("List[T]()") != -1)

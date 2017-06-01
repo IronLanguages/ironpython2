@@ -17,7 +17,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class FieldsInsideEnumTest(IronPythonTestCase):
     def setUp(self):
         super(FieldsInsideEnumTest, self).setUp()

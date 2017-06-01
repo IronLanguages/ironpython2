@@ -17,7 +17,7 @@ import unittest
 
 from iptest import skipUnlessIronPython
 x = None
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class SpecialContextTest(unittest.TestCase):
     def test_special_context(self):
         # our built in types shouldn't show CLS methods

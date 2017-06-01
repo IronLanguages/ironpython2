@@ -50,7 +50,7 @@ if is_cli:
 
 
 @unittest.skipIf(is_posix or is_netstandard, 'little or no System.Windows.Forms support')
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class WinformsTest(IronPythonTestCase):
     def setUp(self):
         super(WinformsTest, self).setUp()

@@ -361,15 +361,15 @@ class CodecTest(IronPythonTestCase):
             chrs = u'\u20ac\u201a\u0192\u201e\u2026\u2020\u2021\u02c6\u2030\u0160\u2039\u0152\u017d\u2018\u2019\u201c\u201d\u2022\u2013\u2014\u02dc\u2122\u0161\u203a\u0153\u017e\u0178'
             self.assertEqual(codecs.mbcs_encode(chrs, mode), ('\x80\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8e\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9e\x9f', 27))
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_readbuffer_encode(self):
         self.assertRaises(NotImplementedError, codecs.readbuffer_encode, "abc")
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_unicode_escape_decode(self):
         self.assertRaises(NotImplementedError, codecs.unicode_escape_decode, "abc")
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_unicode_escape_encode(self):
         self.assertRaises(NotImplementedError, codecs.unicode_escape_encode, "abc")
 
@@ -528,8 +528,6 @@ class CodecTest(IronPythonTestCase):
         t_in.close()
         
         self.assertEqual(len(t_out_lines), 0)
-        print t_err_lines[0]
-        print t_err_lines[1]
         self.assertTrue(t_err_lines[0].startswith("  File"))
         self.assertTrue(t_err_lines[1].startswith("SyntaxError: encoding problem: with BOM"))
 

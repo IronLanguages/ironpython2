@@ -13,11 +13,12 @@ if is_cli:
 class _AssertRaisesContext(object):
     """A context manager used to implement TestCase.assertRaises* methods."""
 
-    def __init__(self, expected, test_case, expected_regexp=None, expected_message=None, expected_messages=[], partial=False):
+    def __init__(self, expected, test_case, expected_regexp=None, expected_number=None, expected_message=None, expected_messages=[], partial=False):
         self.expected = expected
         self.failureException = test_case.failureException
         self.expected_regexp = expected_regexp
         self.expected_message = expected_message
+        self.expected_number = expected_number
 
     def __enter__(self):
         return self
@@ -57,6 +58,10 @@ class _AssertRaisesContext(object):
                 if self.expected_message != str(exc_value):
                     raise self.failureException("'%s' does not match '%s'" %
                             (self.expected_message, str(exc_value)))
+        elif not (self.expected_number is None):
+            if self.expected_number != exc_value.errno:
+                raise self.failureException("'%d' does not match '%d'" % 
+                            (self.expected_number, exc_value.errno))
         return True
 
 class stderr_trapper(object):
@@ -97,11 +102,31 @@ class path_modifier(object):
     def __exit__(self, *args):
         sys.path = [x for x in self._old_path]
 
-def skipUnlessIronPython(obj):
+def skipUnlessIronPython():
     """Skips the test unless currently running on IronPython"""
-    if is_cli:
-        return obj
-    return unittest.skip('IronPython specific test')
+    return unittest.skipUnless(is_cli, 'IronPython specific test')
+
+MAX_FAILURE_RETRY = 3
+def retryOnFailure(f, times=MAX_FAILURE_RETRY, *args, **kwargs):
+    '''
+    Utility function which:
+    1. Wraps execution of the input function, f
+    2. If f() fails, it retries invoking it MAX_FAILURE_RETRY times
+    '''
+    def t(*args, **kwargs):
+        for i in xrange(times):
+            try:
+                ret_val = f(*args, **kwargs)
+                return ret_val
+            except Exception, e:
+                print "retryOnFailure(%s): failed on attempt '%d':" % (f.__name__, i+1)
+                print e
+                excp_info = sys.exc_info()
+                continue
+        # raise w/ excep info to preverve the original stack trace
+        raise excp_info[0], excp_info[1], excp_info[2]
+
+    return t
 
 def _find_root():
     test_dirs = ['Src', 'Build', 'Package', 'Tests', 'Util']
@@ -220,6 +245,23 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
         with context:
             callable_obj(*args, **kwargs)
 
+    def assertRaisesNumber(self, expected_exception, expected_number, 
+                        callable_obj=None, *args, **kwargs):
+        """Asserts that the message in a raised exception is contained in the expected message.
+
+        Args:
+            expected_exception: Exception class expected to be raised.
+            expected_message: Expected error message
+            callable_obj: Function to be called.
+            args: Extra args.
+            kwargs: Extra kwargs.
+        """
+        context = _AssertRaisesContext(expected_exception, self, expected_number=expected_number)
+        if callable_obj is None:
+            return context
+        with context:
+            callable_obj(*args, **kwargs)
+
     def assertArrayEqual(self,a,b):
         self.assertEqual(a.Length, b.Length)
         for x in xrange(a.Length):
@@ -286,6 +328,10 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
         return self._test_inputs_dir
     test_inputs_dir = property(get_test_inputs_dir)
 
+def run_test(name):
+    from test import test_support
+    test_support.run_unittest(name)
+
 # class testpath:
 #     # find the ironpython root directory
 #     rowan_root          = get_environ_variable("dlr_root")
@@ -332,25 +378,3 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
 #     #my_profile          = my_dir and path_combine(my_dir, r'settings.py') or None
 
 
-# MAX_FAILURE_RETRY = 3
-
-# def retry_on_failure(f, *args, **kwargs):
-#     '''
-#     Utility function which:
-#     1. Wraps execution of the input function, f
-#     2. If f() fails, it retries invoking it MAX_FAILURE_RETRY times
-#     '''
-#     def t(*args, **kwargs):        
-#         for i in xrange(MAX_FAILURE_RETRY):
-#             try:
-#                 ret_val = f(*args, **kwargs)
-#                 return ret_val
-#             except Exception, e:
-#                 print "retry_on_failure(%s): failed on attempt '%d':" % (f.__name__, i+1)
-#                 print e
-#                 excp_info = sys.exc_info()
-#                 continue
-#         # raise w/ excep info to preverve the original stack trace
-#         raise excp_info[0], excp_info[1], excp_info[2]
-                
-#     return t

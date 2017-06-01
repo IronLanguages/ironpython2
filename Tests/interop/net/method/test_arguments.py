@@ -21,7 +21,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class ArgumentsTest(IronPythonTestCase):
     def setUp(self):
         super(ArgumentsTest, self).setUp()

@@ -83,7 +83,7 @@ class NumberHashTest(unittest.TestCase):
         #if not is_net40: #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=25894
         self.assertEqual(hash(x()), 2)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cli_number_hash(self):
         from iptest.type_util import clr_numbers
         

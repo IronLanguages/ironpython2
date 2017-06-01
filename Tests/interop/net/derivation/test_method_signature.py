@@ -26,7 +26,7 @@ global expected
 # from Merlin.Testing import *
 # from Merlin.Testing.BaseClass import *
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class MethodSignatureTest(IronPythonTestCase):
     def setUp(self):
         super(MethodSignatureTest, self).setUp()

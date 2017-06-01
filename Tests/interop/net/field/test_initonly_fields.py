@@ -17,7 +17,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class InitOnlyFieldsTest(IronPythonTestCase):
     def setUp(self):
         super(InitOnlyFieldsTest, self).setUp()

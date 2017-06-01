@@ -21,7 +21,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class FieldMiscTest(IronPythonTestCase):
     def setUp(self):
         super(FieldMiscTest, self).setUp()

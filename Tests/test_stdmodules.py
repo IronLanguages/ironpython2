@@ -86,7 +86,7 @@ class StdModulesTest(IronPythonTestCase):
         self.assertEqual(1, cPickle.loads(one))
         self.assertEqual(1, cPickle.loads(bytes(one)))
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cp13618(self):
         import os
         from System.IO.Path import PathSeparator
@@ -176,7 +176,7 @@ class StdModulesTest(IronPythonTestCase):
         self.assertEqual(ec, 0)
 
     @unittest.skipIf(is_netstandard, "figure out why this doesn't work")
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cp13401(self):
         import System
         import copy
@@ -216,7 +216,7 @@ class StdModulesTest(IronPythonTestCase):
         self.assertTrue(os.path.isfile(sys.executable))
         self.assertTrue(not os.path.isfile('"' + sys.executable + '"'))
     
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_get_set_locale(self):
         import locale
         locale.setlocale(locale.LC_ALL, 'en-US')

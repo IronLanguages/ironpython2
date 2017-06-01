@@ -21,7 +21,7 @@ import unittest
 from iptest import IronPythonTestCase, is_mono, is_netstandard, skipUnlessIronPython
 
 @unittest.skipIf(is_mono, 'https://github.com/IronLanguages/main/issues/1438')
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class DefaultMemberTest(IronPythonTestCase):
     def setUp(self):
         super(DefaultMemberTest, self).setUp()

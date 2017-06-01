@@ -60,7 +60,7 @@ class PropertyTest(IronPythonTestCase):
         self.assertEqual(a.prop, 'hello')
 
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_builtinclrtype_set(self):
         """setting an instance property on a built-in type should throw that you can't set on built-in types"""
         import System
@@ -103,7 +103,7 @@ class PropertyTest(IronPythonTestCase):
             self.assertRaises(AttributeError, tryDelReflectedProp)
 
     
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_reflected_extension_property_ops(self):
         '''
         Test to hit IronPython.RunTime.Operations.ReflectedExtensionPropertyOps

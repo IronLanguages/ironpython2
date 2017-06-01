@@ -100,7 +100,7 @@ class TupleTest(IronPythonTestCase):
 
         self.assertEqual(len(hashes), 1000000)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_tuple_hash_none(self):
         import clr # Make sure .GetHashCode() is available
         example = (1, None)
@@ -109,7 +109,7 @@ class TupleTest(IronPythonTestCase):
         self.assertEqual(hash(example), expected)
         self.assertEqual(hash(example), example.GetHashCode())
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_tuple_cli_interactions(self):
         # verify you can call ToString on a tuple after importing clr
         import clr

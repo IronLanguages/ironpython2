@@ -19,7 +19,7 @@ import warnings
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class InstanceFieldsTest(IronPythonTestCase):
     def setUp(self):
         super(InstanceFieldsTest, self).setUp()

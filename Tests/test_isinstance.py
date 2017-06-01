@@ -385,7 +385,7 @@ class IsInstanceTest(IronPythonTestCase):
         for (x, y) in [("2", int), (2, int), ("string", str), (None, int), (str, None), (int, 3), (int, (6, 7))]:
             self.assertRaises(TypeError, lambda: issubclass(x, y))
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cli_subclasses(self):
         import clr
         
@@ -441,7 +441,7 @@ class IsInstanceTest(IronPythonTestCase):
             "string".split('')
         self.assertRaises(ValueError, splitTest)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_primitive_inheritance(self):
         import System
         
@@ -475,7 +475,7 @@ class IsInstanceTest(IronPythonTestCase):
         self.assertTrue(issubclass(userClass, System.Int64) == False)
         self.assertTrue(issubclass(userClass, System.Boolean) == False)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cli_types(self):
         import System
         arrayMapping = {'b': System.SByte, 'h': System.Int16, 'H': System.UInt16, 'i': System.Int32,
@@ -636,7 +636,7 @@ class IsInstanceTest(IronPythonTestCase):
         self.assertEqual(cmp(a,b) == 0, False)
 
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_unhashable_types(self):
         import System
         class OldUserClass:
@@ -668,7 +668,7 @@ class IsInstanceTest(IronPythonTestCase):
         hashcode = System.Object.GetHashCode(set())
 
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_builtin_attributes(self):
         import System
         def AssignMethodOfBuiltin():
@@ -706,13 +706,13 @@ class IsInstanceTest(IronPythonTestCase):
         self.assertRaisesMessage(TypeError, "vars() argument must have __dict__ attribute", vars, System.DateTime())
 
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_explicit_interface_impl(self):
         import System
         self.assertEqual(System.IConvertible.ToDouble('32', None), 32.0)
 
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_mutable_Valuetypes(self):
         self.load_iron_python_test()
         from IronPythonTest import MySize, BaseClass

@@ -18,7 +18,7 @@ import unittest
 
 from iptest import IronPythonTestCase, is_cli, is_mono, is_netstandard, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class MethodDispatchTest(IronPythonTestCase):
     def setUp(self):
         super(MethodDispatchTest, self).setUp()

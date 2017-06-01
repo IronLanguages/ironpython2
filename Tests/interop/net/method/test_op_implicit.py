@@ -22,7 +22,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class OpImplicitTest(IronPythonTestCase):
     def setUp(self):
         super(OpImplicitTest, self).setUp()

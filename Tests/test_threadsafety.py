@@ -19,7 +19,7 @@ import unittest
 
 from iptest import is_mono, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class ThreadSafetyTest(unittest.TestCase):
 
     #TODO: @skip("multiple_execute")

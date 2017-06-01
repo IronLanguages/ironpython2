@@ -17,7 +17,7 @@ import unittest
 
 from iptest import IronPythonTestCase. skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class LiteralFieldsTest(IronPythonTestCase):
     def setUp(self):
         super(LiteralFieldsTest, self).setUp()

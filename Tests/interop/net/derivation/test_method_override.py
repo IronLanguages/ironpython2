@@ -27,7 +27,7 @@ from iptest import IronPythonTestCase, skipUnlessIronPython
 # import System
 
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class MethodOverrideTest(IronPythonTestCase):
     def setUp(self):
         super(MethodOverrideTest, self).setUp()

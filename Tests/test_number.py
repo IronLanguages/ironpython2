@@ -58,7 +58,7 @@ class NumberTest(IronPythonTestCase):
         self.assertEqual(SillyLong(2) * 1, 2)
         self.assertEqual((1).__mul__(SillyLong(2)), NotImplemented)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_clr(self):
         self.assertTrue(Single.IsInfinity(Single.PositiveInfinity))
         self.assertTrue(not Single.IsInfinity(1.0))
@@ -176,7 +176,7 @@ class NumberTest(IronPythonTestCase):
                 type_test(a, b)
                 type_test(b, a)
     
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_conversions(self):
         """implicit conversions (conversion defined on Derived)"""
         from IronPythonTest import Base, Base2, ConversionStorage, Derived, Derived2, EnumByte, EnumInt, EnumLong, EnumSByte, EnumShort, EnumTest, EnumUShort, EnumUInt, EnumULong
@@ -617,7 +617,7 @@ class NumberTest(IronPythonTestCase):
         self.assertTrue( (cmp(D(3L), C(4000000000)) < 0) == True)
         self.assertTrue( (cmp(D2(3), D2(4.9)) < 0) == True)
     
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_comparisions(self):
         from IronPythonTest import ComparisonTest
         
@@ -755,7 +755,7 @@ class NumberTest(IronPythonTestCase):
         self.assertTrue( (D() > C()) == False )
         '''
     
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_ipt_integertest(self):
 
         def f():

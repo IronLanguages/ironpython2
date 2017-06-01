@@ -77,7 +77,7 @@ if is_cli:
     arrayObj = array_object(['str', 10])
 
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class MethodBinder2Test(IronPythonTestCase):
     def setUp(self):
         super(MethodBinder2Test, self).setUp()

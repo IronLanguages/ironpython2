@@ -119,7 +119,7 @@ class StrFormatTest(IronPythonTestCase):
         self.assertRaisesMessage(ValueError, "Missing ']' in format string", '{0[}'.format, 42)
         self.assertRaises(IndexError, '{0[}'.format)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_format_cli_interop(self):
         # test classes implementing IFormattable where we pass
         # the format spec through

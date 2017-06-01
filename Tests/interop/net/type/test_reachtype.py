@@ -29,7 +29,7 @@ modules = ['__builtin__', 'datetime', '_collections', 'site']
 
 if is_netstandard: SystemError = Exception # TODO: revert this once System.SystemException is added to netstandard (https://github.com/IronLanguages/main/issues/1399)
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class ReachTypeTest(IronPythonTestCase):
     def setUp(self):
         super(ReachTypeTest, self).setUp()
@@ -200,7 +200,8 @@ class ReachTypeTest(IronPythonTestCase):
         import NSwForwardee1
         self.assertEqual(NSwForwardee1.Foo.A, 120)
         self.assertEqual(NSwForwardee1.Bar.A, -120)
-
+    
+    #@skip("multiple_execute")
     @unittest.skipIf(is_mono, 'https://github.com/IronLanguages/main/issues/1439')
     def test_type_forward2(self):
         self.add_clr_assemblies("typeforwarder2")

@@ -211,7 +211,7 @@ if is_cli:
     ftypes = [Single, Double]
     all = get_values(values, itypes, ftypes)
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class NumTypesTest(unittest.TestCase):
     def verify_b(self, a, b, op, x_s, x_v, g_s, g_v):
         if not x_s == g_s:

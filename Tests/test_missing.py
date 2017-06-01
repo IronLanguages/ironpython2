@@ -238,7 +238,7 @@ def TestCalls(t):
         if trace: print r
 
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class MissingTest(unittest.TestCase):
     def test_main(self):
         path = IO.Path.GetTempPath()

@@ -21,7 +21,7 @@ import unittest
 
 from iptest import IronPythonTestCase, is_netstandard, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class EventTest(IronPythonTestCase):
     def setUp(self):
         super(EventTest, self).setUp()

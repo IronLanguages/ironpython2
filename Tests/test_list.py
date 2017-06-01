@@ -45,7 +45,7 @@ class ListTest(IronPythonTestCase):
         self.assertTrue(fo.read() == repr(a))
         fo.close()
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cli_enumerator(self):
         import clr
         x = [1,2,3]
@@ -207,7 +207,7 @@ class ListTest(IronPythonTestCase):
         self.assertRaises(ValueError, a.index, 2)
         self.assertEqual(hitCount, 3)       # should have only checked existing items
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_pass_pythonlist_to_clr(self):
         ##
         ## test passing pythonlist to clr where IList or ArrayList is requested

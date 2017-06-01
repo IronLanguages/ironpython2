@@ -24,8 +24,6 @@ from iptest import skipUnlessIronPython
 
 
 class BinasciiTest(unittest.TestCase):
-
-    @skipUnlessIronPython
     def test_negative(self):
         """verify extra characters are ignored, and that we require padding."""
         for x in ('A', 'AB', '%%%A', 'A%%%', '%A%%', '%AA%' ):
@@ -41,7 +39,7 @@ class BinasciiTest(unittest.TestCase):
         """verify zeros don't show up as being only a single character"""
         self.assertEqual(binascii.b2a_hex('\x00\x00\x10\x00'), '00001000')
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_not_implemented(self):
         test_cases = [
                         lambda: binascii.a2b_qp(None),

@@ -29,7 +29,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class ClrArrayTest(IronPythonTestCase):
     def test_creation(self):
         from System import Array

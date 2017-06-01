@@ -13,7 +13,7 @@
 #
 #####################################################################################
 
-from ipunittest import IronPythonTestCase, stdout_trapper, stderr_trapper, path_modifier, skipUnlessIronPython
+from ipunittest import IronPythonTestCase, stdout_trapper, stderr_trapper, path_modifier, retryOnFailure, run_test, skipUnlessIronPython
 from test_env import *
 from type_util import *
 from misc_util import ip_supported_encodings

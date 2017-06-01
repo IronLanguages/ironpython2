@@ -25,7 +25,7 @@ from iptest import IronPythonTestCase, skipUnlessIronPython
 
 EVENT_COUNT = 0
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class EventOverrideTest(IronPythonTestCase):
     def setUp(self):
         super(EventOverrideTest, self).setUp()

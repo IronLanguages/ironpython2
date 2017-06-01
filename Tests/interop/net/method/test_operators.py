@@ -20,7 +20,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class OperatorsTest(IronPythonTestCase):
     def setUp(self):
         super(OperatorsTest, self).setUp()

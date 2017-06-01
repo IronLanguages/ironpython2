@@ -71,7 +71,7 @@ def _my_call(func, arg):
     else:
         func(arg)
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class MethodBinder1Test(IronPythonTestCase):
 
     def setUp(self):

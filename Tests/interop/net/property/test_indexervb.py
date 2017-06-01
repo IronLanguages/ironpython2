@@ -22,7 +22,7 @@ import unittest
 from iptest import IronPythonTestCase, is_mono, skipUnlessIronPython
 
 @unittest.skipIf(is_mono, 'https://github.com/IronLanguages/main/issues/1438')
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class IndexerVbTest(IronPythonTestCase):
     def setUp(self):
         super(IndexerVbTest, self).setUp()

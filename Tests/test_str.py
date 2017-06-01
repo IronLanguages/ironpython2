@@ -258,7 +258,7 @@ class StrTest(IronPythonTestCase):
         self.assertEqual(len(o), 2300)
         self.assertEqual('a' in o, False)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_str_char_hash(self):
         import System
         #System.Char.Parse('a') is not available in Silverlight mscorlib

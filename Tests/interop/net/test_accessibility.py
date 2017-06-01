@@ -22,7 +22,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class AccessibilityTest(IronPythonTestCase):
     def setUp(self):
         super(AccessibilityTest, self).setUp()

@@ -29,7 +29,7 @@ class InheritanceTest(IronPythonTestCase):
         super(InheritanceTest, self).setUp()
         self.load_iron_python_test()
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cli_inheritance(self):
         from IronPythonTest import BaseClass, MySize
         class InheritedClass(BaseClass):
@@ -76,7 +76,7 @@ class InheritanceTest(IronPythonTestCase):
         self.assertEqual(i.ReturnSize().width, 3)
         self.assertEqual(i.ReturnSize().height, 4)
         
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cli_new_inheritance(self):
         """verifies that we do the right thing with new slot's (e.g. public int new Foo { get; })"""
 
@@ -135,7 +135,7 @@ class InheritanceTest(IronPythonTestCase):
                 self.assertEqual(i.ReturnSize().width,  4)
                 self.assertEqual(i.ReturnSize().height,  5)
         
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_override_hierarchy(self):
         from IronPythonTest import CliVirtualStuff
         self.assertEqual(CliVirtualStuff().VirtualMethod(1), 10)
@@ -197,13 +197,13 @@ class InheritanceTest(IronPythonTestCase):
         self.assertEqual(D11().VirtualMethod(1), 10)
 
     @unittest.skipIf(is_netstandard, 'no System.MarshalByRefObject in netstandard')
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_mbr_inheritance(self):
         import System
         class InheritFromMarshalByRefObject(System.MarshalByRefObject):
             pass
         
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_static_ctor_inheritance(self):
         from IronPythonTest import BaseClassStaticConstructor
         class StaticConstructorInherit(BaseClassStaticConstructor):
@@ -213,7 +213,7 @@ class InheritanceTest(IronPythonTestCase):
             
         self.assertEqual(sci.Value, 10)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cli_overriding(self):
         from IronPythonTest import Overriding
         class PythonDerived(Overriding):
@@ -267,7 +267,7 @@ class InheritanceTest(IronPythonTestCase):
             
         self.assertEqual(o.BigTopMethod(), "BaseBigTemplate - and Top")
     
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_more_inheritance(self):
         from IronPythonTest import Inherited
         class CTest(Inherited):
@@ -276,7 +276,7 @@ class InheritanceTest(IronPythonTestCase):
             
         o = CTest()
         
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_interface_inheritance(self):
         from IronPythonTest import ITestIt1, ITestIt2, TestIt
         class C(ITestIt1, ITestIt2):
@@ -296,7 +296,7 @@ class InheritanceTest(IronPythonTestCase):
             
         class SingleInherit(ITestIt1): pass
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_more_interface_inheritance(self):
         import System
         class Point(System.IFormattable):
@@ -312,7 +312,7 @@ class InheritanceTest(IronPythonTestCase):
         self.assertEqual(p.ToString('x', None), "(1, 2)")
         #System.Console.WriteLine("{0}", p)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_interface_hierarchy(self):
         import System
         self.assertTrue(System.Collections.IEnumerable in System.Collections.IList.__bases__)
@@ -344,7 +344,7 @@ class InheritanceTest(IronPythonTestCase):
         #!!! more meta testing todo
 
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_override_param_testing(self):
         from IronPythonTest import MoreOverridding
         class OverrideParamTesting(MoreOverridding):
@@ -404,7 +404,7 @@ class InheritanceTest(IronPythonTestCase):
 
     ##############################################################
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_even_more_overriding(self):
         from IronPythonTest import BaseClass, MoreOverridding
         class Test(BaseClass):
@@ -442,7 +442,7 @@ class InheritanceTest(IronPythonTestCase):
         self.assertTrue('Func' in dir(PythonDerivedClass))
         self.assertTrue('Func' in dir(PythonDerivedClass()))
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_cli_inheritance_dir(self):
         class PythonDerivedFromCLR(System.Collections.Generic.List[int]): pass
         #
@@ -454,7 +454,7 @@ class InheritanceTest(IronPythonTestCase):
         #
 
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_subclass_into_cli(self):
         """Subclassing once as python class, use it; and pass into CLI again"""
         from IronPythonTest import CliInterface, CliAbstractClass, UseCliClass
@@ -536,7 +536,7 @@ class InheritanceTest(IronPythonTestCase):
         self.assertEqual(f.v, 0)
         self.assertEqual(p.helperF, -3 * 2)
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_subclass_twice(self):
         """Subclassing twice"""
         from IronPythonTest import CliInterface, CliAbstractClass
@@ -546,7 +546,7 @@ class InheritanceTest(IronPythonTestCase):
         class PythonClass(CliAbstractClass): pass
         class PythonClass2(PythonClass): pass
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_negative_cli(self):
         """Negative cases: struct, enum, delegate"""
         from IronPythonTest import MySize, DaysInt, VoidDelegate
@@ -566,7 +566,7 @@ class InheritanceTest(IronPythonTestCase):
             self.fail("should thrown")
         except TypeError:    pass
         
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_all_virtuals(self):
         """All Virtual stuff can be overriden? and run"""
         from IronPythonTest import CliVirtualStuff
@@ -616,7 +616,7 @@ class InheritanceTest(IronPythonTestCase):
         a = foo()
         self.assertEqual(str(a), 'abc')
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_instance_override(self):
         """set virtual override on an instance method"""
         from IronPythonTest import Overriding
@@ -632,7 +632,7 @@ class InheritanceTest(IronPythonTestCase):
         self.assertEqual(a.TopMethod(), "I'm Derived - and Top")
 
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_new_init(self):
         """new / init combos w/ inheritance from CLR class"""
         from IronPythonTest import CtorTest
@@ -761,7 +761,7 @@ class InheritanceTest(IronPythonTestCase):
         a = Foo([])
         self.assertEqual(a.CtorRan, 3)
         
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_new_init_combo(self):
         """new/init combo tests..."""
         from IronPythonTest import CtorTest
@@ -837,7 +837,7 @@ class InheritanceTest(IronPythonTestCase):
         s = MyString()
         self.assertEqual(s, '')
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_interface_with_property(self):
         """inheritance from an interface w/ a property"""
         from IronPythonTest import ITestIt3
@@ -848,7 +848,7 @@ class InheritanceTest(IronPythonTestCase):
         a = foo()
         self.assertEqual(a.Name, 'abc')
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_conversions(self):
         """test converter logics and EmitCastFromObject"""
         import System
@@ -882,7 +882,7 @@ class InheritanceTest(IronPythonTestCase):
         self.assertEqual(used.Use_RtClass().F, 1)
         self.assertEqual(reduce(add, used.Use_IEnumerator()),  60)
         
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_inherit_returntypes(self):
         """inherited all, but with correct return types expect values defined here"""
 
@@ -973,7 +973,7 @@ class InheritanceTest(IronPythonTestCase):
             def M_IEnumerable(self): return retObj
         return NewC
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_inherited_returntypes_odd_returns(self):
         """inherited all, but returns with a python old class, or new class, or with explicit ops"""    
         from IronPythonTest import UseCReturnTypes
@@ -1015,7 +1015,7 @@ class InheritanceTest(IronPythonTestCase):
         check_behavior(python_old_class())
         check_behavior(python_new_class())
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_extensible_int(self):
         """extensible int"""
         import System
@@ -1048,7 +1048,7 @@ class InheritanceTest(IronPythonTestCase):
                 
         check_behavior(python_my_int(10))
         
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_custom_number_conversion(self):
         """customized __int__. __float__"""
         import System
@@ -1079,7 +1079,7 @@ class InheritanceTest(IronPythonTestCase):
         check_behavior(python_old_class())
         check_behavior(python_new_class())
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_return_interesting(self):
         """inherited all, but with more interesting return types"""
 
@@ -1162,7 +1162,7 @@ class InheritanceTest(IronPythonTestCase):
         delegate = used.Use_RtDelegate()
         self.assertRaises(TypeError, delegate, 1)
 
-        @skipUnlessIronPython
+        @skipUnlessIronPython()
         def test_redefine_non_virtual():
             #############################################
             ## Redefine non-virtual method:
@@ -1372,7 +1372,7 @@ class InheritanceTest(IronPythonTestCase):
 
         c = C()
 
-    @skipUnlessIronPython
+    @skipUnlessIronPython()
     def test_inherit_mixed_properties(self):
         from IronPythonTest import MixedPropertiesInherited, MixedProperties
         def checkEqual(first, second):

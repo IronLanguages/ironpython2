@@ -23,7 +23,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class ReturnValueTest(IronPythonTestCase):
     def setUp(self):
         super(ReturnValueTest, self).setUp()

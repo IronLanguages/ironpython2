@@ -20,7 +20,7 @@ import unittest
 
 from iptest import IronPythonTestCase, skipUnlessIronPython
 
-@skipUnlessIronPython
+@skipUnlessIronPython()
 class CtorTest(IronPythonTestCase):
     def setUp(self):
         super(CtorTest, self).setUp()
