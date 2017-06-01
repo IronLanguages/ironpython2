@@ -1,28 +1,29 @@
+os:
+  - linux
+  - osx
+
 language: csharp
 
-sudo: required
-
 env:
-  - CONFIGURATION=Release
+  - CONFIGURATION=Release FLAVOUR=release
 
 mono:
   - 4.8.0
 
-solution: Solutions/IronPython.sln
-
-install:
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then sudo apt-get install -y binfmt-support libmono-system-windows-forms4.0-cil ; fi
-  - git submodule update --init --recursive
-  - nuget restore Solutions/IronPython.sln
+solution: IronPython.sln
 
 script:
-  - make test-ipy-release 
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then sudo apt-get install -y binfmt-support libmono-system-windows-forms4.0-cil ; fi
+  - mono Util/NuGet/nuget.exe restore
+  - git submodule update --init --recursive
+  - make $FLAVOUR
+  - pushd bin/$CONFIGURATION
+  - mono ./IronPythonTest.exe --labels=All --result:all-result.xml
 
 notifications:
   email:
     recipients:
-      - slide.o.mix@gmail.com
-      - ticotimo@gmail.com
+      - developers+int+211+854770831703316759@ironpython.groups.io
     on_success: always # default: change
     #on_failure: [always|never|change] # default: always
   webhooks:
