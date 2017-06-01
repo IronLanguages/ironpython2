@@ -13,16 +13,18 @@
 #
 #####################################################################################
 
-"""
-Bare-bones application used to ensure the 'Silverlight3Release' build configuration of
-IronPython is OK.
-"""
+'''
+This tests what CPythons test_types.py does not hit.
+'''
 
-from System.Windows import Application
-from System.Windows.Controls import TextBlock
+import types
+import unittest
 
-tb = TextBlock()
-tb.Text = "Hello World"
+from iptest import run_test
 
-Application.Current.RootVisual = tb
+class TypesTest(unittest.TestCase):
+    def test_cp24741(self):
+        m = types.ModuleType('m')
+        self.assertEqual(m.__doc__, None)
 
+run_test(__name__)

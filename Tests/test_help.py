@@ -17,7 +17,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, is_netstandard, stdout_trapper
+from iptest import IronPythonTestCase, is_cli, is_mono, is_netstandard, run_test, skipUnlessIronPython, stdout_trapper
 
 class HelpTest(IronPythonTestCase):
     def run_help(self, o):
@@ -25,7 +25,7 @@ class HelpTest(IronPythonTestCase):
             help(o)
         return os.linesep.join(output.messages)
 
-    @unittest.skipUnless(is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_z_cli_tests(self):    # runs last to prevent tainting the module w/ CLR names
         import clr
         import System
@@ -44,7 +44,7 @@ class HelpTest(IronPythonTestCase):
         
         x = self.run_help('u.u'.Split('u'))
         # requires std lib
-        self.assertTrue('Help on Array[str] object' in x)
+        self.assertTrue('Help on Array[str] object' in x, x)
 
         #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=4190
         from System.IO import MemoryStream
@@ -344,13 +344,14 @@ class HelpTest(IronPythonTestCase):
         if is_cli:   # Cpython and IronPython display different help
             self.assertTrue(out.find('append(self: ') != -1)
 
-    @unittest.skipUnless(is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_clr_addreference(self):
         import clr
         x = self.run_help(clr.AddReference)
         self.assertTrue(x.find("Adds a reference to a .NET assembly.") != -1)
 
-    @unittest.skipUnless(is_cli and not is_mono, 'IronPython specific test and doc different on Mono')
+    @unittest.skipIf(is_mono, 'doc different on Mono')
+    @skipUnlessIronPython()
     def test_paramrefs(self):
         # System.DateTime.Parse (for example) has a paramrefs in its help text which get substitued
         # by paramnames.
@@ -362,17 +363,15 @@ class HelpTest(IronPythonTestCase):
         
         self.assertTrue(x.find("equivalent to the date and time contained in s") != -1)
 
-    #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=20236#
-    def test_type(self):        
+    def test_type(self):
+        """https://github.com/IronLanguages/main/issues/397"""
         x = self.run_help(type)
             
         self.assertTrue("CodeContext" not in x)
-        self.assertTrue(x.count("type(") > 1)
+        self.assertTrue(x.count("type(") > 1, x)
 
     def test_builtinfunc_module(self):
         self.assertEqual([].append.__module__, None)
         self.assertEqual(min.__module__, '__builtin__')
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

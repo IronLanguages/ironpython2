@@ -16,9 +16,9 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard, is_mono
+from iptest import IronPythonTestCase, is_cli, is_netstandard, is_mono, run_test, skipUnlessIronPython
 
-@unittest.skipUnless(is_cli, 'IronPython specific test case')
+@skipUnlessIronPython()
 class ClrLoad2Test(IronPythonTestCase):
     """Test cases for CLR types that don't involve actually loading CLR into the module using the CLR types"""
 
@@ -60,6 +60,4 @@ class ClrLoad2Test(IronPythonTestCase):
 
         sys.path = [x for x in old_path]
         
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

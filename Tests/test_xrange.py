@@ -21,6 +21,8 @@
 
 import unittest
 
+from iptest import run_test
+
 class XRangeTest(unittest.TestCase):
 
     def test_range(self):
@@ -94,6 +96,4 @@ class XRangeTest(unittest.TestCase):
         self.assertRaises(TypeError, lambda: xrange(4)[1:2:3])
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
