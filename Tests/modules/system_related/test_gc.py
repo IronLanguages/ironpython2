@@ -17,7 +17,7 @@ import gc
 import _random
 import unittest
 
-from iptest import is_cli
+from iptest import is_cli, run_test
 
 debug_list = [ 1, #DEBUG_STATS
                2, #DEBUG_COLLECTABLE
@@ -130,12 +130,12 @@ class GcTest(unittest.TestCase):
     
     def test_disable(self):
         if is_cli:
-            from iptest.warning_util import warning_trapper
-            w = warning_trapper()
-            w.hook()
-            gc.disable()
-            m = w.finish()        
-            self.assertEqual(m[0].message, 'IronPython has no support for disabling the GC')
+            import warnings
+            with warnings.catch_warnings(record=True) as m:
+                warnings.simplefilter("always")
+                gc.disable()
+
+            self.assertIn('IronPython has no support for disabling the GC', m[0].message)
         else:
             gc.disable()
             result = gc.isenabled()
@@ -192,7 +192,6 @@ class GcTest(unittest.TestCase):
         self.assertEqual(62,gc.DEBUG_LEAK)
  
 
-    @unittest.skipIf(is_cli, 'CodePlex Work Item 8202')
     def test_get_debug(self):
         state = [0,gc.DEBUG_STATS,gc.DEBUG_COLLECTABLE,gc.DEBUG_UNCOLLECTABLE,gc.DEBUG_INSTANCES,gc.DEBUG_OBJECTS,gc.DEBUG_SAVEALL,gc.DEBUG_LEAK]
         result = gc.get_debug()
@@ -200,6 +199,4 @@ class GcTest(unittest.TestCase):
             self.fail("Returned value of getdebug method is not valid value:" + str(result))
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

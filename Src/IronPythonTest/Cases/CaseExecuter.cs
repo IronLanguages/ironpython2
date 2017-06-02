@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using IronPython.Hosting;
 using IronPython.Runtime;
 using IronPython.Runtime.Exceptions;
@@ -36,21 +36,27 @@ namespace IronPythonTest.Cases {
             return engine;
         }
 
+        private static string FindRoot() {
+            // we start at the current directory and look up until we find the "Src" directory
+            var current = System.Reflection.Assembly.GetEntryAssembly().Location;
+            var found = false;
+            while (!found && !string.IsNullOrEmpty(current)) {
+                var test = Path.Combine(current, "Src", "StdLib", "Lib");
+                if (Directory.Exists(test)) {
+                    return current;
+                }
+
+                current = Path.GetDirectoryName(current);
+            }
+            return string.Empty;
+        }
+
         private static void AddSearchPaths(ScriptEngine engine) {
             var paths = new List<string>(engine.GetSearchPaths());
             if(!paths.Any(x => x.ToLower().Contains("stdlib"))) {
-                // we start at the current directory and look up until we find the "Src" directory
-                var current = System.Reflection.Assembly.GetEntryAssembly().Location;
-                var found = false;
-                while(!found && !string.IsNullOrEmpty(current)) {
-                    var test = Path.Combine(current, "Src", "StdLib", "Lib");
-                    if(Directory.Exists(test)) {
-                        paths.Add(test);
-                        found = true;
-                        break;
-                    }
-
-                    current = Path.GetDirectoryName(current);
+                var root = FindRoot();
+                if(!string.IsNullOrEmpty(root)) {
+                    paths.Insert(0, Path.Combine(root, "Src", "StdLib", "Lib"));
                 }
             }
             engine.SetSearchPaths(paths);
@@ -99,22 +105,43 @@ namespace IronPythonTest.Cases {
             return GetResult(engine, source);
         }
 
+        private static string CreateIronPythonPath() {
+            var root = FindRoot();
+            if(!string.IsNullOrEmpty(root)) {
+                return root;
+            }
+            return string.Empty;            
+        }
+
+        private string ReplaceVariables(string input) {
+            Regex variableRegex = new Regex(@"\${([^}]+)}", RegexOptions.Compiled);
+            var replacements = new Dictionary<string, string>() {
+                { "ROOT", FindRoot() }
+            };
+
+            var result = input;
+            var match = variableRegex.Match(input);
+            while(match.Success) {
+                var variable = match.Groups[1].Value;
+                if(replacements.ContainsKey(variable)) {
+                    result = result.Replace(match.Groups[0].Value, replacements[variable]);
+                }
+                match = match.NextMatch();
+            }
+
+            return result;
+        }
+
         private int GetProcessTest(TestInfo testcase) {
             int exitCode = -1;
             using (Process proc = new Process()) {
+                if(!string.IsNullOrEmpty(testcase.Options.WorkingDirectory)) {
+                    proc.StartInfo.WorkingDirectory = ReplaceVariables(testcase.Options.WorkingDirectory);
+                }
                 proc.StartInfo.FileName = Executable;
-                proc.StartInfo.Arguments = string.Format("{0} {1}", testcase.Path, testcase.Options.Arguments);
+                proc.StartInfo.Arguments = string.Format("\"{0}\" {1}", testcase.Path, testcase.Options.Arguments);
+                proc.StartInfo.EnvironmentVariables.Add("IRONPYTHONPATH", CreateIronPythonPath());
                 proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.CreateNoWindow = true;
-                proc.StartInfo.RedirectStandardError = true;
-                proc.StartInfo.RedirectStandardOutput = true;
-                proc.OutputDataReceived += (e, d) => {
-                    Console.Write(d.Data);
-                };
-
-                proc.ErrorDataReceived += (e, d) => {
-                    Console.Error.Write(d.Data);
-                };
                 proc.Start();
                 proc.WaitForExit();
                 exitCode = proc.ExitCode;

@@ -139,6 +139,9 @@ def _find_root():
 
 _root = _find_root()
 
+def source_root():
+    return _root
+
 class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
 
     def setUp(self):
@@ -329,8 +332,9 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
     test_inputs_dir = property(get_test_inputs_dir)
 
 def run_test(name):
-    from test import test_support
-    test_support.run_unittest(name)
+    if name == '__main__':
+        from test import test_support
+        test_support.run_unittest(name)
 
 # class testpath:
 #     # find the ironpython root directory
