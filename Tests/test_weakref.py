@@ -43,8 +43,7 @@ class C(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-class WeakrefTest(IronPythonTestCase):
-    def _create_weakrefs(self, o, count, cb = None):
+def _create_weakrefs(self, o, count, cb = None):
         # Helper method to work around the (to me yet unexplicable) fact that
         # 'o = factory(); del o; force_gc();' does not lead to the collection of 'o'.
 
@@ -61,11 +60,12 @@ class WeakrefTest(IronPythonTestCase):
         else:
             raise Exception("not implemented")
 
+class WeakrefTest(IronPythonTestCase):
     def test_ref_callable(self):
         # "if the referent is no longer alive, calling the reference object will cause None to 
         # be returned"
 
-        r = self._create_weakrefs(C("a"), 1)
+        r = _create_weakrefs(self, C("a"), 1)
         # for reasons stated in create_weakrefs(), we cannot test on instance equality
         self.assertTrue(r().value == "a") 
 
@@ -78,7 +78,7 @@ class WeakrefTest(IronPythonTestCase):
         # even after the object was deleted. If hash() is called the first time only after the object 
         # was deleted, the call will raise TypeError."
 
-        r1, r2 = self._create_weakrefs(C("a"), 2)
+        r1, r2 = _create_weakrefs(self, C("a"), 2)
         self.assertTrue(hash(r1) == hash("a"))
 
         self.force_gc()
@@ -93,8 +93,8 @@ class WeakrefTest(IronPythonTestCase):
         # their referents (regardless of the callback). If either referent has been deleted, the 
         # references are equal only if the reference objects are the same object."
 
-        r1, r2 = self._create_weakrefs(C("a"), 2)
-        r3 = self._create_weakrefs(C("a"), 1)
+        r1, r2 = _create_weakrefs(self, C("a"), 2)
+        r3 = _create_weakrefs(self, C("a"), 1)
         self.assertTrue(r1 == r2)
         self.assertTrue(r1 == r3)
 

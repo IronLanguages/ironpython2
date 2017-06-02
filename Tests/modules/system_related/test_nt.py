@@ -21,7 +21,7 @@ import unittest
 
 from exceptions import IOError
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard, is_posix, skipUnlessIronPython, stderr_trapper
+from iptest import IronPythonTestCase, is_cli, is_netstandard, is_posix, run_test, skipUnlessIronPython, stderr_trapper
 
 if not is_posix:
     import nt

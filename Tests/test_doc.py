@@ -17,7 +17,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, path_modifier, skipUnlessIronPython
+from iptest import IronPythonTestCase, path_modifier, run_test, skipUnlessIronPython
 
 class DocTest(IronPythonTestCase):
 
@@ -236,6 +236,4 @@ class DocTest(IronPythonTestCase):
             self.delete_files(temp_filename, temp_filename_empty)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

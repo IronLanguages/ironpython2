@@ -413,9 +413,9 @@ class StrTest(IronPythonTestCase):
         lang,encoding = locale.getlocale()
 
         if is_cli:
-            locale.setlocale(locale.LC_ALL,"tr_TR")
+            locale.setlocale(locale.LC_ALL, "tr_TR")
         else:
-            locale.setlocale(locale.LC_ALL, "turkish")            
+            locale.setlocale(locale.LC_ALL, "turkish")
 
         if PERFECT_UNICODE_CASING:
             self.assertEqual(u"I".lower(),u"ı")

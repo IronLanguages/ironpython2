@@ -14,7 +14,8 @@ using IronPython.Runtime.Operations;
 
 namespace IronPythonTest.Cases {
     class CaseExecuter {
-        private static readonly String Executable = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "ipy.exe");
+        private static readonly string Executable = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "ipy.exe");
+        private static readonly string IRONPYTHONPATH = GetIronPythonPath();
 
         private ScriptEngine defaultEngine;
 
@@ -66,7 +67,7 @@ namespace IronPythonTest.Cases {
             this.defaultEngine = Python.CreateEngine(new Dictionary<string, object> {
                 {"Debug", false},
                 {"Frames", true},
-                {"FullFrames", true},
+                {"FullFrames", false},
                 {"RecursionLimit", 100}
             });
 
@@ -97,20 +98,12 @@ namespace IronPythonTest.Cases {
             return this.defaultEngine.GetService<ExceptionOperations>().FormatException(ex);
         }
 
-        private int GetEngineTest(TestInfo testcase) {
-            var engine = CreateEngine(testcase.Options);
-            var source = engine.CreateScriptSourceFromString(
-                testcase.Text, testcase.Path, SourceCodeKind.File);
-
-            return GetResult(engine, source);
-        }
-
-        private static string CreateIronPythonPath() {
-            var root = FindRoot();
-            if(!string.IsNullOrEmpty(root)) {
-                return root;
+        private static string GetIronPythonPath() {
+            var path = Path.Combine(FindRoot(), "Src", "StdLib", "Lib");
+            if (Directory.Exists(path)) {
+                return path;
             }
-            return string.Empty;            
+            return string.Empty;
         }
 
         private string ReplaceVariables(string input) {
@@ -121,9 +114,9 @@ namespace IronPythonTest.Cases {
 
             var result = input;
             var match = variableRegex.Match(input);
-            while(match.Success) {
+            while (match.Success) {
                 var variable = match.Groups[1].Value;
-                if(replacements.ContainsKey(variable)) {
+                if (replacements.ContainsKey(variable)) {
                     result = result.Replace(match.Groups[0].Value, replacements[variable]);
                 }
                 match = match.NextMatch();
@@ -132,15 +125,26 @@ namespace IronPythonTest.Cases {
             return result;
         }
 
+        private int GetEngineTest(TestInfo testcase) {
+            var engine = CreateEngine(testcase.Options);
+            var source = engine.CreateScriptSourceFromString(
+                testcase.Text, testcase.Path, SourceCodeKind.File);
+
+            return GetResult(engine, source);
+        }        
+
         private int GetProcessTest(TestInfo testcase) {
             int exitCode = -1;
             using (Process proc = new Process()) {
-                if(!string.IsNullOrEmpty(testcase.Options.WorkingDirectory)) {
+                proc.StartInfo.FileName = Executable;
+                proc.StartInfo.Arguments = string.Format("\"{0}\" {1}", testcase.Path, testcase.Options.Arguments);                
+                if (!string.IsNullOrEmpty(IRONPYTHONPATH)) {
+                    proc.StartInfo.EnvironmentVariables["IRONPYTHONPATH"] = IRONPYTHONPATH;
+                }
+
+                if (!string.IsNullOrEmpty(testcase.Options.WorkingDirectory)) {
                     proc.StartInfo.WorkingDirectory = ReplaceVariables(testcase.Options.WorkingDirectory);
                 }
-                proc.StartInfo.FileName = Executable;
-                proc.StartInfo.Arguments = string.Format("\"{0}\" {1}", testcase.Path, testcase.Options.Arguments);
-                proc.StartInfo.EnvironmentVariables.Add("IRONPYTHONPATH", CreateIronPythonPath());
                 proc.StartInfo.UseShellExecute = false;
                 proc.Start();
                 proc.WaitForExit();
@@ -157,6 +161,10 @@ namespace IronPythonTest.Cases {
         }
 
         private int GetResult(ScriptEngine engine, ScriptSource source) {
+            var path = Environment.GetEnvironmentVariable("IRONPYTHONPATH");
+            if(string.IsNullOrEmpty(path)) {
+                Environment.SetEnvironmentVariable("IRONPYTHONPATH", IRONPYTHONPATH);
+            }
             var scope = engine.CreateScope();
             engine.GetSysModule().SetVariable("argv", List.FromArrayNoCopy(new object[] { source.Path }));
             var compiledCode = source.Compile(new IronPython.Compiler.PythonCompilerOptions() { ModuleName = "__main__" });

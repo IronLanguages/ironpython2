@@ -22,12 +22,12 @@ from __future__ import division
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, path_modifier
+from iptest import IronPythonTestCase, is_cli, path_modifier, run_test
 
 assert_code = '''
 def CustomAssert(c):
     if not c: raise AssertionError("Assertion Failed")
-
+    
 '''
 
 code1  = assert_code + '''
@@ -156,7 +156,5 @@ class FutureTest(IronPythonTestCase):
         self.assertEqual( eval(compile("2/3", "<string>", "eval", 0, 1), {}), 0)
         self.assertEqual( eval(compile("2/3", "<string>", "eval", 0), {}), 2/3)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

@@ -15,6 +15,8 @@
 
 import unittest
 
+from iptest import run_test
+
 x = 123456      # global to possibly mislead the closures
 
 class ClosureTest(unittest.TestCase):
@@ -329,6 +331,4 @@ class ClosureTest(unittest.TestCase):
             exec "z = 7" in globals(), locals()
             self.assertEqual(z, 7)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

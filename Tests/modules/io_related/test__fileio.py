@@ -18,14 +18,15 @@ Tests for CPython's _fileio module.
 
 import os
 import sys
+import time
 import unittest
 
 from _io import FileIO
 
-#--GLOBALS---------------------------------------------------------------------
+from iptest import run_test
+
 TEMP_READINTO_NAME = "_fileio__FileIO_readinto%d.tmp"
 
-#--HELPERS---------------------------------------------------------------------
 def bytesio_helper():
     return (bytes(bytearray(b'')),
             bytes(bytearray(b'a')),
@@ -43,9 +44,9 @@ def fileio_helper():
     bytes_io_list = bytesio_helper()
     file_io_list  = []
     for i in xrange(len(bytes_io_list)):
-        f = FileIO(TEMP_READINTO_NAME % i, "w")
-        f.write(bytes_io_list[i])
-        f.close()
+        with FileIO(TEMP_READINTO_NAME % i, "w") as f:
+            f.write(bytes_io_list[i])
+
         file_io_list.append(FileIO(TEMP_READINTO_NAME % i, "r"))
     
     return file_io_list
@@ -437,10 +438,12 @@ class FileIOTest(unittest.TestCase):
             #cleanup
             for f in f_list: 
                 f.close()
+
             for i in xrange(len(f_list)):
-                os.remove(TEMP_READINTO_NAME % i)
+                try:
+                    os.remove(TEMP_READINTO_NAME % i)
+                except:
+                    pass
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

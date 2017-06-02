@@ -18,7 +18,7 @@ import unittest
 
 from time import clock
 
-from iptest import is_cli, is_cli64, is_mono
+from iptest import is_cli, is_cli64, is_mono, run_test, skipUnlessIronPython
 
 def evalLoop(code, N):
     for i in range(N):
@@ -83,7 +83,7 @@ t_list = [
         "def f():pass\nclass C:pass\nf()",
     ]
 
-@unittest.skipUnless(is_cli, 'IronPython specific test case')
+@skipUnlessIronPython()
 class MemoryTest(unittest.TestCase):
     def setUp(self):
         super(MemoryTest, self).setUp()
@@ -153,6 +153,4 @@ z = f(3)
         self.assertTrue(after-before < 10)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

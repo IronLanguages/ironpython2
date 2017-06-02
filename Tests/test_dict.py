@@ -19,10 +19,11 @@ x = dir(dict)
 x = dir(dict.fromkeys)
 
 import operator
+import os
 import unittest
 import sys
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard
+from iptest import IronPythonTestCase, is_cli, is_netstandard, path_modifier, source_root
 
 if is_netstandard: # TODO: revert this once System.SystemException is added to netstandard (https://github.com/IronLanguages/main/issues/1399)
     SystemError = System.InvalidOperationException
@@ -1152,10 +1153,11 @@ class DictTest(IronPythonTestCase):
         self.assertEqual(sys.Dict["1"], "b")
         del sys.Dict
 
-        import testpkg1
-        testpkg1.Dict = {"1": "c"}
-        self.assertEqual(testpkg1.Dict["1"], "c")
-        del testpkg1.Dict
+        with path_modifier(os.path.join(source_root(), 'Tests')):
+            import testpkg1
+            testpkg1.Dict = {"1": "c"}
+            self.assertEqual(testpkg1.Dict["1"], "c")
+            del testpkg1.Dict
 
     def test_dict_equality_lookup(self):
         """dictionaries check object equality before running normal equality"""

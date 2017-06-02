@@ -39,7 +39,7 @@ class FileUtil(object):
 
     def fullpath(self, path):
         if sys.platform == 'win32' and colon not in path:
-            return path_combine(os.getcwd(), path)
+            return os.path.join(os.getcwd(), path)
         elif sys.platform != 'win32':
             from System.IO.Path import GetFullPath
             return GetFullPath(path)
@@ -79,7 +79,7 @@ class FileUtil(object):
     def clean_directory(self, path, remove=False):
         for f in os.listdir(path):
             try: 
-                os.unlink(path_combine(path, f))
+                os.unlink(os.path.join(path, f))
             except: 
                 pass
         if remove:
@@ -121,26 +121,7 @@ class FileUtil(object):
 
         
 
-# # need consider .. and . later
-# def fullpath(path):
-#     if sys.platform == "win32" and colon not in path:
-#         return path_combine(os.getcwd(), path)
-#     elif sys.platform != "win32":
-#         from System.IO.Path import GetFullPath
-#         return GetFullPath(path)
-#     else: 
-#         return path
-
-# def path_combine(*paths):
-#     l = len(paths)
-#     p = ''
-#     for x in paths[:-1]:
-#         if len(x)==0 or x[-1] == separator:
-#             p += x 
-#         else: 
-#             p += x + separator
-#     return p + paths[-1]
-    
+   
 # def get_full_dir_name(path):
 #     """removes ~# from short file names"""
 #     if sys.platform == "win32": return path
