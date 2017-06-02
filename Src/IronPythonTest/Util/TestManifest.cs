@@ -87,5 +87,17 @@ namespace IronPythonTest.Util {
                 return this.manifest.GetBool(this.testName, "Tracing", false);
             }
         }
+
+        public string Arguments {
+            get {
+                return this.manifest.GetValue(this.testName, "Arguments", string.Empty);
+            }
+        }
+
+        public string WorkingDirectory {
+            get {
+                return this.manifest.GetValue(this.testName, "WorkingDirectory", string.Empty);
+            }
+        }
     }
 }

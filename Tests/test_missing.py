@@ -13,10 +13,11 @@
 #
 #####################################################################################
 
-from iptest.assert_util import *
 
+import unittest
 
-skiptest("win32")
+from iptest import is_cli, skipUnlessIronPython
+
 
 # set this flag to True to have the test trace progress
 trace = False
@@ -30,14 +31,15 @@ skipTypes =  [
 
 counter = 1
 
-import clr
-import System
-import System.IO as IO
-import System.Reflection as Reflection
-import System.Reflection.Emit as Emit
-import System.Runtime.InteropServices as Interop
-import System.Diagnostics as Diagnostics
-from System.Reflection.Emit import OpCodes
+if is_cli:
+    import clr
+    import System
+    import System.IO as IO
+    import System.Reflection as Reflection
+    import System.Reflection.Emit as Emit
+    import System.Runtime.InteropServices as Interop
+    import System.Diagnostics as Diagnostics
+    from System.Reflection.Emit import OpCodes
 
 def MakeArray(type, *values):
     a = System.Array.CreateInstance(clr.GetClrType(type), len(values))
@@ -235,14 +237,18 @@ def TestCalls(t):
         r = getattr(t, n)()
         if trace: print r
 
-# disabled the test for Orcas CLR bug (DDB#66718)
-@skip("orcas")
-def test_main():
-    path = IO.Path.GetTempPath()
-    ag = CreateAssemblyGenerator(IO.Path.Combine(path, "MissingTest.dll"), "MissingTest")
-    t = GenerateMethods(ag)
-    TestCalls(t)
-    
-    ag.Save()
 
-run_test(__name__)
+@skipUnlessIronPython()
+class MissingTest(unittest.TestCase):
+    def test_main(self):
+        path = IO.Path.GetTempPath()
+        ag = CreateAssemblyGenerator(IO.Path.Combine(path, "MissingTest.dll"), "MissingTest")
+        t = GenerateMethods(ag)
+        TestCalls(t)
+        
+        ag.Save()
+
+
+if __name__ == '__main__':
+    from test import test_support
+    test_support.run_unittest(__name__)

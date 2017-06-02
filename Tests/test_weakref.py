@@ -31,8 +31,7 @@
 
 import weakref
 
-from test import test_support
-from iptest import ipunittest
+from iptest import IronPythonTestCase, run_test
 
 class C(object):
     def __init__(self, value=0):
@@ -44,7 +43,7 @@ class C(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-class WeakrefTest(ipunittest.IronPythonTestCase):
+class WeakrefTest(IronPythonTestCase):
     def _create_weakrefs(self, o, count, cb = None):
         # Helper method to work around the (to me yet unexplicable) fact that
         # 'o = factory(); del o; force_gc();' does not lead to the collection of 'o'.
@@ -70,7 +69,7 @@ class WeakrefTest(ipunittest.IronPythonTestCase):
         # for reasons stated in create_weakrefs(), we cannot test on instance equality
         self.assertTrue(r().value == "a") 
 
-        self._force_gc()
+        self.force_gc()
 
         self.assertTrue(r() is None)
 
@@ -82,7 +81,7 @@ class WeakrefTest(ipunittest.IronPythonTestCase):
         r1, r2 = self._create_weakrefs(C("a"), 2)
         self.assertTrue(hash(r1) == hash("a"))
 
-        self._force_gc()
+        self.force_gc()
 
         self.assertTrue(r1() is None)
         self.assertTrue(r2() is None)
@@ -99,15 +98,12 @@ class WeakrefTest(ipunittest.IronPythonTestCase):
         self.assertTrue(r1 == r2)
         self.assertTrue(r1 == r3)
 
-        self._force_gc()
+        self.force_gc()
 
         self.assertTrue(r1() is None)
         self.assertTrue(r3() is None)
         self.assertTrue(r1 == r2)
         self.assertTrue(r1 != r3)
 
-def test_main():
-    test_support.run_unittest(WeakrefTest)
 
-if __name__ == '__main__':
-    test_main()
+run_test(__name__)

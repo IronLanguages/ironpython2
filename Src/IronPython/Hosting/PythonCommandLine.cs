@@ -291,7 +291,7 @@ namespace IronPython.Hosting {
         private void InitializeExtensionDLLs() {
             string dir = Path.Combine(PythonContext.InitialPrefix, "DLLs");
             if (Directory.Exists(dir)) {
-                foreach (string file in Directory.GetFiles(dir)) {
+                foreach (string file in Directory.EnumerateFiles(dir)) {
                     if (file.ToLower().EndsWith(".dll")) {
                         try {
                             ClrModule.AddReference(PythonContext.SharedContext, new FileInfo(file).Name);

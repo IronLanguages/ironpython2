@@ -60,4 +60,5 @@ class TestGH1387(unittest.TestCase):
         self.assertEqual(len(chunk), 2)
         
 if __name__ == '__main__':
-    unittest.main()
+    from test import test_support
+    test_support.run_unittest(__name__)

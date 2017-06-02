@@ -29,7 +29,7 @@ namespace IronPythonTest.Cases {
 
     class IronPythonCaseGenerator : CommonCaseGenerator<IronPythonCases> {
         protected override IEnumerable<TestInfo> GetTests() {
-            return Directory.GetFiles(Path.Combine("..", "..", "Tests"), "test_*.py")
+            return Directory.EnumerateFiles(Path.Combine("..", "..", "Tests"), "test_*.py", SearchOption.AllDirectories)
                 .Select(file => new TestInfo(Path.GetFullPath(file), this.manifest))
                 .OrderBy(testcase => testcase.Name);
         }
