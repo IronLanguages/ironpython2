@@ -22,7 +22,7 @@ import unittest
 
 from cStringIO import StringIO
 
-from iptest import IronPythonTestCase, is_cli, path_modifier
+from iptest import IronPythonTestCase, is_cli, path_modifier, run_test
 
 
 # We test IronPython's cPickle bytecode output against CPython's pickle.py
@@ -876,7 +876,6 @@ FROM_MOD_IN_SUBMOD = mod.KMod()
                         if sys.platform=="win32":
                             os.unlink(f_name + "c")
                     
-                    
                     for dir_name in [ _testdir_sub, _testdir]:
                         os.rmdir(dir_name)
                 except:
@@ -946,6 +945,4 @@ FROM_MOD_IN_SUBMOD = mod.KMod()
         import cPickle
         self.assertEqual(type(cPickle.loads(cPickle.dumps(d()))), d)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

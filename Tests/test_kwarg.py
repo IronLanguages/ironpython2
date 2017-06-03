@@ -478,17 +478,15 @@ class KwargTest(unittest.TestCase):
     def test_negTestFunc_testFunc_kw_dupArg(self):
         self.assertRaises(TypeError, testFunc_kw, '234', a='234')
 
+    @unittest.expectedFailure
     def test_negTestFunc_ObjectSubClass_testFunc_pw_kw_dupArg(self):
         o = ObjectSubClass()
-        try: o.testFunc_pw_kw(a='abc')
-        except TypeError: pass
-        else: self.assertUnreachable()
+        self.assertRaises(TypeError, o.testFunc_pw_kw, a='abc')
 
+    @unittest.expectedFailure
     def test_negTestFunc_ObjectSubClass_testFunc_kw_dupArg(self):
         o = ObjectSubClass()
-        try: o.testFunc_kw(a='abc')
-        except TypeError: pass
-        else: self.assertUnreachable()
+        self.assertRaises(TypeError, o.testFunc_kw, a='abc')
 
     def test_negTestFunc_ObjectSubClass_testFunc_pw_kw_2_dupArg(self):
         o = ObjectSubClass()

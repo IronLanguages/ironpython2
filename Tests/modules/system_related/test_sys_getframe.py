@@ -3,6 +3,57 @@ import unittest
 
 from iptest import IronPythonTestCase, is_cli, run_test
 
+def g(self):
+    y = 42
+    def f():
+        x = sys._getframe(1)
+        return x
+
+    self.assertEqual(f().f_locals['y'], 42)
+    self.assertTrue(f().f_builtins is f().f_globals['__builtins__'].__dict__)
+    self.assertEqual(f().f_locals['y'], 42)
+    self.assertEqual(f().f_exc_traceback, None)
+    self.assertEqual(f().f_exc_type, None)
+    self.assertEqual(f().f_restricted, False)
+    self.assertEqual(f().f_trace, None)
+
+    # replace __builtins__, func code should have the non-replaced value
+    global __builtins__
+    oldbuiltin = __builtins__
+    try:
+        __builtins__ = dict(__builtins__.__dict__)
+        def f():
+            x = sys._getframe(1)
+            return x
+        self.assertTrue(f().f_builtins is oldbuiltin.__dict__)
+    finally:
+        __builtins__ = oldbuiltin
+
+    def f():
+        x = sys._getframe()
+        return x
+
+    self.assertEqual(f().f_back.f_locals['y'], 42)
+
+    def f():
+        yield sys._getframe()
+    
+    frame = list(f())[0]
+    if is_cli:
+        # incompat, this works for us, but not CPython, not sure why.
+        self.assertEqual(frame.f_back.f_locals['y'], 42)
+    
+    # call through a built-in function
+    global gfres
+    class x(object):
+        def __cmp__(self, other):
+            global gfres
+            gfres = sys._getframe(1)
+            return -1
+            
+    cmp(x(), x())
+    self.assertEqual(gfres.f_locals['y'], 42)
+
 class SysGetFrameTest(IronPythonTestCase):
     def test_getframe(self):
         # This test requires -X:FullFrames, run it in separate instance of IronPython.
@@ -30,57 +81,7 @@ class SysGetFrameTest(IronPythonTestCase):
         # restore it back
         sys._getframe = _getframe
 
-        def g():
-            y = 42
-            def f():
-                x = sys._getframe(1)
-                return x
-
-            self.assertEqual(f().f_locals['y'], 42)
-            self.assertTrue(f().f_builtins is f().f_globals['__builtins__'].__dict__)
-            self.assertEqual(f().f_locals['y'], 42)
-            self.assertEqual(f().f_exc_traceback, None)
-            self.assertEqual(f().f_exc_type, None)
-            self.assertEqual(f().f_restricted, False)
-            self.assertEqual(f().f_trace, None)
-
-            # replace __builtins__, func code should have the non-replaced value
-            global __builtins__
-            oldbuiltin = __builtins__
-            try:
-                __builtins__ = dict(__builtins__.__dict__)
-                def f():
-                    x = sys._getframe(1)
-                    return x
-                self.assertTrue(f().f_builtins is oldbuiltin.__dict__)
-            finally:
-                __builtins__ = oldbuiltin
-
-            def f():
-                x = sys._getframe()
-                return x
-
-            self.assertEqual(f().f_back.f_locals['y'], 42)
-
-            def f():
-                yield sys._getframe()
-            
-            frame = list(f())[0]
-            if is_cli:
-                # incompat, this works for us, but not CPython, not sure why.
-                self.assertEqual(frame.f_back.f_locals['y'], 42)
-            
-            # call through a built-in function
-            global gfres
-            class x(object):
-                def __cmp__(self, other):
-                    global gfres
-                    gfres = sys._getframe(1)
-                    return -1
-                    
-            cmp(x(), x())
-            self.assertEqual(gfres.f_locals['y'], 42)
-        g()
+        g(self)
         
         def f():
             x = 42

@@ -15,6 +15,8 @@
 
 import unittest
 
+from iptest import run_test
+
 class SetCompTest(unittest.TestCase):
 
     def test_set_comp(self):
@@ -109,6 +111,5 @@ class SetCompTest(unittest.TestCase):
         r = {eval(lambda i: i+v, k+v) for k in xrange(2)}
         self.assertEqual(r, set([4, 5]))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+
+run_test(__name__)

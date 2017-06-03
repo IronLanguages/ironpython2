@@ -17,7 +17,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_netstandard, path_modifier, skipUnlessIronPython
 
 class IsInstanceTest(IronPythonTestCase):
 
@@ -425,7 +425,8 @@ class IsInstanceTest(IronPythonTestCase):
         self.assertEqual(str(sys), "<module 'sys' (built-in)>")
         
         import time
-        import toimport
+        with path_modifier(self.test_dir):
+            import toimport
         
         m = [type(sys), type(time), type(toimport)]
         for i in m:
