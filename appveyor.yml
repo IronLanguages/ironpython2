@@ -129,22 +129,20 @@ test_script:
 
 # on successful build
 on_success:
-  # upload test results to AppVeyor
-  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\Release\all-result.xml))
+  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", "bin\Release\all-result.xml")
 
 # on build failure
 on_failure:
-  # upload test results to AppVeyor
-  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\bin\Release\all-result.xml))
+  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", "bin\Release\all-result.xml")
 
 # after build failure or success
 #on_finish:
 #  - do something
-  
+
 #---------------------------------#
 #         notifications           #
 #---------------------------------#
-  
+
 notifications:
 
   # Email
