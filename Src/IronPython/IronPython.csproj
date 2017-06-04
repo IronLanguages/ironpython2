@@ -433,9 +433,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Lib\site.py">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Lib\iptest\ipunittest.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

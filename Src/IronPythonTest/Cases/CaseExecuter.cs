@@ -130,14 +130,14 @@ namespace IronPythonTest.Cases {
             var source = engine.CreateScriptSourceFromString(
                 testcase.Text, testcase.Path, SourceCodeKind.File);
 
-            return GetResult(engine, source);
+            return GetResult(engine, source, testcase.Options.WorkingDirectory);
         }        
 
         private int GetProcessTest(TestInfo testcase) {
             int exitCode = -1;
             using (Process proc = new Process()) {
                 proc.StartInfo.FileName = Executable;
-                proc.StartInfo.Arguments = string.Format("\"{0}\" {1}", testcase.Path, testcase.Options.Arguments);                
+                proc.StartInfo.Arguments = string.Format("{0} \"{1}\"", testcase.Options.Arguments, testcase.Path);
                 if (!string.IsNullOrEmpty(IRONPYTHONPATH)) {
                     proc.StartInfo.EnvironmentVariables["IRONPYTHONPATH"] = IRONPYTHONPATH;
                 }
@@ -157,23 +157,34 @@ namespace IronPythonTest.Cases {
             var source = this.defaultEngine.CreateScriptSourceFromString(
                 testcase.Text, testcase.Path, SourceCodeKind.File);
 
-            return GetResult(this.defaultEngine, source);
+            return GetResult(this.defaultEngine, source, testcase.Options.WorkingDirectory);
         }
 
-        private int GetResult(ScriptEngine engine, ScriptSource source) {
+        private int GetResult(ScriptEngine engine, ScriptSource source, string workingDir) {
+            int res = 0;
             var path = Environment.GetEnvironmentVariable("IRONPYTHONPATH");
             if(string.IsNullOrEmpty(path)) {
                 Environment.SetEnvironmentVariable("IRONPYTHONPATH", IRONPYTHONPATH);
             }
-            var scope = engine.CreateScope();
-            engine.GetSysModule().SetVariable("argv", List.FromArrayNoCopy(new object[] { source.Path }));
-            var compiledCode = source.Compile(new IronPython.Compiler.PythonCompilerOptions() { ModuleName = "__main__" });
-            int res = 0;
+
+            var cwd = Environment.CurrentDirectory;
+            if(!string.IsNullOrWhiteSpace(workingDir)) {
+                Environment.CurrentDirectory = ReplaceVariables(workingDir);
+            }
+
             try {
-                res = engine.Operations.ConvertTo<int>(compiledCode.Execute(scope) ?? 0);
-            } catch(SystemExitException ex) {
-                object otherCode;
-                res = ex.GetExitCode(out otherCode);
+                var scope = engine.CreateScope();
+                engine.GetSysModule().SetVariable("argv", List.FromArrayNoCopy(new object[] { source.Path }));
+                var compiledCode = source.Compile(new IronPython.Compiler.PythonCompilerOptions() { ModuleName = "__main__" });
+
+                try {
+                    res = engine.Operations.ConvertTo<int>(compiledCode.Execute(scope) ?? 0);
+                } catch (SystemExitException ex) {
+                    object otherCode;
+                    res = ex.GetExitCode(out otherCode);
+                }
+            } finally {
+                Environment.CurrentDirectory = cwd;
             }
             return res;
         }

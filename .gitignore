@@ -30,20 +30,51 @@ CurrentVersion.Generated.cs
 
 TestResult.xml
 Solutions/TestResults/
-Runtime/Samples/Hosting/Scenarios/bin/
+
 
 # TODO - testing scripts should not create these files
-External.LCA_RESTRICTED/Languages/IronPython/27/Lib/@test_*
+Src/StdLib/Lib/@test_*
 
 # created by CPython tests
-External.LCA_RESTRICTED/Languages/IronPython/27/Lib/lib2to3/Grammar*.pickle
-External.LCA_RESTRICTED/Languages/IronPython/27/Lib/lib2to3/PatternGrammar*.pickle
+Src/StdLib/Lib/lib2to3/Grammar*.pickle
+Src/StdLib/Lib/lib2to3/PatternGrammar*.pickle
 
 # created by side by side tests
-Languages/IronPython/Tests/compat/*.log
-Languages/IronPython/Tests/compat/*.pyc
-Languages/IronPython/Tests/compat/*/*.pyc
-Languages/IronPython/Tests/compat/sbs_library.dll
-Languages/IronPython/Tests/compat/tempfile.txt
-Languages/IronPython/Tests/Tools/stdmodules.py.stdout.log
-Languages/IronPython/Tests/test_data.gz
+Tests/compat/*.log
+Tests/compat/*.pyc
+Tests/compat/*/*.pyc
+Tests/compat/sbs_library.dll
+Tests/compat/tempfile.txt
+Tests/Tools/stdmodules.py.stdout.log
+Tests/test_data.gz
+
+# created by tests
+abc.txt
+Src/StdLib/Lib/@test_*
+Src/StdLib/Lib/lib2to3/Grammar2.9.9.alpha.0.pickle
+Src/StdLib/Lib/lib2to3/PatternGrammar2.9.9.alpha.0.pickle
+Tests/ImportTestDir/
+Tests/cp15803/
+Tests/InheritanceTypes.dll
+Tests/OutterDir/
+Tests/ImpTest/
+Tests/another.py
+Tests/cached_type_dll.dll
+Tests/cp7007/
+Tests/finaltest.dll
+Tests/foo
+Tests/imfpstart.tpy
+Tests/impcp13736.py
+Tests/impmodfrmpkg/
+Tests/onlyread.tmp
+Tests/onlywrite.tmp
+Tests/tempFile1.tpy
+Tests/temp_syspath_none.py
+Tests/test.dll
+Tests/test.pyil
+Tests/test.xaml
+Tests/testfile.tmp
+Tests/testilcode.dll
+Tests/the_dir/
+Tests/vbproptest0.*.dll
+tmp/
