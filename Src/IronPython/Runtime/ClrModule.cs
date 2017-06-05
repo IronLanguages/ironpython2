@@ -58,6 +58,12 @@ namespace IronPython.Runtime {
         public static readonly bool IsNetStandard = false;
 #endif
 
+#if DEBUG
+        public static readonly bool IsDebug = true;
+#else
+        public static readonly bool IsDebug = false;
+#endif
+
         private static int _isMono = -1;
         public static bool IsMono {
             get {

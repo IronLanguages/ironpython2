@@ -18,7 +18,14 @@ import re
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_posix, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_posix, run_test, skipUnlessIronPython
+
+if is_cli:
+    import clr
+else:
+    # this in only so CPython does choke on the skipUnless down below
+    class clr(object):
+        IsDebug = False
 
 @unittest.skipIf(is_posix, 'Relies on batchfiles')
 @skipUnlessIronPython()
@@ -46,8 +53,6 @@ class StdConsoleTest(IronPythonTestCase):
         with open(self.batfile, "w") as f:
             f.write("@" + sys.executable + " >" + self.tmpfile + " 2>&1 %*\n")
 
-
-    
     # Runs the console with the given tuple of arguments and verifies that the output and exit code are as
     # specified. The expected_output argument can be specified in various ways:
     #   None        : No output comparison is performed
@@ -265,9 +270,9 @@ class StdConsoleTest(IronPythonTestCase):
         self.TestCommandLine(("-X:Interpret", "-c", "eval('2+2')"), "")
         self.TestCommandLine(("-X:Interpret", "-c", "x = 3; eval('x+2')"), "")
 
-    @unittest.skipIf(sys.flags.optimize, 'Test can only run in debug mode')
+    @unittest.skipUnless(clr.IsDebug, 'Test can only run in debug mode')
     def test_X_TrackPerformance(self):
-        """Test -X:TrackPerformance"""        
+        """Test -X:TrackPerformance"""
         self.TestCommandLine(("-X:TrackPerformance", "-c", "2+2"), "")
 
     def test_u(self):

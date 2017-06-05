@@ -931,18 +931,23 @@ finally:
         self.assertEqual(x.__dict__, {'a' : 3, 'b' : 2, 'c' : 4})
 
     def test_deprecated_string_exception(self):
-        import warnings
-        with warnings.catch_warnings(record=True) as w:
-            try:
-                raise 'Error'
-            except:
-                pass
-        
         try:
             raise 'foo'
         except TypeError, e:
             print e.message
-    
+            # TODO: re-enable this when https://github.com/IronLanguages/ironpython2/issues/10 is fixed
+            # self.assertEqual(e.message, 'exceptions must be old-style classes or derived from BaseException, not str')
+
+        class SomeClass(object):
+            pass
+
+        try:
+            raise SomeClass()
+        except TypeError, e:
+            print e.message
+            # TODO: re-enable this when https://github.com/IronLanguages/ironpython2/issues/10 is fixed
+            # self.assertEqual(e.message, 'exceptions must be old-style classes or derived from BaseException, not SomeClass')
+
 
     def test_nested_try(self):
         global l
