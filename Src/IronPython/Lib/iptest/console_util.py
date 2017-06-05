@@ -20,7 +20,7 @@ Its purpose is to enable testing behaviour of the top-level console,
 when that differs from behaviour while importing a module and executing
 its statements.
 """
-from test_env import is_netstandard
+from test_env import is_netstandard, is_posix
 if is_netstandard:
     import clr
     clr.AddReference("System.Diagnostics.Process")
@@ -135,6 +135,12 @@ console for testing purposes, and direct input to and from the instance.
     def End(self):
         if 'writer' in dir(self) and 'Close' in dir(self.writer):
             self.writer.Close()
+
+        try:
+            if not self.proc.HasExited:
+                self.proc.Kill()
+        except:
+            print 'Leaked ipy process could not kill!'
     
     # Functions for the remote console
     

@@ -19,20 +19,21 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_netstandard, run_test, skipUnlessIronPython
 
-# import Microsoft.Scripting.Hosting
-# from Microsoft.Scripting import Severity, SourceCodeKind, SourceSpan, SourceLocation
-# from Microsoft.Scripting.Hosting import ErrorListener, ScriptSource, ScriptRuntime
-# from IronPython.Hosting import Python
+if is_cli:
+    import clr
+    if not is_netstandard:
+        clr.AddReference("System.Core")
+    clr.AddReference("Microsoft.Scripting")
 
 @skipUnlessIronPython()
 class ErrorListenerTest(IronPythonTestCase):
     def setUp(self):
         super(ErrorListenerTest, self).setUp()
-        from Microsoft.Scripting import Severity, SourceLocation
         self.load_iron_python_test()
 
+        from Microsoft.Scripting import Severity, SourceLocation
         from IronPython.Hosting import Python
         self.engine = Python.CreateEngine()
 
@@ -186,8 +187,6 @@ def foo():
     global a"""
         self.assertNotEqual(expected, self.compile_file(code))
 
-    # this needs to be debugged...
-    @unittest.expectedFailure
     def test_all_together(self):
         expected = [
             ('cannot assign to None', 'None', 80, self.FatalError),

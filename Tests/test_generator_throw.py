@@ -21,7 +21,7 @@ import gc
 import sys
 import unittest
 
-from iptest import run_test
+from iptest import is_cli, run_test
 
 # Declare some dummy exceptions to throw
 
@@ -102,15 +102,13 @@ class GeneratorThrowTest(unittest.TestCase):
         nested()
         gc.collect()
         # in controlled environment like this, this is ok to expect finalizer to run
-        # however, when gc happens at random, and finalizer tries to continue execution
+        # however, when gc happenus at random, and finalizer tries to continue execution
         # of generator, the state of generator and generator frame is non
         # deterministic
 
         # self.assertEqual(l,[1]) # finally should have execute now.
 
 
-    #not sure why this is failing when it's no in the global scope
-    @unittest.expectedFailure
     def test_yield_lambda(self):
         """
         Yield can appear in lambda expressions (or any function body).
@@ -118,16 +116,15 @@ class GeneratorThrowTest(unittest.TestCase):
         returning it.
         """
 
-        def test(arg):
-            return (3 + (yield arg), (yield arg * 2))
+        f = lambda x: (3 + (yield x), (yield x * 2))
 
-        g = test(10)
+        g = f(10)
         self.assertEqual(g.next(), 10)
         self.assertEqual(g.send(9), 10 * 2)
-        if is_cpython:  # http://ironpython.codeplex.com/workitem/28219
-            self.assertRaises(StopIteration, g.send, 5)
-        else:
+        if is_cli:  # https://github.com/IronLanguages/main/issues/864
             self.assertEqual(g.send(5), (3 + 9, 5))
+        else:
+            self.assertRaises(StopIteration, g.send, 5)
 
 
     def test_yield_old_lambda(self):

@@ -105,10 +105,9 @@ class StdConsoleTest(IronPythonTestCase):
         
         #Verify basic behavior
         self.assertEqual("4", ipi.ExecuteLine("2+2"))
-        
         ipi.End()
 
-    
+
     def TestScript(self, commandLineArgs, script, expected_output, expected_exitcode = 0):
         scriptFileName = "script_" + str(hash(script)) + ".py"
         tmpscript = os.path.join(self.tmpdir, scriptFileName)
@@ -149,7 +148,6 @@ class StdConsoleTest(IronPythonTestCase):
         self.TestCommandLine(("-c", "import sys; sys.exit(123)"), "", 123)
         self.TestCommandLine(("-c", "import sys; print sys.argv", "foo", "bar", "baz"), "['-c', 'foo', 'bar', 'baz']\n")
         self.TestCommandLine(("-c",), "Argument expected for the -c option.\n", 1)
-
 
     def test_S(self):
         """Test the -S (suppress site initialization) option."""
@@ -200,7 +198,6 @@ class StdConsoleTest(IronPythonTestCase):
         foo_doc = "def foo():\n\t'OK'\nprint foo.__doc__\n"
         self.TestScript((),       foo_doc, "OK\n")
         self.TestScript(("-OO",), foo_doc, "None\n")
-
 
     def test_t(self):
         """Test the -t and -tt (warnings/errors on inconsistent tab usage) options."""
@@ -306,34 +303,33 @@ class StdConsoleTest(IronPythonTestCase):
         self.TestCommandLine(("-X:MTA", "-c", "print 'OK'"), "OK\n")
         self.TestInteractive("-X:MTA")
 
-    @unittest.expectedFailure
     def test_Q(self):
         """Test -Q"""
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3/2.0"), """<string>:1: DeprecationWarning: classic float division\n1.5\n""")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3/2.0"), """-c:1: DeprecationWarning: classic float division\n1.5\n""")
         self.TestCommandLine(("-Q", "warn", "-c", "print 3/2.0"), "1.5\n")
         self.TestCommandLine(("-Q", "warn", "-c", "print 3j/2.0"), "1.5j\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3/2.0"), "<string>:1: DeprecationWarning: classic float division\n1.5\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3L/2.0"), "<string>:1: DeprecationWarning: classic float division\n1.5\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3.0/2L"), "<string>:1: DeprecationWarning: classic float division\n1.5\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3j/2.0"), "<string>:1: DeprecationWarning: classic complex division\n1.5j\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3j/2"), "<string>:1: DeprecationWarning: classic complex division\n1.5j\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3j/2L"), "<string>:1: DeprecationWarning: classic complex division\n1.5j\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3.0/2j"), "<string>:1: DeprecationWarning: classic complex division\n-1.5j\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3/2j"), "<string>:1: DeprecationWarning: classic complex division\n-1.5j\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3L/2j"), "<string>:1: DeprecationWarning: classic complex division\n-1.5j\n")
-        self.TestCommandLine(("-Qwarn", "-c", "print 3/2L"), "<string>:1: DeprecationWarning: classic long division\n1\n")
-        self.TestCommandLine(("-Qwarnall", "-c", "print 3/2L"), "<string>:1: DeprecationWarning: classic long division\n1\n")
-        self.TestCommandLine(("-Qwarn", "-c", "print 3L/2"), "<string>:1: DeprecationWarning: classic long division\n1\n")
-        self.TestCommandLine(("-Qwarnall", "-c", "print 3L/2"), "<string>:1: DeprecationWarning: classic long division\n1\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3/2.0"), "-c:1: DeprecationWarning: classic float division\n1.5\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3L/2.0"), "-c:1: DeprecationWarning: classic float division\n1.5\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3.0/2L"), "-c:1: DeprecationWarning: classic float division\n1.5\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3j/2.0"), "-c:1: DeprecationWarning: classic complex division\n1.5j\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3j/2"), "-c:1: DeprecationWarning: classic complex division\n1.5j\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3j/2L"), "-c:1: DeprecationWarning: classic complex division\n1.5j\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3.0/2j"), "-c:1: DeprecationWarning: classic complex division\n-1.5j\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3/2j"), "-c:1: DeprecationWarning: classic complex division\n-1.5j\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3L/2j"), "-c:1: DeprecationWarning: classic complex division\n-1.5j\n")
+        self.TestCommandLine(("-Qwarn", "-c", "print 3/2L"), "-c:1: DeprecationWarning: classic long division\n1\n")
+        self.TestCommandLine(("-Qwarnall", "-c", "print 3/2L"), "-c:1: DeprecationWarning: classic long division\n1\n")
+        self.TestCommandLine(("-Qwarn", "-c", "print 3L/2"), "-c:1: DeprecationWarning: classic long division\n1\n")
+        self.TestCommandLine(("-Qwarnall", "-c", "print 3L/2"), "-c:1: DeprecationWarning: classic long division\n1\n")
 
         self.TestCommandLine(("-Qnew", "-c", "print 3/2"), "1.5\n")
         self.TestCommandLine(("-Qold", "-c", "print 3/2"), "1\n")
-        self.TestCommandLine(("-Qwarn", "-c", "print 3/2"), "<string>:1: DeprecationWarning: classic int division\n1\n")
-        self.TestCommandLine(("-Qwarnall", "-c", "print 3/2"), "<string>:1: DeprecationWarning: classic int division\n1\n")
+        self.TestCommandLine(("-Qwarn", "-c", "print 3/2"), "-c:1: DeprecationWarning: classic int division\n1\n")
+        self.TestCommandLine(("-Qwarnall", "-c", "print 3/2"), "-c:1: DeprecationWarning: classic int division\n1\n")
         self.TestCommandLine(("-Q", "new", "-c", "print 3/2"), "1.5\n")
         self.TestCommandLine(("-Q", "old", "-c", "print 3/2"), "1\n")
-        self.TestCommandLine(("-Q", "warn", "-c", "print 3/2"), "<string>:1: DeprecationWarning: classic int division\n1\n")
-        self.TestCommandLine(("-Q", "warnall", "-c", "print 3/2"), "<string>:1: DeprecationWarning: classic int division\n1\n")
+        self.TestCommandLine(("-Q", "warn", "-c", "print 3/2"), "-c:1: DeprecationWarning: classic int division\n1\n")
+        self.TestCommandLine(("-Q", "warnall", "-c", "print 3/2"), "-c:1: DeprecationWarning: classic int division\n1\n")
 
     def test_doc(self):
         self.TestCommandLine(("", "-c", "print __doc__"), "None\n", 0)
@@ -354,8 +350,9 @@ AssertionError
         i.reader = i.proc.StandardOutput
         x = i.EatToPrompt()
         self.assertTrue(x.find('\r\r\n') == -1)
+        i.End()
 
-    #@disabled("When run in a batch mode, the stdout/stderr/stdin are redirected")
+    #TODO: haven't seen this issue during testing - @disabled("When run in a batch mode, the stdout/stderr/stdin are redirected")
     def test_isatty(self):
         # cp33123
         # this test assumes to be run from cmd.exe without redirecting stdout/stderr/stdin
