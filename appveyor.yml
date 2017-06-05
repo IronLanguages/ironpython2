@@ -58,6 +58,7 @@ configuration: Release
 before_build:
   - git submodule update --init --recursive
   - ps: $xml = [xml] (Get-Content CurrentVersion.props); $major = $xml.Project.PropertyGroup.MajorVersion; $minor = $xml.Project.PropertyGroup.MinorVersion; $micro = $xml.Project.PropertyGroup.MicroVersion; $serial = $xml.Project.PropertyGroup.ReleaseSerial; Update-AppveyorBuild -Version "$($major).$($minor).$($micro).$($serial)-$($env:APPVEYOR_BUILD_NUMBER)".replace(" ","")
+  - ps: ps
 
 # scripts to run *after* solution is built and *before* automatic packaging occurs (web apps, NuGet packages, Azure Cloud Services)
 before_package:
@@ -78,9 +79,8 @@ test_script:
   - .\make.cmd test-all-release
 
 # to run custom scripts after tests
-#after_test:
-#  - make package-release
-#  - ps: Get-ChildItem -recurse .\Packages\Release\* -Include *.zip,*.msi | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+after_test:
+  - ps: ls bin\Release\all-result.xml
 
 #---------------------------------#
 #      artifacts configuration    #
@@ -127,17 +127,16 @@ test_script:
 #        global handlers          #
 #---------------------------------#
 
-# on successful build
-on_success:
-  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", "bin\Release\all-result.xml")
-
-# on build failure
 on_failure:
-  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", "bin\Release\all-result.xml")
+  - ps: Write-Host "Uploading test results"
+  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", ".\bin\Release\all-result.xml")
+  - ps: Write-Host "Done uploading test results"
 
-# after build failure or success
-#on_finish:
-#  - do something
+on_success:
+  - ps: Write-Host "Uploading test results"
+  - ps: $wc = New-Object 'System.Net.WebClient'; $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", ".\bin\Release\all-result.xml")
+  - ps: Write-Host "Done uploading test results"
+
 
 #---------------------------------#
 #         notifications           #
