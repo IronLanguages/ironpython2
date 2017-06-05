@@ -821,7 +821,7 @@ class FileTest(IronPythonTestCase):
                         lambda: file(name = 'some_test_file.txt', mode = 'w', buffering=x))
 
     def test_open_with_BOM(self):
-        # https://github.com/IronLanguages/main/issues/1088
+        """https://github.com/IronLanguages/main/issues/1088"""
         fileName = os.path.join(self.test_dir, "file_without_BOM.txt") 
         with open(fileName, "r") as f:
             if is_posix: self.assertEqual(f.read(), "\x42\xc3\x93\x4d\x0d\x0a")
