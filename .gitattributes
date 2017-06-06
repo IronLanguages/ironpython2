@@ -20,8 +20,8 @@
 *.rbproj text eol=crlf
 *.vcxproj text eol=crlf
 *.vdproj text eol=crlf
-Tests/file_with_BOM.txt eol=crlf
-Tests/file_without_BOM.txt eol=crlf
+Tests/file_with_BOM.txt text eol=crlf
+Tests/file_without_BOM.txt text eol=crlf
 
 # Declare files that will always have LF line endings on checkout.
 *.sh text eol=lf
