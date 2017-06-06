@@ -102,7 +102,7 @@ class GeneratorThrowTest(unittest.TestCase):
         nested()
         gc.collect()
         # in controlled environment like this, this is ok to expect finalizer to run
-        # however, when gc happenus at random, and finalizer tries to continue execution
+        # however, when gc happens at random, and finalizer tries to continue execution
         # of generator, the state of generator and generator frame is non
         # deterministic
 

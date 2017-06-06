@@ -27,6 +27,28 @@ else:
     class clr(object):
         IsDebug = False
 
+class IronPythonVariableContext(object):
+    def __init__(self, variable, value, sep=os.pathsep, prepend=False):
+        from System import Environment
+        self._variable = variable
+        self._value = value
+        self._prepend = prepend
+        self._sep = sep
+        self._oldval = Environment.GetEnvironmentVariable(self._variable)
+        
+    def __enter__(self):
+        from System import Environment
+        if self._prepend:
+            Environment.SetEnvironmentVariable(self._variable, "%s%s%s" % (self._value, self._sep, self._oldval))
+        else:
+            Environment.SetEnvironmentVariable(self._variable, self._value)
+
+    def __exit__(self, *args):
+        from System import Environment
+        if self._oldval:
+            Environment.SetEnvironmentVariable(self._variable, self._oldval)
+
+
 @unittest.skipIf(is_posix, 'Relies on batchfiles')
 @skipUnlessIronPython()
 class StdConsoleTest(IronPythonTestCase):
@@ -39,7 +61,7 @@ class StdConsoleTest(IronPythonTestCase):
         # This is relative to working directory so the path related tests (e.g.'print __name__')
         # return predictable results.
 
-        self.tmpdir = "tmp"
+        self.tmpdir = "tmp" #os.path.join(self.temp_dir, "tmp")
         if not os.path.exists(self.tmpdir):
             os.mkdir(self.tmpdir)
 
@@ -164,35 +186,29 @@ class StdConsoleTest(IronPythonTestCase):
         with open(os.path.join(self.tmpdir, "site.py"), "w") as f:
             f.write("import sys\nsys.foo = 123\n")
         
-        Environment.SetEnvironmentVariable("IRONPYTHONPATH", self.tmpdir)
-        
-        # Verify that the file gets loaded by default.
-        self.TestCommandLine(("-c", "import sys; print sys.foo"), "123\n")
-        
-        # CP778 - verify 'site' does not show up in dir()
-        self.TestCommandLine(("-c", "print 'site' in dir()"), "False\n")
-        
-        # Verify that Lib remains in sys.path.
-        self.TestCommandLine(("-S", "-c", "import os ; import sys; print str(os.path.join(sys.exec_prefix, 'Lib')).lower() in [x.lower() for x in sys.path]"), "True\n")
-        
-        # Now check that we can suppress this with -S.
-        self.TestCommandLine(("-S", "-c", "import sys; print sys.foo"), ("lastline", "AttributeError: 'module' object has no attribute 'foo'\n"), 1)
+        with IronPythonVariableContext("IRONPYTHONPATH", self.tmpdir, prepend=True):
+            print Environment.GetEnvironmentVariable("IRONPYTHONPATH")
+            # Verify that the file gets loaded by default.
+            self.TestCommandLine(("-c", "import sys; print sys.foo"), "123\n")
+            
+            # CP778 - verify 'site' does not show up in dir()
+            self.TestCommandLine(("-c", "print 'site' in dir()"), "False\n")
+            
+            # Verify that Lib remains in sys.path.
+            self.TestCommandLine(("-S", "-c", "import os ; import sys; print str(os.path.join(sys.exec_prefix, 'Lib')).lower() in [x.lower() for x in sys.path]"), "True\n")
+            
+            # Now check that we can suppress this with -S.
+            self.TestCommandLine(("-S", "-c", "import sys; print sys.foo"), ("lastline", "AttributeError: 'module' object has no attribute 'foo'\n"), 1)
 
     def test_cp24720(self):
         from System import Environment
-        with open(os.path.join(self.temporary_dir, "site.py"), "w") as f:
+        with open(os.path.join(self.tmpdir, "site.py"), "w") as f:
             f.write("import sys\nsys.foo = 456\n")
         
-        orig_ipy_path = Environment.GetEnvironmentVariable("IRONPYTHONPATH")
-        
-        try:
-            Environment.SetEnvironmentVariable("IRONPYTHONPATH", "")
-            self.TestCommandLine(("-c", "import site;import sys;print hasattr(sys, 'foo')"), "False\n")
-            Environment.SetEnvironmentVariable("IRONPYTHONPATH", self.temporary_dir)
+        self.TestCommandLine(("-c", "import site;import sys;print hasattr(sys, 'foo')"), "False\n")
+        with IronPythonVariableContext("IRONPYTHONPATH", self.tmpdir, prepend=True):
             self.TestCommandLine(("-c", "import site;import sys;print hasattr(sys, 'foo')"), "True\n")
-        finally:
-            Environment.SetEnvironmentVariable("IRONPYTHONPATH", orig_ipy_path)
-            os.remove(os.path.join(self.temporary_dir, "site.py"))
+        os.remove(os.path.join(self.tmpdir, "site.py"))
 
     def test_V(self):
         """Test the -V (print version and exit) option."""
@@ -237,30 +253,29 @@ class StdConsoleTest(IronPythonTestCase):
         with open(tmpscript, "w") as f:
             f.write("from System import Environment\nprint 'Boo!'\nEnvironment.Exit(27)\n")
         
-        Environment.SetEnvironmentVariable("IRONPYTHONSTARTUP", tmpscript)
-        self.TestCommandLine((), None, 27)
+        with IronPythonVariableContext("IRONPYTHONSTARTUP", tmpscript):
+            self.TestCommandLine((), None, 27)
+            
+            tmpscript2 = os.path.join(self.tmpdir, "something.py")
+            with open(tmpscript2, "w") as f:
+                f.write("print 2+2\n")
+            
+            self.TestCommandLine(('-E', tmpscript2), "4\n")
+            
+            tmpscript3 = os.path.join(self.tmpdir, "startupdie.py")
+            with open(tmpscript3, "w") as f:
+                f.write("import sys\nprint 'Boo!'\nsys.exit(42)\n")
         
-        tmpscript2 = os.path.join(self.tmpdir, "something.py")
-        with open(tmpscript2, "w") as f:
-            f.write("print 2+2\n")
+        with IronPythonVariableContext("IRONPYTHONSTARTUP", tmpscript3):
+            self.TestCommandLine((), None, 42)
         
-        self.TestCommandLine(('-E', tmpscript2), "4\n")
-        
-        tmpscript3 = os.path.join(self.tmpdir, "startupdie.py")
-        with open(tmpscript3, "w") as f:
-            f.write("import sys\nprint 'Boo!'\nsys.exit(42)\n")
-        
-        Environment.SetEnvironmentVariable("IRONPYTHONSTARTUP", tmpscript3)
-        self.TestCommandLine((), None, 42)
-        
-        Environment.SetEnvironmentVariable("IRONPYTHONSTARTUP", "")
         os.unlink(tmpscript)
         os.unlink(tmpscript2)
 
     def test_W(self):
         """Test -W (set warning filters) option."""
         self.TestCommandLine(("-c", "import sys; print sys.warnoptions"), "[]\n")
-        self.TestCommandLine(("-W", "foo", "-c", "import sys; print sys.warnoptions"), "['foo']\n")
+        self.TestCommandLine(("-W", "foo", "-c", "import sys; print sys.warnoptions"), "Invalid -W option ignored: invalid action: 'foo'\n['foo']\n")
         self.TestCommandLine(("-W", "always", "-W", "once", "-c", "import sys; print sys.warnoptions"), "['always', 'once']\n")
         self.TestCommandLine(("-W",), "Argument expected for the -W option.\n", 1)
 
@@ -401,10 +416,10 @@ def t():
 t()
 """
         expected = r"""Traceback (most recent call last):
-  File "tmp\script_cp34849.py", line 7, in t
-  File "tmp\script_cp34849.py", line 4, in f1
+  File "%s", line 7, in t
+  File "%s", line 4, in f1
 Exception: test exception
-"""
+""" % (os.path.join(self.tmpdir, "script_cp34849.py"), os.path.join(self.tmpdir, "script_cp34849.py"))
 
         scriptFileName = os.path.join(self.tmpdir, "script_cp34849.py")
         with open(scriptFileName, "w") as f:
