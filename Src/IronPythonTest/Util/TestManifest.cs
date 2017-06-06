@@ -46,6 +46,12 @@ namespace IronPythonTest.Util {
             }
         }
 
+        public string IgnoreReason {
+            get {
+                return this.manifest.GetValue(this.testName, "IgnoreReason", string.Empty);
+            }
+        }
+
         public TestIsolationLevel IsolationLevel {
             get {
                 return this.manifest.GetEnum<TestIsolationLevel>(this.testName, "IsolationLevel", TestIsolationLevel.DEFAULT);

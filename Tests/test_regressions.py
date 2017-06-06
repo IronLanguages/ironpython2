@@ -686,23 +686,19 @@ class C:
     @unittest.skipIf(is_posix, "mono's GC behaves differently so we get another print when GC occurs")
     def test_cp23914(self):
         class C(object):
-            def __init__(self, x,y,z):
+            def __init__(self,x,y,z):
                 print x,y,z
         
         m = type.__call__
         
-        import sys
-        from cStringIO import StringIO
-        oldstdout, sys.stdout = sys.stdout, StringIO()
-        try:
-            l = m(C,1,2,3)
-            l = m(C,z=3,y=2,x=1)
-            sys.stdout.flush()
-        finally:
-            temp_stdout = sys.stdout
-            sys.stdout = oldstdout
+        with stdout_trapper() as trapper:
+            try:
+                l = m(C,1,2,3)
+                l = m(C,z=3,y=2,x=1)
+            except Exception, e:
+                print e.message
         
-        self.assertEqual(temp_stdout.getvalue(), '1 2 3\n1 2 3\n')
+        self.assertEqual(trapper.messages[0:2], ['1 2 3', '1 2 3'])
 
     @unittest.skipIf(is_cli, 'CPython specific test')
     def test_cp23992(self):

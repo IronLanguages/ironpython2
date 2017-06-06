@@ -59,6 +59,7 @@ Tests/cp15803/
 Tests/InheritanceTypes.dll
 Tests/OutterDir/
 Tests/ImpTest/
+Tests/StandAlone/
 Tests/another.py
 Tests/cached_type_dll.dll
 Tests/clruse*.py

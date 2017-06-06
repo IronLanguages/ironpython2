@@ -173,7 +173,7 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
         
     def load_iron_python_test(self, *args):
         if args:
-            return load_ironpython_test()
+            return load_ironpython_test(*args)
         else:
             load_ironpython_test()
 
