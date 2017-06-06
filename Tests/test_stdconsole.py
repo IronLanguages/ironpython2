@@ -45,8 +45,7 @@ class IronPythonVariableContext(object):
 
     def __exit__(self, *args):
         from System import Environment
-        if self._oldval:
-            Environment.SetEnvironmentVariable(self._variable, self._oldval)
+        Environment.SetEnvironmentVariable(self._variable, self._oldval)
 
 
 @unittest.skipIf(is_posix, 'Relies on batchfiles')
@@ -372,7 +371,7 @@ AssertionError
         self.assertTrue(x.find('\r\r\n') == -1)
         i.End()
 
-    #TODO: haven't seen this issue during testing - @disabled("When run in a batch mode, the stdout/stderr/stdin are redirected")
+    @unittest.skip("When run in a batch mode, the stdout/stderr/stdin are redirected")
     def test_isatty(self):
         # cp33123
         # this test assumes to be run from cmd.exe without redirecting stdout/stderr/stdin
