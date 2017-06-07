@@ -11,6 +11,10 @@
 *.py text
 *.rb text
 
+# Explicitly declare files that should not have line endings modified, ever
+Tests/file_with_BOM.txt -text
+Tests/file_without_BOM.txt -text
+
 # Declare files that will always have CRLF line endings on checkout.
 *.bat text eol=crlf
 *.sln text eol=crlf
@@ -20,8 +24,6 @@
 *.rbproj text eol=crlf
 *.vcxproj text eol=crlf
 *.vdproj text eol=crlf
-Tests/file_with_BOM.txt text eol=crlf
-Tests/file_without_BOM.txt text eol=crlf
 
 # Declare files that will always have LF line endings on checkout.
 *.sh text eol=lf
