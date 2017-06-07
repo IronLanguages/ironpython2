@@ -56,7 +56,6 @@ configuration: Release
 
 # scripts to run before build
 before_build:
-  - ps: Get-Content "Tests\file_without_BOM.txt" -Encoding Byte -ReadCount 16 | ForEach-Object { $output = "" ; foreach ( $byte in $_ ) { $output += "0x{0:x2} " -f $byte } ; $output }
   - git submodule update --init --recursive
   - ps: $xml = [xml] (Get-Content CurrentVersion.props); $major = $xml.Project.PropertyGroup.MajorVersion; $minor = $xml.Project.PropertyGroup.MinorVersion; $micro = $xml.Project.PropertyGroup.MicroVersion; $serial = $xml.Project.PropertyGroup.ReleaseSerial; Update-AppveyorBuild -Version "$($major).$($minor).$($micro).$($serial)-$($env:APPVEYOR_BUILD_NUMBER)".replace(" ","")
 
