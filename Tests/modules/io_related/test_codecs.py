@@ -402,7 +402,7 @@ class CodecTest(IronPythonTestCase):
             #positive cases
             for coding in ip_supported_encodings:
                 if coding.lower().replace(" ", "-")=="utf-16-be":
-                    print "http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=24082"
+                    print "https://github.com/IronLanguages/ironpython2/issues/3"
                     continue
                 temp_mod_name = "test_encoding_" + coding.replace("-", "_").replace(" ", "_")
                 f = open(os.path.join(self.temporary_dir, "tmp_encodings", temp_mod_name + ".py"), "w")

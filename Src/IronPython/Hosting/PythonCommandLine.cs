@@ -291,8 +291,8 @@ namespace IronPython.Hosting {
         private void InitializeExtensionDLLs() {
             string dir = Path.Combine(PythonContext.InitialPrefix, "DLLs");
             if (Directory.Exists(dir)) {
-                foreach (string file in Directory.EnumerateFiles(dir)) {
-                    if (file.ToLower().EndsWith(".dll")) {
+                foreach (string file in Directory.EnumerateFiles(dir, "*.dll")) {
+                    if(file.ToLower().EndsWith(".dll")) {
                         try {
                             ClrModule.AddReference(PythonContext.SharedContext, new FileInfo(file).Name);
                         } catch {
@@ -516,7 +516,7 @@ namespace IronPython.Hosting {
             PythonModule module = PythonContext.CompileModule(
                 "", // there is no file, it will be set to <module>
                 "__main__",
-                PythonContext.CreateSnippet(command, SourceCodeKind.File),
+                PythonContext.CreateSnippet(command, "-c", SourceCodeKind.File),
                 modOpt,
                 out compiledCode);
             PythonContext.PublishModule("__main__", module);

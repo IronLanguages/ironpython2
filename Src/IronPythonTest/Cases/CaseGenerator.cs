@@ -47,8 +47,13 @@ namespace IronPythonTest.Cases {
                     .SetName(testcase.Name)
                     .Returns(0);
 
-                if (testcase.Options.Ignore)
-                    result.Ignore("ignored");
+                if (testcase.Options.Ignore) {
+                    if (!string.IsNullOrWhiteSpace(testcase.Options.IgnoreReason)) {
+                        result.Ignore(testcase.Options.IgnoreReason);
+                    } else {
+                        result.Ignore("ignored");
+                    }
+                }
 
                 if(!ConditionMatched(testcase.Options.Condition))
                     result.Ignore(string.Format("condition ({0})", testcase.Options.Condition));

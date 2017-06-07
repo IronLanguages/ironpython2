@@ -550,14 +550,14 @@ class TestBank:
             }),
         ]
     if is_cli: #https://github.com/IronLanguages/main/issues/853
-        tests.append((0.33333333333333331, 
+        tests.append((0.33333333333333331,
                       {
                        0:'F0.33333333333333331\n.',
                        1:'G?\xd5UUUUUU.',
                       }
                      ))
     else:
-        tests.append((0.33333333333333331, 
+        tests.append((0.33333333333333331,
                       {
                        0:'F0.3333333333333333\n.',
                        1:'G?\xd5UUUUUU.',
@@ -591,7 +591,7 @@ class CPickleTest(IronPythonTestCase):
 
         def match(pattern, text):
             import re
-            
+
             patterns = re.split(r'<.*?>', pattern)
             curpos = 0
 
@@ -670,7 +670,7 @@ class CPickleTest(IronPythonTestCase):
     def test_unpickler(self, module=cPickle, verbose=True):
         s = StringIO()
         TestBank.selph = self
-        for test in TestBank.tests:            
+        for test in TestBank.tests:
             obj, pickle_lists, display_name = TestBank.normalize(test)
             expected = normalized_repr(obj)
 
@@ -707,7 +707,7 @@ class CPickleTest(IronPythonTestCase):
                     pickle_num += 1
 
             if verbose: print 'ok'
-        
+
 
     def test_persistent_load(self):
         class MyData(object):
@@ -728,14 +728,14 @@ class CPickleTest(IronPythonTestCase):
             p = cPickle.Pickler(src)
             p.persistent_id = persistent_id
             p.binary = binary
-            
+
             value = MyData('abc')
             p.dump(value)
-            
+
             up = cPickle.Unpickler(StringIO(src.getvalue()))
             up.persistent_load = persistent_load
             res = up.load()
-            
+
             self.assertEqual(res.value, value.value)
 
             # errors
@@ -743,19 +743,19 @@ class CPickleTest(IronPythonTestCase):
             p = cPickle.Pickler(src)
             p.persistent_id = persistent_id
             p.binary = binary
-            
+
             value = MyData('abc')
             p.dump(value)
 
             up = cPickle.Unpickler(StringIO(src.getvalue()))
-            
+
             # exceptions vary between cPickle & Pickle
             try:
                 up.load()
                 AssertUnreachable()
             except Exception, e:
                 pass
-    
+
 
     def test_pers_load(self):
         for binary in [True, False]:
@@ -763,14 +763,14 @@ class CPickleTest(IronPythonTestCase):
             p = cPickle.Pickler(src)
             p.persistent_id = persistent_id
             p.binary = binary
-            
+
             value = MyData('abc')
             p.dump(value)
-            
+
             up = cPickle.Unpickler(StringIO(src.getvalue()))
             up.persistent_load = persistent_load
             res = up.load()
-            
+
             self.assertEqual(res.value, value.value)
 
             # errors
@@ -778,23 +778,23 @@ class CPickleTest(IronPythonTestCase):
             p = cPickle.Pickler(src)
             p.persistent_id = persistent_id
             p.binary = binary
-            
+
             value = MyData('abc')
             p.dump(value)
 
             up = cPickle.Unpickler(StringIO(src.getvalue()))
-            
+
             # exceptions vary betwee cPickle & Pickle
             try:
                 up.load()
                 self.assertUnreachable()
             except Exception, e:
                 pass
-    
-    
+
+
     def test_loads_negative(self):
         self.assertRaises(EOFError, cPickle.loads, "")
-    
+
     def test_load_negative(self):
         if cPickle.__name__ == "cPickle":   # pickle vs. cPickle report different exceptions, even on Cpy
             filename = os.tempnam()
@@ -808,30 +808,30 @@ class CPickleTest(IronPythonTestCase):
         import os
         _testdir = 'cp15803'
         pickle_file = os.path.join(self.test_dir, "cp15803.pickle")
-        
+
         module_txt = """
 class K%s(object):
     static_member = 1
     def __init__(self):
         self.member = 2
-        
+
 %s = K%s()
 """
-    
+
         _testdir_init       = os.path.join(self.test_dir, _testdir, '__init__.py')
         self.write_to_file(_testdir_init, module_txt % ("", "FROM_INIT", ""))
-        
+
         _testdir_mod        = os.path.join(self.test_dir, _testdir, 'mod.py')
         self.write_to_file(_testdir_mod, module_txt % ("Mod", "FROM_MOD", "Mod") + """
 from cp15803 import K
 FROM_INIT_IN_MOD = K()
 """
         )
-    
+
         _testdir_sub        = os.path.join(self.test_dir, _testdir, 'sub')
         _testdir_sub_init   = os.path.join(_testdir_sub, '__init__.py')
         self.write_to_file(_testdir_sub_init)
-        
+
         _testdir_sub_submod = os.path.join(_testdir_sub, 'submod.py')
         self.write_to_file(_testdir_sub_submod, module_txt % ("SubMod", "FROM_SUB_MOD", "SubMod") + """
 from cp15803 import mod
@@ -844,43 +844,36 @@ FROM_MOD_IN_SUBMOD = mod.KMod()
             import cp15803.mod
             import cp15803.sub.submod
             import cp15803.sub.submod as newname
-            
+
             try:
                 for x in [
                             cp15803.K(), cp15803.FROM_INIT,
                             cp15803.mod.KMod(), cp15803.mod.FROM_MOD, cp15803.mod.K(), cp15803.mod.FROM_INIT_IN_MOD,
                             cp15803.sub.submod.KSubMod(), cp15803.sub.submod.FROM_SUB_MOD, cp15803.sub.submod.FROM_MOD_IN_SUBMOD,
                             cp15803.sub.submod.mod.KMod(), cp15803.sub.submod.mod.FROM_MOD, cp15803.sub.submod.mod.K(), cp15803.sub.submod.mod.FROM_INIT_IN_MOD,
-                                
+
                             newname.KSubMod(), newname.FROM_SUB_MOD, newname.FROM_MOD_IN_SUBMOD,
                             newname.mod.KMod(), newname.mod.FROM_MOD, newname.mod.K(), newname.mod.FROM_INIT_IN_MOD,
                             ]:
                     with open(pickle_file, "w") as f:
                         cPickle.dump(x, f)
-                    
+
                     with open(pickle_file, "r") as f:
                         x_unpickled = cPickle.load(f)
-                    
+
                         self.assertEqual(x.__class__.__name__, x_unpickled.__class__.__name__)
                         self.assertEqual(x.static_member, x_unpickled.static_member)
                         self.assertEqual(x.member, x_unpickled.member)
-                        
+
             finally:
                 import os
                 try:
                     os.unlink(pickle_file)
-                    for f_name in [ _testdir_init, _testdir_mod,
-                                    _testdir_sub_init, _testdir_sub_submod,
-                                    ]:
-                        os.unlink(f_name)
-                        if sys.platform=="win32":
-                            os.unlink(f_name + "c")
-                    
-                    for dir_name in [ _testdir_sub, _testdir]:
-                        os.rmdir(dir_name)
+                    self.clean_directory(os.path.join(self.test_dir, _testdir), remove=True)
                 except:
                     pass
-        
+
+
     def test_cp945(self):
         #--sanity
         try:
@@ -888,32 +881,32 @@ FROM_MOD_IN_SUBMOD = mod.KMod()
             Fail("should have been division by zero error")
         except Exception, e:
             temp_msg = e.message
-        
-            
+
+
         x_pickled = cPickle.dumps(e)
         x_unpickled = cPickle.loads(x_pickled)
         self.assertEqual(x_unpickled.message, temp_msg)
-        
+
         #--comprehensive
         import exceptions
-        
+
         special_types = [ "UnicodeTranslateError", "UnicodeEncodeError", "UnicodeDecodeError"]
         exception_types = [ x for x in exceptions.__dict__.keys() if x.startswith("__")==False and special_types.count(x)==0]
         exception_types = [ eval("exceptions." + x) for x in exception_types]
-        
+
         for exception_type in exception_types:
             except_list = [exception_type(), exception_type("a single param")]
-            
+
             for t_except in except_list:
                 try:
                     raise t_except
                 except exception_type, e:
                     temp_msg = e.message
-                
+
                 x_pickled = cPickle.dumps(e)
                 x_unpickled = cPickle.loads(x_pickled)
                 self.assertEqual(x_unpickled.message, temp_msg)
-                            
+
         #--special cases
         for e in [  exceptions.UnicodeEncodeError("1", u"2", 3, 4, "5"),
                     exceptions.UnicodeDecodeError("1", "2", 3, 4, "5"),
@@ -931,17 +924,17 @@ FROM_MOD_IN_SUBMOD = mod.KMod()
 
     def test_metaclass_mixed_new_old_style(self):
         class mc(type): pass
-        
+
         class mo(object): __metaclass__ = mc
-        
+
         class c:
             def f(self): pass
-        
+
         c.of = c.f
 
         global d
         class d(c, mo): pass
-        
+
         import cPickle
         self.assertEqual(type(cPickle.loads(cPickle.dumps(d()))), d)
 

@@ -142,30 +142,40 @@ _root = _find_root()
 def source_root():
     return _root
 
+def _add_reference_to_dlr_core():
+    if is_cli and not is_netstandard:
+        clr.AddReference("System.Core")
+
+_iron_python_test_dll = os.path.join(sys.prefix, 'IronPythonTest.exe')
+def load_ironpython_test(*args):
+    _add_reference_to_dlr_core()
+    clr.AddReference("Microsoft.Scripting")
+    clr.AddReference("Microsoft.Dynamic")
+    clr.AddReference("IronPython")
+
+    if args: 
+        return clr.LoadAssemblyFromFileWithPath(_iron_python_test_dll)
+    else: 
+        clr.AddReferenceToFileAndPath(_iron_python_test_dll)
+
 class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
 
     def setUp(self):
         self._temporary_dir = os.path.join(self.temp_dir, "IronPython")
         self.ensure_directory_present(self._temporary_dir)
         
-        self._iron_python_test_dll = os.path.join(sys.prefix, 'IronPythonTest.exe')
+        self._iron_python_test_dll = _iron_python_test_dll
         self._test_dir = os.path.join(_root, 'Tests')
         self._test_inputs_dir = os.path.join(_root, 'Tests', 'Inputs')
 
     def add_reference_to_dlr_core(self):
-        if not is_netstandard:
-            clr.AddReference("System.Core")
+        _add_reference_to_dlr_core()
         
     def load_iron_python_test(self, *args):
-        self.add_reference_to_dlr_core()
-        clr.AddReference("Microsoft.Scripting")
-        clr.AddReference("Microsoft.Dynamic")
-        clr.AddReference("IronPython")
-
-        if args: 
-            return clr.LoadAssemblyFromFileWithPath(self._iron_python_test_dll)
-        else: 
-            clr.AddReferenceToFileAndPath(self._iron_python_test_dll)
+        if args:
+            return load_ironpython_test(*args)
+        else:
+            load_ironpython_test()
 
     def load_iron_python_dll(self):
         #When assemblies are installed into the GAC, we should not expect
@@ -307,6 +317,12 @@ class IronPythonTestCase(unittest.TestCase, FileUtil, ProcessUtil):
             del expected[index]
         
         if expected: self.fail('Missing doc strings: ' + expected.join(', '))
+
+    def assertInAndNot(self, test_list, in_list, not_in_list):
+        for x in in_list:
+            self.assertIn(x, test_list)
+        for x in not_in_list:
+            self.assertNotIn(x, test_list)
 
     # environment variables
     def get_environ_variable(self, key):

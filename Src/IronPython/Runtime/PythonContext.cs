@@ -1684,9 +1684,12 @@ namespace IronPython.Runtime
         private static string FrameToString(DynamicStackFrame frame) {
             string methodName = frame.GetMethodName();
             int lineNumber = frame.GetFileLineNumber();
+            string fileName = frame.GetFileName();
+            if (fileName == "-c")
+                fileName = "<string>";
 
             return String.Format("  File \"{0}\", line {1}, in {2}",
-                frame.GetFileName(),
+                fileName,
                 lineNumber == 0 ? "unknown" : lineNumber.ToString(),
                 methodName);
         }

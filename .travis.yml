@@ -15,7 +15,6 @@ solution: IronPython.sln
 script:
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then sudo apt-get install -y binfmt-support libmono-system-windows-forms4.0-cil ; fi
   - mono Util/NuGet/nuget.exe restore
-  - git submodule update --init --recursive
   - make $FLAVOUR
   - pushd bin/$CONFIGURATION
   - mono ./IronPythonTest.exe --labels=All --result:all-result.xml

@@ -209,6 +209,8 @@ class ClosureTest(unittest.TestCase):
 
     def test_global(self):
         global x
+        global y
+        global z
         class c:
             x = 5
             y = x
@@ -314,13 +316,13 @@ class ClosureTest(unittest.TestCase):
 
         def test():
             self.assertEqual(y, "global y")
-            exec "y = 10" in globals(), locals()
+            exec "y = 10" in globals()
             self.assertEqual(y, 10)
         test()
 
         def test2():
             self.assertEqual(x, "global x")
-            exec "x = 5" in globals(), locals()
+            exec "x = 5" in globals()
             self.assertEqual(x, 5)
             yield x
 
@@ -328,7 +330,7 @@ class ClosureTest(unittest.TestCase):
 
         class C:
             self.assertEqual(z, "global z")
-            exec "z = 7" in globals(), locals()
+            exec "z = 7" in globals()
             self.assertEqual(z, 7)
 
 run_test(__name__)

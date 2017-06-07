@@ -19,6 +19,8 @@ using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Hosting;
 using IronPython.Hosting;
 
+using NUnit.Framework;
+
 namespace IronPythonTest.Stress {
 
     public class Engine
@@ -55,7 +57,7 @@ namespace IronPythonTest.Stress {
                 ScriptScope scope = _pe.CreateScope();
                 scope.SetVariable("x", "Hello");
                 _pe.CreateScriptSourceFromFile(System.IO.Path.Combine(Common.InputTestDirectory, "simpleCommand.py")).Execute(scope);
-                AreEqual(_pe.CreateScriptSourceFromString("x").Execute<int>(scope), 1);
+                Assert.AreEqual(_pe.CreateScriptSourceFromString("x").Execute<int>(scope), 1);
                 scope = null;
             }
 
@@ -75,14 +77,5 @@ namespace IronPythonTest.Stress {
             }
         }
 #endif
-
-        static void AreEqual<T>(T expected, T actual) {
-            if (expected == null && actual == null) return;
-
-            if (!expected.Equals(actual)) {
-                Console.WriteLine("Expected: {0} Got: {1} from {2}", expected, actual, new StackTrace((Exception)null, true));
-                throw new Exception();
-            }
-        }
     }
 }

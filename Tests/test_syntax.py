@@ -42,7 +42,7 @@ def test_compile(self):
         pass
     """, "Error", "single")
 
-    self.assertRaises(SyntaxError, compile, "x=10\ny=x.", "Error", "exec")    
+    self.assertRaises(SyntaxError, compile, "x=10\ny=x.", "Error", "exec")
 
     if is_ironpython:
         _yield_msg = "can't assign to yield expression"
@@ -106,7 +106,7 @@ def test_compile(self):
     # different error messages, ok
     for test in compile_tests:
         run_compile_test(self, *test)
-                
+
     self.assertEqual(float(repr(2.5)), 2.5)
 
     self.assertEqual(eval("1, 2, 3,"), (1, 2, 3))
@@ -161,8 +161,8 @@ self.assertEqual(x, 7)
 
     if is_cpython:
         # this seems to be a CPython bug, Guido says:
-        #   I usually append some extra newlines before passing a string to compile(). That's the usual work-around. 
-        #   There's probably a subtle bug in the tokenizer when reading from a string -- if you find it, 
+        #   I usually append some extra newlines before passing a string to compile(). That's the usual work-around.
+        #   There's probably a subtle bug in the tokenizer when reading from a string -- if you find it,
         #   please upload a patch to the tracker!
         # http://mail.python.org/pipermail/python-dev/2009-May/089793.html
         self.assertRaises(SyntaxError, compile, "def f(a):\n\treturn a\n\t", "", "single")
@@ -222,7 +222,7 @@ self.assertEqual(x, 7)
     # correct case - qualified exec in nested function
     c = compile("def f():\n    x = 10\n    def g():\n        exec 'pass' in {}\n        print x\n", "", "exec")
 
-def test_expr_support(self):
+def test_expr_support_impl(self):
     x = 10
     self.assertEqual(x, 10)
     del x
@@ -411,8 +411,9 @@ class SyntaxTest(IronPythonTestCase):
     def test_compile_method(self):
         test_compile(self)
 
+    @unittest.skip('TODO: this need to be at the global level')
     def test_expr_support_method(self):
-        test_expr_support(self)
+        test_expr_support_impl(self)
 
     def test_private_names_method(self):
         test_private_names(self)
@@ -461,12 +462,12 @@ class SyntaxTest(IronPythonTestCase):
         for test in tests:
             #Merlin 148614 - Change it to self.assertRaisesWithMessage once bug is fixed.
             self.assertRaisesMessage(SyntaxError, "'return' with argument inside generator", compile, test, "", "exec")
-            
+
         #Verify that when there is no return value error is not thrown.
         def f():
             yield 42
             return
-    
+
     def test_return_from_finally(self):
         # compile function which returns from finally, but does not yield from finally.
         c = compile("def f():\n    try:\n        pass\n    finally:\n        return 1", "", "exec")
@@ -477,7 +478,7 @@ class SyntaxTest(IronPythonTestCase):
             finally:
                 return 1
             return 2
-            
+
         self.assertEqual(ret_from_finally(), 1)
 
         def ret_from_finally2(x):
@@ -559,7 +560,7 @@ class SyntaxTest(IronPythonTestCase):
                 pass
             else:
                 break''')
-                
+
         self.assertRaises(SyntaxError, f)
 
     def test_no_throw(self):
@@ -570,7 +571,7 @@ class SyntaxTest(IronPythonTestCase):
 
         print "No ^L's..."
 
-    def test_syntaxerror_text(self):       
+    def test_syntaxerror_text(self):
         method_missing_colon = ("    def MethodTwo(self)\n", """
 class HasASyntaxException:
     def MethodOne(self):
@@ -582,7 +583,7 @@ class HasASyntaxException:
 
         if is_cpython: #http://ironpython.codeplex.com/workitem/28380
             function_missing_colon1 = ("def f()\n", "def f()")
-        else:        
+        else:
             function_missing_colon1 = ("def f()", "def f()")
         function_missing_colon2 = ("def f()\n", "def f()\n")
         if is_cpython: #http://ironpython.codeplex.com/workitem/28380
@@ -591,8 +592,8 @@ class HasASyntaxException:
         else:
             function_missing_colon3 = ("def f()\r\n", "def f()\r\n")
             function_missing_colon4 = ("def f()\r", "def f()\r")
-            
-            
+
+
         function_missing_colon2a = ("def f()\n", "print 1\ndef f()\nprint 3")
         if is_cpython: #http://ironpython.codeplex.com/workitem/28380
             function_missing_colon3a = ("def f()\n", "print 1\ndef f()\r\nprint 3")
@@ -600,7 +601,7 @@ class HasASyntaxException:
         else:
             function_missing_colon3a = ("def f()\r\n", "print 1\ndef f()\r\nprint 3")
             function_missing_colon4a = ("def f()\rprint 3", "print 1\ndef f()\rprint 3")
-        
+
         tests = (
             method_missing_colon,
             #function_missing_body,
@@ -613,7 +614,7 @@ class HasASyntaxException:
             function_missing_colon3a,
             function_missing_colon4a,
         )
-        
+
         for expectedText, testCase in tests:
             try:
                 exec testCase
@@ -640,7 +641,7 @@ class HasASyntaxException:
                 ("def  Foo():\n\n    # comment\n\n    Something = -1\n\n\n\n   ", 0x000, ('unindent does not match any outer indentation level', ('dummy', 9, 3, '   '))),
                 ("def  Foo():\n\n    # comment\n\n    Something = -1\n\n\n\n   ", 0x200, ('unindent does not match any outer indentation level', ('dummy', 9, 3, '   '))),
                 ]
-        
+
         for input, flags, res in tests:
             #print repr(input), flags
             try:
@@ -648,7 +649,7 @@ class HasASyntaxException:
                 AssertUnreachable()
             except SyntaxError, err:
                 self.assertEqual(err.args, res)
-                
+
 
         try:
             exec("""
@@ -662,14 +663,14 @@ class HasASyntaxException:
     @skipUnlessIronPython()
     def test_parser_recovery(self):
         # bunch of test infrastructure...
-        
+
         import clr
         clr.AddReference('IronPython')
         clr.AddReference('Microsoft.Scripting')
         clr.AddReference('Microsoft.Dynamic')
-        
+
         from Microsoft.Scripting import (
-            TextContentProvider, SourceCodeKind, SourceUnit, ErrorSink,  
+            TextContentProvider, SourceCodeKind, SourceUnit, ErrorSink,
             SourceCodeReader
             )
         from Microsoft.Scripting.Runtime import CompilerContext
@@ -679,16 +680,16 @@ class HasASyntaxException:
         from System.IO import StringReader
         from System.Text import Encoding
 
-        class MyErrorSink(ErrorSink):    
+        class MyErrorSink(ErrorSink):
             def __init__(self):
                 self.Errors = []
-            
+
             def Add(self, *args):
                 if type(args[0]) is str:
                     self.AddWithPath(*args)
                 else:
                     self.AddWithSourceUnit(*args)
-            
+
             def AddWithPath(self, message, path, code, line, span, error, severity):
                 err = (
                     message,
@@ -697,17 +698,17 @@ class HasASyntaxException:
                     error
                 )
                 self.Errors.append(err)
-            
+
             def AddWithSourceUnit(self, source, message, span, errorCode, severity):
                 err = (
-                    message, 
+                    message,
                     source.Path,
                     span,
                     errorCode
                 )
-                
+
                 self.Errors.append(err)
-        
+
         class MyTextContentProvider(TextContentProvider):
             def __init__(self, text):
                 self.text = text
@@ -722,7 +723,7 @@ class HasASyntaxException:
                     'foo',
                     SourceCodeKind.File
                 )
-            
+
             parser = Parser.CreateParser(
                 CompilerContext(sourceUnit, PythonCompilerOptions(), errorSink),
                 PythonOptions()
@@ -735,20 +736,20 @@ class HasASyntaxException:
             self.assertEqual(len(res.Errors), len(errors))
             for curErr, expectedMsg in zip(res.Errors, errors):
                 self.assertEqual(curErr[0], expectedMsg)
-        
+
         def PrintErrors(text):
             """helper for creating new tests"""
             errors = parse_text(text)
             print
             for err in errors.Errors:
                 print err
-        
-        TestErrors("""class 
+
+        TestErrors("""class
 
 def x(self):
     pass""", ["unexpected token '<newline>'"])
 
-        
+
         TestErrors("""class x
 
 def x(self):
@@ -767,34 +768,34 @@ def x(self):
 
         TestErrors("""class X:
     if x is None:
-        x = 
+        x =
 
     def x(self): pass""", ["unexpected token '<newline>'"])
 
         TestErrors("""class X:
-    
+
     def f(
-    
+
     def g(self): pass""", ["unexpected token 'def'"])
 
         TestErrors("""class X:
-        
+
     def f(*
-    
+
     def g(self): pass""", ["unexpected token 'def'"])
 
         TestErrors("""class X:
-        
+
     def f(**
-    
+
     def g(self): pass""", ["unexpected token 'def'"])
 
         TestErrors("""class X:
-        
+
     def f(*a, **
-    
+
     def g(self): pass""", ["unexpected token 'def'"])
-        
+
         TestErrors("""f() += 1""", ["illegal expression for augmented assignment"])
 
     def test_syntax_warnings(self):
@@ -809,25 +810,25 @@ def x(self):
             compile("def f():\n    def a(): pass\n    global a\n", "", "exec")
         self.assertEqual(trapper.messages, [":3: SyntaxWarning: name 'a' is assigned to before global declaration"])
 
-        with stderr_trapper() as trapper:   
+        with stderr_trapper() as trapper:
             compile("def f():\n    for a in []: pass\n    global a\n", "", "exec")
         self.assertEqual(trapper.messages, [":3: SyntaxWarning: name 'a' is assigned to before global declaration"])
 
-        with stderr_trapper() as trapper:   
+        with stderr_trapper() as trapper:
             compile("def f():\n    global a\n    a = 1\n    global a\n", "", "exec")
         self.assertEqual(trapper.messages, [":4: SyntaxWarning: name 'a' is assigned to before global declaration"])
 
-        with stderr_trapper() as trapper:   
+        with stderr_trapper() as trapper:
             compile("def f():\n    print a\n    global a\n", "", "exec")
         self.assertEqual(trapper.messages, [":3: SyntaxWarning: name 'a' is used prior to global declaration"])
 
-        with stderr_trapper() as trapper:   
+        with stderr_trapper() as trapper:
             compile("def f():\n    a = 1\n    global a\n    global a\n    a = 1", "", "exec")
-        self.assertEqual(trapper.messages, 
-                [":3: SyntaxWarning: name 'a' is assigned to before global declaration", 
+        self.assertEqual(trapper.messages,
+                [":3: SyntaxWarning: name 'a' is assigned to before global declaration",
                 ":4: SyntaxWarning: name 'a' is assigned to before global declaration"])
 
-        with stderr_trapper() as trapper:   
+        with stderr_trapper() as trapper:
             compile("x = 10\nglobal x\n", "", "exec")
         self.assertEqual(trapper.messages, [":2: SyntaxWarning: name 'x' is assigned to before global declaration"])
 

@@ -77,16 +77,17 @@ class FileUtil(object):
             except: pass
 
     def clean_directory(self, path, remove=False):
-        for f in os.listdir(path):
-            try: 
-                os.unlink(os.path.join(path, f))
-            except: 
-                pass
-        if remove:
-            try:
-                os.rmdir(path)
-            except:
-                pass
+        if os.path.exists(path):
+            for f in os.listdir(path):
+                try: 
+                    os.unlink(os.path.join(path, f))
+                except: 
+                    pass
+            if remove:
+                try:
+                    os.rmdir(path)
+                except:
+                    pass
 
 # def create_new_file(filename):
 #     f = file(filename, "w")
