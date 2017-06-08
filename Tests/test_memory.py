@@ -128,7 +128,6 @@ z = f(3)
         eval(e, names)
         self.assertEqual(names['z'], 5)
 
-    @unittest.skipIf(is_mono, 'Memory allocation is different on mono')
     def test_cp26005(self):
         def coroutine():
             try: pass
