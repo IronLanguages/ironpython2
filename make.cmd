@@ -7,7 +7,7 @@ if "%1"=="" (goto :default) else (goto :%1)
 goto :exit
 
 :default
-goto :debug
+goto :release
 
 :debug
 set _target=Build
