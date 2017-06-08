@@ -42,13 +42,13 @@ test-smoke:
 
 test-smoke-debug:
 	(cd bin/Debug && mono ./IronPythonTest.exe --labels=All --where:Category==StandardCPython --result=smoke-net45-debug-result.xml) || true
-	(cd bin/v4Debug && mono ./IronPythonTest.exe --labels=All --where:Category==StandardCPython --result=smoke-net40-release-result.xml) || true
+	(cd bin/v4Debug && mono ./IronPythonTest.exe --labels=All --where:Category==StandardCPython --result=smoke-net40-debug-result.xml) || true
 
 test-all:
 	(cd bin/Release && mono ./IronPythonTest.exe --labels=All --result=all-net45-release-result.xml) || true
 	(cd bin/v4Release && mono ./IronPythonTest.exe --labels=All --result=all-net40-release-result.xml) || true
 
 test-all-debug:
-	(cd bin/Debug && mono ./IronPythonTest.exe --labels=All --result=all-result-net45.xml) || true
-	(cd bin/v4Debug && mono ./IronPythonTest.exe --labels=All --result=all-result-net40.xml) || true
+	(cd bin/Debug && mono ./IronPythonTest.exe --labels=All --result=all-result-debug-net45.xml) || true
+	(cd bin/v4Debug && mono ./IronPythonTest.exe --labels=All --result=all-result-debug-net40.xml) || true
 
