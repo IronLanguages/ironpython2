@@ -16,7 +16,6 @@ script:
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then sudo apt-get install -y binfmt-support libmono-system-windows-forms4.0-cil ; fi
   - mono Util/NuGet/nuget.exe restore
   - make
-  - pushd bin/$CONFIGURATION
   - make test-all
 
 notifications:
