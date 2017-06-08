@@ -5,7 +5,7 @@ os:
 language: csharp
 
 env:
-  - CONFIGURATION=Release FLAVOUR=release
+  - CONFIGURATION=Release
 
 mono:
   - 4.8.0
@@ -15,9 +15,9 @@ solution: IronPython.sln
 script:
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then sudo apt-get install -y binfmt-support libmono-system-windows-forms4.0-cil ; fi
   - mono Util/NuGet/nuget.exe restore
-  - make $FLAVOUR
+  - make
   - pushd bin/$CONFIGURATION
-  - mono ./IronPythonTest.exe --labels=All --result:all-result.xml
+  - make test-all
 
 notifications:
   email:
