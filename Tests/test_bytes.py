@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, ip_supported_encodings, is_cli, is_mono
+from iptest import IronPythonTestCase, ip_supported_encodings, is_cli, is_mono, is_osx
 
 types = [bytearray, bytes]
 class IndexableOC:

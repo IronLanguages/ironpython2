@@ -48,15 +48,20 @@ namespace IronPythonTest.Cases {
                     .Returns(0);
 
                 if (testcase.Options.Ignore) {
-                    if (!string.IsNullOrWhiteSpace(testcase.Options.IgnoreReason)) {
-                        result.Ignore(testcase.Options.IgnoreReason);
+                    if (!string.IsNullOrWhiteSpace(testcase.Options.Reason)) {
+                        result.Ignore(string.Format("ignored - {0}", testcase.Options.Reason));
                     } else {
                         result.Ignore("ignored");
                     }
                 }
 
-                if(!ConditionMatched(testcase.Options.Condition))
-                    result.Ignore(string.Format("condition ({0})", testcase.Options.Condition));
+                if(!ConditionMatched(testcase.Options.Condition)) {
+                    if (!string.IsNullOrWhiteSpace(testcase.Options.Reason)) {
+                        result.Ignore(string.Format("condition ({0}) - {1}", testcase.Options.Condition, testcase.Options.Reason));
+                    } else {
+                        result.Ignore(string.Format("condition ({0})", testcase.Options.Condition));
+                    }
+                }
 
                 yield return result;
             }

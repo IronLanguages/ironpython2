@@ -16,7 +16,7 @@
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, is_netstandard, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, is_netstandard, is_posix, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class MethodDispatchTest(IronPythonTestCase):
@@ -1109,7 +1109,8 @@ class MethodDispatchTest(IronPythonTestCase):
         self.assertEqual(type(BindTest.ReturnTest('char')), System.Char)
         self.assertEqual(type(BindTest.ReturnTest('null')), type(None))
         self.assertEqual(type(BindTest.ReturnTest('object')), object)
-        self.assertTrue(repr(BindTest.ReturnTest("com")).startswith('<System.__ComObject'))
+        if not is_posix:
+            self.assertTrue(repr(BindTest.ReturnTest("com")).startswith('<System.__ComObject'))
 
     def test_multicall_generator(self):
         import clr
