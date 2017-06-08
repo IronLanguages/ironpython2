@@ -72,7 +72,7 @@
     <Features>$(Features);FEATURE_ASYNC</Features>
     <Features>$(Features);FEATURE_GET_TYPE_INFO</Features>
     <Features>$(Features);FEATURE_DYNAMIC_EXPRESSION_VISITOR</Features>
-    <Features>$(Features);FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY</Features>
+    <Features Condition=" '$(Mono)' != 'true' ">$(Features);FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY</Features>
     <Features>$(Features);FEATURE_READONLY_DICTIONARY</Features>
     <Features>$(Features);FEATURE_SORTKEY</Features>
     <Features>$(Features);FEATURE_READONLY_COLLECTION_INTERFACE</Features>

@@ -46,9 +46,9 @@ namespace IronPythonTest.Util {
             }
         }
 
-        public string IgnoreReason {
+        public string Reason {
             get {
-                return this.manifest.GetValue(this.testName, "IgnoreReason", string.Empty);
+                return this.manifest.GetValue(this.testName, "Reason", string.Empty);
             }
         }
 

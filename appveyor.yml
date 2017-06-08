@@ -67,15 +67,15 @@ after_build:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - .\make.cmd release
+  - .\make.cmd
 
 # to disable automatic builds
 #build: off
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  - .\make.cmd ngen-release
-  - .\make.cmd test-all-release
+  - .\make.cmd ngen
+  - .\make.cmd test-all
 
 #---------------------------------#
 #      artifacts configuration    #

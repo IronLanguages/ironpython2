@@ -7,7 +7,7 @@ if "%1"=="" (goto :default) else (goto :%1)
 goto :exit
 
 :default
-goto :debug
+goto :release
 
 :debug
 set _target=Build
@@ -61,15 +61,6 @@ echo No target 'test'. Try 'test-smoke', 'test-ironpython', 'test-cpython', or '
 goto :exit
 
 :test-smoke
-pushd bin\v4Debug
-IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-net40-debug-result.xml
-popd
-pushd bin\Debug
-IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-net45-debug-result.xml
-popd
-goto :exit
-
-:test-smoke-release
 pushd bin\Release
 IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-net45-release-result.xml
 popd
@@ -78,8 +69,26 @@ IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke
 popd
 goto :exit
 
-:test-ironpython
+:test-smoke-debug
 pushd bin\Debug
+IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-net45-debug-result.xml
+popd
+pushd bin\v4Debug
+IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-net40-debug-result.xml
+popd
+goto :exit
+
+:test-ironpython
+pushd bin\Release
+IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net45-release-result.xml
+popd
+pushd bin\v4Release
+IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net40-release-result.xml
+popd
+goto :exit
+
+:test-ironpython-debug
+pushd bin\Release
 IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net45-debug-result.xml
 popd
 pushd bin\v4Debug
@@ -87,25 +96,7 @@ IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython
 popd
 goto :exit
 
-:test-ironpython-release
-pushd bin\Release
-IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net45-result.xml
-popd
-pushd bin\v4Release
-IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net40-result.xml
-popd
-goto :exit
-
 :test-cpython
-pushd bin\Debug
-IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-debug-result.xml
-popd
-pushd bin\v4Debug
-IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-bet40-debug-result.xml
-popd
-goto :exit
-
-:test-cpython-release
 pushd bin\Release
 IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-release-result.xml
 popd
@@ -114,16 +105,16 @@ IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==
 popd
 goto :exit
 
-:test-all
+:test-cpython-debug
 pushd bin\Debug
-IronPythonTest.exe --labels=All --result:all-net45-debug-result.xml
+IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-debug-result.xml
 popd
 pushd bin\v4Debug
-IronPythonTest.exe --labels=All --result:all-net40-debug-result.xml
+IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net40-debug-result.xml
 popd
 goto :exit
 
-:test-all-release
+:test-all
 pushd bin\Release
 IronPythonTest.exe --labels=All --result:all-net45-release-result.xml
 popd
@@ -132,8 +123,17 @@ IronPythonTest.exe --labels=All --result:all-net40-release-result.xml
 popd
 goto :exit
 
-:test-custom
+:test-all-debug
 pushd bin\Debug
+IronPythonTest.exe --labels=All --result:all-net45-debug-result.xml
+popd
+pushd bin\v4Release
+IronPythonTest.exe --labels=All --result:all-net40-debug-result.xml
+popd
+goto :exit
+
+:test-custom
+pushd bin\Release
 shift
 IronPythonTest.exe --labels=All --result:custom-result.xml %1 %2 %3 %4 %5 %6 %7 %8 %9
 popd
@@ -149,7 +149,7 @@ msbuild /t:DistClean /p:BuildFlavour=Release /verbosity:minimal /nologo /p:Platf
 msbuild /t:DistClean /p:BuildFlavour=Debug /verbosity:minimal /nologo /p:Platform="Any CPU"
 goto :main
 
-:ngen-release
+:ngen
 %SystemRoot%\Microsoft.NET\Framework\v4.0.30319\ngen.exe install bin\Release\ipy.exe
 goto :exit
 
