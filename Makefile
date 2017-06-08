@@ -31,7 +31,7 @@ test-cpython:
 	(cd bin/Release && mono ./IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-release-result.xml) || true
 	(cd bin/v4Release && mono ./IronPythonTest.exe --labels=All -where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net40-release-result.xml) || true
 
-test-cpython-release:
+test-cpython-debug:
 	(cd bin/Debug && mono ./IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-debug-result.xml) || true
 	(cd bin/v4Debug && mono ./IronPythonTest.exe --labels=All ---where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net40-debug-result.xml) || true
 

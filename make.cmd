@@ -101,7 +101,7 @@ pushd bin\Release
 IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-release-result.xml
 popd
 pushd bin\v4Release
-IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-bet40-release-result.xml
+IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net40-release-result.xml
 popd
 goto :exit
 
