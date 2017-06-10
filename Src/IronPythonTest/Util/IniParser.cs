@@ -63,9 +63,10 @@ namespace IronPythonTest.Util {
             Section currentSection = new Section();
             OptionStore options = new OptionStore(StringComparer.OrdinalIgnoreCase) { { "DEFAULT", currentSection } };
             foreach (var rawline in lines) {
-                if (string.IsNullOrWhiteSpace(rawline)) continue;
-
                 string line = rawline.Split(new [] { ';', '#' }, 2)[0].Trim();
+
+                if (string.IsNullOrEmpty(line)) continue;
+
                 if (line.StartsWith("[") && line.EndsWith("]")) {
                     var sectionName = line.Substring(1, line.Length - 2);
                     if (!options.TryGetValue(sectionName, out currentSection)) {
