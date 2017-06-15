@@ -311,6 +311,19 @@ class SetTest(IronPythonTestCase):
         s.add(4)
         self.assertEqual(4 in f, False)
 
+    def test_gh152(self):
+        """https://github.com/IronLanguages/ironpython2/issues/152"""
+        s1 = set(['a','b','c','d','e','f','h','i','l','m'])
+        s2 = set(['1','2','3','4','5','6','7','8','9'])
+        s1.pop()
+        s = s1 | s2
+        self.assertEqual(len(s), len(s1) + len(s2))
+
+        s = set(range(10))
+        s.pop()
+        t = set(s)
+        self.assertEqual(len(s), len(t))
+
 if __name__ == '__main__':
     from test import test_support
     test_support.run_unittest(__name__)
