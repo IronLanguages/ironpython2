@@ -41,7 +41,7 @@ class CompilerTest(IronPythonTestCase):
         fileList = []
         for fileName, code in codeDict.iteritems():
             filePath = os.path.join(packagePath, fileName)
-            self.ensure_directory_present(os.path.basename(filePath))
+            self.ensure_directory_present(os.path.dirname(filePath))
             self.write_to_file(filePath, code)
             fileList.append(filePath)
         dllFile = os.path.join(self.temporary_dir, packageName + ".dll")
