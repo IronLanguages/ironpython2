@@ -324,6 +324,13 @@ class SetTest(IronPythonTestCase):
         t = set(s)
         self.assertEqual(len(s), len(t))
 
+    def test_gh154(self):
+        """https://github.com/IronLanguages/ironpython2/issues/154"""
+        s = set([1,17])
+        self.assertEqual(s.pop(), 1)
+        s.add(17)
+        self.assertEqual(tuple(s), (17,))
+
 if __name__ == '__main__':
     from test import test_support
     test_support.run_unittest(__name__)
