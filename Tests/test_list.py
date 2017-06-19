@@ -55,6 +55,18 @@ class ListTest(IronPythonTestCase):
             y.append(xenum.Current)
         self.assertEqual(x, y)
 
+    @skipUnlessIronPython()
+    def test_generic_list(self):
+        """https://github.com/IronLanguages/ironpython2/issues/109"""
+        from System.Collections.Generic import List
+        lst = List[str]()
+        lst.Add('Hello')
+        lst.Add('World')
+        vals = []
+        for v in lst[1:]:
+            vals.append(v)
+        self.assertEqual(vals, ['World'])
+
     def test_assign_to_empty(self):
         # should all succeed
         y = []
