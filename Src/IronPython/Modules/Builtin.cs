@@ -77,18 +77,6 @@ namespace IronPython.Modules {
             }
         }
 
-        public static object exit {
-            get {
-                return "Use Ctrl-Z plus Return to exit";
-            }
-        }
-
-        public static object quit {
-            get {
-                return "Use Ctrl-Z plus Return to exit";
-            }
-        }
-
         [Documentation("__import__(name) -> module\n\nImport a module.")]
         [LightThrowing]
         public static object __import__(CodeContext/*!*/ context, string name) {
