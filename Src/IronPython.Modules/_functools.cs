@@ -235,7 +235,7 @@ namespace IronPython.Modules {
                     Interlocked.CompareExchange(
                         ref _splatSite,
                         CallSite<Func<CallSite, CodeContext, object, object[], object>>.Create(
-                            Binders.InvokeSplat(PythonContext.GetContext(_context))
+                            Binders.InvokeSplat(_context.LanguageContext)
                         ),
                         null
                     );
@@ -247,7 +247,7 @@ namespace IronPython.Modules {
                     Interlocked.CompareExchange(
                         ref _dictSite,
                         CallSite<Func<CallSite, CodeContext, object, object[], IDictionary<object, object>, object>>.Create(
-                            Binders.InvokeKeywords(PythonContext.GetContext(_context))
+                            Binders.InvokeKeywords(_context.LanguageContext)
                         ),
                         null
                     );

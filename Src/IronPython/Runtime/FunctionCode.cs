@@ -626,7 +626,7 @@ namespace IronPython.Runtime {
             }
 
             var func = new PythonFunction(context, this, null, ArrayUtils.EmptyObjects, new MutableTuple<object>());
-            CallSite<Func<CallSite, CodeContext, PythonFunction, object>> site = PythonContext.GetContext(context).FunctionCallSite;
+            CallSite<Func<CallSite, CodeContext, PythonFunction, object>> site = context.LanguageContext.FunctionCallSite;
             return site.Target(site, context, func);
         }
 
@@ -720,7 +720,7 @@ namespace IronPython.Runtime {
         /// </summary>
         internal void LazyCompileFirstTarget(PythonFunction function) {
             lock (_CodeCreateAndUpdateDelegateLock) {
-                UpdateDelegate(PythonContext.GetContext(function.Context), true);
+                UpdateDelegate(function.Context.LanguageContext, true);
             }
         }
 

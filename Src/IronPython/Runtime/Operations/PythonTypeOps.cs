@@ -56,7 +56,7 @@ namespace IronPython.Runtime.Operations {
             Type curType = type;
             while (curType != null) {
                 string moduleName;
-                if (PythonContext.GetContext(context).BuiltinModuleNames.TryGetValue(curType, out moduleName)) {
+                if (context.LanguageContext.BuiltinModuleNames.TryGetValue(curType, out moduleName)) {
                     return moduleName;
                 }
 

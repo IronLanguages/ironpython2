@@ -1698,11 +1698,6 @@ namespace IronPython.Runtime
 
 #endregion
         
-        // TODO: Replace all usages with direct access
-        internal static PythonContext/*!*/ GetContext(CodeContext/*!*/ context) {
-            return context.LanguageContext;
-        }
-       
         public override TService GetService<TService>(params object[] args) {
             if (typeof(TService) == typeof(TokenizerService)) {
                 return (TService)(object)new Tokenizer(ErrorSink.Null, GetPythonCompilerOptions(), true);
@@ -2336,7 +2331,7 @@ namespace IronPython.Runtime
 
         internal static object InvokeUnaryOperator(CodeContext/*!*/ context, UnaryOperators oper, object target, string errorMsg) {
             object res;
-            if (PythonContext.GetContext(context).InvokeOperatorWorker(context, oper, target, out res)) {
+            if (context.LanguageContext.InvokeOperatorWorker(context, oper, target, out res)) {
                 return res;
             }
 
@@ -2345,7 +2340,7 @@ namespace IronPython.Runtime
 
         internal static object InvokeUnaryOperator(CodeContext/*!*/ context, UnaryOperators oper, object target) {
             object res;
-            if (PythonContext.GetContext(context).InvokeOperatorWorker(context, oper, target, out res)) {
+            if (context.LanguageContext.InvokeOperatorWorker(context, oper, target, out res)) {
                 return res;
             }
 
@@ -2353,7 +2348,7 @@ namespace IronPython.Runtime
         }
 
         internal static bool TryInvokeTernaryOperator(CodeContext/*!*/ context, TernaryOperators oper, object target, object value1, object value2, out object res) {
-            return PythonContext.GetContext(context).InvokeOperatorWorker(context, oper, target, value1, value2, out res);
+            return context.LanguageContext.InvokeOperatorWorker(context, oper, target, value1, value2, out res);
         }
 
         internal CallSite<Func<CallSite, object, object, int>> CompareSite {
@@ -4271,7 +4266,7 @@ namespace IronPython.Runtime
 
     public static class PythonContextHelpers {
         public static PythonContext GetPythonContext(this CodeContext context) {
-            return PythonContext.GetContext(context);
+            return context.LanguageContext;
         }
     }
 

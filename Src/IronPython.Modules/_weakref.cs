@@ -41,11 +41,11 @@ namespace IronPython.Modules {
         }
 
         public static int getweakrefcount(CodeContext context, object @object) {
-            return @ref.GetWeakRefCount(PythonContext.GetContext(context), @object);
+            return @ref.GetWeakRefCount(context.LanguageContext, @object);
         }
 
         public static List getweakrefs(CodeContext context, object @object) {
-            return @ref.GetWeakRefs(PythonContext.GetContext(context), @object);
+            return @ref.GetWeakRefs(context.LanguageContext, @object);
         }
 
         public static object proxy(CodeContext context, object @object) {
@@ -81,7 +81,7 @@ namespace IronPython.Modules {
 
             #region Python Constructors
             public static object __new__(CodeContext context, PythonType cls, object @object) {
-                IWeakReferenceable iwr = ConvertToWeakReferenceable(PythonContext.GetContext(context), @object);
+                IWeakReferenceable iwr = ConvertToWeakReferenceable(context.LanguageContext, @object);
 
                 if (cls == DynamicHelpers.GetPythonTypeFromType(typeof(@ref))) {
                     WeakRefTracker wrt = iwr.GetWeakRef();
@@ -217,7 +217,7 @@ namespace IronPython.Modules {
                 if (!_fHasHash) {
                     object refObj = _target.Target;
                     if (refObj == null) throw PythonOps.TypeError("weak object has gone away");
-                    _hashVal = PythonContext.GetContext(context).EqualityComparerNonGeneric.GetHashCode(refObj);
+                    _hashVal = context.LanguageContext.EqualityComparerNonGeneric.GetHashCode(refObj);
                     _fHasHash = true;
                 }
                 GC.KeepAlive(this);
@@ -304,7 +304,7 @@ namespace IronPython.Modules {
 
             #region Python Constructors
             internal static object MakeNew(CodeContext/*!*/ context, object @object, object callback) {
-                IWeakReferenceable iwr = ConvertToWeakReferenceable(PythonContext.GetContext(context), @object);
+                IWeakReferenceable iwr = ConvertToWeakReferenceable(context.LanguageContext, @object);
 
                 if (callback == null) {
                     WeakRefTracker wrt = iwr.GetWeakRef();
@@ -324,7 +324,7 @@ namespace IronPython.Modules {
             #region Constructors
 
             private weakproxy(CodeContext/*!*/ context, object target, object callback) {
-                WeakRefHelpers.InitializeWeakRef(PythonContext.GetContext(context), this, target, callback);
+                WeakRefHelpers.InitializeWeakRef(context.LanguageContext, this, target, callback);
                 _target = new WeakHandle(target, false);
                 _context = context;
             }
@@ -563,7 +563,7 @@ namespace IronPython.Modules {
             #region Python Constructors
 
             internal static object MakeNew(CodeContext/*!*/ context, object @object, object callback) {
-                IWeakReferenceable iwr = ConvertToWeakReferenceable(PythonContext.GetContext(context), @object);
+                IWeakReferenceable iwr = ConvertToWeakReferenceable(context.LanguageContext, @object);
 
                 if (callback == null) {
                     WeakRefTracker wrt = iwr.GetWeakRef();
@@ -586,7 +586,7 @@ namespace IronPython.Modules {
             #region Constructors
 
             private weakcallableproxy(CodeContext context, object target, object callback) {
-                WeakRefHelpers.InitializeWeakRef(PythonContext.GetContext(context), this, target, callback);
+                WeakRefHelpers.InitializeWeakRef(context.LanguageContext, this, target, callback);
                 _target = new WeakHandle(target, false);
                 _context = context;
             }
@@ -689,7 +689,7 @@ namespace IronPython.Modules {
 
             [SpecialName]
             public object Call(CodeContext/*!*/ context, params object[] args) {
-                return PythonContext.GetContext(context).CallSplat(GetObject(), args);
+                return context.LanguageContext.CallSplat(GetObject(), args);
             }
                         
             [SpecialName]

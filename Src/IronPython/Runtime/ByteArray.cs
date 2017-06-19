@@ -862,7 +862,7 @@ namespace IronPython.Runtime {
             }
 
             throw PythonOps.TypeError("Type {0} doesn't support the buffer API",
-                PythonContext.GetContext(context).PythonOptions.Python30 ? PythonTypeOps.GetOldName(value) : PythonTypeOps.GetName(value));
+                context.LanguageContext.PythonOptions.Python30 ? PythonTypeOps.GetOldName(value) : PythonTypeOps.GetName(value));
         }
 
         public PythonTuple __reduce__(CodeContext/*!*/ context) {

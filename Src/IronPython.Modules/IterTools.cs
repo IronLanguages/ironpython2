@@ -229,7 +229,7 @@ namespace IronPython.Modules {
                 EnsureNumeric(context, step);
                 _cur = start;
                 _step = step;
-                InnerEnumerator = ObjectYielder(PythonContext.GetContext(context), this, start, step);
+                InnerEnumerator = ObjectYielder(context.LanguageContext, this, start, step);
             }
 
             private static void EnsureNumeric(CodeContext/*!*/ context, object num) {
@@ -384,7 +384,7 @@ namespace IronPython.Modules {
             }
 
             private IEnumerator<object> Yielder(object predicate, IEnumerator iter) {
-                PythonContext pc = PythonContext.GetContext(_context);
+                PythonContext pc = _context.LanguageContext;
 
                 while (MoveNextHelper(iter)) {
                     if (!Converter.ConvertToBoolean(pc.CallSplat(predicate, iter.Current))) {
@@ -448,7 +448,7 @@ namespace IronPython.Modules {
             private object GetKey(object val) {
                 if (_key == null) return val;
 
-                return PythonContext.GetContext(_context).CallSplat(_key, val);
+                return _context.LanguageContext.CallSplat(_key, val);
             }
         }
 
@@ -473,7 +473,7 @@ namespace IronPython.Modules {
             private bool ShouldYield(object predicate, object current) {
                 if (predicate == null) return PythonOps.IsTrue(current);
 
-                return Converter.ConvertToBoolean(PythonContext.GetContext(_context).CallSplat(predicate, current));
+                return Converter.ConvertToBoolean(_context.LanguageContext.CallSplat(predicate, current));
             }
         }
 
@@ -498,7 +498,7 @@ namespace IronPython.Modules {
                 if (predicate == null) return !PythonOps.IsTrue(current);
 
                 return !Converter.ConvertToBoolean(
-                    PythonContext.GetContext(_context).CallSplat(predicate, current)
+                    _context.LanguageContext.CallSplat(predicate, current)
                 );
             }
         }
@@ -534,7 +534,7 @@ namespace IronPython.Modules {
                     if (_function == null) {
                         return PythonTuple.MakeTuple(args);
                     } else {
-                        return PythonContext.GetContext(_context).CallSplat(_function, args);
+                        return _context.LanguageContext.CallSplat(_function, args);
                     }
                 }
             }
@@ -1082,7 +1082,7 @@ namespace IronPython.Modules {
             }
 
             private IEnumerator<object> Yielder(CodeContext context, object function, IEnumerator iter) {
-                PythonContext pc = PythonContext.GetContext(context);
+                PythonContext pc = context.LanguageContext;
 
                 while (MoveNextHelper(iter)) {
                     PythonTuple args = iter.Current as PythonTuple;
@@ -1115,7 +1115,7 @@ namespace IronPython.Modules {
             private IEnumerator<object> Yielder(object predicate, IEnumerator iter) {
                 while (MoveNextHelper(iter)) {
                     if(!Converter.ConvertToBoolean(
-                        PythonContext.GetContext(_context).CallSplat(predicate, iter.Current)
+                        _context.LanguageContext.CallSplat(predicate, iter.Current)
                     )) {
                         break;
                     }
