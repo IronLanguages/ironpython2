@@ -73,6 +73,23 @@ class AssertTest(unittest.TestCase):
         except AssertionError:
             ok = True
         self.assertTrue(ok)
+
+    def test_custom_assertionerror(self):
+        """https://github.com/IronLanguages/ironpython2/issues/107"""
+        class MyAssertionError(Exception):
+            def __init__(self, msg):
+                super(MyAssertionError, self).__init__(msg)
+
+        def test():
+            assert False, 'You are here'
+
+        import __builtin__
+        old = __builtin__.AssertionError
+        __builtin__.AssertionError = MyAssertionError
+        try:
+            self.assertRaises(MyAssertionError, test)
+        finally:
+            __builtin__.AssertionError = old
   
   
 #--Main------------------------------------------------------------------------
