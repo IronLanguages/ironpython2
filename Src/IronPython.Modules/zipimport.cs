@@ -218,7 +218,7 @@ module, or raises ZipImportError if it wasn't found.")]
                 }
 
                 mod = pythonContext.CompileModule(modpath, fullname,
-                    new SourceUnit(pythonContext, new MemoryStreamContentProvider(context.GetPythonContext(), code, modpath), modpath, SourceCodeKind.File),
+                    new SourceUnit(pythonContext, new MemoryStreamContentProvider(pythonContext, code, modpath), modpath, SourceCodeKind.File),
                     ModuleOptions.None, out script);
 
                 dict = mod.__dict__;

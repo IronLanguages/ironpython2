@@ -1414,7 +1414,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static void InitializeForFinalization(CodeContext/*!*/ context, object newObject) {
-            IWeakReferenceable iwr = context.GetPythonContext().ConvertToWeakReferenceable(newObject);
+            IWeakReferenceable iwr = context.LanguageContext.ConvertToWeakReferenceable(newObject);
             Debug.Assert(iwr != null);
 
             InstanceFinalizer nif = new InstanceFinalizer(context, newObject);
@@ -3614,7 +3614,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static void Warn3k(CodeContext/*!*/ context, string message, params object[] args) {
-            if (context.GetPythonContext().PythonOptions.WarnPython30) {
+            if (context.LanguageContext.PythonOptions.WarnPython30) {
                 Warn(context, PythonExceptions.DeprecationWarning, message, args);
             }
         }

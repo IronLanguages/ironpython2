@@ -116,7 +116,7 @@ namespace IronPython.Modules {
 
             public @ref(CodeContext context, object @object, object callback) {
                 _context = context;
-                WeakRefTracker wrt = WeakRefHelpers.InitializeWeakRef(_context.GetPythonContext(), this, @object, callback);
+                WeakRefTracker wrt = WeakRefHelpers.InitializeWeakRef(_context.LanguageContext, this, @object, callback);
 
                 _target = new WeakHandle(@object, false);
                 _targetId = wrt.TargetId;
@@ -126,7 +126,7 @@ namespace IronPython.Modules {
             #region Finalizer
             ~@ref() {
                 IWeakReferenceable iwr;
-                if (_context.GetPythonContext().TryConvertToWeakReferenceable(_target.Target, out iwr))
+                if (_context.LanguageContext.TryConvertToWeakReferenceable(_target.Target, out iwr))
                 {
                     WeakRefTracker wrt = iwr.GetWeakRef();
                     if (wrt != null) {
@@ -334,7 +334,7 @@ namespace IronPython.Modules {
             ~weakproxy() {
                 // remove our self from the chain...
                 IWeakReferenceable iwr;
-                if (_context.GetPythonContext().TryConvertToWeakReferenceable(_target.Target, out iwr)) {
+                if (_context.LanguageContext.TryConvertToWeakReferenceable(_target.Target, out iwr)) {
                     WeakRefTracker wrt = iwr.GetWeakRef();
                     wrt.RemoveHandler(this);
                 }
@@ -598,7 +598,7 @@ namespace IronPython.Modules {
             ~weakcallableproxy() {
                 // remove our self from the chain...
                 IWeakReferenceable iwr;
-                if (_context.GetPythonContext().TryConvertToWeakReferenceable(_target.Target, out iwr))
+                if (_context.LanguageContext.TryConvertToWeakReferenceable(_target.Target, out iwr))
                 {
                     WeakRefTracker wrt = iwr.GetWeakRef();
                     wrt.RemoveHandler(this);

@@ -4265,6 +4265,7 @@ namespace IronPython.Runtime
     }
 
     public static class PythonContextHelpers {
+        [Obsolete("Use context.LanguageContext instead")]
         public static PythonContext GetPythonContext(this CodeContext context) {
             return context.LanguageContext;
         }
