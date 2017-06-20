@@ -132,7 +132,7 @@ namespace IronPython.Runtime.Operations {
 
 
             // Invoke Operator.IsCallable on the object. 
-            return PythonContext.GetContext(context).IsCallable(o);
+            return context.LanguageContext.IsCallable(o);
         }
 
         public static bool UserObjectIsCallable(CodeContext/*!*/ context, object o) {
@@ -154,7 +154,7 @@ namespace IronPython.Runtime.Operations {
 
         [LightThrowing]
         internal static object LookupEncodingError(CodeContext/*!*/ context, string name) {
-            Dictionary<string, object> errorHandlers = PythonContext.GetContext(context).ErrorHandlers;
+            Dictionary<string, object> errorHandlers = context.LanguageContext.ErrorHandlers;
             lock (errorHandlers) {
                 if (errorHandlers.ContainsKey(name))
                     return errorHandlers[name];
@@ -164,7 +164,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static void RegisterEncodingError(CodeContext/*!*/ context, string name, object handler) {
-            Dictionary<string, object> errorHandlers = PythonContext.GetContext(context).ErrorHandlers;
+            Dictionary<string, object> errorHandlers = context.LanguageContext.ErrorHandlers;
 
             lock (errorHandlers) {
                 if (!PythonOps.IsCallable(context, handler))
@@ -175,9 +175,9 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static PythonTuple LookupEncoding(CodeContext/*!*/ context, string encoding) {
-            PythonContext.GetContext(context).EnsureEncodings();
+            context.LanguageContext.EnsureEncodings();
 
-            List<object> searchFunctions = PythonContext.GetContext(context).SearchFunctions;
+            List<object> searchFunctions = context.LanguageContext.SearchFunctions;
             string normalized = encoding.ToLower().Replace(' ', '-');
             if (normalized.IndexOf(Char.MinValue) != -1) {
                 throw PythonOps.TypeError("lookup string cannot contain null character");
@@ -196,7 +196,7 @@ namespace IronPython.Runtime.Operations {
             if (!PythonOps.IsCallable(context, search_function))
                 throw PythonOps.TypeError("search_function must be callable");
 
-            List<object> searchFunctions = PythonContext.GetContext(context).SearchFunctions;
+            List<object> searchFunctions = context.LanguageContext.SearchFunctions;
 
             lock (searchFunctions) {
                 searchFunctions.Add(search_function);
@@ -337,7 +337,7 @@ namespace IronPython.Runtime.Operations {
             if (typeinfo == null) throw PythonOps.TypeError("issubclass: arg 2 must be a class");
 
             PythonTuple pt = typeinfo as PythonTuple;
-            PythonContext pyContext = PythonContext.GetContext(context);
+            PythonContext pyContext = context.LanguageContext;
             if (pt != null) {
                 // Recursively inspect nested tuple(s)
                 foreach (object o in pt) {
@@ -406,7 +406,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static bool IsInstance(CodeContext/*!*/ context, object o, PythonTuple typeinfo) {
-            PythonContext pyContext = PythonContext.GetContext(context);
+            PythonContext pyContext = context.LanguageContext;
             foreach (object type in typeinfo) {
                 try {
                     PythonOps.FunctionPushFrame(pyContext);
@@ -579,7 +579,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static object Equal(CodeContext/*!*/ context, object x, object y) {
-            PythonContext pc = PythonContext.GetContext(context);
+            PythonContext pc = context.LanguageContext;
             return pc.EqualSite.Target(pc.EqualSite, x, y);
         }
 
@@ -677,7 +677,7 @@ namespace IronPython.Runtime.Operations {
             int diff;
 
             if (DynamicHelpers.GetPythonType(x) != DynamicHelpers.GetPythonType(y)) {
-                if (shouldWarn && PythonContext.GetContext(context).PythonOptions.WarnPython30) {
+                if (shouldWarn && context.LanguageContext.PythonOptions.WarnPython30) {
                     PythonOps.Warn(context, PythonExceptions.DeprecationWarning, "comparing unequal types not supported in 3.x");
                 }
 
@@ -803,7 +803,7 @@ namespace IronPython.Runtime.Operations {
         public static object PowerMod(CodeContext/*!*/ context, object x, object y, object z) {
             object ret;
             if (z == null) {
-                return PythonContext.GetContext(context).Operation(PythonOperationKind.Power, x, y);
+                return context.LanguageContext.Operation(PythonOperationKind.Power, x, y);
             }
             if (x is int && y is int && z is int) {
                 ret = Int32Ops.Power((int)x, (int)y, (int)z);
@@ -1058,7 +1058,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static object GetIndex(CodeContext/*!*/ context, object o, object index) {
-            PythonContext pc = PythonContext.GetContext(context);
+            PythonContext pc = context.LanguageContext;
             return pc.GetIndexSite.Target(pc.GetIndexSite, o, index);
         }
 
@@ -1067,7 +1067,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static void SetAttr(CodeContext/*!*/ context, object o, string name, object value) {
-            PythonContext.GetContext(context).SetAttr(context, o, name, value);
+            context.LanguageContext.SetAttr(context, o, name, value);
         }
 
         public static bool TryGetBoundAttr(CodeContext/*!*/ context, object o, string name, out object ret) {
@@ -1075,7 +1075,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static void DeleteAttr(CodeContext/*!*/ context, object o, string name) {
-            PythonContext.GetContext(context).DeleteAttr(context, o, name);
+            context.LanguageContext.DeleteAttr(context, o, name);
         }
 
         public static bool HasAttr(CodeContext/*!*/ context, object o, string name) {
@@ -1415,7 +1415,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static void InitializeForFinalization(CodeContext/*!*/ context, object newObject) {
-            IWeakReferenceable iwr = context.GetPythonContext().ConvertToWeakReferenceable(newObject);
+            IWeakReferenceable iwr = context.LanguageContext.ConvertToWeakReferenceable(newObject);
             Debug.Assert(iwr != null);
 
             InstanceFinalizer nif = new InstanceFinalizer(context, newObject);
@@ -1504,7 +1504,7 @@ namespace IronPython.Runtime.Operations {
             // __metaclass__ = foo
             // class bar: pass
             // calls our function...
-            PythonContext pc = PythonContext.GetContext(context);
+            PythonContext pc = context.LanguageContext;
 
             return pc.MetaClassCallSite.Target(
                 pc.MetaClassCallSite,
@@ -1521,7 +1521,7 @@ namespace IronPython.Runtime.Operations {
         /// </summary>
         /// <param name="msg">Object representing the assertion message</param>
         public static void RaiseAssertionError(CodeContext context, object msg) {
-            PythonDictionary builtins = context.GetBuiltinsDict() ?? PythonContext.GetContext(context).BuiltinModuleDict;
+            PythonDictionary builtins = context.GetBuiltinsDict() ?? context.LanguageContext.BuiltinModuleDict;
 
             object obj;
             var message = String.Empty;
@@ -1691,7 +1691,7 @@ namespace IronPython.Runtime.Operations {
         #region Standard I/O support
 
         public static void Write(CodeContext/*!*/ context, object f, string text) {
-            PythonContext pc = PythonContext.GetContext(context);
+            PythonContext pc = context.LanguageContext;
 
             if (f == null) {
                 f = pc.SystemStandardOut;
@@ -1748,11 +1748,11 @@ namespace IronPython.Runtime.Operations {
 
         // Must stay here for now because libs depend on it.
         public static void Print(CodeContext/*!*/ context, object o) {
-            PrintWithDest(context, PythonContext.GetContext(context).SystemStandardOut, o);
+            PrintWithDest(context, context.LanguageContext.SystemStandardOut, o);
         }
 
         public static void PrintNoNewline(CodeContext/*!*/ context, object o) {
-            PrintWithDestNoNewline(context, PythonContext.GetContext(context).SystemStandardOut, o);
+            PrintWithDestNoNewline(context, context.LanguageContext.SystemStandardOut, o);
         }
 
         public static void PrintWithDest(CodeContext/*!*/ context, object dest, object o) {
@@ -1773,7 +1773,7 @@ namespace IronPython.Runtime.Operations {
         /// Prints newline into default standard output
         /// </summary>
         public static void PrintNewline(CodeContext/*!*/ context) {
-            PrintNewlineWithDest(context, PythonContext.GetContext(context).SystemStandardOut);
+            PrintNewlineWithDest(context, context.LanguageContext.SystemStandardOut);
         }
 
         /// <summary>
@@ -1788,7 +1788,7 @@ namespace IronPython.Runtime.Operations {
         /// Prints value into default standard output with Python comma semantics.
         /// </summary>
         public static void PrintComma(CodeContext/*!*/ context, object o) {
-            PrintCommaWithDest(context, PythonContext.GetContext(context).SystemStandardOut, o);
+            PrintCommaWithDest(context, context.LanguageContext.SystemStandardOut, o);
         }
 
         /// <summary>
@@ -1806,14 +1806,14 @@ namespace IronPython.Runtime.Operations {
         /// Called from generated code when we are supposed to print an expression value
         /// </summary>
         public static void PrintExpressionValue(CodeContext/*!*/ context, object value) {
-            PythonContext pc = PythonContext.GetContext(context);
+            PythonContext pc = context.LanguageContext;
             object dispHook = pc.GetSystemStateValue("displayhook");
             pc.CallWithContext(context, dispHook, value);
         }
 
 #if FEATURE_FULL_CONSOLE
         public static void PrintException(CodeContext/*!*/ context, Exception/*!*/ exception, IConsole console) {
-            PythonContext pc = PythonContext.GetContext(context);
+            PythonContext pc = context.LanguageContext;
             PythonTuple exInfo = GetExceptionInfoLocal(context, exception);
             pc.SetSystemStateValue("last_type", exInfo[0]);
             pc.SetSystemStateValue("last_value", exInfo[1]);
@@ -2007,7 +2007,7 @@ namespace IronPython.Runtime.Operations {
             PythonFile pf;
             Stream cs;
 
-            var pythonContext = PythonContext.GetContext(context);
+            var pythonContext = context.LanguageContext;
 
             bool noLineFeed = true;
 
@@ -2137,7 +2137,7 @@ namespace IronPython.Runtime.Operations {
             }
 
             IEnumerable enumer;
-            if (PythonContext.GetContext(context).TryConvertToIEnumerable(enumerable, out enumer)) {
+            if (context.LanguageContext.TryConvertToIEnumerable(enumerable, out enumer)) {
                 enumerator = enumer.GetEnumerator();
                 return true;
             }
@@ -2894,7 +2894,7 @@ namespace IronPython.Runtime.Operations {
             if (self.TryGetBoundCustomMember(context, "__iter__", out callable)) {
                 return CreatePythonEnumerable(self);
             } else if (self.TryGetBoundCustomMember(context, "__getitem__", out callable)) {
-                return CreateItemEnumerable(callable, PythonContext.GetContext(context).GetItemCallSite);
+                return CreateItemEnumerable(callable, context.LanguageContext.GetItemCallSite);
             }
 
             return null;
@@ -2914,7 +2914,7 @@ namespace IronPython.Runtime.Operations {
             if (self.TryGetBoundCustomMember(context, "__iter__", out callable)) {
                 return new IEnumerableOfTWrapper<T>(CreatePythonEnumerable(self));
             } else if (self.TryGetBoundCustomMember(context, "__getitem__", out callable)) {
-                return new IEnumerableOfTWrapper<T>(CreateItemEnumerable(callable, PythonContext.GetContext(context).GetItemCallSite));
+                return new IEnumerableOfTWrapper<T>(CreateItemEnumerable(callable, context.LanguageContext.GetItemCallSite));
             }
 
             return null;
@@ -2934,7 +2934,7 @@ namespace IronPython.Runtime.Operations {
             if (self.TryGetBoundCustomMember(context, "__iter__", out callable)) {
                 return CreatePythonEnumerator(self);
             } else if (self.TryGetBoundCustomMember(context, "__getitem__", out callable)) {
-                return CreateItemEnumerator(callable, PythonContext.GetContext(context).GetItemCallSite);
+                return CreateItemEnumerator(callable, context.LanguageContext.GetItemCallSite);
             }
 
             return null;
@@ -2973,7 +2973,7 @@ namespace IronPython.Runtime.Operations {
             if (oi.TryGetBoundCustomMember(context, "__nonzero__", out value)) {
                 return ThrowingConvertToNonZero(PythonCalls.Call(context, value));
             } else if (oi.TryGetBoundCustomMember(context, "__len__", out value)) {
-                return PythonContext.GetContext(context).ConvertToInt32(PythonCalls.Call(context, value)) != 0;
+                return context.LanguageContext.ConvertToInt32(PythonCalls.Call(context, value)) != 0;
             }
 
             return null;
@@ -3238,7 +3238,7 @@ namespace IronPython.Runtime.Operations {
 
         [NoSideEffects]
         public static object MakeFunctionDebug(CodeContext/*!*/ context, FunctionCode funcInfo, object modName, object[] defaults, Delegate target) {
-            funcInfo.SetDebugTarget(PythonContext.GetContext(context), target);
+            funcInfo.SetDebugTarget(context.LanguageContext, target);
 
             return new PythonFunction(context, funcInfo, modName, defaults, null);
         }
@@ -3274,7 +3274,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static void FunctionPushFrameCodeContext(CodeContext context) {
-            FunctionPushFrame(PythonContext.GetContext(context));
+            FunctionPushFrame(context.LanguageContext);
         }
 
         public static void FunctionPopFrame() {
@@ -3562,9 +3562,9 @@ namespace IronPython.Runtime.Operations {
 
         public static void RemoveModule(CodeContext/*!*/ context, string name, object oldValue) {
             if (oldValue != null) {
-                PythonContext.GetContext(context).SystemStateModules[name] = oldValue;
+                context.LanguageContext.SystemStateModules[name] = oldValue;
             } else {
-                PythonContext.GetContext(context).SystemStateModules.Remove(name);
+                context.LanguageContext.SystemStateModules.Remove(name);
             }
         }
 
@@ -3598,7 +3598,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static void Warn(CodeContext/*!*/ context, PythonType category, string message, params object[] args) {
-            PythonContext pc = PythonContext.GetContext(context);
+            PythonContext pc = context.LanguageContext;
             object warnings = pc.GetWarningsModule(), warn = null;
 
             if (warnings != null) {
@@ -3615,13 +3615,13 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static void Warn3k(CodeContext/*!*/ context, string message, params object[] args) {
-            if (context.GetPythonContext().PythonOptions.WarnPython30) {
+            if (context.LanguageContext.PythonOptions.WarnPython30) {
                 Warn(context, PythonExceptions.DeprecationWarning, message, args);
             }
         }
 
         public static void ShowWarning(CodeContext/*!*/ context, PythonType category, string message, string filename, int lineNo) {
-            PythonContext pc = PythonContext.GetContext(context);
+            PythonContext pc = context.LanguageContext;
             object warnings = pc.GetWarningsModule(), warn = null;
 
             if (warnings != null) {
@@ -3679,79 +3679,79 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static DynamicMetaObjectBinder MakeComboAction(CodeContext/*!*/ context, DynamicMetaObjectBinder opBinder, DynamicMetaObjectBinder convBinder) {
-            return PythonContext.GetContext(context).BinaryOperationRetType((PythonBinaryOperationBinder)opBinder, (PythonConversionBinder)convBinder);
+            return context.LanguageContext.BinaryOperationRetType((PythonBinaryOperationBinder)opBinder, (PythonConversionBinder)convBinder);
         }
 
         public static DynamicMetaObjectBinder MakeInvokeAction(CodeContext/*!*/ context, CallSignature signature) {
-            return PythonContext.GetContext(context).Invoke(signature);
+            return context.LanguageContext.Invoke(signature);
         }
 
         public static DynamicMetaObjectBinder MakeGetAction(CodeContext/*!*/ context, string name, bool isNoThrow) {
-            return PythonContext.GetContext(context).GetMember(name);
+            return context.LanguageContext.GetMember(name);
         }
 
         public static DynamicMetaObjectBinder MakeCompatGetAction(CodeContext/*!*/ context, string name) {
-            return PythonContext.GetContext(context).CompatGetMember(name, false);
+            return context.LanguageContext.CompatGetMember(name, false);
         }
 
         public static DynamicMetaObjectBinder MakeCompatInvokeAction(CodeContext/*!*/ context, CallInfo callInfo) {
-            return PythonContext.GetContext(context).CompatInvoke(callInfo);
+            return context.LanguageContext.CompatInvoke(callInfo);
         }
 
         public static DynamicMetaObjectBinder MakeCompatConvertAction(CodeContext/*!*/ context, Type toType, bool isExplicit) {
-            return PythonContext.GetContext(context).Convert(toType, isExplicit ? ConversionResultKind.ExplicitCast : ConversionResultKind.ImplicitCast).CompatBinder;
+            return context.LanguageContext.Convert(toType, isExplicit ? ConversionResultKind.ExplicitCast : ConversionResultKind.ImplicitCast).CompatBinder;
         }
 
         public static DynamicMetaObjectBinder MakeSetAction(CodeContext/*!*/ context, string name) {
-            return PythonContext.GetContext(context).SetMember(name);
+            return context.LanguageContext.SetMember(name);
         }
 
         public static DynamicMetaObjectBinder MakeDeleteAction(CodeContext/*!*/ context, string name) {
-            return PythonContext.GetContext(context).DeleteMember(name);
+            return context.LanguageContext.DeleteMember(name);
         }
 
         public static DynamicMetaObjectBinder MakeConversionAction(CodeContext/*!*/ context, Type type, ConversionResultKind kind) {
-            return PythonContext.GetContext(context).Convert(type, kind);
+            return context.LanguageContext.Convert(type, kind);
         }
 
         public static DynamicMetaObjectBinder MakeTryConversionAction(CodeContext/*!*/ context, Type type, ConversionResultKind kind) {
-            return PythonContext.GetContext(context).Convert(type, kind);
+            return context.LanguageContext.Convert(type, kind);
         }
 
         public static DynamicMetaObjectBinder MakeOperationAction(CodeContext/*!*/ context, int operationName) {
-            return PythonContext.GetContext(context).Operation((PythonOperationKind)operationName);
+            return context.LanguageContext.Operation((PythonOperationKind)operationName);
         }
 
         public static DynamicMetaObjectBinder MakeUnaryOperationAction(CodeContext/*!*/ context, ExpressionType expressionType) {
-            return PythonContext.GetContext(context).UnaryOperation(expressionType);
+            return context.LanguageContext.UnaryOperation(expressionType);
         }
 
         public static DynamicMetaObjectBinder MakeBinaryOperationAction(CodeContext/*!*/ context, ExpressionType expressionType) {
-            return PythonContext.GetContext(context).BinaryOperation(expressionType);
+            return context.LanguageContext.BinaryOperation(expressionType);
         }
 
         public static DynamicMetaObjectBinder MakeGetIndexAction(CodeContext/*!*/ context, int argCount) {
-            return PythonContext.GetContext(context).GetIndex(argCount);
+            return context.LanguageContext.GetIndex(argCount);
         }
 
         public static DynamicMetaObjectBinder MakeSetIndexAction(CodeContext/*!*/ context, int argCount) {
-            return PythonContext.GetContext(context).SetIndex(argCount);
+            return context.LanguageContext.SetIndex(argCount);
         }
 
         public static DynamicMetaObjectBinder MakeDeleteIndexAction(CodeContext/*!*/ context, int argCount) {
-            return PythonContext.GetContext(context).DeleteIndex(argCount);
+            return context.LanguageContext.DeleteIndex(argCount);
         }
 
         public static DynamicMetaObjectBinder MakeGetSliceBinder(CodeContext/*!*/ context) {
-            return PythonContext.GetContext(context).GetSlice;
+            return context.LanguageContext.GetSlice;
         }
 
         public static DynamicMetaObjectBinder MakeSetSliceBinder(CodeContext/*!*/ context) {
-            return PythonContext.GetContext(context).SetSliceBinder;
+            return context.LanguageContext.SetSliceBinder;
         }
 
         public static DynamicMetaObjectBinder MakeDeleteSliceBinder(CodeContext/*!*/ context) {
-            return PythonContext.GetContext(context).DeleteSlice;
+            return context.LanguageContext.DeleteSlice;
         }
 
 #if FEATURE_REFEMIT

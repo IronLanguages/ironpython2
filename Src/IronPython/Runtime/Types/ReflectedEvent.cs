@@ -210,7 +210,7 @@ namespace IronPython.Runtime.Types {
                 if (CompilerHelpers.IsVisible(remove)
                     || (remove.IsProtected() /*todo: validate current context is in family*/ )
                     || context.LanguageContext.DomainManager.Configuration.PrivateBinding) {
-                    _event.Tracker.RemoveHandler(_instance, func, PythonContext.GetContext(context).EqualityComparer);
+                    _event.Tracker.RemoveHandler(_instance, func, context.LanguageContext.EqualityComparer);
                 } else {
                     throw new TypeErrorException("Cannot remove handler from a private event.");
                 }

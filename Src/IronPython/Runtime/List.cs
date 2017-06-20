@@ -115,7 +115,7 @@ namespace IronPython.Runtime {
             try {
                 object len;
                 if (PythonTypeOps.TryInvokeUnaryOperator(context, sequence, "__len__", out len)) {
-                    int ilen = PythonContext.GetContext(context).ConvertToInt32(len);
+                    int ilen = context.LanguageContext.ConvertToInt32(len);
                     _data = new object[ilen];
                     _size = 0;
                     extend(sequence);
@@ -952,7 +952,7 @@ namespace IronPython.Runtime {
 
             // the empty list is already sorted
             if (_size != 0) {                
-                IComparer comparer = PythonContext.GetContext(context).GetComparer(
+                IComparer comparer = context.LanguageContext.GetComparer(
                     cmp,
                     GetComparisonType());
 

@@ -52,7 +52,7 @@ is given, must be a number between 1 and 9.
                 [DefaultParameterValue(0)]int buffering,
                 [DefaultParameterValue(DEFAULT_COMPRESSLEVEL)]int compresslevel) {
 
-                var pythonContext = PythonContext.GetContext(context);
+                var pythonContext = context.LanguageContext;
 
                 this.buffering = buffering;
                 this.compresslevel = compresslevel;

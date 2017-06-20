@@ -637,7 +637,7 @@ namespace IronPython.Runtime {
         }
 
         public bool __contains__(CodeContext/*!*/ context, int value) {
-            if (!PythonContext.GetContext(context).PythonOptions.Python30) {
+            if (!context.LanguageContext.PythonOptions.Python30) {
                 throw PythonOps.TypeError("'in <bytes>' requires string or bytes as left operand, not int");
             }
 
@@ -648,7 +648,7 @@ namespace IronPython.Runtime {
             if (value is Extensible<string>) {
                 return __contains__(PythonOps.MakeBytes(((Extensible<string>)value).Value.MakeByteArray()));
             }
-            if (!PythonContext.GetContext(context).PythonOptions.Python30) {
+            if (!context.LanguageContext.PythonOptions.Python30) {
                 throw PythonOps.TypeError("'in <bytes>' requires string or bytes as left operand, not {0}", PythonTypeOps.GetName(value));
             }
 
@@ -759,7 +759,7 @@ namespace IronPython.Runtime {
         public object this[CodeContext/*!*/ context, int index] {
             get {
                 byte res = _bytes[PythonOps.FixIndex(index, _bytes.Length)];
-                if (PythonContext.GetContext(context).PythonOptions.Python30) {
+                if (context.LanguageContext.PythonOptions.Python30) {
                     return (int)res;
                 }
 

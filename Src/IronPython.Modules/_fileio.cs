@@ -75,7 +75,7 @@ namespace IronPython.Modules {
                     throw PythonOps.ValueError("fd must be >= 0");
                 }
 
-                PythonContext pc = PythonContext.GetContext(context);
+                PythonContext pc = context.LanguageContext;
 
                 PythonFile pf = null;
                 FileIO file = null;
@@ -132,7 +132,7 @@ namespace IronPython.Modules {
                 }
                 _closefd = true;
                 this.name = name;
-                PlatformAdaptationLayer pal = PythonContext.GetContext(context).DomainManager.Platform;
+                PlatformAdaptationLayer pal = context.LanguageContext.DomainManager.Platform;
 
                 switch (StandardizeMode(mode)) {
                     case "r":
@@ -171,7 +171,7 @@ namespace IronPython.Modules {
                         break;
                 }
 
-                _context = PythonContext.GetContext(context);
+                _context = context.LanguageContext;
             }
 
             /// <summary>
