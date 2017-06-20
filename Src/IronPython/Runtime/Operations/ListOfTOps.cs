@@ -13,6 +13,8 @@
  *
  * ***************************************************************************/
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -58,31 +60,81 @@ namespace IronPython.Runtime.Operations {
 
         #region Python __ methods
 
-        public static bool __contains__(List<T> l, T item) {
-            return l.Contains(item);
-        }
-
-        public static string __format__(CodeContext/*!*/ context, List<T> self, [BytesConversion]string formatSpec) {
-            return ObjectOps.__format__(context, self, formatSpec);
-        }
-
-        public static int __len__(List<T> l) {
-            return l.Count;
+        [SpecialName]
+        public static void DeleteItem(List<T> l, int index) {
+            l.RemoveAt(PythonOps.FixIndex(index, l.Count));
         }
 
         [SpecialName]
-        public static T GetItem(List<T> l, int index) {
-            return l[PythonOps.FixIndex(index, l.Count)];
+        public static void DeleteItem(List<T> l, object index) {
+            DeleteItem(l, Converter.ConvertToIndex(index));
         }
 
         [SpecialName]
-        public static T GetItem(List<T> l, object index) {
-            return GetItem(l, Converter.ConvertToIndex(index));
+        public static void DeleteItem(List<T> l, Slice slice) {
+            if (slice == null) {
+                throw PythonOps.TypeError("list indices must be integers or slices");
+            }
+
+            lock (l) {
+                int start, stop, step;
+                // slice is sealed, indices can't be user code...
+                slice.indices(l.Count, out start, out stop, out step);
+
+                if (step > 0 && (start >= stop)) return;
+                if (step < 0 && (start <= stop)) return;
+
+                if (step == 1) {
+                    int i = start;
+                    for (int j = stop; j < l.Count; j++, i++) {
+                        l[i] = l[j];
+                    }
+                    l.RemoveRange(i, stop - start);
+                    return;
+                } else if (step == -1) {
+                    int i = stop + 1;
+                    for (int j = start + 1; j < l.Count; j++, i++) {
+                        l[i] = l[j];
+                    }
+                    l.RemoveRange(i, start - stop);
+                    return;
+                } else if (step < 0) {
+                    // find "start" we will skip in the 1,2,3,... order
+                    int i = start;
+                    while (i > stop) {
+                        i += step;
+                    }
+                    i -= step;
+
+                    // swap start/stop, make step positive
+                    stop = start + 1;
+                    start = i;
+                    step = -step;
+                }
+
+                int curr, skip, move;
+                // skip: the next position we should skip
+                // curr: the next position we should fill in data
+                // move: the next position we will check
+                curr = skip = move = start;
+
+                while (curr < stop && move < stop) {
+                    if (move != skip) {
+                        l[curr++] = l[move];
+                    } else
+                        skip += step;
+                    move++;
+                }
+                while (stop < l.Count) {
+                    l[curr++] = l[stop++];
+                }
+                l.RemoveRange(curr, l.Count - curr);
+            }
         }
 
         [SpecialName]
         public static List<T> GetItem(List<T> l, Slice slice) {
-            if (slice == null) throw PythonOps.TypeError("string indices must be slices or integers");
+            if (slice == null) throw PythonOps.TypeError("List<T> indices must be slices or integers");
             int start, stop, step;
             slice.indices(l.Count, out start, out stop, out step);
             if (step == 1) {
