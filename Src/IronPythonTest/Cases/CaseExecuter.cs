@@ -106,12 +106,9 @@ namespace IronPythonTest.Cases {
             return string.Empty;
         }
 
-        private string ReplaceVariables(string input) {
-            Regex variableRegex = new Regex(@"\${([^}]+)}", RegexOptions.Compiled);
-            var replacements = new Dictionary<string, string>() {
-                { "ROOT", FindRoot() }
-            };
-
+        private string ReplaceVariables(string input, IDictionary<string,string> replacements) {
+            Regex variableRegex = new Regex(@"\$\(([^}]+)\)", RegexOptions.Compiled);
+            
             var result = input;
             var match = variableRegex.Match(input);
             while (match.Success) {
@@ -135,15 +132,23 @@ namespace IronPythonTest.Cases {
 
         private int GetProcessTest(TestInfo testcase) {
             int exitCode = -1;
+            var argReplacements = new Dictionary<string, string>() {
+                { "TEST_FILE", testcase.Path }
+            };
+
+            var wdReplacements = new Dictionary<string, string>() {
+                { "ROOT", FindRoot() }
+            };
+
             using (Process proc = new Process()) {
                 proc.StartInfo.FileName = Executable;
-                proc.StartInfo.Arguments = string.Format("{0} \"{1}\"", testcase.Options.Arguments, testcase.Path);
+                proc.StartInfo.Arguments = ReplaceVariables(testcase.Options.Arguments, argReplacements);
                 if (!string.IsNullOrEmpty(IRONPYTHONPATH)) {
                     proc.StartInfo.EnvironmentVariables["IRONPYTHONPATH"] = IRONPYTHONPATH;
                 }
 
                 if (!string.IsNullOrEmpty(testcase.Options.WorkingDirectory)) {
-                    proc.StartInfo.WorkingDirectory = ReplaceVariables(testcase.Options.WorkingDirectory);
+                    proc.StartInfo.WorkingDirectory = ReplaceVariables(testcase.Options.WorkingDirectory, wdReplacements);
                 }
                 proc.StartInfo.UseShellExecute = false;
                 proc.Start();
@@ -169,7 +174,10 @@ namespace IronPythonTest.Cases {
 
             var cwd = Environment.CurrentDirectory;
             if(!string.IsNullOrWhiteSpace(workingDir)) {
-                Environment.CurrentDirectory = ReplaceVariables(workingDir);
+                var replacements = new Dictionary<string, string>() {
+                    { "ROOT", FindRoot() }
+                };
+                Environment.CurrentDirectory = ReplaceVariables(workingDir, replacements);
             }
 
             try {
