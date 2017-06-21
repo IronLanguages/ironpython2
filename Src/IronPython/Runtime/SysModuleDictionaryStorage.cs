@@ -167,7 +167,7 @@ namespace IronPython.Runtime {
         }
 
         private static object CreateTraceBack(ExceptionState list) {
-            return PythonOps.CreateTraceBack(list.ClrException, list.Traceback, list.FrameCount);
+            return PythonOps.CreateTraceBack(list.ClrException, list.Traceback, null, list.FrameCount);
         }
 
         public override void Clear(ref DictionaryStorage storage) {
