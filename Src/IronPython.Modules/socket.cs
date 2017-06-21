@@ -2865,7 +2865,7 @@ namespace IronPython.Modules {
             [Documentation(@"read([len]) -> string
 
 Read up to len bytes from the SSL socket.")]
-            public string read(CodeContext/*!*/ context, [DefaultParameterValue(Int32.MaxValue)] int len) {
+            public string read(CodeContext/*!*/ context, int len) {
                 EnsureSslStream(true);
 
                 try {
