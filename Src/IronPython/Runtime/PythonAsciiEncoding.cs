@@ -198,7 +198,7 @@ namespace IronPython.Runtime {
 
         public override bool Fallback(char charUnknown, int index) {
             if (charUnknown > 0xff) {
-                throw PythonOps.UnicodeEncodeError("'ascii' codec can't encode character '\\u{0:X}' in position {1}", (int)charUnknown, index);
+                throw PythonOps.UnicodeEncodeError("'ascii' codec can't encode character '\\u{0:X}' in position {1}: ordinal not in range(128)", (int)charUnknown, index);
             }
 
             _buffer.Add(charUnknown);
