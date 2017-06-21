@@ -4436,7 +4436,7 @@ namespace IronPython.Runtime.Operations {
         /// <param name="type">original type of exception requested</param>
         /// <returns>a TypeEror exception</returns>
         internal static Exception MakeExceptionTypeError(object type) {
-            return PythonOps.TypeError("exceptions must be classes, or instances, not {0}", PythonTypeOps.GetName(type));
+            return PythonOps.TypeError("exceptions must be old-style classes or derived from BaseException, not {0}", PythonTypeOps.GetName(type));
         }
 
         public static Exception AttributeErrorForObjectMissingAttribute(object obj, string attributeName) {
