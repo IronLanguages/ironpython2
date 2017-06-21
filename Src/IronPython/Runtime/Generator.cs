@@ -527,7 +527,7 @@ namespace IronPython.Runtime {
 
             // This may invoke user code such as __init__, thus MakeException may throw. 
             // Since this is invoked from the generator's body, the generator can catch this exception. 
-            return LightExceptions.Throw(PythonOps.MakeExceptionWorker(Context, throwableBackup[0], throwableBackup[1], throwableBackup[2], false, true));
+            return LightExceptions.Throw(PythonOps.MakeExceptionForGenerator(Context, throwableBackup[0], throwableBackup[1], throwableBackup[2]));
         }
 
         private void Close() {

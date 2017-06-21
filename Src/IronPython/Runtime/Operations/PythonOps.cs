@@ -2422,7 +2422,13 @@ namespace IronPython.Runtime.Operations {
             return e;
         }
 
-        internal static Exception MakeExceptionWorker(CodeContext/*!*/ context, object type, object value, object traceback, bool forRethrow, bool forGenerator=false) {
+        public static Exception MakeExceptionForGenerator(CodeContext/*!*/ context, object type, object value, object traceback) {
+            Exception e = MakeExceptionWorker(context, type, value, traceback, false, true);
+            e.RemoveFrameList();
+            return e;
+        }
+
+        private static Exception MakeExceptionWorker(CodeContext/*!*/ context, object type, object value, object traceback, bool forRethrow, bool forGenerator=false) {
             Exception throwable;
             PythonType pt;
 
