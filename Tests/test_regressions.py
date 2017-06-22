@@ -965,6 +965,28 @@ class C:
         self.assertEqual('Bool is 1', 'Bool is {:^}'.format(True))
         self.assertEqual('Bool is     1     ', 'Bool is {:^10}'.format(True))
 
+    def test_ipy3_gh230(self):
+        """https://github.com/IronLanguages/ironpython3/pull/230"""
+        import inspect
+        class test(object): pass
+
+        self.assertFalse(inspect.ismethoddescriptor(test.__weakref__))
+        self.assertFalse(inspect.ismethoddescriptor(test.__dict__["__dict__"]))
+
+    def test_ipy3_gh219(self):
+        """https://github.com/IronLanguages/ironpython3/pull/219"""
+        with self.assertRaises(SyntaxError):
+            exec '["a"] = [1]'
+
+        with self.assertRaises(SyntaxError):
+            exec '[a + 1] = [1]'
+
+    def test_ipy3_gh215(self):
+        """https://github.com/IronLanguages/ironpython3/pull/215"""
+        import io
+        class Test(io.IOBase): pass
+        dir(Test()) # check that this does not StackOverflow
+
 if __name__ == '__main__':
     from test import test_support
     test_support.run_unittest(__name__)
