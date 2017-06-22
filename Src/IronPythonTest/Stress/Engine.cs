@@ -23,7 +23,7 @@ using NUnit.Framework;
 
 namespace IronPythonTest.Stress {
 
-    [TestFixture]
+    [TestFixture(Category="IronPython")]
     public class Engine
 #if FEATURE_REMOTING
         : MarshalByRefObject
@@ -50,7 +50,7 @@ namespace IronPythonTest.Stress {
         }
 
 #if FEATURE_REFEMIT
-        [Test, Category("IronPython")]
+        [Test]
         public void ScenarioXGC() {
             long initialMemory = GetTotalMemory();
 
