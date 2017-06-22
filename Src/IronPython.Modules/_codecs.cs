@@ -72,6 +72,18 @@ namespace IronPython.Modules {
         }
 
         /// <summary>
+        /// Encodes the input string with the specified optimized encoding map.
+        /// </summary>
+        public static PythonTuple charmap_encode(CodeContext context, [BytesConversion]string input, string errors, [NotNull]EncodingMap map) {
+            return CharmapDecodeWorker(context, input, errors, new EncodingMapEncoding(map, errors), false);
+        }
+
+        public static object charmap_encode(CodeContext context, [BytesConversion]string input, string errors = "strict", IDictionary<object, object> map = null) {
+            Encoding e = map != null ? new CharmapEncoding(map, errors) : null;
+            return CharmapDecodeWorker(context, input, errors, e, false);
+        }
+
+        /// <summary>
         /// Decodes the input string using the provided string mapping.
         /// </summary>
         public static PythonTuple charmap_decode(CodeContext context, [BytesConversion]string input, string errors, [NotNull]string map) {
@@ -82,22 +94,11 @@ namespace IronPython.Modules {
             return CharmapDecodeWorker(context, input, errors, new EncodingMapEncoding(m, errors), true);
         }
 
-        /// <summary>
-        /// Encodes the input string with the specified optimized encoding map.
-        /// </summary>
-        public static PythonTuple charmap_encode(CodeContext context, [BytesConversion]string input, string errors, [NotNull]EncodingMap map) {
-            return CharmapDecodeWorker(context, input, errors, new EncodingMapEncoding(map, errors), false);
-        }
-
         public static PythonTuple charmap_decode(CodeContext context, [BytesConversion]string input, string errors="strict", IDictionary<object, object> map=null) {
             Encoding e = map != null ? new CharmapEncoding(map, errors) : null;
             return CharmapDecodeWorker(context, input, errors, e, true);
         }
 
-        public static object charmap_encode(CodeContext context, [BytesConversion]string input, string errors="strict", IDictionary<object, object> map=null) {
-            Encoding e = map != null ? new CharmapEncoding(map, errors) : null;
-            return CharmapDecodeWorker(context, input, errors, e, false);
-        }
 
         private static PythonTuple CharmapDecodeWorker(CodeContext context, string input, string errors, Encoding e, bool isDecode) {
             if (input.Length == 0) {
@@ -221,7 +222,7 @@ namespace IronPython.Modules {
                         break;
                 }
             }
-            return PythonTuple.MakeTuple(res.ToString(), text.Length);
+            return PythonTuple.MakeTuple(res.ToString(), res.Length);
         }
 
         #region Latin-1 Functions
@@ -325,10 +326,6 @@ namespace IronPython.Modules {
         }
 
         public static PythonTuple unicode_internal_encode(object input, [Optional]string errors) {
-            string str = input as string;
-            if(str != null) {
-                return PythonTuple.MakeTuple(str, str.Length);
-            }
             // length consumed is returned in bytes and for a UTF-16 string that is 2 bytes per char
             PythonTuple res = DoEncode(Encoding.Unicode, input, errors, false);
             return PythonTuple.MakeTuple(
@@ -819,6 +816,18 @@ namespace IronPython.Modules {
         public CharmapEncoding(IDictionary<object, object> map, string errors) {
             _map = map;
             _errors = errors;
+            FixupMap();
+        }
+
+        private void FixupMap() {
+            // this is required if someone passes in a mapping like { 'a' : None }
+            foreach(var k in _map) {
+                if(k.Key is string) {
+                    var s = (string)k.Key;
+                    if(s.Length > 0)
+                        _map[(int)s[0]] = k.Value;
+                }
+            }
         }
 
         public override int GetByteCount(char[] chars, int index, int count) {
@@ -827,21 +836,15 @@ namespace IronPython.Modules {
             while (index < charEnd) {
                 char c = chars[index];
                 object val;
-                object charObj = ScriptingRuntimeHelpers.Int32ToObject((int)c);
+                object charObj = (int)c;
 
-                if (!_map.TryGetValue(charObj, out val)) {
-                    if(val == null) {
-                        throw PythonOps.UnicodeEncodeError("charmap", c, index, "'charmap' codec can't encode character u'\\x{0:x}' in position {1}: character maps to <undefined>", (int)c, index);
-                    }
+                if (!_map.TryGetValue(charObj, out val) || (val == null && _errors == "strict")) {
                     EncoderFallbackBuffer efb = EncoderFallback.CreateFallbackBuffer();
                     if (efb.Fallback(c, index)) {
                         byteCount += efb.Remaining;
                     }
                 } else if(val == null) { 
-                    if(_errors == "strict") {
-                        throw PythonOps.UnicodeDecodeError("'charmap' codec can't decode characters at index {0} because charmap maps to None", index);
-                    }
-                    byteCount += 2; // \ufffd
+                    throw PythonOps.UnicodeEncodeError("charmap", c, index, "'charmap' codec can't encode character u'\\x{0:x}' in position {1}: character maps to <undefined>", (int)c, index);
                 } else if (val is string) {
                     byteCount += ((string)val).Length;
                 } else if(val is int) {
@@ -860,16 +863,18 @@ namespace IronPython.Modules {
             while(charIndex < charEnd) {
                 char c = chars[charIndex];
                 object val;
-                object obj = ScriptingRuntimeHelpers.Int32ToObject((int)c);
-                if (!_map.TryGetValue(obj, out val) || val == null) {
+                object obj = (int)c;
+                if (!_map.TryGetValue(obj, out val) || (val == null && _errors == "strict")) {
                     EncoderFallbackBuffer efb = EncoderFallback.CreateFallbackBuffer();
                     if (efb.Fallback(c, charIndex)) {
                         while (efb.Remaining != 0) {
-                            obj = ScriptingRuntimeHelpers.Int32ToObject((int)efb.GetNextChar());
+                            obj = (int)efb.GetNextChar();
                             bytes[byteIndex++] = (byte)((int)_map[obj]);
                             outputBytes++;
                         }
                     }
+                } else if(val == null) {
+                    throw PythonOps.UnicodeEncodeError("charmap", c, charIndex, "'charmap' codec can't encode character u'\\x{0:x}' in position {1}: character maps to <undefined>", (int)c, charIndex);
                 } else if (val is string) {
                     string v = val as string;
                     for (int i = 0; i < v.Length; i++) {
