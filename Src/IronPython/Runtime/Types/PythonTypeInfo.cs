@@ -1025,7 +1025,7 @@ namespace IronPython.Runtime.Types {
             if (type == typeof(string)) {
                 // __iter__ is only exposed in 3.0
                 if (binder.Binder.Context.PythonOptions.Python30) {
-                    return GetInstanceOpsMethod(type, "IterMethodForString");
+                    return GetInstanceOpsMethod(type, nameof(InstanceOps.IterMethodForString));
                 }
                 return MemberGroup.EmptyGroup;
             }
@@ -1033,7 +1033,7 @@ namespace IronPython.Runtime.Types {
             if (typeof(Bytes).IsAssignableFrom(type)) {
                 // __iter__ is only exposed in 3.0
                 if (binder.Binder.Context.PythonOptions.Python30) {
-                    return GetInstanceOpsMethod(type, "IterMethodForBytes");
+                    return GetInstanceOpsMethod(type, nameof(InstanceOps.IterMethodForBytes));
                 }
                 return MemberGroup.EmptyGroup;
             }
@@ -1049,13 +1049,13 @@ namespace IronPython.Runtime.Types {
             if (!type.GetTypeInfo().IsDefined(typeof(DontMapIEnumerableToIterAttribute), true)) {
                 // no special __iter__, use the default.
                 if (typeof(IEnumerable<>).IsAssignableFrom(type)) {
-                    return GetInstanceOpsMethod(type, "IterMethodForGenericEnumerable");
+                    return GetInstanceOpsMethod(type, nameof(InstanceOps.IterMethodForGenericEnumerable));
                 } else if (typeof(IEnumerable).IsAssignableFrom(type)) {
-                    return GetInstanceOpsMethod(type, "IterMethodForEnumerable");
+                    return GetInstanceOpsMethod(type, nameof(InstanceOps.IterMethodForEnumerable));
                 } else if (typeof(IEnumerator<>).IsAssignableFrom(type)) {
-                    return GetInstanceOpsMethod(type, "IterMethodForGenericEnumerator");
+                    return GetInstanceOpsMethod(type, nameof(InstanceOps.IterMethodForGenericEnumerator));
                 } else if (typeof(IEnumerator).IsAssignableFrom(type)) {
-                    return GetInstanceOpsMethod(type, "IterMethodForEnumerator");
+                    return GetInstanceOpsMethod(type, nameof(InstanceOps.IterMethodForEnumerator));
                 }
             }
             
