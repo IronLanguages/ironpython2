@@ -362,10 +362,6 @@ class CodecTest(IronPythonTestCase):
             self.assertEqual(codecs.mbcs_encode(chrs, mode), ('\x80\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8e\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9e\x9f', 27))
 
     @skipUnlessIronPython()
-    def test_readbuffer_encode(self):
-        self.assertRaises(NotImplementedError, codecs.readbuffer_encode, "abc")
-
-    @skipUnlessIronPython()
     def test_unicode_escape_decode(self):
         self.assertRaises(NotImplementedError, codecs.unicode_escape_decode, "abc")
 
@@ -539,10 +535,23 @@ class CodecTest(IronPythonTestCase):
             temp = _codecs.lookup(encoding)
 
     def test_charmap_build(self):
-        decodemap = ''.join([unichr(i).upper() if chr(i).islower() else unichr(i).lower() for i in xrange(256)])    
+        decodemap = ''.join([unichr(i).upper() if chr(i).islower() else unichr(i).lower() for i in xrange(256)])
         encodemap = codecs.charmap_build(decodemap)
         self.assertEqual(codecs.charmap_decode(u'Hello World', 'strict', decodemap), ('hELLO wORLD', 11))
         self.assertEqual(codecs.charmap_encode(u'Hello World', 'strict', encodemap), ('hELLO wORLD', 11))
+
+    def test_gh16(self):
+        """https://github.com/IronLanguages/ironpython2/issues/16"""
+        # test with a standard error handler
+        res = u"\xac\u1234\u20ac\u8000".encode("rot_13", "backslashreplace")
+        self.assertEqual(res, "\xac\\h1234\\h20np\\h8000")
+
+        # test with a custom error handler
+        def handler(ex):
+            return (u"", ex.end)
+        codecs.register_error("test_unicode_error", handler)
+        res = u"\xac\u1234\u20ac\u8000".encode("rot_13", "test_unicode_error")
+        self.assertEqual(res, "\xac")
     
 if __name__ == '__main__':
     from test import test_support
