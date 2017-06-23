@@ -824,7 +824,7 @@ namespace IronPython.Modules {
             foreach(var k in _map) {
                 if(k.Key is string) {
                     var s = (string)k.Key;
-                    if(s.Length > 0)
+                    if(s.Length == 1)
                         _map[(int)s[0]] = k.Value;
                 }
             }
