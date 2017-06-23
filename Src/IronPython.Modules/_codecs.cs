@@ -78,7 +78,7 @@ namespace IronPython.Modules {
             return CharmapDecodeWorker(context, input, errors, new EncodingMapEncoding(map, errors), false);
         }
 
-        public static object charmap_encode(CodeContext context, [BytesConversion]string input, string errors = "strict", IDictionary<object, object> map = null) {
+        public static PythonTuple charmap_encode(CodeContext context, [BytesConversion]string input, string errors = "strict", IDictionary<object, object> map = null) {
             Encoding e = map != null ? new CharmapEncoding(map, errors) : null;
             return CharmapDecodeWorker(context, input, errors, e, false);
         }
@@ -294,7 +294,7 @@ namespace IronPython.Modules {
             );
         }
 
-        public static object readbuffer_encode([BytesConversion]string input, string errors=null) {
+        public static PythonTuple readbuffer_encode([BytesConversion]string input, string errors=null) {
             return PythonTuple.MakeTuple(input, input.Length);
         }
 
