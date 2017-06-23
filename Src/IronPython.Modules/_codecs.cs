@@ -294,13 +294,8 @@ namespace IronPython.Modules {
             );
         }
 
-        public static object readbuffer_encode(string input, string errors=null) {
+        public static object readbuffer_encode([BytesConversion]string input, string errors=null) {
             return PythonTuple.MakeTuple(input, input.Length);
-        }
-
-        public static object readbuffer_encode(IPythonBufferable buffer, string errors=null) {
-            string val = buffer.ToString();
-            return PythonTuple.MakeTuple(val, val.Length);
         }
 
         public static void register(CodeContext/*!*/ context, object search_function) {
