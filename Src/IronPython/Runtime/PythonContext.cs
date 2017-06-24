@@ -1869,7 +1869,7 @@ namespace IronPython.Runtime
 #endif
             if (attrs.Any()) {
                 foreach (PythonModuleAttribute pma in attrs) {
-                    if (pma.InvalidPlatforms != null && Array.IndexOf(pma.InvalidPlatforms, Environment.OSVersion.Platform) < 0) {
+                    if (pma.IsPlatformValid) {
                         builtinTable[pma.Name] = pma.Type;
                         BuiltinModuleNames[pma.Type] = pma.Name;
                     }
