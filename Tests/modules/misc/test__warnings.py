@@ -18,7 +18,7 @@ CPython's _warnings module. http://docs.python.org/library/warnings.html
 
 import unittest
 import _warnings
-from iptest import stderr_trapper as stderr_trapper
+from iptest import IronPythonTestCase, stderr_trapper as stderr_trapper
 
 #--GLOBALS---------------------------------------------------------------------
 EXPECTED = [] # expected output (ignoring filename, lineno, and line)
@@ -40,7 +40,7 @@ def expect(warn_type, message):
     EXPECTED.append(": " + warn_type.__name__ + ": " + message + "\n")
 
 
-class _WarningsTest(unittest.TestCase):
+class _WarningsTest(IronPythonTestCase):
     #TODO: @skip("multiple_execute")
     def test_sanity(self):
         global EXPECTED
@@ -79,6 +79,11 @@ class _WarningsTest(unittest.TestCase):
         finally:
             # remove generated files
             cleanup()
+
+    def test_gh23(self):
+        def test():
+            object.__init__(object, None)
+        self.assertWarns(DeprecationWarning, test)
 
 
     def test_default_action(self):
