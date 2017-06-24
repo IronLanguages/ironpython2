@@ -73,9 +73,9 @@ namespace IronPython.Modules {
             , IValueEquality
 #endif
         {
-            private readonly CodeContext _context;
-            private readonly WeakHandle _target;
-            private readonly long _targetId;
+            private CodeContext _context;
+            private WeakHandle _target;
+            private long _targetId;
             private int _hashVal;
             private bool _fHasHash;
 
@@ -107,20 +107,22 @@ namespace IronPython.Modules {
                     return cls.CreateInstance(context, @object, callback);
                 }
             }
-            #endregion
 
-            #region Constructors
-            public @ref(CodeContext context, object @object)
-                : this(context, @object, null) {
-            }
-
-            public @ref(CodeContext context, object @object, object callback) {
+            public void __init__(CodeContext context, object ob, object callback=null) {
                 _context = context;
-                WeakRefTracker wrt = WeakRefHelpers.InitializeWeakRef(_context.LanguageContext, this, @object, callback);
+                WeakRefTracker wrt = WeakRefHelpers.InitializeWeakRef(_context.LanguageContext, this, ob, callback);
 
-                _target = new WeakHandle(@object, false);
+                _target = new WeakHandle(ob, false);
                 _targetId = wrt.TargetId;
             }
+            #endregion
+
+            #region Constructors            
+
+            public @ref(CodeContext context, object @object, object callback=null) {
+                __init__(context, @object, callback);
+            }
+
             #endregion
 
             #region Finalizer
