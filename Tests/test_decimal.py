@@ -15,6 +15,18 @@ class DecimalTest(unittest.TestCase):
         #float
         self.assertEqual(str(Decimal(System.Decimal.Parse('45.34'))), '45.34')
 
+    def test_formatting(self):
+        import System
+        d = System.Decimal.Parse('1.4274243253253245432543254545')
+        self.assertEqual('{}'.format(d), '1.4274243253253245432543254545')
+        self.assertEqual('{:,.2f}'.format(d), '1.43')
+        self.assertEqual('{:e}'.format(d), '1.427424325325e+00')
+
+        d = System.Decimal.Parse('4000000000.40000000')
+        self.assertEqual('{}'.format(d), '4000000000.40000000')
+        self.assertEqual('{:e}'.format(d), '4.000000000400e+09')
+
+
 if __name__ == '__main__':
     from test import test_support
     test_support.run_unittest(__name__)
