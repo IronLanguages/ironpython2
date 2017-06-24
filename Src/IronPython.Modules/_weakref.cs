@@ -120,7 +120,7 @@ namespace IronPython.Modules {
             #region Constructors            
 
             public @ref(CodeContext context, object @object, object callback=null) {
-                __init__(context, @object, callback);
+                // the work is actually done on the call to __init__
             }
 
             #endregion
