@@ -18,8 +18,9 @@ solution: IronPython.sln
 script:
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then sudo apt-get install -y binfmt-support libmono-system-windows-forms4.0-cil ; fi
   - make
-  - docker build -t mono-4.8 .
-  - docker run mono-4.8 /bin/sh -c "make test-all"
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then docker build -t mono-4.8 . ; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then docker run mono-4.8 /bin/sh -c "make test-all" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then make test-all ; fi
 
 notifications:
   email:
