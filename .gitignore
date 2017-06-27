@@ -10,6 +10,7 @@ bin/
 
 #Backup files
 *.bak
+*.swp
 
 # Temporary VS files
 *.suo
@@ -48,6 +49,9 @@ Tests/compat/tempfile.txt
 Tests/Tools/stdmodules.py.stdout.log
 Tests/test_data.gz
 
+# nunit
+Util/References/NUnit*/
+
 # created by tests
 abc.txt
 *-result.xml
@@ -82,3 +86,4 @@ Tests/testilcode.dll
 Tests/the_dir/
 Tests/vbproptest0.*.dll
 tmp/
+@test_*
