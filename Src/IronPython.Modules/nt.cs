@@ -57,7 +57,7 @@ namespace IronPython.Modules {
         #region Public API Surface
 
 #if FEATURE_PROCESS
-        public static void abort() {            
+        public static void abort() {
             System.Environment.FailFast("IronPython os.abort");
         }
 #endif
