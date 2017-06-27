@@ -1481,6 +1481,12 @@ namespace IronPython.Runtime {
                 handle = ((PipeStream)stream).SafePipeHandle.DangerousGetHandle().ToPython();
                 return true;
             }
+#if FEATURE_UNIX
+            if (stream is Mono.Unix.UnixStream) {
+                handle = ((Mono.Unix.UnixStream)stream).Handle;
+                return true;
+            }
+#endif
 
             // if all else fails try reflection
             var sfh = stream.GetType().GetField("_handle", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(stream);
