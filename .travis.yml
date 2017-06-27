@@ -4,18 +4,22 @@ os:
 
 language: csharp
 
+services:
+  - docker
+
 env:
   - CONFIGURATION=Release
 
 mono:
-  - 4.8.0
+  - latest
 
 solution: IronPython.sln
 
 script:
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then sudo apt-get install -y binfmt-support libmono-system-windows-forms4.0-cil ; fi
   - make
-  - make test-all
+  - docker build -t mono-4.8 .
+  - docker run mono-4.8 /bin/sh -c "make test-all"
 
 notifications:
   email:
