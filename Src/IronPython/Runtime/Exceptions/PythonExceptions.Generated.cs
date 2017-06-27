@@ -31,7 +31,6 @@ using Microsoft.Scripting.Utils;
 // This generated code is updated by the generate_exceptions.py script.
 namespace IronPython.Runtime.Exceptions {
     public static partial class PythonExceptions {
-        private static object _pythonExceptionsLock = new object();
 
         #region Generated Python New-Style Exceptions
 

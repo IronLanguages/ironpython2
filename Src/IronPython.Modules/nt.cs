@@ -57,7 +57,7 @@ namespace IronPython.Modules {
         #region Public API Surface
 
 #if FEATURE_PROCESS
-        public static void abort() {            
+        public static void abort() {
             System.Environment.FailFast("IronPython os.abort");
         }
 #endif
@@ -398,14 +398,17 @@ namespace IronPython.Modules {
         }
 
 #if FEATURE_UNIX && FEATURE_NATIVE
-        [DllImport("libc")]
-        private static extern int symlink(string source, string dest);
-
         public static void symlink(CodeContext context, string source, string link_name) {
-            int result = symlink(source, link_name);
+            int result = Mono.Unix.Native.Syscall.symlink(source, link_name);
             if(result != 0) {
                 throw PythonExceptions.CreateThrowable(PythonExceptions.OSError, 0, source, link_name);
             }
+        }
+
+        public static PythonTuple uname(CodeContext context) {
+            Mono.Unix.Native.Utsname info;
+            Mono.Unix.Native.Syscall.uname(out info);
+            return PythonTuple.MakeTuple(info.sysname, info.nodename, info.release, info.version, info.machine);
         }
 #endif
 

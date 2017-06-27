@@ -1096,13 +1096,18 @@ namespace IronPython.Runtime {
             var pythonContext = context.LanguageContext;
             var encoding = pythonContext.DefaultEncoding;
 
-            var inPipe = new AnonymousPipeServerStream(PipeDirection.In);
             var inPipeFile = new PythonFile(context);
-            inPipeFile.InitializePipe(inPipe, "r", encoding);
-
-            var outPipe = new AnonymousPipeClientStream(PipeDirection.Out, inPipe.ClientSafePipeHandle);
             var outPipeFile = new PythonFile(context);
+#if FEATURE_WINDOWS
+            var inPipe = new AnonymousPipeServerStream(PipeDirection.In);
+            inPipeFile.InitializePipe(inPipe, "r", encoding);
+            var outPipe = new AnonymousPipeClientStream(PipeDirection.Out, inPipe.ClientSafePipeHandle);
             outPipeFile.InitializePipe(outPipe, "w", encoding);
+#else
+            Mono.Unix.UnixPipes pipes = Mono.Unix.UnixPipes.CreatePipes();
+            inPipeFile.InitializePipe(pipes.Reading, "r", encoding);
+            outPipeFile.InitializePipe(pipes.Writing,"w", encoding);
+#endif
             return new [] {inPipeFile, outPipeFile};
         }
 
@@ -1440,7 +1445,7 @@ namespace IronPython.Runtime {
         }
 
 #if FEATURE_PROCESS
-        internal void InitializePipe(PipeStream stream, string mode, Encoding encoding) {
+        internal void InitializePipe(Stream stream, string mode, Encoding encoding) {
             _stream = stream;
             _io = null;
             _name = "<pipe>";
@@ -1449,7 +1454,6 @@ namespace IronPython.Runtime {
             _encoding = StringOps.GetEncodingName(encoding);
             _isOpen = true;
             InitializeReaderAndWriter(stream, encoding);
-
         }
 #endif
 
@@ -1477,6 +1481,12 @@ namespace IronPython.Runtime {
                 handle = ((PipeStream)stream).SafePipeHandle.DangerousGetHandle().ToPython();
                 return true;
             }
+#if FEATURE_UNIX
+            if (stream is Mono.Unix.UnixStream) {
+                handle = ((Mono.Unix.UnixStream)stream).Handle;
+                return true;
+            }
+#endif
 
             // if all else fails try reflection
             var sfh = stream.GetType().GetField("_handle", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(stream);
@@ -1991,6 +2001,7 @@ namespace IronPython.Runtime {
         }
 
 #if FEATURE_NATIVE
+#if FEATURE_WINDOWS
         public bool isatty() {
             return IsConsole && !isRedirected();
         }
@@ -2004,6 +2015,14 @@ namespace IronPython.Runtime {
             }
             return StreamRedirectionInfo.IsErrorRedirected;
         }
+#endif
+#if FEATURE_UNIX
+
+        public bool isatty() {
+            return Mono.Unix.Native.Syscall.isatty(0) || Mono.Unix.Native.Syscall.isatty(1) || Mono.Unix.Native.Syscall.isatty(2);
+        }
+#endif
+
 #else
         public bool isatty() {
             return IsConsole;
@@ -2082,7 +2101,7 @@ namespace IronPython.Runtime {
 #if FEATURE_NATIVE
     // dotnet45 backport
     // http://msdn.microsoft.com/en-us/library/system.console.isoutputredirected%28v=VS.110%29.aspx
-
+#if FEATURE_WINDOWS
     internal static class StreamRedirectionInfo {
 
         private enum FileType { Unknown, Disk, Char, Pipe };
@@ -2107,22 +2126,6 @@ namespace IronPython.Runtime {
             return !success;
         }
 
-        private static Object s_InternalSyncObject;
-
-        private static Object InternalSyncObject {
-            get {
-                if (s_InternalSyncObject == null) {
-                    Object o = new Object();
-                    Interlocked.CompareExchange<Object>(ref s_InternalSyncObject, o, null);
-                }
-                return s_InternalSyncObject;
-            }
-        }
-
-        private static bool _stdInRedirectQueried = false;
-
-        private static bool _isStdInRedirected = false;
-
         internal static bool IsInputRedirected {
             get {
                 if (_stdInRedirectQueried) {
@@ -2138,10 +2141,6 @@ namespace IronPython.Runtime {
                 }
             }
         }
-
-        private static bool _stdOutRedirectQueried = false;
-
-        private static bool _isStdOutRedirected = false;
 
         internal static bool IsOutputRedirected {
             get {
@@ -2159,10 +2158,6 @@ namespace IronPython.Runtime {
             }
         }
 
-        private static bool _stdErrRedirectQueried = false;
-
-        private static bool _isStdErrRedirected = false;
-
         internal static bool IsErrorRedirected {
             get {
                 if (_stdErrRedirectQueried) {
@@ -2178,7 +2173,32 @@ namespace IronPython.Runtime {
                 }
             }
         }
+
+        private static Object s_InternalSyncObject;
+
+        private static Object InternalSyncObject {
+            get {
+                if (s_InternalSyncObject == null) {
+                    Object o = new Object();
+                    Interlocked.CompareExchange<Object>(ref s_InternalSyncObject, o, null);
+                }
+                return s_InternalSyncObject;
+            }
+        }
+
+        private static bool _stdInRedirectQueried = false;
+
+        private static bool _isStdInRedirected = false;
+
+        private static bool _stdOutRedirectQueried = false;
+
+        private static bool _isStdOutRedirected = false;
+
+        private static bool _stdErrRedirectQueried = false;
+
+        private static bool _isStdErrRedirected = false;
     }
+#endif
 
 #endif
 }
