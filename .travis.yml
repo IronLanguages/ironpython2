@@ -11,13 +11,13 @@ env:
   - CONFIGURATION=Release
 
 mono:
-  - 5.0
+  - latest
   - 4.8
 
 matrix:
   exclude:
     - os: osx
-      mono: 5.0
+      mono: latest
     - os: linux
       mono: 4.8
 
