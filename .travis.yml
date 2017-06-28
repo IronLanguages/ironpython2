@@ -26,7 +26,7 @@ solution: IronPython.sln
 script:
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then make ; fi
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then docker -v /home/travis/build/IronLanguages/ironpython2:/home/travis/build/IronLanguages/ironpython2 run mono:4.8 /bin/sh -c "cd /home/travis/build/IronLanguages/ironpython2 && make test-all" ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then docker -v /home/travis/build/IronLanguages/ironpython2:/home/travis/build/IronLanguages/ironpython2 run mono:5.0 /bin/sh -c "cd /home/travis/build/IronLanguages/ironpython2 && make" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then docker -v /Users/travis/build/IronLanguages/ironpython2:/home/travis/build/IronLanguages/ironpython2 run mono:5.0 /bin/sh -c "cd /home/travis/build/IronLanguages/ironpython2 && make" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then make test-all ; fi
 
 notifications:
