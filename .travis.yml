@@ -11,7 +11,7 @@ env:
   - CONFIGURATION=Release
 
 mono:
-  - latest
+  - 5.0
   - 4.8
 
 matrix:
