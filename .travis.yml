@@ -26,8 +26,8 @@ solution: IronPython.sln
 script:
   - docker 
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then make ; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then docker run mono:4.8 -v /home/travis/build/IronLanguages/ironpython2:/home/travis/build/IronLanguages/ironpython2 /bin/sh -c "apt-get update ; apt-get install make ; cd /home/travis/build/IronLanguages/ironpython2 && make test-all" ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then docker run mono:5.0 -v /Users/travis/build/IronLanguages/ironpython2:/home/travis/build/IronLanguages/ironpython2 /bin/sh -c "cd /home/travis/build/IronLanguages/ironpython2 && make" ; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then docker run -v /home/travis/build/IronLanguages/ironpython2:/home/travis/build/IronLanguages/ironpython2 mono:4.8 /bin/sh -c "apt-get update ; apt-get install make ; cd /home/travis/build/IronLanguages/ironpython2 && make test-all" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then docker run -v /Users/travis/build/IronLanguages/ironpython2:/home/travis/build/IronLanguages/ironpython2 mono:5.0 /bin/sh -c "cd /home/travis/build/IronLanguages/ironpython2 && make" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then make test-all ; fi
 
 notifications:
