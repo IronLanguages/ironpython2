@@ -15,11 +15,11 @@ mono:
   - 4.8
 
 matrix:
-  include:
+  exclude:
     - os: osx
-      mono: 4.8
-    - os: linux
       mono: 5.0
+    - os: linux
+      mono: 4.8
 
 solution: IronPython.sln
 
