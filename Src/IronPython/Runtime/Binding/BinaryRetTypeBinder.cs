@@ -18,11 +18,7 @@ using System.Dynamic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-#if FEATURE_CORE_DLR
 using System.Linq.Expressions;
-#else
-using Microsoft.Scripting.Ast;
-#endif
 
 using Microsoft.Scripting.Actions;
 using Microsoft.Scripting.Generation;
