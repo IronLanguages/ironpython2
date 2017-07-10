@@ -27,11 +27,7 @@ using IronPython.Runtime;
 using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 [assembly: PythonModule("math", typeof(IronPython.Modules.PythonMath))]
 namespace IronPython.Modules {

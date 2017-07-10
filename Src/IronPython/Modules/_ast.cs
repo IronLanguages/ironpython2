@@ -36,12 +36,7 @@ using PythonList = IronPython.Runtime.List;
 using System.Runtime.InteropServices;
 using AstExpression = IronPython.Compiler.Ast.Expression;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-using Complex = Microsoft.Scripting.Math.Complex64;
-#endif
 
 [assembly: PythonModule("_ast", typeof(IronPython.Modules._ast))]
 namespace IronPython.Modules

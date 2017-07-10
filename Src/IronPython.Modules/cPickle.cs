@@ -28,11 +28,7 @@ using Microsoft.Scripting;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 [assembly: PythonModule("cPickle", typeof(IronPython.Modules.PythonPickle))]
 namespace IronPython.Modules {

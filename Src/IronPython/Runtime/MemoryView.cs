@@ -13,11 +13,7 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 using System;
 using IronPython.Runtime.Operations;

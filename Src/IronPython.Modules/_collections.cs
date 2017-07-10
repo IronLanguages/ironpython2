@@ -31,11 +31,7 @@ using IronPython.Runtime.Exceptions;
 using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 using SpecialNameAttribute = System.Runtime.CompilerServices.SpecialNameAttribute;
 

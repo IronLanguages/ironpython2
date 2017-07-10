@@ -29,12 +29,7 @@ using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 using AstUtils = Microsoft.Scripting.Ast.Utils;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-using Complex = Microsoft.Scripting.Math.Complex64;
-#endif
 
 namespace IronPython.Runtime.Binding {
     using Ast = Expression;

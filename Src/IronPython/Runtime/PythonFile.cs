@@ -36,11 +36,7 @@ using IronPython.Runtime.Types;
 using System.IO.Pipes;
 #endif
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 #if NETCOREAPP1_0
 using Environment = System.FakeEnvironment;

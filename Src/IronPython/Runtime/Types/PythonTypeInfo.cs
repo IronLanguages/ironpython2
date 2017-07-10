@@ -32,12 +32,7 @@ using IronPython.Runtime.Binding;
 using IronPython.Runtime.Exceptions;
 using IronPython.Runtime.Operations;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-using Complex = Microsoft.Scripting.Math.Complex64;
-#endif
 
 #if !FEATURE_TYPE_INFO
 using TypeInfo = System.Type;
@@ -807,9 +802,7 @@ namespace IronPython.Runtime.Types {
         /// </summary>
         private static MemberGroup/*!*/ StringResolver(MemberBinder/*!*/ binder, Type/*!*/ type) {
             if (type != typeof(double) && type != typeof(float)
-#if FEATURE_NUMERICS
                 && type != typeof(Complex)
-#endif
             ) {
                 MethodInfo tostr = type.GetMethod("ToString", ReflectionUtils.EmptyTypes);
                 if (tostr != null && tostr.DeclaringType != typeof(object)) {
