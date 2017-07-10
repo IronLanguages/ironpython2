@@ -27,11 +27,7 @@ using Microsoft.Scripting;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 using SpecialNameAttribute = System.Runtime.CompilerServices.SpecialNameAttribute; 
 

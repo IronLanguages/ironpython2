@@ -34,11 +34,7 @@ using IronPython.Runtime.Exceptions;
 using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 [assembly: PythonModule("future_builtins", typeof(FutureBuiltins))]
 namespace IronPython.Runtime {

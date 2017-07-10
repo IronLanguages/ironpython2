@@ -18,11 +18,7 @@ using IronPython.Runtime;
 using IronPython.Runtime.Operations;
 using Microsoft.Scripting.Utils;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 #if FEATURE_SERIALIZATION
 using System.IO;

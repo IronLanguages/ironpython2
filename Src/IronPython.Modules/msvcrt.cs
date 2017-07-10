@@ -27,11 +27,7 @@ using Microsoft.Scripting.Runtime;
 using IronPython.Runtime;
 using IronPython.Runtime.Operations;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 [assembly: PythonModule("msvcrt", typeof(IronPython.Modules.PythonMsvcrt), PythonModuleAttribute.PlatformFamily.Windows)]
 namespace IronPython.Modules {

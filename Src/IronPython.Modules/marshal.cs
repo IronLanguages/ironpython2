@@ -24,12 +24,7 @@ using IronPython.Runtime.Types;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-using Complex = Microsoft.Scripting.Math.Complex64;
-#endif
 
 [assembly: PythonModule("marshal", typeof(IronPython.Modules.PythonMarshal))]
 namespace IronPython.Modules {

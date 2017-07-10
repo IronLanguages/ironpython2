@@ -15,11 +15,7 @@
 
 using System.Linq.Expressions;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 using System;
 using System.Collections;

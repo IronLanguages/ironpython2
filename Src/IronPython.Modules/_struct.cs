@@ -31,11 +31,7 @@ using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
 using IronPython.Runtime.Binding;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 [assembly: PythonModule("_struct", typeof(IronPython.Modules.PythonStruct))]
 namespace IronPython.Modules {

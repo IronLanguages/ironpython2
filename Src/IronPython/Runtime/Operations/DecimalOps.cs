@@ -18,11 +18,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.Scripting.Runtime;
 
-#if FEATURE_NUMERICS
 using System.Numerics;
-#else
-using Microsoft.Scripting.Math;
-#endif
 
 namespace IronPython.Runtime.Operations {
     public static class DecimalOps {
