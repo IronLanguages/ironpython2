@@ -159,7 +159,7 @@ namespace IronPython.Runtime {
                 // old-style class, lookup attribute                
                 OldClass dt = pt.OldClass;
 
-                if (PythonOps.TryGetBoundAttr(context, dt, name, out value)) {
+                if (dt.TryLookupOneSlot(DescriptorContext, name, out value)) {
                     value = OldClass.GetOldStyleDescriptor(context, value, self, DescriptorContext);
                     return true;
                 }

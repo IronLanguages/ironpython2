@@ -987,6 +987,26 @@ class C:
         class Test(io.IOBase): pass
         dir(Test()) # check that this does not StackOverflow
 
+    def test_ipy2_gh206(self):
+        """https://github.com/IronLanguages/ironpython2/issues/206"""
+        class x0: pass
+
+        class x1(object): pass
+
+        class aco(object):
+          def __init__(self):
+            self.cnt += 1
+            super(aco, self).__init__()
+            self.cnt += 1
+
+        class two(x0, x1, aco):
+          def __init__(self):
+            self.cnt = 0
+            super(two, self).__init__()
+            self.cnt += 1
+
+        self.assertEqual(two().cnt, 3)
+
 if __name__ == '__main__':
     from test import test_support
     test_support.run_unittest(__name__)
