@@ -1,6 +1,7 @@
 IronPython
 ===
-[![Build Status](https://travis-ci.org/IronLanguages/ironpython2.svg?branch=master)](https://travis-ci.org/IronLanguages/ironpython2)
+[![Linux/OSX Build Status](https://travis-ci.org/IronLanguages/ironpython2.svg?branch=master)](https://travis-ci.org/IronLanguages/ironpython2)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/53h9jt1bym8wunh1?svg=true)](https://ci.appveyor.com/project/AlexEarl/ironpython2)
 [![Gitter chat](https://badges.gitter.im/IronLanguages/ironpython.png)](https://gitter.im/IronLanguages/ironpython)
 
 IronPython is an open-source implementation of the Python programming language which is tightly integrated with the .NET Framework. IronPython can use the .NET Framework and Python libraries, and other .NET languages can use Python code just as easily.
