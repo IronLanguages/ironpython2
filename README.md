@@ -12,28 +12,32 @@ Comparison of IronPython vs. C# for 'Hello World'
 
 c#:
 
-    using System;
-    class Hello
+```cs
+using System;
+class Hello
+{
+    static void Main() 
     {
-        static void Main() 
-        {
-            Console.WriteLine("Hello World");
-        }
+        Console.WriteLine("Hello World");
     }
+}
+```
 
 IronPython:
-
-    print "Hello World"
-
+```py
+print "Hello World"
+```
 IronPython is a Dynamic Language that runs on the .NET DLR ([Dynamic Language Runtime](http://en.wikipedia.org/wiki/Dynamic_Language_Runtime)) in contrast with VB.NET and C# which are [static languages](http://en.wikipedia.org/wiki/Type_system).
 
 
 Iron Python can also import DLL files compiled in other languages and use functions defined therein. For example:
 
-    import clr
-    clr.AddReference("System.Windows.Forms")
-    from System.Windows.Forms import *
-    
+```py
+import clr
+clr.AddReference("System.Windows.Forms")
+from System.Windows.Forms import *
+```
+
 # Documentation
 
 Documentation can be found here:
