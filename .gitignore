@@ -25,6 +25,9 @@ bin/
 Util/References/updated
 Util/References/NUnit*
 
+# NuGet Packages
+packages/*
+
 # Visual Studio 2015 cache/options directory
 .vs/
 
@@ -34,7 +37,6 @@ CurrentVersion.Generated.cs
 
 TestResult.xml
 Solutions/TestResults/
-
 
 # TODO - testing scripts should not create these files
 Src/StdLib/Lib/@test_*

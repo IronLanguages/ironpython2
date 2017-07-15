@@ -50,7 +50,7 @@
       <BuildPrefix></BuildPrefix>
     </ReferencedPlatform>
     <ReferencedPlatform Include="net40">
-      <BuildPrefix>v4</BuildPrefix>
+      <BuildPrefix></BuildPrefix>
     </ReferencedPlatform>
   </ItemGroup>
 

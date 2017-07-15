@@ -15,6 +15,8 @@
          additional assembly references. -->
     <NoConfig>true</NoConfig>
     <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   
   <Import Project="$(RootDir)\CurrentVersion.props" />
@@ -26,7 +28,11 @@
 
   <PropertyGroup Condition="Exists('$(PublicKey)') and '$(AssemblyOriginatorKeyFile)'==''">
     <AssemblyOriginatorKeyFile>$(PublicKey)</AssemblyOriginatorKeyFile>
-    <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SignAssembly)' == 'true'">
+    <SignedSym>SIGNED</SignedSym>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -52,20 +58,16 @@
        used). Fill then in here based on the selected configuration. -->
   <PropertyGroup Condition=" '$(BuildFlavour)' == '' ">
     <BuildFlavour>Debug</BuildFlavour>
-    <BuildFlavour Condition="'$(Configuration)' == 'FxCop'">Release</BuildFlavour>
     <BuildFlavour Condition="'$(Configuration)' == 'Release'">Release</BuildFlavour>
-    <BuildFlavour Condition="'$(Configuration)' == 'v4Release'">Release</BuildFlavour>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(ReferencedPlatform)' == ''">
     <ReferencedPlatform>net45</ReferencedPlatform>
-    <ReferencedPlatform
-        Condition="'$(Configuration)' == 'v4Release' or '$(Configuration)' == 'v4Debug'">net40</ReferencedPlatform>
+    <ReferencedPlatform Condition="'$(TargetFramework)' == 'net40'">net40</ReferencedPlatform>
   </PropertyGroup>
 
   <PropertyGroup>
     <CSharpTargets Condition="'$(CSharpTargets)' == ''">$(MSBuildBinPath)\Microsoft.CSharp.targets</CSharpTargets>
-    <CSharpTargets Condition="'$(CSharpTargets)' == '' and '$(ReferencedPlatform)' == 'android'">$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets</CSharpTargets>
     <WpfReferences>$(RootDir)\Util\References\WPF\4.0</WpfReferences>
   </PropertyGroup>
 
