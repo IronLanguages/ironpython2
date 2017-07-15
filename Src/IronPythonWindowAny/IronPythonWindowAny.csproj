@@ -4,6 +4,7 @@
   <PropertyGroup>
     <TargetFrameworks>net40;net45</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
     <ProjectGuid>{7F6F9AB3-9943-4316-BD4C-A10F580BC75C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -11,7 +12,6 @@
     <AssemblyName>ipyw64</AssemblyName>
     <ApplicationIcon>..\IronPythonWindow\ipy.ico</ApplicationIcon>
     <CodeAnalysisRuleSet>IronPythonWindowAny.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\IronPython\IronPython.csproj" />
