@@ -21,10 +21,6 @@ bin/
 *.lock.json
 *.nuget.targets
 
-# NuGet stuff
-Util/References/updated
-Util/References/NUnit*
-
 # NuGet Packages
 packages/*
 
