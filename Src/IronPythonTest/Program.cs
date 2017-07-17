@@ -37,7 +37,7 @@ namespace NUnitLite.Tests
         public static int Main(string[] args)
         {
             Console.WriteLine(string.Join(" ", args));
-            return new AutoRun().Execute(args);
+            return new AutoRun(typeof(Program).Assembly).Execute(args);
         }
     }
 }

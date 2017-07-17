@@ -155,12 +155,6 @@ goto :exit
 
 :main
 msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU"
-if "%_target%" == "Build" (
-    echo "Copying %_flavour%\net45 test dlls"
-    xcopy /y /q Src\DLR\bin\%_flavour%\net45\rowantest.*.dll bin\%_flavour%\net45\
-    echo "Copying %_flavour%\net40 test dlls"
-    xcopy /y /q Src\DLR\bin\%_flavour%\net40\rowantest.*.dll bin\%_flavour%\net40\
-)
 goto :exit
 
 :exit

@@ -63,7 +63,7 @@
 
   <PropertyGroup Condition="'$(ReferencedPlatform)' == ''">
     <ReferencedPlatform>net45</ReferencedPlatform>
-    <ReferencedPlatform Condition="'$(TargetFramework)' == 'net40'">net40</ReferencedPlatform>
+    <ReferencedPlatform Condition="'$(TargetFramework)' != ''">$(TargetFramework)</ReferencedPlatform>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -72,7 +72,7 @@
   </PropertyGroup>
 
   <!-- References -->
-  <Import Project="$(BuildSysDir)\$(ReferencedPlatform).props" />
+  <Import Project="$(BuildSysDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
   
   <PropertyGroup>
     <BaseOutputPath>$(RootDir)\bin\$(Configuration)</BaseOutputPath>
