@@ -23,7 +23,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_netstandard, is_cpython, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_netstandard, is_cpython, is_posix, skipUnlessIronPython
 
 class StdModulesTest(IronPythonTestCase):
 
@@ -228,7 +228,7 @@ class StdModulesTest(IronPythonTestCase):
         self.assertEqual(loc, (None,None))
 
         self.assertTrue(locale.setlocale(locale.LC_ALL, '') != None)
-        if not (is_netstandard and is_posix): # TODO: figure this out
+        if not (is_netstandard or is_posix): # TODO: figure this out
             self.assertTrue(locale.getlocale() != None)
 
     def test_cp17819(self):
