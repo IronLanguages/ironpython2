@@ -19,7 +19,7 @@ Create a Python class which derives from CLR type(s).
 
 import unittest
 
-from iptest import IronPythonTestCase, is_netstandard, skipUnlessIronPython
+from iptest import IronPythonTestCase, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class SimpleDeriveTest(IronPythonTestCase):
@@ -139,8 +139,6 @@ class SimpleDeriveTest(IronPythonTestCase):
         self.assertRaises(TypeError, inheritValueType)
         self.assertRaises(TypeError, inheritEnum)
 
-
-    @unittest.skipIf(is_netstandard, 'no System.MarshalByRefObject in netstandard')
     def test_mbr(self):
         import System
         class C(System.MarshalByRefObject): pass

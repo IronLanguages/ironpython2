@@ -46,7 +46,7 @@ top_level_dir = dir()
 x = 10
 y = 20
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp
 
 class BuiltinsTest2(IronPythonTestCase):
 
@@ -431,13 +431,10 @@ class BuiltinsTest2(IronPythonTestCase):
         
         if is_cli:
             import clr
-            try:
-                clr.AddReference("Microsoft.Scripting.Core")
-            except Exception, e:
-                if is_netstandard:
-                    clr.AddReference("System.Dynamic.Runtime")
-                else:
-                    clr.AddReference("System.Core")
+            if is_netcoreapp:
+                clr.AddReference("System.Linq.Expressions")
+            else:
+                clr.AddReference("System.Core")
             
             from System.Dynamic import ExpandoObject
             eo = ExpandoObject()

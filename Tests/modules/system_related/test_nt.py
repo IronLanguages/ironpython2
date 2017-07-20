@@ -21,7 +21,7 @@ import unittest
 
 from exceptions import IOError
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard, is_posix, run_test, skipUnlessIronPython, stderr_trapper
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp, is_posix, run_test, skipUnlessIronPython, stderr_trapper
 
 if not is_posix:
     import nt
@@ -1038,7 +1038,7 @@ class NtTest(IronPythonTestCase):
         for bad in [None, 0, 34, -12345L, 3.14, object, self.test__getfullpathname]:
             self.assertRaises(TypeError, nt._getfullpathname, bad)
 
-    @unittest.skipIf(is_netstandard, 'TODO: figure out')
+    @unittest.skipIf(is_netcoreapp, 'TODO: figure out')
     def test_cp15514(self):
         cmd_variation_list = ['%s -c "print __name__"' % sys.executable,
                             '"%s -c "print __name__""' % sys.executable,
@@ -1094,7 +1094,6 @@ class NtTest(IronPythonTestCase):
         for key, value in test_dict.iteritems():
             self.assertEqual(nt.strerror(key), value)
 
-    @unittest.skipIf(is_netstandard, 'TODO: figure out')
     def test_popen_cp34837(self):
         import subprocess
         p = subprocess.Popen("whoami", env=os.environ)

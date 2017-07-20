@@ -29,11 +29,12 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_netstandard, is_cli, is_posix, stdout_trapper
+from iptest import IronPythonTestCase, skipUnlessIronPython, is_netcoreapp, is_cli, is_posix, stdout_trapper
 
 class RegressionTest(IronPythonTestCase):
 
-    @unittest.skipIf(is_netstandard or not is_cli, 'No System.AppDomain in netstandard or native')
+    @unittest.skipIf(is_netcoreapp, 'no System.AppDomain')
+    @skipUnlessIronPython()
     def test_cp18345(self):
         import System
         import time
@@ -46,7 +47,7 @@ class RegressionTest(IronPythonTestCase):
         time.sleep(10)
         self.assertEqual(z, 100)
 
-    @unittest.skipIf(is_netstandard, 'TODO: figure out')
+    @unittest.skipIf(is_netcoreapp, 'TODO: figure out')
     def test_cp17420(self):
         #Create a temporary Python file
         test_file_name = os.path.join(self.temporary_dir, "cp17420.py")
@@ -103,7 +104,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         self.assertEqual(KNewDerivedSpecial().__doc__, "KNewDerivedSpecial doc")
 
 
-    @unittest.skipIf(not is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_cp16831(self):
         import clr
         clr.AddReference("IronPythonTest")
@@ -151,7 +152,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
             message = "'%s' should have %d groups, not %d" % (data, groups, regex.groups)
             self.assertTrue(regex.groups == groups, message)
 
-    @unittest.skipIf(not is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_protected_ctor_inheritance_cp20021(self):
         self.load_iron_python_test()
         from IronPythonTest import (
@@ -293,10 +294,10 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         import _winreg
         self.assertEqual(_winreg.error, WindowsError)
 
-    @unittest.skipIf(not is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_indexing_value_types_cp20370(self):
         import clr
-        if is_netstandard:
+        if is_netcoreapp:
             clr.AddReference("System.Drawing.Primitives")
         else:
             clr.AddReference("System.Drawing")
@@ -405,7 +406,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         self.assertEqual(int(MyFloat), 3)
     
 
-    @unittest.skipIf(not is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_type_delegate_conversion(self):
         import clr
         from System import Func    
@@ -458,7 +459,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
             os.chmod(dir_name, stat.S_IWRITE)
             os.rmdir(dir_name)
 
-    @unittest.skipIf(not is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_cp22735(self):
         import System
         if System.Environment.Version.Major < 4:
@@ -478,7 +479,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
                     'abc'.ljust, -2147483649L)
 
 
-    @unittest.skipIf(not is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_help_dir_cp11833(self):
         import System
         self.assertTrue(dir(System).count('Action') == 1)
@@ -500,7 +501,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         print bool(c)
         self.assertEqual(not c, False)
 
-    @unittest.skipIf(not is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_cp18912(self):
         import __future__
         feature = __future__.__dict__['with_statement']
@@ -528,7 +529,8 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         self.assertRaisesRegexp(TypeError, "f\(\) got multiple values for keyword argument 'a'",
                             lambda: f(1, a=3))
 
-    @unittest.skipIf(is_netstandard or not is_cli, 'no System.Drawing.Pen in netstandard or native')
+    @unittest.skipIf(is_netcoreapp, 'no System.Drawing.Pen')
+    @skipUnlessIronPython()
     def test_cp24802(self):
         import clr
         clr.AddReference('System.Drawing')
@@ -603,7 +605,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         self.assertEqual(self.cp22692_helper("if 1:\n  if 1:", 0),
                 [IndentationError, IndentationError])
 
-    @unittest.skipIf(not is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_cp23545(self):
         import clr
         clr.AddReference("rowantest.defaultmemberscs")
@@ -647,10 +649,10 @@ class C:
             os.rmdir(cp20174_path)
             sys.path = old_path
 
-    @unittest.skipIf(not is_cli, 'IronPython specific test')
+    @skipUnlessIronPython()
     def test_cp20370(self):
         import clr
-        if is_netstandard:
+        if is_netcoreapp:
             clr.AddReference("System.Drawing.Primitives")
         else:
             clr.AddReference("System.Drawing")
@@ -663,7 +665,8 @@ class C:
         l[-1] = p2
         self.assertEqual(id(l[-1]), id(p2))
 
-    @unittest.skipIf(is_netstandard or not is_cli, 'netstandard does not support PlatformNotSupportedException, nor does native')
+    @unittest.skipIf(is_netcoreapp, 'throws PlatformNotSupportedException')
+    @skipUnlessIronPython()
     def test_cp23878(self):
         import clr
         clr.AddReference("rowantest.delegatedefinitions")
@@ -811,7 +814,8 @@ class C:
             pass
 
 
-    @unittest.skipIf(is_netstandard or not is_cli, 'no clr.CompileModules')
+    @unittest.skipIf(is_netcoreapp, 'no clr.CompileModules')
+    @skipUnlessIronPython()
     def test_gh1357(self):
         filename = os.path.join(self.temporary_dir, 'gh1357.py')
         dll = os.path.join(self.temporary_dir, "test.dll")
@@ -827,6 +831,7 @@ class C:
             os.unlink(filename)
             os.unlink(dll)
 
+    @skipUnlessIronPython()
     def test_gh1435(self):
         import clr
         code = """
@@ -908,6 +913,7 @@ class C:
             help(gh1435.someMethod4)
         self.assertTrue('\n'.join(trapper.messages), expected) 
 
+    @unittest.skipIf(is_netcoreapp, 'TODO: figure out')
     def test_gh278(self):
         import _random  
         r = _random.Random()

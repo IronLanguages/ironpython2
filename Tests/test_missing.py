@@ -16,7 +16,7 @@
 
 import unittest
 
-from iptest import is_cli, skipUnlessIronPython
+from iptest import is_cli, skipUnlessIronPython, is_netcoreapp
 
 
 # set this flag to True to have the test trace progress
@@ -237,7 +237,7 @@ def TestCalls(t):
         r = getattr(t, n)()
         if trace: print r
 
-
+@unittest.skipIf(is_netcoreapp, "TODO: figure out")
 @skipUnlessIronPython()
 class MissingTest(unittest.TestCase):
     def test_main(self):
