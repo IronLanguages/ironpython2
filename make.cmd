@@ -9,10 +9,18 @@ goto :exit
 :default
 goto :release
 
+:dotnet
+goto :dotnet-release
+
 :debug
 set _target=Build
 set _flavour=Debug
 goto :main
+
+:dotnet-debug
+set _target=Build
+set _flavour=Debug
+goto :dotnet-main
 
 :clean-debug
 set _target=Clean
@@ -28,6 +36,11 @@ goto :main
 set _target=Build
 set _flavour=Release
 goto :main
+
+:dotnet-release
+set _target=Build
+set _flavour=Release
+goto :dotnet-main
 
 :clean-release
 set _target=Clean
@@ -155,6 +168,10 @@ goto :exit
 
 :main
 msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU"
+goto :exit
+
+:dotnet-main
+msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU" /p:BuildNetCoreApp=true
 goto :exit
 
 :exit
