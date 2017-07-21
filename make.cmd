@@ -1,6 +1,13 @@
 @echo off
 setlocal
-set PATH=%PATH%;%ProgramFiles(x86)%\MSBuild\14.0\Bin\;%WINDIR%\Microsoft.NET\Framework\v4.0.30319
+
+for /f "usebackq tokens=1* delims=: " %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere" -latest -requires Microsoft.Component.MSBuild`) do (
+  if /i "%%i"=="installationPath" set InstallDir=%%j
+)
+
+if exist "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
+  set "PATH=%PATH%;%InstallDir%\MSBuild\15.0\Bin\"
+)
 
 :getopts
 if "%1"=="" (goto :default) else (goto :%1)
@@ -88,7 +95,7 @@ popd
 goto :exit
 
 :test-ironpython-debug
-pushd bin\Release
+pushd bin\Debug
 net45\IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net45-debug-result.xml
 popd
 pushd bin\Debug
@@ -127,7 +134,7 @@ goto :exit
 pushd bin\Debug
 net45\IronPythonTest.exe --labels=All --result:all-net45-debug-result.xml
 popd
-pushd bin\Release
+pushd bin\Debug
 net40\IronPythonTest.exe --labels=All --result:all-net40-debug-result.xml
 popd
 goto :exit
