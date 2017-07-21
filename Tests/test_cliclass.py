@@ -1463,7 +1463,7 @@ if not hasattr(A, 'Rank'):
         # make sure you can do dir on everything in System which 
         # includes special types like ArgIterator and Func
         for attr in dir(System):
-            if is_netcoreapp and attr in ["ArgIterator", "ReadOnlySpan"]: continue # TODO: figure out
+            if is_netcoreapp and attr in ["ArgIterator", "ReadOnlySpan"]: continue # TODO: https://github.com/IronLanguages/dlr/issues/74
             dir(getattr(System, attr))
 
         if is_netcoreapp:
