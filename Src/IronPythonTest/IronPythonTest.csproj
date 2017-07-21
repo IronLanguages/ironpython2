@@ -26,13 +26,17 @@
     <EmbeddedResource Include="Cases\StandardCPythonCasesManifest.ini" />
   </ItemGroup>
   <ItemGroup>
+    <!-- ensure ClrAssembly is built before IronPythonTest -->
     <ProjectReference Include="..\DLR\Tests\ClrAssembly\ClrAssembly.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <Content Include="..\DLR\bin\$(Configuration)\$(TargetFramework)\rowantest.*.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
+  <Target Name="CopyRowanTestFiles" AfterTargets="AfterBuild">
+    <ItemGroup>
+      <RowanTestFiles Include="..\DLR\bin\$(Configuration)\$(TargetFramework)\rowantest.*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(RowanTestFiles)" DestinationFolder="$(TargetDir)" />
+  </Target>
   <Import Project="$(BeforeTargetFiles)" />
   <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
   <ItemGroup>
