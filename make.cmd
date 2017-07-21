@@ -108,7 +108,7 @@ popd
 goto :exit
 
 :test-ironpython-debug
-pushd bin\Release
+pushd bin\Debug
 net45\IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net45-debug-result.xml
 popd
 pushd bin\Debug
@@ -147,7 +147,7 @@ goto :exit
 pushd bin\Debug
 net45\IronPythonTest.exe --labels=All --result:all-net45-debug-result.xml
 popd
-pushd bin\Release
+pushd bin\Debug
 net40\IronPythonTest.exe --labels=All --result:all-net40-debug-result.xml
 popd
 goto :exit
