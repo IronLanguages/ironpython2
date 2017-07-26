@@ -19,15 +19,16 @@ for Python.
 
 import unittest 
 
-from iptest import IronPythonTestCase, is_netstandard, skipUnlessIronPython
+from iptest import IronPythonTestCase, skipUnlessIronPython, is_netcoreapp
 
 @skipUnlessIronPython()
 class FourDotZeroTest(IronPythonTestCase):
     def setUp(self):
         super(FourDotZeroTest, self).setUp()
-        if is_netstandard:
+        if is_netcoreapp:
             import clr
             clr.AddReference("System.Threading.Tasks.Parallel")
+            clr.AddReference("System.IO.FileSystem")
 
     def test_system_threading_tasks(self):
         '''

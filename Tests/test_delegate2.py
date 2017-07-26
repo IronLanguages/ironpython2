@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython, is_cli, is_netcoreapp
 
 myfuncCalled = False
 passedarg = None
@@ -52,6 +52,9 @@ class foo(object):
 
 if is_cli:
     import clr
+
+    if is_netcoreapp:
+        clr.AddReference("System.Threading.Thread")
 
     from System import EventArgs
     from System.Threading import AutoResetEvent

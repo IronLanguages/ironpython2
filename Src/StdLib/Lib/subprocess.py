@@ -427,7 +427,7 @@ elif mono:
     import threading
     _has_poll = False
     import clr
-    if clr.IsNetStandard:
+    if clr.IsNetCoreApp:
         clr.AddReference("System.Diagnostics.Process")
     from System.Diagnostics import Process
     from System.IO import MemoryStream

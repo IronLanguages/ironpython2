@@ -44,10 +44,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-  <ReferencedPlatform Include="net45">
-      <BuildPrefix></BuildPrefix>
-    </ReferencedPlatform>
-    <ReferencedPlatform Include="net40">
+    <ReferencedPlatform Include="net45">
       <BuildPrefix></BuildPrefix>
     </ReferencedPlatform>
   </ItemGroup>

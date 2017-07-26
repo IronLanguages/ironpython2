@@ -16,7 +16,7 @@
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_netstandard, is_posix
+from iptest import IronPythonTestCase, is_posix
 from threading import Timer
 
 flags = os.O_CREAT | os.O_TRUNC | os.O_RDWR
@@ -40,7 +40,7 @@ def xtest_unlink():
     os.close(fd)
     os.unlink("tmp.unlink.test-1")
 
-@unittest.skipIf(is_netstandard and is_posix, 'Figure this out')
+@unittest.skipIf(is_posix, 'Figure this out')
 class FdTest(IronPythonTestCase):
 
     @unittest.skipIf(is_posix, 'https://github.com/IronLanguages/main/issues/1609')

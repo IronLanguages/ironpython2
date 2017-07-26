@@ -19,12 +19,10 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, skipUnlessIronPython, is_cli, run_test
 
 if is_cli:
     import clr
-    if not is_netstandard:
-        clr.AddReference("System.Core")
     clr.AddReference("Microsoft.Scripting")
 
 @skipUnlessIronPython()

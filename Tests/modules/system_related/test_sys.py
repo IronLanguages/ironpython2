@@ -21,7 +21,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard, path_modifier, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, path_modifier, run_test, skipUnlessIronPython
 
 CP24381_MESSAGES = []
 
@@ -35,7 +35,6 @@ class SysTest(IronPythonTestCase):
         # api_version
         self.assertEqual(sys.api_version, 0)
 
-    @unittest.skipIf(is_netstandard, 'IRuntimeVariables')
     def test_settrace(self):
         """TODO: now that sys.settrace has been implemented this test case needs to be fully revisited"""
         # settrace
@@ -112,7 +111,6 @@ print final"""
             finally:
                 os.unlink('temp.py')
 
-    @unittest.skipIf(is_netstandard, 'IRuntimeVariables')
     def test_call_tracing(self):
         def f(i):
             return i * 2
@@ -137,8 +135,6 @@ print final"""
         
         self.assertEqual(log, ['g', 'f'])
 
-
-    @unittest.skipIf(is_netstandard, 'TODO')
     @skipUnlessIronPython()
     def test_version(self):
         import re
@@ -166,8 +162,6 @@ print final"""
         else:
             self.assertTrue(sys.getsizeof(1)<sys.getsizeof(1.0))
         
-
-    @unittest.skipIf(is_netstandard, 'IRuntimeVariables')
     def test_gettrace(self):
         '''TODO: revisit'''
         self.assertEqual(sys.gettrace(), None)
@@ -215,7 +209,6 @@ f()
                 None, 'line', None, 'call', None, 'line', None, 'return', None, 
                 'return', None])
 
-    @unittest.skipIf(is_netstandard, 'IRuntimeVariables')
     def test_cp30130(self):
         def f(frame, event, arg):
             if event == 'exception':

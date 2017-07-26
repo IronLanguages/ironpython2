@@ -47,10 +47,6 @@ using IronPython.Runtime.Types;
 using Debugging = Microsoft.Scripting.Debugging;
 using PyAst = IronPython.Compiler.Ast;
 
-#if NETCOREAPP1_0
-using Environment = System.FakeEnvironment;
-#endif
-
 namespace IronPython.Runtime
 {
     public delegate int HashDelegate(object o, ref HashDelegate dlg);
@@ -1324,11 +1320,7 @@ namespace IronPython.Runtime
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Reflection.Assembly.LoadFile")]
         internal bool TryLoadAssemblyFromFileWithPath(string path, out Assembly res) {
             if (File.Exists(path) && Path.IsPathRooted(path)) {
-#if NETSTANDARD
-                res = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
-#else
                 res = Assembly.LoadFile(path);
-#endif
                 if (res != null) {
 #if !CLR2
                     _loadedAssemblies.Add(res);
@@ -1857,11 +1849,7 @@ namespace IronPython.Runtime
         }
 
         internal void LoadBuiltins(Dictionary<string, Type> builtinTable, Assembly assem, bool updateSys) {
-#if NETSTANDARD
-            var attrs = assem.GetCustomAttributes(typeof(PythonModuleAttribute));
-#else
             var attrs = assem.GetCustomAttributes(typeof(PythonModuleAttribute), false);
-#endif
             if (attrs.Any()) {
                 foreach (PythonModuleAttribute pma in attrs) {
                     if (pma.IsPlatformValid) {

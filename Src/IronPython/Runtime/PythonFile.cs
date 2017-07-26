@@ -32,15 +32,11 @@ using IronPython.Runtime.Exceptions;
 using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
 
-#if FEATURE_PROCESS
+#if FEATURE_PIPES
 using System.IO.Pipes;
 #endif
 
 using System.Numerics;
-
-#if NETCOREAPP1_0
-using Environment = System.FakeEnvironment;
-#endif
 
 namespace IronPython.Runtime {
     #region Readers
@@ -1087,7 +1083,7 @@ namespace IronPython.Runtime {
             return res;
         }
 
-#if FEATURE_NATIVE
+#if FEATURE_PIPES
         internal static PythonFile[] CreatePipe(CodeContext/*!*/ context) {
             var pythonContext = context.LanguageContext;
             var encoding = pythonContext.DefaultEncoding;
@@ -1440,7 +1436,7 @@ namespace IronPython.Runtime {
             }
         }
 
-#if FEATURE_PROCESS
+#if FEATURE_PIPES
         internal void InitializePipe(Stream stream, string mode, Encoding encoding) {
             _stream = stream;
             _io = null;
@@ -1473,6 +1469,7 @@ namespace IronPython.Runtime {
                 handle = ((FileStream)stream).SafeFileHandle.DangerousGetHandle().ToPython();
                 return true;
             }
+#if FEATURE_PIPES
             if (stream is PipeStream) {
                 handle = ((PipeStream)stream).SafePipeHandle.DangerousGetHandle().ToPython();
                 return true;
@@ -1482,6 +1479,7 @@ namespace IronPython.Runtime {
                 handle = ((Mono.Unix.UnixStream)stream).Handle;
                 return true;
             }
+#endif
 #endif
 
             // if all else fails try reflection

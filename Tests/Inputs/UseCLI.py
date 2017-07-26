@@ -17,11 +17,12 @@ import clr
 import os
 import sys
 
-from iptest import IronPythonTestCase, is_netstandard
+from iptest import IronPythonTestCase, is_netcoreapp
 
-ip_test = os.path.join(sys.prefix, 'IronPythonTest.exe')
-
-if not is_netstandard:
+if is_netcoreapp:
+    ip_test = os.path.join(sys.prefix, 'IronPythonTest.dll')
+else:
+    ip_test = os.path.join(sys.prefix, 'IronPythonTest.exe')
     clr.AddReference("System.Core")
     clr.AddReference('System.Windows.Forms')
     from System.Windows.Forms import Form, Control

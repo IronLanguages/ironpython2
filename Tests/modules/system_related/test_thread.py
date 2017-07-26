@@ -18,7 +18,11 @@ import thread
 import time
 import unittest
 
-from iptest import is_cli, run_test, skipUnlessIronPython
+from iptest import is_cli, run_test, skipUnlessIronPython, is_netcoreapp
+
+if is_netcoreapp:
+    import clr
+    clr.AddReference("System.Threading.Thread")
 
 class ThreadTest(unittest.TestCase):
     @skipUnlessIronPython()

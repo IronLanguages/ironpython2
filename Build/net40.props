@@ -55,7 +55,9 @@
     <Features>$(Features);FEATURE_FULL_CRYPTO</Features>
     <Features>$(Features);FEATURE_ICLONEABLE</Features>
     <Features>$(Features);FEATURE_ANSICP</Features>
-    <Features>$(Features);FEATURE_SORTKEY</Features>  
+    <Features>$(Features);FEATURE_SORTKEY</Features>
+    <Features>$(Features);FEATURE_ARGITERATOR</Features>
+    <Features>$(Features);FEATURE_PIPES</Features>
   </PropertyGroup>
   
   <ItemGroup>

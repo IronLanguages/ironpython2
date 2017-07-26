@@ -28,7 +28,7 @@ Work Item number.
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_netstandard, is_mono, skipUnlessIronPython
+from iptest import IronPythonTestCase, skipUnlessIronPython, is_netcoreapp, is_mono
 
 #--CodePlex 24118--#
 def GetMethodTest():
@@ -98,7 +98,7 @@ class DynamicRegressionTest(IronPythonTestCase):
         self.assertEqual(DR.cp24117(xrange),    "IronPython.Runtime.Types.PythonType")
         self.assertEqual(DR.cp24117(xrange(3)), "IronPython.Runtime.XRange")
 
-    @unittest.skipIf(is_netstandard, "investigate cause of failure")
+    @unittest.skipIf(is_netcoreapp, "TODO: figure out")
     def test_cp24118(self):
         import IronPythonTest.DynamicRegressions as DR
         #TODO: once 26089 gets fixed the following needs actual verification.  That is,
@@ -153,7 +153,7 @@ class DynamicRegressionTest(IronPythonTestCase):
         self.assertEqual(CodePlex24113.cp24113(to), "abc")
         self.assertEqual(to.Prop, "hi")
 
-    @unittest.skipIf(is_netstandard, "can't compile snippet due to missing references")
+    @unittest.skipIf(is_netcoreapp, "can't compile snippet due to missing references")
     def test_cp20519(self):
         import os
         import System

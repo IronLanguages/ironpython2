@@ -29,7 +29,7 @@ import shutil
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, is_netstandard, is_posix, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, is_posix, skipUnlessIronPython
 from iptest.misc_util import ip_supported_encodings
 
 
@@ -414,7 +414,8 @@ class CodecTest(IronPythonTestCase):
             shutil.rmtree(os.path.join(self.temporary_dir, "tmp_encodings"), True)
 
 
-    @unittest.skipIf(is_mono or is_netstandard, "is_mono - https://github.com/IronLanguages/main/issues/1608, is_netstadard - netstandard because sys.executable isn't an executable")
+    @unittest.skipIf(is_netcoreapp, "TODO: figure out")
+    @unittest.skipIf(is_mono, "https://github.com/IronLanguages/main/issues/1608")
     def test_cp11334(self):
         
         #--Test that not using "# coding ..." results in a warning

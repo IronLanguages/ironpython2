@@ -16,7 +16,7 @@
 import operator
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp, skipUnlessIronPython
 
 class OperaterTest(IronPythonTestCase):
     def setUp(self):
@@ -25,7 +25,7 @@ class OperaterTest(IronPythonTestCase):
         if is_cli:
             import clr
             self.load_iron_python_test()
-            if is_netstandard:
+            if is_netcoreapp:
                 clr.AddReference("System.Drawing.Primitives")
             else:
                 clr.AddReference("System.Drawing")
@@ -136,7 +136,6 @@ class OperaterTest(IronPythonTestCase):
         self.assertTrue(not DaysInt.Mon == None)
         self.assertTrue(DaysInt.Mon != None)
 
-    @unittest.skipIf(is_netstandard, 'no System.Drawing.Color in netstandard')
     @skipUnlessIronPython()
     def test_cp3982(self):
         from System.Drawing import Color

@@ -19,9 +19,9 @@ Ensures we can import from .NET 2.0 namespaces and types
 
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, is_netstandard, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, skipUnlessIronPython
 
-if is_cli and not is_netstandard:
+if is_cli and not is_netcoreapp:
     import clr
     clr.AddReference("System.Configuration")
     clr.AddReference("System.Configuration.Install")
@@ -241,7 +241,7 @@ def deep_dive(in_name, in_type):
             deep_dive(member_fullname, member_type)
 
 
-@unittest.skipIf(is_netstandard, 'references are different in netstandard')
+@unittest.skipIf(is_netcoreapp, 'references are different')
 @skipUnlessIronPython()
 class SystemNamespacesTest(IronPythonTestCase):
     def test_system_deep(self):

@@ -22,7 +22,7 @@ from __future__ import absolute_import
 import _sha256
 import unittest
 
-from iptest import is_cli, is_netstandard
+from iptest import is_cli
 
 class _Sha256Test(unittest.TestCase):
 
@@ -54,7 +54,6 @@ class _Sha256Test(unittest.TestCase):
         self.assertTrue(x!=x_copy)
         self.assertEqual(x.hexdigest(), x_copy.hexdigest())
         
-    @unittest.skipIf(is_netstandard, 'Not implemented on netstandard')
     def test_sha224_sanity(self):
         x = _sha256.sha224()
         self.assertEqual(x.block_size, 64)

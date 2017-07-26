@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_netstandard, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp, run_test, skipUnlessIronPython
 
 class CP35300_Derived(EnvironmentError):
     def __init__(self, *args, **kwargs):
@@ -296,15 +296,13 @@ finally:
         except MyClass, mc:
             self.assertTrue(mc.__class__ == MyClass)
         
-        if not is_netstandard: # intern doesn't work in netstandard
-            # BUG 430 intern(None) should throw TypeError
-            try:
-                intern(None)
-                self.assertTrue(False)
-            except TypeError:
-                pass
-            # /BUG
-        
+        # BUG 430 intern(None) should throw TypeError
+        try:
+            intern(None)
+            self.assertTrue(False)
+        except TypeError:
+            pass
+        # /BUG
         
         # BUG 393 exceptions throw when bad value passed to except
         try:
@@ -746,7 +744,7 @@ finally:
         self.assertEqual(test_outer_for_with_finally(state, True), 42)
         self.assertEqual(state.finallyCalled, True)
 
-    @unittest.skipIf(is_netstandard, 'no System.AppDomain in netstandard')
+    @unittest.skipIf(is_netcoreapp, 'no System.AppDomain')
     def test_serializable_clionly(self):
         import clr
         import System
