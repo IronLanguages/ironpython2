@@ -1,12 +1,19 @@
 @echo off
 setlocal
 
-for /f "usebackq tokens=1* delims=: " %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere" -latest -requires Microsoft.Component.MSBuild`) do (
-  if /i "%%i"=="installationPath" set InstallDir=%%j
+set _VSWHERE="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+if exist %_VSWHERE% (
+  for /f "usebackq tokens=*" %%i in (`%_VSWHERE% -latest -requires Microsoft.Component.MSBuild -property installationPath`) do (
+    set _VSINSTPATH=%%i
+  )
+)
+if not exist "%_VSINSTPATH%" (
+   echo Error: Visual Studio 2017 15.2 or later is required.
+   exit /b 1
 )
 
-if exist "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
-  set "PATH=%PATH%;%InstallDir%\MSBuild\15.0\Bin\"
+if exist "%_VSINSTPATH%\MSBuild\15.0\Bin\MSBuild.exe" (
+  set "PATH=%PATH%;%_VSINSTPATH%\MSBuild\15.0\Bin\"
 )
 
 :getopts
