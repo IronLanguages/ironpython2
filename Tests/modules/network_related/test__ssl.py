@@ -42,7 +42,7 @@ class _SslTest(IronPythonTestCase):
         self.assertEqual(real_ssl.PROTOCOL_TLSv1, 3)
         self.assertEqual(real_ssl.PROTOCOL_TLSv1_1, 4)
         self.assertEqual(real_ssl.PROTOCOL_TLSv1_2, 5)
-        self.assertEqual(real_ssl.OP_NO_SSLv2, 0x0000000)
+        self.assertEqual(real_ssl.OP_NO_SSLv2, 0x1000000)
         self.assertEqual(real_ssl.OP_NO_SSLv3, 0x2000000)
         self.assertEqual(real_ssl.OP_NO_TLSv1, 0x4000000)
         self.assertEqual(real_ssl.OP_NO_TLSv1_1, 0x10000000)

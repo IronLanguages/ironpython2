@@ -2640,12 +2640,7 @@ namespace IronPython.Modules {
 
                 EnsureSslStream(true);
 
-#if CLR45
-                const SslProtocols enabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls;
-#else
-                const SslProtocols enabledSslProtocols = SslProtocols.Default;
-#endif
-
+                var enabledSslProtocols = GetProtocolType(_protocol);
 
                 try {
                     if (_serverSide) {
@@ -2676,11 +2671,13 @@ namespace IronPython.Modules {
 
             /* supported communication based upon what the client & server specify
              * as per the CPython docs:
-             * client / server SSLv2 SSLv3 SSLv23 TLSv1 
-                         SSLv2 yes      no   yes*    no 
-                         SSLv3 yes     yes   yes     no 
-                        SSLv23 yes      no   yes     no 
-                         TLSv1 no       no   yes    yes 
+             * client / server SSLv2 SSLv3 SSLv23 TLSv1 TLSv1.1 TLSv1.2
+                         SSLv2   yes    no    yes    no      no      no
+                         SSLv3    no   yes    yes    no      no      no
+                        SSLv23    no   yes    yes   yes     yes     yes
+                         TLSv1    no    no    yes   yes      no      no
+                       TLSv1.1    no    no    yes    no     yes      no
+                       TLSv1.2    no    no    yes    no      no     yes
              */
 
             private static SslProtocols GetProtocolType(int type) {
