@@ -23,25 +23,25 @@ update-submodules:
 	@git submodule update --init
 
 test-ironpython:
-	cd bin/Release && mono ./net45/IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net45-release-result.xml
+	cd bin/Release/net45 && mono ../../../packages/nunit.consolerunner/3.6.1/nunit3-console.exe --labels=All --where:Category==IronPython --result:ironpython-net45-release-result.xml
 
 test-ironpython-debug:
-	cd bin/Debug && mono ./net45/IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net45-debug-result.xml
+	cd bin/Debug/net45 && mono ../../../packages/nunit.consolerunner/3.6.1/nunit3-console.exe --labels=All --where:Category==IronPython --result:ironpython-net45-debug-result.xml
 
 test-cpython:
-	cd bin/Release && mono ./net45/IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-release-result.xml
+	cd bin/Release/net45 && mono ../../../packages/nunit.consolerunner/3.6.1/nunit3-console.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-release-result.xml
 
 test-cpython-debug:
-	cd bin/Debug && mono ./net45/IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-debug-result.xml
+	cd bin/Debug/net45 && mono ../../../packages/nunit.consolerunner/3.6.1/nunit3-console.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-debug-result.xml
 
 test-smoke:
-	cd bin/Release && mono ./net45/IronPythonTest.exe --labels=All --where:Category==StandardCPython --result=smoke-net45-release-result.xml
+	cd bin/Release/net45 && mono ../../../packages/nunit.consolerunner/3.6.1/nunit3-console.exe --labels=All --where:Category==StandardCPython --result=smoke-net45-release-result.xml
 
 test-smoke-debug:
-	cd bin/Debug && mono ./net45/IronPythonTest.exe --labels=All --where:Category==StandardCPython --result=smoke-net45-debug-result.xml
+	cd bin/Debug/net45 && mono ../../../packages/nunit.consolerunner/3.6.1/nunit3-console.exe --labels=All --where:Category==StandardCPython --result=smoke-net45-debug-result.xml
 
 test-all:
-	cd bin/Release && mono ./net45/IronPythonTest.exe --labels=All --result=all-net45-release-result.xml
+	cd bin/Release/net45 && mono ../../../packages/nunit.consolerunner/3.6.1/nunit3-console.exe --labels=All --result=all-net45-release-result.xml
 
 test-all-debug:
-	cd bin/Debug && mono ./net45/IronPythonTest.exe --labels=All --result=all-net45-debug-result.xml
+	cd bin/Debugnet45 && mono ../../../packages/nunit.consolerunner/3.6.1/nunit3-console.exe --labels=All --result=all-net45-debug-result.xml
