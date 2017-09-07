@@ -20,6 +20,7 @@ bin/
 *.opendb
 *.lock.json
 *.nuget.targets
+launchSettings.json
 
 # NuGet Packages
 packages/*
@@ -84,3 +85,8 @@ Tests/testilcode.dll
 Tests/the_dir/
 Tests/vbproptest0.*.dll
 tmp/
+Src/IronPythonConsole/App.config
+Src/IronPythonConsoleAny/App.config
+Src/IronPythonWindow/App.config
+Src/IronPythonWindowAny/App.config
+Package/nuget/**/*.nupkg

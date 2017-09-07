@@ -17,7 +17,7 @@
 # Usage: ipy getModuleList.py <output directory>
 
 #--Imports---------------------------------------------------------------------
-import sys, nt, os
+import sys, os
 import clr
 import shutil
 clr.AddReference("System.Xml")
@@ -31,10 +31,19 @@ from System.IO import File, Path, Directory, FileInfo, FileAttributes
 excludedDirectories = []
 excludedFiles       = []
 
+def find_root():
+    test_dirs = ['Src', 'Build', 'Package', 'Tests', 'Util']
+    root = os.getcwd()
+    test = all([os.path.exists(os.path.join(root, x)) for x in test_dirs])
+    while not test:
+        root = os.path.dirname(root)
+        test = all([os.path.exists(os.path.join(root, x)) for x in test_dirs])
+    return root
 
+root = find_root()
 #Automatically determine what's currently not working under IronPython
-sys.path.append(nt.environ["DLR_ROOT"] + r"\Languages\IronPython\Tests\Tools")
-base_dir = nt._getfullpathname(nt.environ["DLR_ROOT"] + r"\External.LCA_RESTRICTED\Languages\IronPython\27")
+sys.path.append(os.path.join(root, 'Tests', 'Tools'))
+base_dir = os.path.abspath(os.path.join(root, 'Src', 'StdLib'))
 
 import stdmodules
 BROKEN_LIST = stdmodules.main(base_dir)
@@ -58,7 +67,6 @@ excludedDirectories += [x for x in BROKEN_LIST if not x.endswith(".py")]
 excludedFiles += [                  
                   #*.py modules IronPython has implemented in *.cs
                   "/Lib/copy_reg.py",
-                  "/Lib/socket.py",
                   "/Lib/re.py",
                 ]
 excludedFiles += [x for x in BROKEN_LIST if x.endswith(".py")]
@@ -98,7 +106,7 @@ for dirpath, dirnames, filenames in os.walk(base_dir):
                 sub_name = filename[len(base_dir) + 1:]
                 if sub_name.startswith('Lib\\'):
                     sub_name = sub_name[4:]
-                    if sub_name.endswith('.exe'):    
+                    if sub_name.endswith('.exe'):
                         continue
                     
                     files.append('    <Content Include="$(StdLibPath)\\%s" />\n' % (sub_name, ))

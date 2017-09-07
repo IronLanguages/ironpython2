@@ -21,10 +21,6 @@
     <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
     <Compile Include="..\IronPythonConsole\Console.cs" Link="Console.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\App.Debug.config" Link="App.Debug.config" />
-    <None Include="..\App.Release.config" Link="App.Release.config" />
-  </ItemGroup>
   <Import Project="$(BeforeTargetFiles)" />
   <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
   <ItemGroup>
@@ -35,5 +31,8 @@
     <Compile Include="Properties\BuildInfo.Generated.cs" />
   </ItemGroup>
   <Import Project="$(AfterTargetFiles)" />
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild">
+    <Copy SourceFiles="..\App.$(Configuration).config" DestinationFiles="App.config" />
+  </Target>
   <Target Name="AfterBuildEnds" AfterTargets="AfterBuild" DependsOnTargets="$(AfterTargets)" />
 </Project>

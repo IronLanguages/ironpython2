@@ -18,11 +18,11 @@ namespace IronPythonTest.Cases {
             get {
 #if NETCOREAPP2_0
                 if (Environment.OSVersion.Platform == PlatformID.Unix) {
-                    return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "ipy64");
+                    return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy64");
                 }
-                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "ipy64.bat");
+                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy64.bat");
 #else
-                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "ipy.exe");
+                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy.exe");
 #endif
             }
         }
@@ -50,7 +50,7 @@ namespace IronPythonTest.Cases {
 
         internal static string FindRoot() {
             // we start at the current directory and look up until we find the "Src" directory
-            var current = System.Reflection.Assembly.GetEntryAssembly().Location;
+            var current = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var found = false;
             while (!found && !string.IsNullOrEmpty(current)) {
                 var test = Path.Combine(current, "Src", "StdLib", "Lib");

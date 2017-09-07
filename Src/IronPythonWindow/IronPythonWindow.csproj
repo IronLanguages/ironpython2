@@ -18,10 +18,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\App.Debug.config" Link="App.Debug.config" />
-    <None Include="..\App.Release.config" Link="App.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
   </ItemGroup>
   <Import Project="$(BeforeTargetFiles)" />
@@ -34,5 +30,8 @@
     <Compile Include="Properties\BuildInfo.Generated.cs" />
   </ItemGroup>
   <Import Project="$(AfterTargetFiles)" />
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild">
+    <Copy SourceFiles="..\App.$(Configuration).config" DestinationFiles="App.config" />
+  </Target>
   <Target Name="AfterBuildEnd" AfterTargets="AfterBuild" DependsOnTargets="$(AfterTargets)" />
 </Project>

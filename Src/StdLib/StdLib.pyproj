@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="$(ProjectDir)..\..\..\Solutions\Common.proj" />
+  <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{89993698-F0CA-411C-82B3-21F1A9705B77}</ProjectGuid>
@@ -10,7 +10,7 @@
     <AssemblyName>PyStdLib</AssemblyName>
     <Name>PyStdLib</Name>
     <RootNamespace>PyStdLib</RootNamespace>
-    <StdLibPath>$(SolutionDir)..\External.LCA_RESTRICTED\Languages\IronPython\27\Lib</StdLibPath>
+    <StdLibPath>$(RootDir)\Src\StdLib\Lib</StdLibPath>
   </PropertyGroup>
   <ItemGroup>
     <!-- Begin Generated Project Items -->
@@ -151,8 +151,8 @@
     <Content Include="$(StdLibPath)\smtpd.py" />
     <Content Include="$(StdLibPath)\smtplib.py" />
     <Content Include="$(StdLibPath)\sndhdr.py" />
+    <Content Include="$(StdLibPath)\socket.py" />
     <Content Include="$(StdLibPath)\SocketServer.py" />
-    <Content Include="$(StdLibPath)\sre_compile.py" />
     <Content Include="$(StdLibPath)\sre_constants.py" />
     <Content Include="$(StdLibPath)\sre_parse.py" />
     <Content Include="$(StdLibPath)\ssl.py" />
@@ -203,8 +203,8 @@
     <Content Include="$(StdLibPath)\_abcoll.py" />
     <Content Include="$(StdLibPath)\_LWPCookieJar.py" />
     <Content Include="$(StdLibPath)\_MozillaCookieJar.py" />
-    <Content Include="$(StdLibPath)\_pyio.py" />
     <Content Include="$(StdLibPath)\_osx_support.py" />
+    <Content Include="$(StdLibPath)\_pyio.py" />
     <Content Include="$(StdLibPath)\_strptime.py" />
     <Content Include="$(StdLibPath)\_threading_local.py" />
     <Content Include="$(StdLibPath)\_weakrefset.py" />
@@ -530,11 +530,11 @@
     <Content Include="$(StdLibPath)\multiprocessing\sharedctypes.py" />
     <Content Include="$(StdLibPath)\multiprocessing\synchronize.py" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets"/>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(BeforeTargetFiles)" />
 
-  <Import Project="$(SolutionDir)Bootstrap.targets" />
-
-  <Target Name="CopyFilesForZip" DependsOnTargets="Bootstrap">
-    <CopyStdLib SourceFiles="@(Content)" Destination="$(OutputPath)" BasePath="$(StdLibPath)" />
+  <Target Name="Stage">
+    <CopyStdLib SourceFiles="@(Content)" Destination="$(OutputPath)\Lib" BasePath="$(StdLibPath)" />
   </Target>
+
 </Project>
