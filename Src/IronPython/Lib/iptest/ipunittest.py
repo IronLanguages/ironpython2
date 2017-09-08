@@ -146,10 +146,7 @@ def _add_reference_to_dlr_core():
     if is_cli:
         clr.AddReference("System.Core")
 
-if is_netcoreapp:
-    _iron_python_test_dll = os.path.join(sys.prefix, 'IronPythonTest.dll')
-else:
-    _iron_python_test_dll = os.path.join(sys.prefix, 'IronPythonTest.exe')
+_iron_python_test_dll = os.path.join(sys.prefix, 'IronPythonTest.dll')
 
 def load_ironpython_test(*args):
     _add_reference_to_dlr_core()

@@ -71,7 +71,7 @@ namespace IronPythonTest {
 
         private static string FindRoot() {
             // we start at the current directory and look up until we find the "Src" directory
-            var current = System.Reflection.Assembly.GetEntryAssembly().Location;
+            var current = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var found = false;
             while (!found && !string.IsNullOrEmpty(current)) {
                 var test = Path.Combine(current, "Src", "StdLib", "Lib");

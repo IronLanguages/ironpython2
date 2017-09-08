@@ -21,12 +21,10 @@
     <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
     <Compile Include="..\IronPythonConsole\Console.cs" Link="Console.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\App.Debug.config" Link="App.Debug.config" />
-    <None Include="..\App.Release.config" Link="App.Release.config" />
-  </ItemGroup>
   <Import Project="$(BeforeTargetFiles)" />
-  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion">
+    <Copy SourceFiles="..\App.$(Configuration).config" DestinationFiles="App.config" />
+  </Target>
   <ItemGroup>
     <!-- if the file does not exist it's not picked up automatically -->
     <Compile Remove="Properties\CurrentVersion.Generated.cs" />

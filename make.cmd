@@ -16,6 +16,8 @@ if exist "%_VSINSTPATH%\MSBuild\15.0\Bin\MSBuild.exe" (
   set "PATH=%PATH%;%_VSINSTPATH%\MSBuild\15.0\Bin\"
 )
 
+set FRAMEWORKS=net45,net40
+
 :getopts
 if "%1"=="" (goto :default) else (goto :%1)
 goto :exit
@@ -88,75 +90,66 @@ echo No target 'test'. Try 'test-smoke', 'test-ironpython', 'test-cpython', or '
 goto :exit
 
 :test-smoke
-pushd bin\Release
-net45\IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-net45-release-result.xml
-popd
-pushd bin\Release
-net40\IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-net40-release-result.xml
-popd
+for %%f in ("%FRAMEWORKS:,=" "%") do (
+  pushd bin\Release\%%f
+  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-release-result.xml IronPythonTest.dll
+  popd
+)
 goto :exit
 
 :test-smoke-debug
-pushd bin\Debug
-net45\IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-net45-debug-result.xml
-popd
-pushd bin\Debug
-net40\IronPythonTest.exe --labels=All --where:Category==StandardCPython --result:smoke-net40-debug-result.xml
-popd
+for %%f in ("%FRAMEWORKS:,=" "%") do (
+  pushd bin\Debug\%%f
+  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-debug-result.xml IronPythonTest.dll
+  popd
+)
 goto :exit
 
 :test-ironpython
-pushd bin\Release
-net45\IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net45-release-result.xml
-popd
-pushd bin\Release
-net40\IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net40-release-result.xml
-popd
+for %%f in ("%FRAMEWORKS:,=" "%") do (
+  pushd bin\Release\%%f
+  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==IronPython" --result:ironpython-%%f-release-result.xml IronPythonTest.dll
+  popd
+)
 goto :exit
 
 :test-ironpython-debug
-pushd bin\Debug
-net45\IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net45-debug-result.xml
-popd
-pushd bin\Debug
-net40\IronPythonTest.exe --labels=All --where:Category==IronPython --result:ironpython-net40-debug-result.xml
-popd
+for %%f in ("%FRAMEWORKS:,=" "%") do (
+  pushd bin\Debug\%%f
+  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==IronPython" --result:ironpython-%%f-debug-result.xml IronPythonTest.dll
+  popd
+)
 goto :exit
 
 :test-cpython
-pushd bin\Release
-net45\IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-release-result.xml
-popd
-pushd bin\Release
-net40\IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net40-release-result.xml
-popd
+for %%f in ("%FRAMEWORKS:,=" "%") do (
+  pushd bin\Release\%%f
+  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-release-result.xml IronPythonTest.dll
+  popd
+)
 goto :exit
 
 :test-cpython-debug
-pushd bin\Debug
-net45\IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net45-debug-result.xml
-popd
-pushd bin\Debug
-net40\IronPythonTest.exe --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-net40-debug-result.xml
-popd
-goto :exit
+for %%f in ("%FRAMEWORKS:,=" "%") do (
+  pushd bin\Debug\%%f
+  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-debug-result.xml IronPythonTest.dll
+  popd
+)goto :exit
 
 :test-all
-pushd bin\Release
-net45\IronPythonTest.exe --labels=All --result:all-net45-release-result.xml
-popd
-pushd bin\Release
-net40\IronPythonTest.exe --labels=All --result:all-net40-release-result.xml
-popd
+for %%f in ("%FRAMEWORKS:,=" "%") do (
+  pushd bin\Release\%%f
+  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --result:all-%%f-release-result.xml IronPythonTest.dll
+  popd
+)
 goto :exit
 
 :test-all-debug
-pushd bin\Debug
-net45\IronPythonTest.exe --labels=All --result:all-net45-debug-result.xml
-popd
-pushd bin\Debug
-net40\IronPythonTest.exe --labels=All --result:all-net40-debug-result.xml
-popd
+for %%f in ("%FRAMEWORKS:,=" "%") do (
+  pushd bin\Debug\%%f
+  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --result:all-%%f-debug-result.xml IronPythonTest.dll
+  popd
+)
 goto :exit
 
 :test-custom

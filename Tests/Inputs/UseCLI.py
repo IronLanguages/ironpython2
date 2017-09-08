@@ -19,10 +19,8 @@ import sys
 
 from iptest import IronPythonTestCase, is_netcoreapp
 
-if is_netcoreapp:
-    ip_test = os.path.join(sys.prefix, 'IronPythonTest.dll')
-else:
-    ip_test = os.path.join(sys.prefix, 'IronPythonTest.exe')
+ip_test = os.path.join(sys.prefix, 'IronPythonTest.dll')
+if not is_netcoreapp:
     clr.AddReference("System.Core")
     clr.AddReference('System.Windows.Forms')
     from System.Windows.Forms import Form, Control
