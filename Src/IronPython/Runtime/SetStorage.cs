@@ -171,7 +171,7 @@ namespace IronPython.Runtime {
             Debug.Assert(item != null);
 
             int add_index = -1;
-            for (int index = hashCode & (buckets.Length - 1); ; ProbeNext(buckets, ref index)) {
+            for (int cnt = 0, index = hashCode & (buckets.Length - 1); cnt < buckets.Length; cnt++, ProbeNext(buckets, ref index)) {
                 Bucket bucket = buckets[index];
                 if (bucket.Item == null) {
                     version++;
@@ -181,10 +181,16 @@ namespace IronPython.Runtime {
                     return true;
                 } else if (bucket.Item == Removed && add_index == -1) {
                     add_index = index;
-                } else if (bucket.HashCode == hashCode && eqFunc(item, bucket.Item)) {
+                } else if (bucket.Item != Removed && bucket.HashCode == hashCode && eqFunc(item, bucket.Item)) {
                     return false;
                 }
             }
+
+            Debug.Assert(add_index != -1);
+            version++;
+            buckets[add_index].HashCode = hashCode;
+            buckets[add_index].Item = item;
+            return true;
         }
 
         /// <summary>
