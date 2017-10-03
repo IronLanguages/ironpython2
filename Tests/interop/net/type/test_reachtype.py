@@ -200,7 +200,6 @@ class ReachTypeTest(IronPythonTestCase):
         self.assertEqual(NSwForwardee1.Bar.A, -120)
     
     #@skip("multiple_execute")
-    @unittest.skipIf(is_mono, 'https://github.com/IronLanguages/main/issues/1439')
     def test_type_forward2(self):
         self.add_clr_assemblies("typeforwarder2")
         from NSwForwardee2 import *      
