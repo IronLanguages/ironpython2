@@ -47,10 +47,6 @@ nuget:
   disable_publish_on_pr: true     # disable publishing of .nupkg artifacts to
                                   # account/project feeds for pull request builds
 
-# Temporary redirect due to NuGet restore issue - https://appveyor.statuspage.io/incidents/m2vdvw39kdk8
-hosts:
-  api.nuget.org: 93.184.221.200
-
 #---------------------------------#
 #       build configuration       #
 #---------------------------------#
