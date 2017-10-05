@@ -15,13 +15,6 @@
 # you can use {branch} name in version format too
 # version: 1.0.{build}-{branch}
 
-# branches to build
-#branches:
-  # whitelist
-  # Setting this prevents PRs from being auto-built
-  # only:
-  #  - ipy-maint-2.7
-
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
 
@@ -47,16 +40,15 @@ nuget:
   disable_publish_on_pr: true     # disable publishing of .nupkg artifacts to
                                   # account/project feeds for pull request builds
 
-# Temporary redirect due to NuGet restore issue - https://appveyor.statuspage.io/incidents/m2vdvw39kdk8
-hosts:
-  api.nuget.org: 93.184.221.200
-
 #---------------------------------#
 #       build configuration       #
 #---------------------------------#
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Release
+
+install:
+  - ps: (New-Object Net.WebClient).DownloadFile('https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe', 'C:\Tools\NuGet\NuGet.exe')
 
 # scripts to run before build
 before_build:
