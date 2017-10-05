@@ -48,7 +48,7 @@ nuget:
 configuration: Release
 
 install:
-- ps: (New-Object Net.WebClient).DownloadFile('https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe', 'C:\Tools\NuGet\NuGet.exe')
+  - ps: (New-Object Net.WebClient).DownloadFile('https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe', 'C:\Tools\NuGet\NuGet.exe')
 
 # scripts to run before build
 before_build:
