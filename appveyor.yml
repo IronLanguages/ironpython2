@@ -65,6 +65,7 @@ after_build:
 # to run your custom scripts instead of automatic MSBuild
 build_script:
   - make.cmd package-release
+  - ps: ls bin\Release\net40\
 
 # to disable automatic builds
 #build: off
