@@ -162,7 +162,7 @@
           Inputs="$(NuSpecInputs)"
           Outputs="$(NuPkgOutputs)">
     <ItemGroup>
-      <DLLsFiles Include="**\DLLs\*.dll" />
+      <DLLsFiles Include="**\DLLs\IronPython.*.dll" Exclude="**\DLLs\IronPython.Modules.dll" />
     </ItemGroup>
 
     <!-- Copy the files from DLLs into the main directory for nuget packaging -->
