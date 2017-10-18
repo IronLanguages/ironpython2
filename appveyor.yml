@@ -64,7 +64,7 @@ after_build:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - .\make.cmd
+  - .\make.cmd package-release
 
 # to disable automatic builds
 #build: off
@@ -78,16 +78,17 @@ test_script:
 #      artifacts configuration    #
 #---------------------------------#
 
-#artifacts:
+  - path: Package/Release/**/IronPython.*.zip
+    name: Zip Package
+    type: Zip
 
-#  # pushing a single file
-#  - path: test.zip
+  - path: Package/Release/**/*.nupkg
+    name: NuGet Package
+    type: NuGetPackage
 
-#  # pushing entire folder as a zip archive
-#  - path: logs
-
-#  # pushing all *.nupkg files in build directory recursively
-#  - path: '**\*.nupkg'
+  - path: build-*.binlog
+    name: Binary Build Log
+    type: File
 
 
 #---------------------------------#

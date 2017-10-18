@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildThisFileDirectory)..\..\..\Solutions\Versioning.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\Build\Common.proj" />
+  <Import Project="$(BeforeTargetFiles)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -13,7 +14,7 @@
     <SuppressPdbOutput>true</SuppressPdbOutput>
     <SuppressSpecificWarnings>5151</SuppressSpecificWarnings>
     
-    <WixToolPath Condition=" '$(WixToolPath)' == '' ">$(MSBuildProjectDirectory)\..\..\Util\Wix35\</WixToolPath>
+    <WixToolPath Condition=" '$(WixToolPath)' == '' ">$(MSBuildProjectDirectory)\..\..\Util\Wix\</WixToolPath>
     <WixTargetsPath>$(WixToolPath)Wix.targets</WixTargetsPath>
     <WixTasksPath>$(WixToolPath)wixtasks.dll</WixTasksPath>
     
@@ -46,20 +47,11 @@
     <WixConstant Include="StdLibDir">
       <Value>Lib</Value>
     </WixConstant>
-    <WixConstant Include="PlatformsNet35Dir">
-      <Value>Platforms\Net35</Value>
-    </WixConstant>
     <WixConstant Include="PlatformsNet40Dir">
       <Value>Platforms\Net40</Value>
     </WixConstant>
     <WixConstant Include="PlatformsNet45Dir">
       <Value>Platforms\Net45</Value>
-    </WixConstant>
-    <WixConstant Include="PlatformsSl5Dir">
-      <Value>Platforms\Sl5</Value>
-    </WixConstant>
-    <WixConstant Include="SilverlightToolsDir">
-      <Value>Silverlight</Value>
     </WixConstant>
     <WixConstant Include="ToolsDir">
       <Value>Tools</Value>
@@ -73,13 +65,13 @@
     <CommonWixConstants>@(WixConstant->'%(Identity)=%(Value)')</CommonWixConstants>
   </PropertyGroup>
   
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath Condition=" '$(OutputPath)' == '' ">bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug;$(CommonWixConstants)</DefineConstants>
   </PropertyGroup>
   
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath Condition=" '$(OutputPath)' == '' ">bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>$(CommonWixConstants)</DefineConstants>
@@ -116,12 +108,6 @@
       <PreprocessorVariable>var.StdLibDir</PreprocessorVariable>
     </HarvestDirectory>
     
-    <HarvestDirectory Include="$(BaseInputPaths)\Platforms\Net35">
-      <DirectoryRefId>IronPythonPlatformsDir</DirectoryRefId>
-      <ComponentGroupName>IronPythonPlatformsNet35</ComponentGroupName>
-      <PreprocessorVariable>var.PlatformsNet35Dir</PreprocessorVariable>
-    </HarvestDirectory>
-    
     <HarvestDirectory Include="$(BaseInputPaths)\Platforms\Net40">
       <DirectoryRefId>IronPythonPlatformsDir</DirectoryRefId>
       <ComponentGroupName>IronPythonPlatformsNet40</ComponentGroupName>
@@ -132,17 +118,6 @@
       <DirectoryRefId>IronPythonPlatformsDir</DirectoryRefId>
       <ComponentGroupName>IronPythonPlatformsNet45</ComponentGroupName>
       <PreprocessorVariable>var.PlatformsNet45Dir</PreprocessorVariable>
-    </HarvestDirectory>
-    <HarvestDirectory Include="$(BaseInputPaths)\Platforms\Sl5">
-      <DirectoryRefId>IronPythonPlatformsDir</DirectoryRefId>
-      <ComponentGroupName>IronPythonPlatformsSl5</ComponentGroupName>
-      <PreprocessorVariable>var.PlatformsSl5Dir</PreprocessorVariable>
-    </HarvestDirectory>
-    
-    <HarvestDirectory Include="$(BaseInputPaths)\Silverlight">
-      <DirectoryRefId>INSTALLDIR</DirectoryRefId>
-      <ComponentGroupName>IronPythonSilverlightTools</ComponentGroupName>
-      <PreprocessorVariable>var.SilverlightToolsDir</PreprocessorVariable>
     </HarvestDirectory>
 
     <HarvestDirectory Include="$(BaseInputPaths)\Tools">

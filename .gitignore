@@ -90,3 +90,5 @@ Src/IronPythonConsoleAny/App.config
 Src/IronPythonWindow/App.config
 Src/IronPythonWindowAny/App.config
 Package/nuget/**/*.nupkg
+*.binlog
+Package/Release/

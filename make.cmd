@@ -174,11 +174,7 @@ goto :main
 goto :exit
 
 :main
-msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU"
-goto :exit
-
-:dotnet-main
-msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU" /p:BuildNetCoreApp=true
+msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-%_flavour%.binlog
 goto :exit
 
 :exit
