@@ -92,3 +92,4 @@ Src/IronPythonWindowAny/App.config
 Package/nuget/**/*.nupkg
 *.binlog
 Package/Release/
+build-*.ProjectImports.zip

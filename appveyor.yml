@@ -10,7 +10,7 @@
 
 # version format
 # NOTE: version is now generated in "before_build:"
-#version: 2.7.6-{build}
+#version: 2.7.8-{build}
 
 # you can use {branch} name in version format too
 # version: 1.0.{build}-{branch}
@@ -64,7 +64,7 @@ after_build:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - .\make.cmd package-release
+  - make.cmd package-release
 
 # to disable automatic builds
 #build: off
@@ -78,6 +78,7 @@ test_script:
 #      artifacts configuration    #
 #---------------------------------#
 
+artifacts:
   - path: Package/Release/**/IronPython.*.zip
     name: Zip Package
     type: Zip
