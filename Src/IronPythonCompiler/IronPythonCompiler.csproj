@@ -16,7 +16,7 @@
     <ProjectReference Include="..\IronPython\IronPython.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="IKVM.Reflection">
+    <Reference Include="IKVM.Reflection" CopyLocal="true">
       <HintPath>..\..\Util\References\IKVM\IKVM.Reflection.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />

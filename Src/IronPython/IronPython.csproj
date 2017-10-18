@@ -22,7 +22,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Condition="'$(Mono)' == 'true'" Include="Mono.Posix, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+    <Reference Condition="'$(Mono)' == 'true'" Include="Mono.Posix">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
