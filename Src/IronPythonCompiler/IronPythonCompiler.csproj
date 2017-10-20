@@ -16,6 +16,10 @@
     <ProjectReference Include="..\IronPython\IronPython.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <StageItem Include="$(TargetDir)\IKVM.Reflection.dll" />
+    <StageItem Include="$(RootDIr)\Util\References\IKVM\IKVM.Reflection.License.txt"/>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="IKVM.Reflection" CopyLocal="true">
       <HintPath>..\..\Util\References\IKVM\IKVM.Reflection.dll</HintPath>
     </Reference>

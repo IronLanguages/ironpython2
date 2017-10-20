@@ -117,8 +117,8 @@
 
   <Target Name="_RemoveDocFiles" DependsOnTargets="_PlatformStage">
     <ItemGroup>
-      <UnneededDocXMLFiles Include="$(StageDir)\*.xml" />
-      <UnneededDocXMLFiles Include="$(StageDir)\DLLs\*.xml" />
+      <UnneededDocXMLFiles Include="$(StageDir)\**\*.xml" />
+      <UnneededDocXMLFiles Include="$(StageDir)\**\DLLs\*.xml" />
     </ItemGroup>
     <Delete Files="@(UnneededDocXMLFiles)" />
   </Target>
@@ -162,7 +162,7 @@
           Inputs="$(NuSpecInputs)"
           Outputs="$(NuPkgOutputs)">
     <ItemGroup>
-      <DLLsFiles Include="**\DLLs\IronPython.*.dll" Exclude="**\DLLs\IronPython.Modules.dll" />
+      <DLLsFiles Include="**\DLLs\IronPython.*.dll" />
     </ItemGroup>
 
     <!-- Copy the files from DLLs into the main directory for nuget packaging -->

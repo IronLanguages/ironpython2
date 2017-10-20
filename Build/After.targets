@@ -5,6 +5,7 @@
       <ItemGroup>
         <StageItem Include="$(TargetPath)" />
         <StageItem Include="$(DocumentationFile)" />
+        <StageItem Include="$(PdbFile)" />
       </ItemGroup>
     </When>
     <When Condition=" '$(OutputType)' == 'Exe' or '$(OutputType)' == 'WinExe' ">
@@ -22,17 +23,27 @@
     <UnsignedMainStaged>@(StageItem->'$(MainStageDir)\%(RecursiveDir)\%(Filename)%(Extension)')</UnsignedMainStaged>
   </PropertyGroup>
 
+  <Target Name="_LateStage"
+          DependsOnTargets="CoreBuild"
+          Condition=" '$(Staging)' == 'true' ">
+    <CreateItem Include="@(LateStageItem)">
+        <Output TaskParameter="Include" ItemName="StageItem" />
+    </CreateItem>
+  </Target>
+
   <Target Name="_MainStage"
           DependsOnTargets="CoreBuild"
           Inputs="$(UnsignedItems)"
-          Outputs="$(UnsignedMainStaged)">
+          Outputs="$(UnsignedMainStaged)"
+          Condition=" '$(Staging)' == 'true' ">
+    <Error Text="StageDir is not set." Condition=" '$(StageDir)' == '' " />
     <Copy SourceFiles="$(UnsignedItems)" DestinationFolder="$(MainStageDir)" />
   </Target>
 
-  <Target Name="Stage"
-          DependsOnTargets="_MainStage"
-          Condition=" '$(Staging)' == 'true' ">
-    <Error Text="StageDir is not set." Condition=" '$(StageDir)' == '' " />
+  <Target Name="_StoreInDLLs" Condition=" '$(StoreInDLLs)' == 'true' ">
+    <Move SourceFiles="@(StageItem)" DestinationFolder="$(TargetDir)\%(StageItem.RecursiveDir)\DLLs" />
   </Target>
+
+  <Target Name="Stage" DependsOnTargets="_LateStage;_MainStage;_StoreInDLLs" />
 </Project>
 

@@ -64,7 +64,6 @@ after_build:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - make.cmd
   - make.cmd package-release
 
 # to disable automatic builds
