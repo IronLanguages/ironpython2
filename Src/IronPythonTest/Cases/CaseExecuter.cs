@@ -22,7 +22,7 @@ namespace IronPythonTest.Cases {
                 }
                 return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy64.bat");
 #else
-                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy.exe");
+                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy32.exe");
 #endif
             }
         }
