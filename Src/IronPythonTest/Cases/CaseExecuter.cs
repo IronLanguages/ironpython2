@@ -167,9 +167,15 @@ namespace IronPythonTest.Cases {
                     proc.StartInfo.WorkingDirectory = ReplaceVariables(testcase.Options.WorkingDirectory, wdReplacements);
                 }
                 proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardError = proc.StartInfo.RedirectStandardInput = proc.StartInfo.RedirectStandardOutput = testcase.Options.Redirect;
                 proc.Start();
                 proc.WaitForExit();
                 exitCode = proc.ExitCode;
+                if(testcase.Options.Redirect && exitCode != 0) {
+                    Console.Error.WriteLine($"Error running {proc.StartInfo.FileName} {proc.StartInfo.Arguments}: ");
+                    Console.Error.WriteLine(proc.StandardOutput.ReadToEnd());
+                    Console.Error.WriteLine();
+                }
             }
             return exitCode;
         }
