@@ -22,7 +22,7 @@ namespace IronPythonTest.Cases {
                 }
                 return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy64.bat");
 #else
-                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy32.exe");
+                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy.exe");
 #endif
             }
         }
@@ -167,17 +167,9 @@ namespace IronPythonTest.Cases {
                     proc.StartInfo.WorkingDirectory = ReplaceVariables(testcase.Options.WorkingDirectory, wdReplacements);
                 }
                 proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.RedirectStandardOutput = true;
-                proc.StartInfo.RedirectStandardError = true;
-                proc.StartInfo.RedirectStandardInput = true;
                 proc.Start();
                 proc.WaitForExit();
                 exitCode = proc.ExitCode;
-                if(exitCode != 0) {
-                    Console.Error.WriteLine($"Error on {testcase.Name}: FileName = {proc.StartInfo.FileName}, Arguments={proc.StartInfo.Arguments}");
-                    Console.Error.WriteLine(proc.StandardError.ReadToEnd());
-                    Console.Error.WriteLine();
-                }
             }
             return exitCode;
         }
