@@ -139,7 +139,6 @@ for %%f in ("%FRAMEWORKS:,=" "%") do (
 :test-all
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
-  dir
   ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --result:all-%%f-release-result.xml IronPythonTest.dll
   popd
 )
