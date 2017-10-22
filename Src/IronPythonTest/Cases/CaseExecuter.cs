@@ -171,7 +171,7 @@ namespace IronPythonTest.Cases {
                 proc.Start();
                 var output = string.Empty;
                 if(testcase.Options.Redirect) {
-                    output = proc.StandardOutput.ReadToEnd();
+                    output = proc.StandardError.ReadToEnd();
                 }
                 proc.WaitForExit();
                 exitCode = proc.ExitCode;
