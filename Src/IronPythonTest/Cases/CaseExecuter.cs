@@ -167,7 +167,7 @@ namespace IronPythonTest.Cases {
                     proc.StartInfo.WorkingDirectory = ReplaceVariables(testcase.Options.WorkingDirectory, wdReplacements);
                 }
                 proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.RedirectStandardError = proc.StartInfo.RedirectStandardInput = proc.StartInfo.RedirectStandardOutput = testcase.Options.Redirect;
+                proc.StartInfo.RedirectStandardError = proc.StartInfo.RedirectStandardOutput = testcase.Options.Redirect;
                 proc.Start();
                 proc.WaitForExit();
                 exitCode = proc.ExitCode;
