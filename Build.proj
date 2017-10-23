@@ -112,7 +112,7 @@
     <ItemGroup>
       <StdLibFiles Include="$(StageDir)\Lib\**\*.*" />
     </ItemGroup>
-    <Zip ZipLevel="9" Files="@(StdLibFiles)" ZipFileName="$(PackageDir)\IronPython.StdLib-$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
+    <Zip ZipLevel="9" Files="@(StdLibFiles)" ZipFileName="$(PackageDir)\IronPython.StdLib.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>
   </Target>
 
   <Target Name="_RemoveDocFiles" DependsOnTargets="_PlatformStage">
@@ -175,11 +175,11 @@
   </Target>
 
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
-          Outputs="$(PackageDir)\IronPython-$(PackageVersion).zip">
+          Outputs="$(PackageDir)\IronPython.$(PackageVersion).zip">
     <ItemGroup>
       <ZipFiles Include="$(StageDir)\**\*.*" Exclude="$(StageDir)\**\IronPythonTest.dll" />
     </ItemGroup>
-    <Zip ZipLevel="9" Files="@(ZipFiles)" ZipFileName="$(PackageDir)\IronPython-$(PackageVersion).zip" WorkingDirectory="$([System.IO.Path]::GetFullPath('$(StageDir)\..'))" />
+    <Zip ZipLevel="9" Files="@(ZipFiles)" ZipFileName="$(PackageDir)\IronPython.$(PackageVersion).zip" WorkingDirectory="$(StageDir)" />
   </Target>
 
   <Target Name="DebPackage" Condition="'$(OS)' == 'Unix' " DependsOnTargets="Stage;MakePackageDir" />

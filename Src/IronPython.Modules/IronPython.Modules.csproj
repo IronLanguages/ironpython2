@@ -27,8 +27,8 @@
     <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <PackageReference Include="Microsoft.Win32.Registry" Version="4.4.0-preview2-25405-01" />
-    <PackageReference Include="System.Security.Permissions" Version="4.4.0-preview2-25405-01" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="4.4.0" />
+    <PackageReference Include="System.Security.Permissions" Version="4.4.0" />
   </ItemGroup>
   <Import Project="$(BeforeTargetFiles)" />
   <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />

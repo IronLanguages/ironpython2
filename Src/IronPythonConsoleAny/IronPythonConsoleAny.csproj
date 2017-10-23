@@ -34,6 +34,11 @@
     <StageItem Include="ipy.bat" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
+    <Content Include="ipy.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <LateStageItem Include="$(TargetDir)\%2A%2A\%2A.runtimeconfig.json" />
     <LateStageitem Include="$(TargetDir)\%2A%2A\System.%2A.dll" />
   </ItemGroup>
