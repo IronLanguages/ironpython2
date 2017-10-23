@@ -77,11 +77,11 @@ test_script:
 #---------------------------------#
 
 artifacts:
-  - path: Package/Release/**/IronPython.*.zip
+  - path: Package/Release/Packages/**/*.zip
     name: Zip Package
     type: Zip
 
-  - path: Package/Release/**/*.nupkg
+  - path: Package/Release/Packages/**/*.nupkg
     name: NuGet Package
     type: NuGetPackage
 
