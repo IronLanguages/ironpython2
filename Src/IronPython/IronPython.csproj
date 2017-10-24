@@ -26,6 +26,9 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' AND '$(OS)' != 'Windows_NT' ">
+    <PackageReference Include="Mono.Posix.Standard" Version="1.0.0-beta2" />
+  </ItemGroup>
   <ItemGroup>
     <None Update="Lib\**\*.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
