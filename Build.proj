@@ -177,7 +177,7 @@
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
           Outputs="$(PackageDir)\IronPython.$(PackageVersion).zip">
     <ItemGroup>
-      <ZipFiles Include="$(StageDir)\**\*.*" Exclude="$(StageDir)\**\IronPythonTest.dll" />
+      <ZipFiles Include="$(StageDir)\**\*.*" Exclude="$(StageDir)\**\IronPythonTest.*" />
     </ItemGroup>
     <Zip ZipLevel="9" Files="@(ZipFiles)" ZipFileName="$(PackageDir)\IronPython.$(PackageVersion).zip" WorkingDirectory="$(StageDir)" />
   </Target>
