@@ -269,7 +269,7 @@ namespace IronPython.Hosting {
                     var name = Path.GetFileNameWithoutExtension(executable);
                     var runner = Path.Combine(prefix, name + ".bat");
                     if (Environment.OSVersion.Platform == PlatformID.Unix) {
-                        runner = Path.Combine(prefix, name);
+                        runner = Path.Combine(prefix, name + ".sh");
                     }
                     if (File.Exists(runner)) executable = runner;
                 }

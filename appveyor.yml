@@ -10,7 +10,7 @@
 
 # version format
 # NOTE: version is now generated in "before_build:"
-#version: 2.7.6-{build}
+#version: 2.7.8-{build}
 
 # you can use {branch} name in version format too
 # version: 1.0.{build}-{branch}
@@ -61,33 +61,33 @@ before_package:
 
 # scripts to run after build
 after_build:
+  - make.cmd package-release
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - .\make.cmd
-
-# to disable automatic builds
-#build: off
+  - make.cmd
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  - .\make.cmd ngen
-  - .\make.cmd test-all
+  - make.cmd ngen
+  - make.cmd test-all
 
 #---------------------------------#
 #      artifacts configuration    #
 #---------------------------------#
 
-#artifacts:
+artifacts:
+  - path: Package/Release/Packages/**/*.zip
+    name: Zip Package
+    type: Zip
 
-#  # pushing a single file
-#  - path: test.zip
+  - path: Package/Release/Packages/**/*.nupkg
+    name: NuGet Package
+    type: NuGetPackage
 
-#  # pushing entire folder as a zip archive
-#  - path: logs
-
-#  # pushing all *.nupkg files in build directory recursively
-#  - path: '**\*.nupkg'
+  - path: build-*.binlog
+    name: Binary Build Log
+    type: File
 
 
 #---------------------------------#

@@ -159,6 +159,22 @@ net45\IronPythonTest.exe --labels=All --result:custom-result.xml %1 %2 %3 %4 %5 
 popd
 goto :exit
 
+:test-netcore-ironpython
+FOR /F "delims=" %%F IN ("bin\Release\netcoreapp2.0") DO SET "BinDir=%%~fF"
+dotnet test .\Src\IronPythonTest\IronPythonTest.csproj --framework netcoreapp2.0 -o %BinDir% --configuration Release --no-build --filter "TestCategory=IronPython"
+goto :exit
+
+:test-netcore-cpython
+FOR /F "delims=" %%F IN ("bin\Release\netcoreapp2.0") DO SET "BinDir=%%~fF"
+dotnet test .\Src\IronPythonTest\IronPythonTest.csproj --framework netcoreapp2.0 -o %BinDir% --configuration Release --no-build --filter "TestCategory=StandardCPython | TestCategory=AllCPython"
+goto :exit
+
+:test-netcore-all
+FOR /F "delims=" %%F IN ("bin\Release\netcoreapp2.0") DO SET "BinDir=%%~fF"
+dotnet test .\Src\IronPythonTest\IronPythonTest.csproj --framework netcoreapp2.0 -o %BinDir% --configuration Release --no-build
+goto :exit
+
+
 :restore
 set _target=RestoreReferences
 set _flavour=Release
@@ -174,11 +190,7 @@ goto :main
 goto :exit
 
 :main
-msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU"
-goto :exit
-
-:dotnet-main
-msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU" /p:BuildNetCoreApp=true
+msbuild Build.proj /t:%_target% /p:BuildFlavour=%_flavour% /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-%_flavour%.binlog
 goto :exit
 
 :exit

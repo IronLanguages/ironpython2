@@ -2,14 +2,14 @@
   <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
   <PropertyGroup>
     <TargetFrameworks>net40;net45</TargetFrameworks>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>anycpu</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
     <ProjectGuid>{7F6F9AB3-9943-4316-BD4C-A10F580BC75C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>IronPythonWindow</RootNamespace>
-    <AssemblyName>ipyw64</AssemblyName>
-    <ApplicationIcon>..\IronPythonWindow\ipy.ico</ApplicationIcon>
+    <AssemblyName>ipyw</AssemblyName>
+    <ApplicationIcon>..\IronPythonWindow\ipyw.ico</ApplicationIcon>
     <CodeAnalysisRuleSet>IronPythonWindowAny.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
@@ -24,9 +24,7 @@
     <Compile Include="..\IronPythonWindow\IronPythonWindow.cs" Link="IronPythonWindow.cs" />
   </ItemGroup>
   <Import Project="$(BeforeTargetFiles)" />
-  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion">
-    <Copy SourceFiles="..\App.$(Configuration).config" DestinationFiles="App.config" />
-  </Target>
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
   <ItemGroup>
     <!-- if the file does not exist it's not picked up automatically -->
     <Compile Remove="Properties\CurrentVersion.Generated.cs" />

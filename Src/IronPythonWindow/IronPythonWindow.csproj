@@ -3,12 +3,13 @@
   <PropertyGroup>
     <TargetFrameworks>net40;net45</TargetFrameworks>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
     <ProjectGuid>{81DA19C7-4FEC-47E7-981B-D9310D549F95}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>IronPythonWindow</RootNamespace>
-    <AssemblyName>ipyw</AssemblyName>
-    <ApplicationIcon>ipy.ico</ApplicationIcon>
+    <AssemblyName>ipyw32</AssemblyName>
+    <ApplicationIcon>ipyw.ico</ApplicationIcon>
     <CodeAnalysisRuleSet>IronPythonWindow.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
@@ -21,9 +22,7 @@
     <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
   </ItemGroup>
   <Import Project="$(BeforeTargetFiles)" />
-  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion">
-    <Copy SourceFiles="..\App.$(Configuration).config" DestinationFiles="App.config" />
-  </Target>
+  <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
   <ItemGroup>
     <!-- if the file does not exist it's not picked up automatically -->
     <Compile Remove="Properties\CurrentVersion.Generated.cs" />

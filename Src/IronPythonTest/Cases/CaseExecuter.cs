@@ -18,9 +18,9 @@ namespace IronPythonTest.Cases {
             get {
 #if NETCOREAPP2_0
                 if (Environment.OSVersion.Platform == PlatformID.Unix) {
-                    return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy64");
+                    return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy.sh");
                 }
-                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy64.bat");
+                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy.bat");
 #else
                 return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy.exe");
 #endif
@@ -167,9 +167,19 @@ namespace IronPythonTest.Cases {
                     proc.StartInfo.WorkingDirectory = ReplaceVariables(testcase.Options.WorkingDirectory, wdReplacements);
                 }
                 proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardError = proc.StartInfo.RedirectStandardOutput = testcase.Options.Redirect;
                 proc.Start();
+                var output = string.Empty;
+                if(testcase.Options.Redirect) {
+                    output = proc.StandardError.ReadToEnd();
+                }
                 proc.WaitForExit();
                 exitCode = proc.ExitCode;
+                if(testcase.Options.Redirect && exitCode != 0) {
+                    Console.Error.WriteLine($"Error running {proc.StartInfo.FileName} {proc.StartInfo.Arguments}: ");
+                    Console.Error.WriteLine(output);
+                    Console.Error.WriteLine();
+                }
             }
             return exitCode;
         }
