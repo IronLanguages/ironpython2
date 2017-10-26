@@ -18,6 +18,8 @@ if exist "%_VSINSTPATH%\MSBuild\15.0\Bin\MSBuild.exe" (
 
 set FRAMEWORKS=net45,net40
 
+set CONSOLERUNNER="..\..\..\packages\nunit.consolerunner\3.7.0\tools\nunit3-console.exe"
+
 :getopts
 if "%1"=="" (goto :default) else (goto :%1)
 goto :exit
@@ -92,7 +94,7 @@ goto :exit
 :test-smoke
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
-  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-release-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-release-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -100,7 +102,7 @@ goto :exit
 :test-smoke-debug
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
-  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-debug-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-debug-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -108,7 +110,7 @@ goto :exit
 :test-ironpython
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
-  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==IronPython" --result:ironpython-%%f-release-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --labels=All --where:"Category==IronPython" --result:ironpython-%%f-release-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -116,7 +118,7 @@ goto :exit
 :test-ironpython-debug
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
-  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==IronPython" --result:ironpython-%%f-debug-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --labels=All --where:"Category==IronPython" --result:ironpython-%%f-debug-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -124,7 +126,7 @@ goto :exit
 :test-cpython
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
-  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-release-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-release-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -132,7 +134,7 @@ goto :exit
 :test-cpython-debug
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
-  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-debug-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-debug-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -140,7 +142,7 @@ goto :exit
 :test-all
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
-  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --result:all-%%f-release-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --labels=All --result:all-%%f-release-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -148,7 +150,7 @@ goto :exit
 :test-all-debug
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
-  ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --result:all-%%f-debug-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --labels=All --result:all-%%f-debug-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
