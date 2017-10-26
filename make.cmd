@@ -134,7 +134,8 @@ for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
   ..\..\..\packages\nunit.consolerunner\3.6.1\tools\nunit3-console.exe  --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-debug-result.xml IronPythonTest.dll
   popd
-)goto :exit
+)
+goto :exit
 
 :test-all
 for %%f in ("%FRAMEWORKS:,=" "%") do (
@@ -173,7 +174,6 @@ goto :exit
 FOR /F "delims=" %%F IN ("bin\Release\netcoreapp2.0") DO SET "BinDir=%%~fF"
 dotnet test .\Src\IronPythonTest\IronPythonTest.csproj --framework netcoreapp2.0 -o %BinDir% --configuration Release --no-build
 goto :exit
-
 
 :restore
 set _target=RestoreReferences
