@@ -257,7 +257,7 @@ namespace IronPython.Runtime.Binding {
                     // iterate using __iter__
                     res = new DynamicMetaObject(
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("ContainsFromEnumerable"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.ContainsFromEnumerable)),
                             AstUtils.Constant(state.SharedContext),
                             sf.Target.Expression,
                             AstUtils.Convert(types[1].Expression, typeof(object))
@@ -324,7 +324,7 @@ namespace IronPython.Runtime.Binding {
                         res = new DynamicMetaObject(
                             operation.Throw(
                                 Ast.Call(
-                                    typeof(PythonOps).GetMethod("TypeErrorForNonIterableObject"),
+                                    typeof(PythonOps).GetMethod(nameof(PythonOps.TypeErrorForNonIterableObject)),
                                     AstUtils.Convert(
                                         types[0].Expression,
                                         typeof(object)
@@ -373,7 +373,7 @@ namespace IronPython.Runtime.Binding {
                 res = new DynamicMetaObject(
                     operation.Throw(
                         Expression.Call(
-                            typeof(PythonOps).GetMethod("TypeErrorForUnhashableObject"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.TypeErrorForUnhashableObject)),
                             self.Expression
                         ),
                         typeof(int)
@@ -457,7 +457,7 @@ namespace IronPython.Runtime.Binding {
 
                 return new DynamicMetaObject(
                     Expression.Call(
-                        typeof(PythonOps).GetMethod("StringEnumerator"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.StringEnumerator)),
                         self.Expression
                     ),
                     self.Restrictions
@@ -468,7 +468,7 @@ namespace IronPython.Runtime.Binding {
                 if (operation.Context.PythonOptions.Python30) {
                     return new DynamicMetaObject(
                         Expression.Call(
-                            typeof(PythonOps).GetMethod("BytesIntEnumerator"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.BytesIntEnumerator)),
                             self.Expression
                         ),
                         self.Restrictions
@@ -476,7 +476,7 @@ namespace IronPython.Runtime.Binding {
                 } else {
                     return new DynamicMetaObject(
                         Expression.Call(
-                            typeof(PythonOps).GetMethod("BytesEnumerator"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.BytesEnumerator)),
                             self.Expression
                         ),
                         self.Restrictions
@@ -488,7 +488,7 @@ namespace IronPython.Runtime.Binding {
 
                 return new DynamicMetaObject(
                     Expression.Call(
-                        typeof(PythonOps).GetMethod("GetEnumeratorFromEnumerable"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.GetEnumeratorFromEnumerable)),
                         Expression.Convert(
                             self.Expression,
                             typeof(IEnumerable)
@@ -551,7 +551,7 @@ namespace IronPython.Runtime.Binding {
                         ),
                         MakeEnumeratorResult(tmp),
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("ThrowTypeErrorForBadIteration"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.ThrowTypeErrorForBadIteration)),
                             PythonContext.GetCodeContext(operation),
                             self.Expression
                         )
@@ -596,7 +596,7 @@ namespace IronPython.Runtime.Binding {
                         notExpr = Ast.Equal(notExpr, AstUtils.Constant(false));
                     } else {
                         notExpr = Ast.Call(
-                            typeof(PythonOps).GetMethod("Not"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.Not)),
                             AstUtils.Convert(notExpr, typeof(object))
                         );
                     }
@@ -970,7 +970,7 @@ namespace IronPython.Runtime.Binding {
                             tmp,
                             target.Target.Expression
                         ),
-                        Ast.Property(null, typeof(PythonOps).GetProperty("NotImplemented"))
+                        Ast.Property(null, typeof(PythonOps).GetProperty(nameof(PythonOps.NotImplemented)))
                     ),
                     tmp
                 );
@@ -1010,7 +1010,7 @@ namespace IronPython.Runtime.Binding {
             bodyBuilder.AddCondition(
                 Ast.AndAlso(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("SlotTryGetValue"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.SlotTryGetValue)),
                         AstUtils.Constant(state.SharedContext),
                         AstUtils.Convert(Utils.WeakConstant(slotTarget), typeof(PythonTypeSlot)),
                         AstUtils.Convert(self, typeof(object)),
@@ -1031,7 +1031,7 @@ namespace IronPython.Runtime.Binding {
                                 ArrayUtils.Insert(AstUtils.Constant(state.SharedContext), (Expression)callable, args)
                             )
                         ),
-                        Ast.Property(null, typeof(PythonOps).GetProperty("NotImplemented"))
+                        Ast.Property(null, typeof(PythonOps).GetProperty(nameof(PythonOps.NotImplemented)))
                     )
                 ),
                 tmp
@@ -1074,7 +1074,7 @@ namespace IronPython.Runtime.Binding {
                             Ast.Assign(
                                 coerceTuple,
                                 Ast.Call(
-                                    typeof(PythonOps).GetMethod("ValidateCoerceResult"),
+                                    typeof(PythonOps).GetMethod(nameof(PythonOps.ValidateCoerceResult)),
                                     coerceResult
                                 )
                             ),
@@ -1100,14 +1100,14 @@ namespace IronPython.Runtime.Binding {
 
         private static MethodCallExpression/*!*/ CoerceTwo(ParameterExpression/*!*/ coerceTuple) {
             return Ast.Call(
-                typeof(PythonOps).GetMethod("GetCoerceResultTwo"),
+                typeof(PythonOps).GetMethod(nameof(PythonOps.GetCoerceResultTwo)),
                 coerceTuple
             );
         }
 
         private static MethodCallExpression/*!*/ CoerceOne(ParameterExpression/*!*/ coerceTuple) {
             return Ast.Call(
-                typeof(PythonOps).GetMethod("GetCoerceResultOne"),
+                typeof(PythonOps).GetMethod(nameof(PythonOps.GetCoerceResultOne)),
                 coerceTuple
             );
         }
@@ -1337,7 +1337,7 @@ namespace IronPython.Runtime.Binding {
 
                     return new DynamicMetaObject(
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("CompareLists"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.CompareLists)),
                             types[0].Expression,
                             types[1].Expression
                         ),
@@ -1349,7 +1349,7 @@ namespace IronPython.Runtime.Binding {
 
                     return new DynamicMetaObject(
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("CompareTuples"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.CompareTuples)),
                             types[0].Expression,
                             types[1].Expression
                         ),
@@ -1361,7 +1361,7 @@ namespace IronPython.Runtime.Binding {
 
                     return new DynamicMetaObject(
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("CompareFloats"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.CompareFloats)),
                             types[0].Expression,
                             types[1].Expression
                         ),
@@ -1446,7 +1446,7 @@ namespace IronPython.Runtime.Binding {
                     op,
                     reverse,
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("CompareToZero"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.CompareToZero)),
                         AstUtils.Convert(expr, typeof(object))
                     )
                 );
@@ -1657,7 +1657,7 @@ namespace IronPython.Runtime.Binding {
                         arguments[0],
                         new DynamicMetaObject(
                             Ast.Call(
-                                typeof(PythonOps).GetMethod("MakeTuple"),
+                                typeof(PythonOps).GetMethod(nameof(PythonOps.MakeTuple)),
                                 Ast.NewArrayInit(typeof(object), tupleArgs)
                             ),
                             restrictions
@@ -1677,7 +1677,7 @@ namespace IronPython.Runtime.Binding {
                         arguments[0],
                         new DynamicMetaObject(
                             Ast.Call(
-                                typeof(PythonOps).GetMethod("MakeTuple"),
+                                typeof(PythonOps).GetMethod(nameof(PythonOps.MakeTuple)),
                                 Ast.NewArrayInit(typeof(object), tupleArgs)
                             ),
                             BindingRestrictions.Combine(ArrayUtils.RemoveFirst(arguments))
@@ -1957,7 +1957,7 @@ namespace IronPython.Runtime.Binding {
 
                 return new DynamicMetaObject(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("NormalizeBigInteger"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.NormalizeBigInteger)),
                         self.Expression,
                         bigInt.Expression,
                         _lengthVar
@@ -1981,7 +1981,7 @@ namespace IronPython.Runtime.Binding {
                 EnsureLengthVariable();
 
                 return Ast.Call(
-                    typeof(PythonOps).GetMethod("GetLengthOnce"),
+                    typeof(PythonOps).GetMethod(nameof(PythonOps.GetLengthOnce)),
                     self.Expression,
                     _lengthVar
                 );
@@ -2109,7 +2109,7 @@ namespace IronPython.Runtime.Binding {
 
             return new DynamicMetaObject(
                 Ast.Call(
-                    typeof(PythonOps).GetMethod("MakeSlice"),
+                    typeof(PythonOps).GetMethod(nameof(PythonOps.MakeSlice)),
                     AstUtils.Convert(GetSetParameter(newArgs, 1), typeof(object)),
                     AstUtils.Convert(GetSetParameter(newArgs, 2), typeof(object)),
                     AstUtils.Convert(GetSetParameter(newArgs, 3), typeof(object))
@@ -2128,7 +2128,7 @@ namespace IronPython.Runtime.Binding {
 
             return new DynamicMetaObject(
                 Ast.Call(
-                    typeof(PythonOps).GetMethod("MakeSlice"),
+                    typeof(PythonOps).GetMethod(nameof(PythonOps.MakeSlice)),
                     AstUtils.Convert(GetGetOrDeleteParameter(newArgs, 1), typeof(object)),
                     AstUtils.Convert(GetGetOrDeleteParameter(newArgs, 2), typeof(object)),
                     AstUtils.Convert(GetGetOrDeleteParameter(newArgs, 3), typeof(object))
@@ -2290,13 +2290,13 @@ namespace IronPython.Runtime.Binding {
 
             string name;
             switch (op) {
-                case PythonOperationKind.Equal: name = "CompareTypesEqual"; break;
-                case PythonOperationKind.NotEqual: name = "CompareTypesNotEqual"; break;
-                case PythonOperationKind.GreaterThan: name = "CompareTypesGreaterThan"; break;
-                case PythonOperationKind.LessThan: name = "CompareTypesLessThan"; break;
-                case PythonOperationKind.GreaterThanOrEqual: name = "CompareTypesGreaterThanOrEqual"; break;
-                case PythonOperationKind.LessThanOrEqual: name = "CompareTypesLessThanOrEqual"; break;
-                case PythonOperationKind.Compare: name = "CompareTypes"; break;
+                case PythonOperationKind.Equal: name = nameof(PythonOps.CompareTypesEqual); break;
+                case PythonOperationKind.NotEqual: name = nameof(PythonOps.CompareTypesNotEqual); break;
+                case PythonOperationKind.GreaterThan: name = nameof(PythonOps.CompareTypesGreaterThan); break;
+                case PythonOperationKind.LessThan: name = nameof(PythonOps.CompareTypesLessThan); break;
+                case PythonOperationKind.GreaterThanOrEqual: name = nameof(PythonOps.CompareTypesGreaterThanOrEqual); break;
+                case PythonOperationKind.LessThanOrEqual: name = nameof(PythonOps.CompareTypesLessThanOrEqual); break;
+                case PythonOperationKind.Compare: name = nameof(PythonOps.CompareTypes); break;
                 default: throw new InvalidOperationException();
             }
             return typeof(PythonOps).GetMethod(name);
@@ -2406,7 +2406,7 @@ namespace IronPython.Runtime.Binding {
                 return new DynamicMetaObject(
                     action.Throw(
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("TypeErrorForBinaryOp"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.TypeErrorForBinaryOp)),
                             AstUtils.Constant(Symbols.OperatorToSymbol(NormalizeOperator(op))),
                             AstUtils.Convert(args[0].Expression, typeof(object)),
                             AstUtils.Convert(args[1].Expression, typeof(object))
@@ -2433,7 +2433,7 @@ namespace IronPython.Runtime.Binding {
 
                 Expression error = action.Throw(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("SimpleTypeError"),   
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.SimpleTypeError)),   
                         Ast.Constant(message)
                     ),
                     typeof(object)

@@ -65,7 +65,7 @@ namespace IronPython.Runtime.Binding {
 
         public Expression/*!*/ CreateExpression() {
             return Ast.Call(
-                typeof(PythonOps).GetMethod("MakeDeleteIndexAction"),
+                typeof(PythonOps).GetMethod(nameof(PythonOps.MakeDeleteIndexAction)),
                 BindingHelpers.CreateBinderStateExpression(),
                 AstUtils.Constant(CallInfo.ArgumentCount)
             );

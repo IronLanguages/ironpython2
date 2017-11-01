@@ -143,7 +143,7 @@ namespace IronPython.Runtime.Binding {
                                 Expression.Assign(
                                     init,
                                     Ast.Call(
-                                        typeof(PythonOps).GetMethod("OldClassTryLookupInit"),
+                                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassTryLookupInit)),
                                         self.Expression,
                                         instTmp
                                     )
@@ -175,7 +175,7 @@ namespace IronPython.Runtime.Binding {
             if (signature.IsSimple || unusedCount > 0) {
                 if (args.Length > 0) {
                     return Ast.Call(
-                        typeof(PythonOps).GetMethod("OldClassMakeCallError"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassMakeCallError)),
                         self.Expression
                     );
                 }
@@ -184,7 +184,7 @@ namespace IronPython.Runtime.Binding {
             }
 
             return Ast.Call(
-                typeof(PythonOps).GetMethod("OldClassCheckCallError"),
+                typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassCheckCallError)),
                 self.Expression,
                 dictExpr,
                 listExpr
@@ -222,28 +222,28 @@ namespace IronPython.Runtime.Binding {
             switch (name) {
                 case "__bases__":
                     call = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldClassSetBases"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassSetBases)),
                         self.Expression,
                         valueExpr
                     );
                     break;
                 case "__name__":
                     call = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldClassSetName"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassSetName)),
                         self.Expression,
                         valueExpr
                     );
                     break;
                 case "__dict__":
                     call = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldClassSetDictionary"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassSetDictionary)),
                         self.Expression,
                         valueExpr
                     );
                     break;
                 default:
                     call = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldClassSetNameHelper"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassSetNameHelper)),
                         self.Expression,
                         AstUtils.Constant(name),
                         valueExpr
@@ -264,7 +264,7 @@ namespace IronPython.Runtime.Binding {
 
             return new DynamicMetaObject(
                 Ast.Call(
-                    typeof(PythonOps).GetMethod("OldClassDeleteMember"),
+                    typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassDeleteMember)),
                     AstUtils.Constant(PythonContext.GetPythonContext(member).SharedContext),
                     self.Expression,
                     AstUtils.Constant(member.Name)
@@ -284,24 +284,24 @@ namespace IronPython.Runtime.Binding {
                 case "__dict__":
                     target = Ast.Block(
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("OldClassDictionaryIsPublic"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassDictionaryIsPublic)),
                             self.Expression
                         ),
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("OldClassGetDictionary"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassGetDictionary)),
                             self.Expression
                         )
                     );
                     break;
                 case "__bases__":
                     target = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldClassGetBaseClasses"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassGetBaseClasses)),
                         self.Expression
                     );
                     break;
                 case "__name__":
                     target = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldClassGetName"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassGetName)),
                         self.Expression
                     );
                     break;
@@ -316,7 +316,7 @@ namespace IronPython.Runtime.Binding {
                                         Expression.Assign(
                                             tmp,
                                             Ast.Call(
-                                                typeof(PythonOps).GetMethod("OldClassTryLookupValue"),
+                                                typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassTryLookupValue)),
                                                 AstUtils.Constant(PythonContext.GetPythonContext(member).SharedContext),
                                                 self.Expression,
                                                 AstUtils.Constant(memberName)

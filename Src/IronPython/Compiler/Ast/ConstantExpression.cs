@@ -59,7 +59,7 @@ namespace IronPython.Compiler.Ast {
             }
         }
 
-        private static readonly MSAst.Expression EllipsisExpr = Ast.Property(null, typeof(PythonOps).GetProperty("Ellipsis"));
+        private static readonly MSAst.Expression EllipsisExpr = Ast.Property(null, typeof(PythonOps).GetProperty(nameof(PythonOps.Ellipsis)));
         private static readonly MSAst.Expression TrueExpr = Ast.Field(null, typeof(ScriptingRuntimeHelpers).GetField("True"));
         private static readonly MSAst.Expression FalseExpr = Ast.Field(null, typeof(ScriptingRuntimeHelpers).GetField("False"));
         public override MSAst.Expression Reduce() {

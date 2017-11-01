@@ -78,7 +78,7 @@ namespace IronPython.Runtime.Binding {
 
         public Expression CreateExpression() {
             return Ast.Call(
-                typeof(PythonOps).GetMethod("MakeDeleteAction"),
+                typeof(PythonOps).GetMethod(nameof(PythonOps.MakeDeleteAction)),
                 BindingHelpers.CreateBinderStateExpression(),
                 AstUtils.Constant(Name)
             );

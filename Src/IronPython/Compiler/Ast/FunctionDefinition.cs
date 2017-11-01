@@ -61,7 +61,7 @@ namespace IronPython.Compiler.Ast {
 
         private static int _lambdaId;
         internal static readonly MSAst.ParameterExpression _functionParam = Ast.Parameter(typeof(PythonFunction), "$function");
-        private static readonly MSAst.Expression _GetClosureTupleFromFunctionCall = MSAst.Expression.Call(null, typeof(PythonOps).GetMethod("GetClosureTupleFromFunction"), _functionParam);
+        private static readonly MSAst.Expression _GetClosureTupleFromFunctionCall = MSAst.Expression.Call(null, typeof(PythonOps).GetMethod(nameof(PythonOps.GetClosureTupleFromFunction)), _functionParam);
         private static readonly MSAst.Expression _parentContext = new GetParentContextFromFunctionExpression();
         internal static readonly MSAst.LabelTarget _returnLabel = MSAst.Expression.Label(typeof(object), "return");
 
@@ -454,7 +454,7 @@ namespace IronPython.Compiler.Ast {
                 return;
             }
             if (lookup != null) {
-                var setter = typeof(PythonOps).GetMethod(lookup.IsLocal ? "SetLocal" : "SetGlobal");
+                var setter = typeof(PythonOps).GetMethod(lookup.IsLocal ? nameof(PythonOps.SetLocal) : nameof(PythonOps.SetGlobal));
                 instructions.Emit(CallInstruction.Create(setter));
                 return;
             }

@@ -300,7 +300,7 @@ namespace IronPython.Compiler.Ast {
 
         internal override MSAst.Expression/*!*/ GetParentClosureTuple() {
             Debug.Assert(NeedsLocalContext);
-            return MSAst.Expression.Call(null, typeof(PythonOps).GetMethod("GetClosureTupleFromContext"), _comprehension.Parent.LocalContext);
+            return MSAst.Expression.Call(null, typeof(PythonOps).GetMethod(nameof(PythonOps.GetClosureTupleFromContext)), _comprehension.Parent.LocalContext);
         }
 
         internal override PythonVariable BindReference(PythonNameBinder binder, PythonReference reference) {
