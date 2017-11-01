@@ -45,4 +45,4 @@ test-all:
 	cd bin/Release/net45 && mono $(CONSOLERUNNER) --labels=All --result=all-net45-release-result.xml IronPythonTest.dll
 
 test-all-debug:
-	cd bin/Debugnet45 && mono $(CONSOLERUNNER) --labels=All --result=all-net45-debug-result.xml IronPythonTest.dll
+	cd bin/Debug/net45 && mono $(CONSOLERUNNER) --labels=All --result=all-net45-debug-result.xml IronPythonTest.dll
