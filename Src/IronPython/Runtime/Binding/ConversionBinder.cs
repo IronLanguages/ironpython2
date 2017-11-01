@@ -178,7 +178,7 @@ namespace IronPython.Runtime.Binding {
                         !_context.PythonOptions.Python30) {
                         res = new DynamicMetaObject(
                             Ast.Call(
-                                typeof(PythonOps).GetMethod("MakeString"),
+                                typeof(PythonOps).GetMethod(nameof(PythonOps.MakeString)),
                                 AstUtils.Convert(self.Expression, typeof(IList<byte>))
                             ),
                             BindingRestrictionsHelpers.GetRuntimeTypeRestriction(self.Expression, limitType)
@@ -197,7 +197,7 @@ namespace IronPython.Runtime.Binding {
                             if (self.LimitType == typeof(string)) {
                                 res = new DynamicMetaObject(
                                     Ast.Call(
-                                        typeof(PythonOps).GetMethod("MakeByteArray"),
+                                        typeof(PythonOps).GetMethod(nameof(PythonOps.MakeByteArray)),
                                         AstUtils.Convert(self.Expression, typeof(string))
                                     ),
                                     BindingRestrictions.GetTypeRestriction(
@@ -239,7 +239,7 @@ namespace IronPython.Runtime.Binding {
                         ),
                         AstUtils.Constant(value),
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("TypeErrorForBadEnumConversion").MakeGenericMethod(type),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.TypeErrorForBadEnumConversion)).MakeGenericMethod(type),
                             AstUtils.Convert(self.Expression, typeof(object))
                         )
                     ),
@@ -619,7 +619,7 @@ namespace IronPython.Runtime.Binding {
 
             return new DynamicMetaObject(
                 Ast.Call(
-                    typeof(PythonOps).GetMethod("ConvertTupleToArray").MakeGenericMethod(toType.GetElementType()),
+                    typeof(PythonOps).GetMethod(nameof(PythonOps.ConvertTupleToArray)).MakeGenericMethod(toType.GetElementType()),
                     self.Expression
                 ),
                 self.Restrictions
@@ -673,7 +673,7 @@ namespace IronPython.Runtime.Binding {
                     res = new DynamicMetaObject(
                         this.Throw(
                             Ast.Call(
-                                typeof(PythonOps).GetMethod("TypeError"),
+                                typeof(PythonOps).GetMethod(nameof(PythonOps.TypeError)),
                                 AstUtils.Constant("expected string of length 1 when converting to char, got '{0}'"),
                                 Ast.NewArrayInit(typeof(object), self.Expression)
                             ),
@@ -795,7 +795,7 @@ namespace IronPython.Runtime.Binding {
                     Expression.Block(
                         new[] { tmp },
                         Expression.Call(
-                            typeof(PythonOps).GetMethod("CreatePythonEnumerator"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.CreatePythonEnumerator)),
                             Ast.Block(
                                 MetaPythonObject.MakeTryGetTypeMember(
                                     state,
@@ -878,7 +878,7 @@ namespace IronPython.Runtime.Binding {
 
         public Expression CreateExpression() {
             return Ast.Call(
-                typeof(PythonOps).GetMethod("MakeConversionAction"),
+                typeof(PythonOps).GetMethod(nameof(PythonOps.MakeConversionAction)),
                 BindingHelpers.CreateBinderStateExpression(),
                 AstUtils.Constant(Type),
                 AstUtils.Constant(ResultKind)

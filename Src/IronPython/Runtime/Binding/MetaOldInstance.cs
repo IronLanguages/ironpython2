@@ -192,7 +192,7 @@ namespace IronPython.Runtime.Binding {
                                 Expression.Assign(
                                     tmp,
                                     Ast.Call(
-                                        typeof(PythonOps).GetMethod("OldInstanceTryGetBoundCustomMember"),
+                                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceTryGetBoundCustomMember)),
                                         codeContext,
                                         self.Expression,
                                         AstUtils.Constant("__call__")
@@ -203,7 +203,7 @@ namespace IronPython.Runtime.Binding {
                         ),
                         Ast.Block(
                             Utils.Try(
-                                Ast.Call(typeof(PythonOps).GetMethod("FunctionPushFrameCodeContext"), codeContext),
+                                Ast.Call(typeof(PythonOps).GetMethod(nameof(PythonOps.FunctionPushFrameCodeContext)), codeContext),
                                 Ast.Assign(
                                     tmp,
                                     DynamicExpression.Dynamic(
@@ -215,7 +215,7 @@ namespace IronPython.Runtime.Binding {
                                     )
                                 )
                             ).Finally(
-                                Ast.Call(typeof(PythonOps).GetMethod("FunctionPopFrame"))
+                                Ast.Call(typeof(PythonOps).GetMethod(nameof(PythonOps.FunctionPopFrame)))
                             ),
                             tmp
                         ),
@@ -245,7 +245,7 @@ namespace IronPython.Runtime.Binding {
                             Ast.Assign(
                                 tmp,
                                 Ast.Call(
-                                    typeof(PythonOps).GetMethod("OldInstanceConvertToIEnumerableNonThrowing"),
+                                    typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceConvertToIEnumerableNonThrowing)),
                                     AstUtils.Constant(PythonContext.GetPythonContext(conversion).SharedContext),
                                     self.Expression
                                 )
@@ -278,7 +278,7 @@ namespace IronPython.Runtime.Binding {
                             Ast.Assign(
                                 tmp,
                                 Ast.Call(
-                                    typeof(PythonOps).GetMethod("OldInstanceConvertToIEnumeratorNonThrowing"),
+                                    typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceConvertToIEnumeratorNonThrowing)),
                                     AstUtils.Constant(PythonContext.GetPythonContext(conversion).SharedContext),
                                     self.Expression
                                 )
@@ -311,7 +311,7 @@ namespace IronPython.Runtime.Binding {
                             Ast.Assign(
                                 tmp,
                                 Ast.Call(
-                                    typeof(PythonOps).GetMethod("OldInstanceConvertToIEnumerableOfTNonThrowing").MakeGenericMethod(genericType),
+                                    typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceConvertToIEnumerableOfTNonThrowing)).MakeGenericMethod(genericType),
                                     AstUtils.Constant(PythonContext.GetPythonContext(conversion).SharedContext),
                                     self.Expression                                   
                                 )
@@ -357,7 +357,7 @@ namespace IronPython.Runtime.Binding {
                 Ast.Assign(
                     tmp,
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("OldInstanceConvertNonThrowing"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceConvertNonThrowing)),
                         AstUtils.Constant(PythonContext.GetPythonContext(conversion).SharedContext),
                         self.Expression,
                         AstUtils.Constant(name)
@@ -382,7 +382,7 @@ namespace IronPython.Runtime.Binding {
                             Ast.Assign(
                                 tmp,
                                 Ast.Call(
-                                    typeof(PythonOps).GetMethod("OldInstanceConvertToBoolNonThrowing"),
+                                    typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceConvertToBoolNonThrowing)),
                                     AstUtils.Constant(PythonContext.GetPythonContext(conversion).SharedContext),
                                     self.Expression
                                 )
@@ -419,7 +419,7 @@ namespace IronPython.Runtime.Binding {
                     Ast.Assign(
                         tmp, 
                         Ast.Call(
-                            typeof(PythonOps).GetMethod("OldInstanceGetOptimizedDictionary"),
+                            typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceGetOptimizedDictionary)),
                             self.Expression,
                             AstUtils.Constant(dict.KeyVersion)
                         )
@@ -435,7 +435,7 @@ namespace IronPython.Runtime.Binding {
                         new[] { value },
                         Ast.Condition(
                             Ast.Call(
-                                typeof(PythonOps).GetMethod("TryOldInstanceDictionaryGetValueHelper"),
+                                typeof(PythonOps).GetMethod(nameof(PythonOps.TryOldInstanceDictionaryGetValueHelper)),
                                 tmp,
                                 Ast.Constant(key),
                                 AstUtils.Convert(Expression, typeof(object)),
@@ -456,7 +456,7 @@ namespace IronPython.Runtime.Binding {
                     // BUG: There's a missing Fallback path here that's always been present even
                     // in the version that used rules.
                     target = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldInstanceDictionaryGetValueHelper"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceDictionaryGetValueHelper)),
                         tmp,
                         AstUtils.Constant(key),
                         AstUtils.Convert(Expression, typeof(object))
@@ -464,7 +464,7 @@ namespace IronPython.Runtime.Binding {
                     break;
                 case MemberAccess.Set:
                     target = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldInstanceDictionarySetExtraValue"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceDictionarySetExtraValue)),
                         tmp,
                         AstUtils.Constant(key),
                         AstUtils.Convert(args[1].Expression, typeof(object))
@@ -472,7 +472,7 @@ namespace IronPython.Runtime.Binding {
                     break;
                 case MemberAccess.Delete:
                     target = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldInstanceDeleteCustomMember"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceDeleteCustomMember)),
                         AstUtils.Constant(PythonContext.GetPythonContext(member).SharedContext),
                         AstUtils.Convert(Expression, typeof(OldInstance)),
                         AstUtils.Constant(name)
@@ -527,7 +527,7 @@ namespace IronPython.Runtime.Binding {
                                     Expression.Assign(
                                         tmp,
                                         Ast.Call(
-                                            typeof(PythonOps).GetMethod("OldInstanceTryGetBoundCustomMember"),
+                                            typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceTryGetBoundCustomMember)),
                                             AstUtils.Constant(PythonContext.GetPythonContext(member).SharedContext),
                                             self.Expression,
                                             AstUtils.Constant(name)
@@ -553,7 +553,7 @@ namespace IronPython.Runtime.Binding {
                                     Expression.Assign(
                                         tmp,
                                         Ast.Call(
-                                            typeof(PythonOps).GetMethod("OldInstanceTryGetBoundCustomMember"),
+                                            typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceTryGetBoundCustomMember)),
                                             AstUtils.Constant(PythonContext.GetPythonContext(member).SharedContext),
                                             self.Expression,
                                             AstUtils.Constant(name)
@@ -572,7 +572,7 @@ namespace IronPython.Runtime.Binding {
                     break;
                 case MemberAccess.Set:
                     target = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldInstanceSetCustomMember"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceSetCustomMember)),
                         AstUtils.Constant(PythonContext.GetPythonContext(member).SharedContext),
                         self.Expression,
                         AstUtils.Constant(name),
@@ -581,7 +581,7 @@ namespace IronPython.Runtime.Binding {
                     break;
                 case MemberAccess.Delete:
                     target = Ast.Call(
-                        typeof(PythonOps).GetMethod("OldInstanceDeleteCustomMember"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceDeleteCustomMember)),
                         AstUtils.Constant(PythonContext.GetPythonContext(member).SharedContext),
                         self.Expression,
                         AstUtils.Constant(name)
@@ -612,7 +612,7 @@ namespace IronPython.Runtime.Binding {
             } else {
                 return member.Throw(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("AttributeError"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.AttributeError)),
                         AstUtils.Constant("{0} instance has no attribute '{1}'"),
                         Ast.NewArrayInit(
                             typeof(object),
@@ -653,7 +653,7 @@ namespace IronPython.Runtime.Binding {
 
             return new DynamicMetaObject(
                 Ast.Call(
-                    typeof(PythonOps).GetMethod("OldInstanceIsCallable"),
+                    typeof(PythonOps).GetMethod(nameof(PythonOps.OldInstanceIsCallable)),
                     AstUtils.Constant(PythonContext.GetPythonContext(operation).SharedContext),
                     self.Expression
                 ),

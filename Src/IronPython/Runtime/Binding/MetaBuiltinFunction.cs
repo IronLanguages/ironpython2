@@ -165,7 +165,7 @@ namespace IronPython.Runtime.Binding {
             );
 
             Expression instance = Ast.Call(
-                typeof(PythonOps).GetMethod("GetBuiltinFunctionSelf"),
+                typeof(PythonOps).GetMethod(nameof(PythonOps.GetBuiltinFunctionSelf)),
                 AstUtils.Convert(
                     Expression,
                     typeof(BuiltinFunction)

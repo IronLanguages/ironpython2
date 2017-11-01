@@ -114,7 +114,7 @@ namespace IronPython.Runtime.Binding {
             return new DynamicMetaObject(
                 Ast.Convert(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("GetDelegate"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.GetDelegate)),
                         AstUtils.Constant(context),
                         arg.Expression,
                         AstUtils.Constant(toType)

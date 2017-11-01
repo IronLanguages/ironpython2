@@ -306,7 +306,7 @@ namespace IronPython.Runtime.Types {
             Debug.Assert(functionTarget.Type == typeof(BuiltinFunction));
 
             return Ast.Call(
-                typeof(PythonOps).GetMethod("TestBoundBuiltinFunction"),
+                typeof(PythonOps).GetMethod(nameof(PythonOps.TestBoundBuiltinFunction)),
                 functionTarget,
                 AstUtils.Constant(_data, typeof(object))
             );
@@ -417,7 +417,7 @@ namespace IronPython.Runtime.Types {
             } else if (IsBinaryOperator && args.Length == 2 && IsThrowException(res.Expression)) {
                 // Binary Operators return NotImplemented on failure.
                 res = new DynamicMetaObject(
-                    Ast.Property(null, typeof(PythonOps), "NotImplemented"),
+                    Ast.Property(null, typeof(PythonOps), nameof(PythonOps.NotImplemented)),
                     res.Restrictions
                 );
             } else if (target.Overload != null) {
@@ -486,7 +486,7 @@ namespace IronPython.Runtime.Types {
 
                     dynamicArgs[index + 1] = new DynamicMetaObject(
                         Expression.Call(
-                           typeof(PythonOps).GetMethod("UserMappingToPythonDictionary"),
+                           typeof(PythonOps).GetMethod(nameof(PythonOps.UserMappingToPythonDictionary)),
                            codeContext,
                            args[index].Expression,
                            AstUtils.Constant(name)
@@ -527,7 +527,7 @@ namespace IronPython.Runtime.Types {
 
                     dynamicArgs[index + 1] = new DynamicMetaObject(
                         Expression.Call(
-                           typeof(PythonOps).GetMethod("MakeTupleFromSequence"),
+                           typeof(PythonOps).GetMethod(nameof(PythonOps.MakeTupleFromSequence)),
                            Expression.Convert(args[index].Expression, typeof(object))
                         ),
                         BindingRestrictions.Empty

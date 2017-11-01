@@ -147,7 +147,7 @@ namespace IronPython.Compiler {
                 Expression.Assign(
                     ret,
                     Expression.Call(
-                        typeof(PythonOps).GetMethod("MakeGenerator"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.MakeGenerator)),
                         parameters[0],
                         Expression.Assign(tupleTmp, newTuple),
                         emitDebugSymbols ?

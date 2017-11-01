@@ -50,7 +50,7 @@ namespace IronPython.Runtime.Binding {
 
             return new ValidationInfo(
                 Ast.Call(
-                    typeof(PythonOps).GetMethod("CheckSpecificTypeVersion"),
+                    typeof(PythonOps).GetMethod(nameof(PythonOps.CheckSpecificTypeVersion)),
                     AstUtils.Convert(Expression, typeof(PythonType)),
                     AstUtils.Constant(version)
                 )
@@ -150,7 +150,7 @@ namespace IronPython.Runtime.Binding {
 
                 return new ValidationInfo(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("CheckTypeVersion"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.CheckTypeVersion)),
                         self,
                         AstUtils.Constant(version)
                     )
@@ -309,7 +309,7 @@ namespace IronPython.Runtime.Binding {
 
                 _cb.AddCondition(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("OldClassTryLookupOneSlot"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.OldClassTryLookupOneSlot)),
                         AstUtils.Constant(pt),
                         AstUtils.Constant(pt.OldClass),
                         AstUtils.Constant(_symName),
@@ -340,7 +340,7 @@ namespace IronPython.Runtime.Binding {
                     );
 
                 if (!pts.IsAlwaysVisible) {
-                    _cb.ExtendLastCondition(Ast.Call(typeof(PythonOps).GetMethod("IsClsVisible"), _codeContext));
+                    _cb.ExtendLastCondition(Ast.Call(typeof(PythonOps).GetMethod(nameof(PythonOps.IsClsVisible)), _codeContext));
                     return false;
                 }
 
@@ -374,7 +374,7 @@ namespace IronPython.Runtime.Binding {
                 // implementation similar to PythonTypeSlot.MakeGetExpression()
 
                 Expression getExpr = Ast.Call(
-                    typeof(PythonOps).GetMethod("SlotTryGetBoundValue"),
+                    typeof(PythonOps).GetMethod(nameof(PythonOps.SlotTryGetBoundValue)),
                     _codeContext,
                     AstUtils.Constant(pts, typeof(PythonTypeSlot)),
                     Expression,
@@ -410,7 +410,7 @@ namespace IronPython.Runtime.Binding {
                 );
 
                 if (!pts.IsAlwaysVisible) {
-                    _cb.ExtendLastCondition(Ast.Call(typeof(PythonOps).GetMethod("IsClsVisible"), _codeContext));
+                    _cb.ExtendLastCondition(Ast.Call(typeof(PythonOps).GetMethod(nameof(PythonOps.IsClsVisible)), _codeContext));
                     return false;
                 }
 
@@ -454,7 +454,7 @@ namespace IronPython.Runtime.Binding {
                             member.Throw(
                                 Ast.Call(
                                     typeof(PythonOps).GetMethod(
-                                        "AttributeErrorForMissingAttribute",
+                                        nameof(PythonOps.AttributeErrorForMissingAttribute),
                                         new Type[] { typeof(string), typeof(string) }
                                     ),
                                     AstUtils.Constant(DynamicHelpers.GetPythonType(Value).Name),
@@ -790,7 +790,7 @@ namespace IronPython.Runtime.Binding {
                                     AstUtils.Constant(state.SharedContext),
                                     Ast.Block(
                                         Ast.Call(
-                                            typeof(PythonOps).GetMethod("SlotTryGetValue"),
+                                            typeof(PythonOps).GetMethod(nameof(PythonOps.SlotTryGetValue)),
                                             AstUtils.Constant(state.SharedContext),
                                             AstUtils.Convert(AstUtils.WeakConstant(pts), typeof(PythonTypeSlot)),
                                             AstUtils.Convert(Expression, typeof(object)),
@@ -815,7 +815,7 @@ namespace IronPython.Runtime.Binding {
                 member,
                 new DynamicMetaObject(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("PythonTypeSetCustomMember"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.PythonTypeSetCustomMember)),
                         AstUtils.Constant(PythonContext.GetPythonContext(member).SharedContext),
                         self.Expression,
                         AstUtils.Constant(member.Name),
@@ -858,7 +858,7 @@ namespace IronPython.Runtime.Binding {
                 member,
                 new DynamicMetaObject(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("PythonTypeDeleteCustomMember"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.PythonTypeDeleteCustomMember)),
                         AstUtils.Constant(PythonContext.GetPythonContext(member).SharedContext),
                         self.Expression,
                         AstUtils.Constant(member.Name)
@@ -878,7 +878,7 @@ namespace IronPython.Runtime.Binding {
             return new ValidationInfo(
                 Ast.Not(
                     Ast.Call(
-                        typeof(PythonOps).GetMethod("IsPythonType"),
+                        typeof(PythonOps).GetMethod(nameof(PythonOps.IsPythonType)),
                         AstUtils.Convert(
                             Expression,
                             typeof(PythonType)
