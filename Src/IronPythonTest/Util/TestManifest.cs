@@ -111,5 +111,11 @@ namespace IronPythonTest.Util {
                 return this.manifest.GetBool(this.testName, "Redirect", true);
             }
         }
+
+        public int Timeout {
+            get {
+                return this.manifest.GetInt(this.testName, "Timeout", -1);
+            }
+        }
     }
 }
