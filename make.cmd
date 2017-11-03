@@ -94,7 +94,7 @@ goto :exit
 :test-smoke
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
-  %CONSOLERUNNER% --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-release-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-release-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -102,7 +102,7 @@ goto :exit
 :test-smoke-debug
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
-  %CONSOLERUNNER% --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-debug-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-debug-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -110,7 +110,7 @@ goto :exit
 :test-ironpython
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
-  %CONSOLERUNNER% --labels=All --where:"Category==IronPython" --result:ironpython-%%f-release-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==IronPython" --result:ironpython-%%f-release-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -118,7 +118,7 @@ goto :exit
 :test-ironpython-debug
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
-  %CONSOLERUNNER% --labels=All --where:"Category==IronPython" --result:ironpython-%%f-debug-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==IronPython" --result:ironpython-%%f-debug-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -126,7 +126,7 @@ goto :exit
 :test-cpython
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
-  %CONSOLERUNNER% --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-release-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-release-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -134,7 +134,7 @@ goto :exit
 :test-cpython-debug
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
-  %CONSOLERUNNER% --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-debug-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-debug-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -142,7 +142,7 @@ goto :exit
 :test-all
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
-  %CONSOLERUNNER% --labels=All --result:all-%%f-release-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --result:all-%%f-release-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
@@ -150,7 +150,7 @@ goto :exit
 :test-all-debug
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
-  %CONSOLERUNNER% --labels=All --result:all-%%f-debug-result.xml IronPythonTest.dll
+  %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --result:all-%%f-debug-result.xml IronPythonTest.dll
   popd
 )
 goto :exit
