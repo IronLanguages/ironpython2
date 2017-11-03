@@ -17,8 +17,8 @@ if exist "%_VSINSTPATH%\MSBuild\15.0\Bin\MSBuild.exe" (
 )
 
 set FRAMEWORKS=net45,net40
-
 set CONSOLERUNNER="..\..\..\packages\nunit.consolerunner\3.7.0\tools\nunit3-console.exe"
+set EXITCODE=0
 
 :getopts
 if "%1"=="" (goto :default) else (goto :%1)
@@ -95,6 +95,7 @@ goto :exit
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
   %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-release-result.xml IronPythonTest.dll
+  if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
   popd
 )
 goto :exit
@@ -103,6 +104,7 @@ goto :exit
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
   %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==StandardCPython" --result:smoke-%%f-debug-result.xml IronPythonTest.dll
+  if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
   popd
 )
 goto :exit
@@ -111,6 +113,7 @@ goto :exit
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
   %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==IronPython" --result:ironpython-%%f-release-result.xml IronPythonTest.dll
+  if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
   popd
 )
 goto :exit
@@ -119,6 +122,7 @@ goto :exit
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
   %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==IronPython" --result:ironpython-%%f-debug-result.xml IronPythonTest.dll
+  if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
   popd
 )
 goto :exit
@@ -127,6 +131,7 @@ goto :exit
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
   %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-release-result.xml IronPythonTest.dll
+  if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
   popd
 )
 goto :exit
@@ -135,6 +140,7 @@ goto :exit
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
   %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --where:"Category==StandardCPython || Category==AllCPython" --result:cpython-%%f-debug-result.xml IronPythonTest.dll
+  if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
   popd
 )
 goto :exit
@@ -143,6 +149,7 @@ goto :exit
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Release\%%f
   %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --result:all-%%f-release-result.xml IronPythonTest.dll
+  if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
   popd
 )
 goto :exit
@@ -151,6 +158,7 @@ goto :exit
 for %%f in ("%FRAMEWORKS:,=" "%") do (
   pushd bin\Debug\%%f
   %CONSOLERUNNER% --params "FRAMEWORK=%%f" --labels=All --result:all-%%f-debug-result.xml IronPythonTest.dll
+  if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
   popd
 )
 goto :exit
@@ -165,16 +173,19 @@ goto :exit
 :test-netcore-ironpython
 FOR /F "delims=" %%F IN ("bin\Release\netcoreapp2.0") DO SET "BinDir=%%~fF"
 dotnet test .\Src\IronPythonTest\IronPythonTest.csproj --framework netcoreapp2.0 -o %BinDir% --configuration Release --no-build --filter "TestCategory=IronPython"
+if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
 goto :exit
 
 :test-netcore-cpython
 FOR /F "delims=" %%F IN ("bin\Release\netcoreapp2.0") DO SET "BinDir=%%~fF"
 dotnet test .\Src\IronPythonTest\IronPythonTest.csproj --framework netcoreapp2.0 -o %BinDir% --configuration Release --no-build --filter "TestCategory=StandardCPython | TestCategory=AllCPython"
+if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
 goto :exit
 
 :test-netcore-all
 FOR /F "delims=" %%F IN ("bin\Release\netcoreapp2.0") DO SET "BinDir=%%~fF"
 dotnet test .\Src\IronPythonTest\IronPythonTest.csproj --framework netcoreapp2.0 -o %BinDir% --configuration Release --no-build
+if %ERRORLEVEL% NEQ 0 set EXITCODE=%ERRORLEVEL%
 goto :exit
 
 :restore
@@ -197,3 +208,4 @@ goto :exit
 
 :exit
 endlocal
+exit /b %EXITCODE%
