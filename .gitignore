@@ -93,3 +93,5 @@ Package/nuget/**/*.nupkg
 *.binlog
 Package/Release/
 build-*.ProjectImports.zip
+*.trx
+*.un~
