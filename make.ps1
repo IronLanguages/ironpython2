@@ -28,7 +28,8 @@ if([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.
 $_FRAMEWORKS = @{
     "net40" = @{
         "runner" = [System.IO.Path]::Combine($_BASEDIR, 'packages\nunit.consolerunner\3.7.0\tools\nunit3-console.exe');
-        "args" = @("--params", '"FRAMEWORK=__FRAMEWORK__"', '--labels=All', '--where:"__FILTER__"', '--result:__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.xml', '__BASEDIR__\bin\__CONFIGURATION__\__FRAMEWORK__\IronPythonTest.dll' );
+        "args" = @("--params", '"FRAMEWORK=__FRAMEWORK__"', '--labels=All', '--result:__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.xml', '__BASEDIR__\bin\__CONFIGURATION__\__FRAMEWORK__\IronPythonTest.dll' );        
+        "filterArg" = '--where:"__FILTER__"';
         "filters" = @{
             "all" = "";
             "smoke" = "Category==StandardCPython";
@@ -38,7 +39,8 @@ $_FRAMEWORKS = @{
     };
     "net45" = @{
         "runner" = "dotnet";
-        "args" = @('test', '__BASEDIR__\Src\IronPythonTest\IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__\bin\__CONFIGURATION__\__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '--filter', '"__FILTER__"', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
+        "args" = @('test', '__BASEDIR__\Src\IronPythonTest\IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__\bin\__CONFIGURATION__\__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
+        "filterArg" = '--filter="__FILTER__"';
         "filters" = @{
             "all" = "";
             "smoke" = "TestCategory=StandardCPython";
@@ -48,7 +50,8 @@ $_FRAMEWORKS = @{
     };
     "netcoreapp2.0" = @{
         "runner" = "dotnet";
-        "args" = @('test', '__BASEDIR__\Src\IronPythonTest\IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__\bin\__CONFIGURATION__\__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '--filter', '"__FILTER__"', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
+        "args" = @('test', '__BASEDIR__\Src\IronPythonTest\IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__\bin\__CONFIGURATION__\__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
+        "filterArg" = '--filter="__FILTER__"';
         "filters" = @{
             "all" = "";
             "smoke" = "TestCategory=StandardCPython";
@@ -69,11 +72,13 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
             exit 1
         }
 
+        $filter = $_FRAMEWORKS[$framework]["filters"][$target]
+
         $replacements = @{
             "__FRAMEWORK__" = $framework;
             "__CONFIGURATION__" = $configuration;
             "__FILTERNAME__" = $target;
-            "__FILTER__" = $_FRAMEWORKS[$framework]["filters"][$target];
+            "__FILTER__" = $filter;
             "__BASEDIR__" = $_BASEDIR;
         };
 
@@ -88,8 +93,16 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
             }
         }
 
+        if($filter.Length -gt 0) {
+            foreach($r in $replacements.Keys) {
+                $filter = $_FRAMEWORKS[$framework]["filterArg"].Replace($r, $replacements[$r])
+            }
+        }
+
+        Write-Host $runner $args $filter
+
         # execute the tests
-        & $runner $args
+        & $runner $args $filter
 
         # save off the status in case of failure
         if($LastExitCode -ne 0) {
