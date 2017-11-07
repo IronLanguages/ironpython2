@@ -61,7 +61,7 @@ before_package:
 
 # scripts to run after build
 after_build:
-  - ps: .\make.ps1 package-release
+  - ps: .\make.ps1 package
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
