@@ -114,7 +114,7 @@ class TimeTest(unittest.TestCase):
             self.assertTrue(y-x < sleep_time*(1+safe_deviation))  # make sure we're close...
 
     def test_dst(self):
-        if time.daylight: self.assertEqual(time.altzone, time.timezone-3600)
+        if time.daylight and time.altzone != time.timezone: self.assertEqual(time.altzone, time.timezone-3600)
         t = time.time()
         self.assertEqual(time.mktime(time.gmtime(t))-time.mktime(time.localtime(t)), time.timezone)
 
