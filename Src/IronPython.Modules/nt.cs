@@ -1378,11 +1378,7 @@ namespace IronPython.Modules {
 
         private static PythonType WindowsError {
             get {
-#if !SILVERLIGHT
                 return PythonExceptions.WindowsError;
-#else
-                return PythonExceptions.OSError;
-#endif
             }
         }
 
@@ -1489,11 +1485,7 @@ namespace IronPython.Modules {
 #endif
 
         public static object urandom(int n) {
-#if SILVERLIGHT || WP75
-            RandomNumberGenerator rng = new RNGCryptoServiceProvider();
-#else
             RandomNumberGenerator rng = RandomNumberGenerator.Create();
-#endif
             byte[] data = new byte[n];
             rng.GetBytes(data);
 
@@ -1683,7 +1675,6 @@ are defined in the signal module.")]
                     }
                 }
 
-#if !SILVERLIGHT5
                 errorCode = System.Runtime.InteropServices.Marshal.GetHRForException(e);
 
                 if ((errorCode & ~0xfff) == (unchecked((int)0x80070000))) {
@@ -1693,7 +1684,6 @@ are defined in the signal module.")]
                     message = GetFormattedException(e, errorCode);
                     isWindowsError = true;
                 }
-#endif
             }
 
             if (isWindowsError) {

@@ -2,13 +2,11 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <PlatformSymbols>CLR4;CLR45</PlatformSymbols>
-    <IsSilverlight>false</IsSilverlight>
     <IsFullFramework>false</IsFullFramework>
     <FeatureCoreDlr>true</FeatureCoreDlr>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Features>$(Features);FEATURE_ANSICP</Features>
     <Features>$(Features);FEATURE_APARTMENTSTATE</Features>
     <Features>$(Features);FEATURE_APPLICATIONEXCEPTION</Features>
     <Features>$(Features);FEATURE_ASSEMBLY_CODEBASE</Features>

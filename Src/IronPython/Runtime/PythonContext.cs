@@ -79,7 +79,6 @@ namespace IronPython.Runtime
 #endif
         private Encoding _defaultEncoding = PythonAsciiEncoding.Instance;
 
-        // conditional variables for silverlight/desktop CLR features
         private Hosting.PythonService _pythonService;
         private string _initialExecutable, _initialPrefix = GetInitialPrefix();
 
@@ -250,9 +249,6 @@ namespace IronPython.Runtime
             InitializeBuiltins();
 
             InitializeSystemState();
-#if SILVERLIGHT
-            AddToPath("");
-#endif
 
             // sys.argv always includes at least one empty string.
             SetSystemStateValue("argv", (_options.Arguments.Count == 0) ?
@@ -752,7 +748,6 @@ namespace IronPython.Runtime
 
         public override Version LanguageVersion {
             get {
-                // Assembly.GetName() can't be called in Silverlight...
                 return GetPythonVersion();
             }
         }
@@ -1921,9 +1916,7 @@ namespace IronPython.Runtime
             _initialExecutable = executable ?? "";
             _initialPrefix = prefix;
 
-#if !SILVERLIGHT
             AddToPath(Path.Combine(prefix, "Lib"), 0);
-#endif
 
             SetHostVariables(SystemState.__dict__);
         }
@@ -3474,12 +3467,7 @@ namespace IronPython.Runtime
             long start = GC.GetTotalMemory(false);
             
             for (int i = 0; i < 2; i++) {
-#if !SILVERLIGHT // GC.Collect
                 GC.Collect(generation);
-#else
-                GC.Collect();
-#endif
-
                 GC.WaitForPendingFinalizers();
 
                 if (generation == GC.MaxGeneration) {
