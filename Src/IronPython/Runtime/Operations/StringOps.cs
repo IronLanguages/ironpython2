@@ -1685,7 +1685,7 @@ namespace IronPython.Runtime.Operations {
                 name = encoding.EncodingName;
             }
 #else
-            // Silverlight only has web names
+            // only has web names
             string name = encoding.WebName;
 #endif
 

@@ -1385,7 +1385,6 @@ namespace IronPython.Runtime {
 
             InitializeReaderAndWriter(stream, encoding);
 
-#if !SILVERLIGHT
             // only possible if the user provides us w/ the stream directly
             FileStream fs = stream as FileStream;
             if (fs != null) {
@@ -1393,9 +1392,6 @@ namespace IronPython.Runtime {
             } else {
                 _name = "nul";
             }
-#else
-            _name = "stream";
-#endif
         }
 
         private void InitializeReaderAndWriter(Stream stream, Encoding encoding) {
@@ -1456,7 +1452,6 @@ namespace IronPython.Runtime {
 
         #endregion
 
-#if !SILVERLIGHT
         internal bool TryGetFileHandle(out object handle) {
             Stream stream = _stream;
             SharedIO io = _io;
@@ -1492,7 +1487,6 @@ namespace IronPython.Runtime {
             handle = null;
             return false;
         }
-#endif
 
         // Enumeration of each stream mode.
         private enum PythonFileMode {

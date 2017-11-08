@@ -555,7 +555,6 @@ namespace IronPython.Runtime.Exceptions {
                     return;
                 }
 
-#if !SILVERLIGHT5
                 var ioExcep = exception as System.IO.IOException;
                 if (ioExcep != null) {
                     try {
@@ -574,17 +573,14 @@ namespace IronPython.Runtime.Exceptions {
                         // not enough permissions to do this...
                     }
                 }
-#endif
 
                 base.InitAndGetClrException(exception);
             }
 
-#if !SILVERLIGHT5
             [MethodImpl(MethodImplOptions.NoInlining)] // don't inline so the link demand is always evaluated here.
             private static int GetHRForException(System.Exception exception) {
                 return System.Runtime.InteropServices.Marshal.GetHRForException(exception);
             }
-#endif
         }
 
         public partial class _UnicodeTranslateError : BaseException {
@@ -1285,7 +1281,6 @@ for k, v in toError.iteritems():
                 return new DynamicStackFrame[0];
             }
 
-#if !SILVERLIGHT
             frames = new List<DynamicStackFrame>(frames);
             List<DynamicStackFrame> identified = new List<DynamicStackFrame>();
 
@@ -1325,9 +1320,6 @@ for k, v in toError.iteritems():
             // this is equivalent of adding remaining frames in front of identified
             frames.AddRange(identified);
             return frames.ToArray();
-#else 
-            return frames.ToArray();
-#endif
         }
 
         private static bool MethodsMatch(MethodBase method, MethodBase other) {

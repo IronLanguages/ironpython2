@@ -25,10 +25,6 @@ using IronPython.Modules;
 using IronPython.Runtime;
 using IronPython.Runtime.Exceptions;
 
-#if SILVERLIGHT
-[assembly: DynamicLanguageProvider(typeof(PythonContext), PythonContext.IronPythonDisplayName, PythonContext.IronPythonNames, PythonContext.IronPythonFileExtensions)]
-#endif
-
 namespace IronPython.Hosting {
 
     /// <summary>

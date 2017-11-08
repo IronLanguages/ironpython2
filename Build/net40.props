@@ -4,7 +4,6 @@
     <WpfReferences Condition="'$(WpfReferences)' == ''">$(SolutionDir)..\Util\References\WPF\4.0</WpfReferences>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <PlatformSymbols>CLR4</PlatformSymbols>
-    <IsSilverlight>false</IsSilverlight>
     <IsFullFramework>true</IsFullFramework>
     <FeatureCoreDlr>true</FeatureCoreDlr>
   </PropertyGroup>
@@ -54,7 +53,6 @@
     <Features>$(Features);FEATURE_FULL_NET</Features>
     <Features>$(Features);FEATURE_FULL_CRYPTO</Features>
     <Features>$(Features);FEATURE_ICLONEABLE</Features>
-    <Features>$(Features);FEATURE_ANSICP</Features>
     <Features>$(Features);FEATURE_SORTKEY</Features>
     <Features>$(Features);FEATURE_ARGITERATOR</Features>
     <Features>$(Features);FEATURE_PIPES</Features>
