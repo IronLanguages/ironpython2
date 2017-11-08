@@ -1,3 +1,4 @@
+#!/usr/bin/pwsh
 [CmdletBinding()]
 Param(
     [Parameter(Position=1)]
@@ -6,29 +7,32 @@ Param(
     [String[]] $frameworks=@('net45','netcoreapp2.0')
 )
 
-$global:Result = 0
+[int] $global:Result = 0
+[bool] $global:isUnix = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Unix
 
 $_BASEDIR = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
-$_VSWHERE = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, 'Microsoft Visual Studio\Installer\vswhere.exe')
-$_VSINSTPATH = ''
+if(!$global:isUnix) {
+    $_VSWHERE = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, 'Microsoft Visual Studio\Installer\vswhere.exe')
+    $_VSINSTPATH = ''
 
-if([System.IO.File]::Exists($_VSWHERE)) {
-    $_VSINSTPATH = & "$_VSWHERE" -latest -requires Microsoft.Component.MSBuild -property installationPath
-} else {
-    Write-Error "Visual Studio 2017 15.2 or later is required"
-    Exit 1
-}
+    if([System.IO.File]::Exists($_VSWHERE)) {
+        $_VSINSTPATH = & "$_VSWHERE" -latest -requires Microsoft.Component.MSBuild -property installationPath
+    } else {
+        Write-Error "Visual Studio 2017 15.2 or later is required"
+        Exit 1
+    }
 
-if([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin\MSBuild.exe'))) {
-    $env:PATH = [String]::Join(';', $env:PATH, [System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin'))
+    if([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin\MSBuild.exe'))) {
+        $env:PATH = [String]::Join(';', $env:PATH, [System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin'))
+    }
 }
 
 # Details for running tests on the various frameworks
 $_FRAMEWORKS = @{
     "net40" = @{
-        "runner" = [System.IO.Path]::Combine($_BASEDIR, 'packages\nunit.consolerunner\3.7.0\tools\nunit3-console.exe');
-        "args" = @("--params", '"FRAMEWORK=__FRAMEWORK__"', '--labels=All', '--result:__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.xml', '__BASEDIR__\bin\__CONFIGURATION__\__FRAMEWORK__\IronPythonTest.dll' );        
+        "runner" = [System.IO.Path]::Combine($_BASEDIR, 'packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe');
+        "args" = @("--params", '"FRAMEWORK=__FRAMEWORK__"', '--labels=All', '--result:__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.xml', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__/IronPythonTest.dll' );        
         "filterArg" = '--where:"__FILTER__"';
         "filters" = @{
             "all" = "";
@@ -39,7 +43,7 @@ $_FRAMEWORKS = @{
     };
     "net45" = @{
         "runner" = "dotnet";
-        "args" = @('test', '__BASEDIR__\Src\IronPythonTest\IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__\bin\__CONFIGURATION__\__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
+        "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
         "filterArg" = '--filter="__FILTER__"';
         "filters" = @{
             "all" = "";
@@ -50,7 +54,7 @@ $_FRAMEWORKS = @{
     };
     "netcoreapp2.0" = @{
         "runner" = "dotnet";
-        "args" = @('test', '__BASEDIR__\Src\IronPythonTest\IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__\bin\__CONFIGURATION__\__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
+        "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
         "filterArg" = '--filter="__FILTER__"';
         "filters" = @{
             "all" = "";
@@ -62,7 +66,7 @@ $_FRAMEWORKS = @{
 }
 
 function Main([String] $target, [String] $configuration) {
-    msbuild Build.proj /t:$target /p:BuildFlavour=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target.binlog
+    msbuild Build.proj /m /t:$target /p:BuildFlavour=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
 }
 
 function Test([String] $target, [String] $configuration, [String[]] $frameworks) {
@@ -87,7 +91,7 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
         $_TempCliXMLString = [System.Management.Automation.PSSerializer]::Serialize($_FRAMEWORKS[$framework]["args"], [int32]::MaxValue)
         [Object[]] $args = [System.Management.Automation.PSSerializer]::Deserialize($_TempCliXMLString)
         # replace the placeholders with actual values
-        for([int32] $i = 0; $i -lt $args.Length; $i++) {
+        for([int] $i = 0; $i -lt $args.Length; $i++) {
             foreach($r in $replacements.Keys) {
                 $args[$i] = $args[$i].Replace($r, $replacements[$r])
             }
@@ -98,8 +102,6 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
                 $filter = $_FRAMEWORKS[$framework]["filterArg"].Replace($r, $replacements[$r])
             }
         }
-
-        Write-Host $runner $args $filter
 
         # execute the tests
         & $runner $args $filter
@@ -112,25 +114,29 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
 }
 
 switch -wildcard ($target) {
-    "restore"       { Main "RestoreReferences" "Release" }
-    
-    "release"       { Main "Build" "Release" }
-    "clean"         { Main "Clean" "Release" }
-    "stage"         { Main "Stage" "Release" }
-    "package"       { Main "Package" "Release" }
-
-    "test-*"        { Test $target.Substring(5) "Release" $frameworks }
-
-    "ngen"          {
-        $imagePath = [System.IO.Path]::Combine($_BASEDIR, "bin\$configuration\net45\ipy.exe")
-        & "${env:SystemRoot}\Microsoft.NET\Framework\v4.0.30319\ngen.exe" install $imagePath 
-    }
-
+    # debug targets
+    "restore-debug" { Main "RestoreReferences" "Debug" }
     "debug"         { Main "Build" "Debug" }
     "clean-debug"   { Main "Clean" "Debug" }
     "stage-debug"   { Main "Stage" "Debug" }
     "package-debug" { Main "Package" "Debug" }
     "test-debug-*"  { Test $target.Substring(10) "Debug" $frameworks }
+    
+    # release targets
+    "restore"       { Main "RestoreReferences" "Release" }   
+    "release"       { Main "Build" "Release" }
+    "clean"         { Main "Clean" "Release" }
+    "stage"         { Main "Stage" "Release" }
+    "package"       { Main "Package" "Release" }
+    "test-*"        { Test $target.Substring(5) "Release" $frameworks }
+
+    # utility targets
+    "ngen"          {
+        if(!$global:isUnix) {
+            $imagePath = [System.IO.Path]::Combine($_BASEDIR, "bin\$configuration\net45\ipy.exe")
+            & "${env:SystemRoot}\Microsoft.NET\Framework\v4.0.30319\ngen.exe" install $imagePath 
+        }
+    }
 
     default { Write-Error "No target '$target'" ; Exit -1 }
 }
