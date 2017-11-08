@@ -55,7 +55,6 @@ using DependencyObject = System.Windows.DependencyObject;
 
 [assembly: ExtensionType(typeof(IronPythonTest.IFooable), typeof(IronPythonTest.FooableExtensions))]
 namespace IronPythonTest {
-#if !SILVERLIGHT
     class Common {
         public static string RootDirectory;
         public static string RuntimeDirectory;
@@ -84,7 +83,6 @@ namespace IronPythonTest {
             return string.Empty;
         }
     }
-#endif
 
     public static class TestHelpers {
         public static LanguageContext GetContext(CodeContext context) {
@@ -431,7 +429,6 @@ x = 42", scope);
             }
         }
 
-#if !SILVERLIGHT
         public void ScenarioCodePlex20472() {
             try {
                 string fileName = Path.Combine(Path.Combine(System.IO.Directory.GetCurrentDirectory(), "encoded_files"), "cp20472.py");
@@ -444,7 +441,6 @@ x = 42", scope);
             }
             catch (IronPython.Runtime.Exceptions.ImportException) { }
         }
-#endif
 
         public void ScenarioInterpreterNestedVariables() {
             ParameterExpression arg = Expression.Parameter(typeof(object), "tmp");
@@ -775,7 +771,6 @@ class K(object):
         private void TestTarget(object sender, EventArgs args) {
         }
 
-#if !SILVERLIGHT
         public void ScenarioDocumentation() {
             ScriptScope scope = _pe.CreateScope();
             ScriptSource src = _pe.CreateScriptSourceFromString(@"
@@ -994,7 +989,6 @@ i = int
 
             doc.GetMembers(scope.GetVariable("enc"));
         }
-#endif
 
         private void ContainsMemberName(ICollection<MemberDoc> members, string name, MemberKind kind) {
             foreach (var member in members) {
@@ -2147,7 +2141,6 @@ instOC = TestOC()
             Assert.AreEqual(42, t());
         }
 
-#if !SILVERLIGHT
         // ExecuteFile
         public void ScenarioExecuteFile() {
             ScriptSource tempFile1, tempFile2;
@@ -2181,9 +2174,7 @@ instOC = TestOC()
 
             tempFile2.Execute(scope);
         }
-#endif
 
-#if !SILVERLIGHT
         // Bug: 542
         public void Scenario542() {
             ScriptSource tempFile1;
@@ -2238,7 +2229,6 @@ instOC = TestOC()
             //pe.Execute(pe.CreateScriptSourceFromString("if C1.M() != -1: raise AssertionError('test failed')");
             //pe.Execute(pe.CreateScriptSourceFromString("if C2.M() != +1: raise AssertionError('test failed')");
         }
-#endif
 
         // Bug: 167
         public void Scenario167() {
@@ -2247,7 +2237,6 @@ instOC = TestOC()
             Assert.AreEqual(1, _pe.CreateScriptSourceFromString("a").Execute<int>(scope));
             Assert.AreEqual(-1, _pe.CreateScriptSourceFromString("b").Execute<int>(scope));
         }
-#if !SILVERLIGHT
         // AddToPath
 
         public void ScenarioAddToPath() { // runs first to avoid path-order issues
@@ -2274,7 +2263,6 @@ instOC = TestOC()
         }
 
         // Options.DebugMode
-#endif
 
 #if FEATURE_REMOTING
         public void ScenarioPartialTrust() {
@@ -2699,7 +2687,7 @@ if r.sum != 110:
             cc.Run(td);
             TestNewDivision(pe, td);  // we've polluted the DefaultModule by executing the code
         }
-#if !SILVERLIGHT
+
         public void ScenarioTrueDivision4() {
             pe.AddToPath(Common.ScriptTestDirectory);
 
@@ -2749,7 +2737,7 @@ if r.sum != 110:
         public void ScenarioSystemStatePrefix() {
             Assert.AreEqual(IronPythonTest.Common.RuntimeDirectory, pe.SystemState.prefix);
         }
-#endif
+
 
         private static void TestOldDivision(ScriptEngine pe, ScriptScope module) {
             pe.Execute(pe.CreateScriptSourceFromString("result = 1/2", module));

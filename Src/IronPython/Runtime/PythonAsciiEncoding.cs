@@ -232,7 +232,6 @@ namespace IronPython.Runtime {
         }
     }
 
-    // no ctors on DecoderFallbackBuffer in Silverlight
     class NonStrictDecoderFallbackBuffer : DecoderFallbackBuffer {
         private List<byte> _bytes = new List<byte>();
         private int _index;
@@ -272,7 +271,6 @@ namespace IronPython.Runtime {
         }
     }
 
-    // no ctors on DecoderFallbackBuffer in Silverlight
     class SourceNonStrictDecoderFallbackBuffer : DecoderFallbackBuffer {
         public override bool Fallback(byte[] bytesUnknown, int index) {
             throw new BadSourceException(bytesUnknown[index]);

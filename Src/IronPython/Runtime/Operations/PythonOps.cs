@@ -3798,7 +3798,6 @@ namespace IronPython.Runtime.Operations {
             return builder.CreateType();
         }
 
-#if !SILVERLIGHT
         /// <summary>
         /// Provides the entry point for a compiled module.  The stub exe calls into InitializeModule which
         /// does the actual work of adding references and importing the main module.  Upon completion it returns
@@ -3864,7 +3863,6 @@ namespace IronPython.Runtime.Operations {
 
             return 0;
         }
-#endif
 #endif
 
         public static CodeContext GetPythonTypeContext(PythonType pt) {

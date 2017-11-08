@@ -15,9 +15,7 @@
 
 using System;
 using IronPython.Runtime.Exceptions;
-#if !SILVERLIGHT
 using System.ComponentModel;
-#endif
 
 namespace IronPython.Runtime.Operations {
     public static partial class PythonOps {
