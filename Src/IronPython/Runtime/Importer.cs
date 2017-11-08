@@ -944,11 +944,9 @@ namespace IronPython.Runtime {
                 }
             }
 
-#if !SILVERLIGHT    // DirectoryExists isn't implemented on Silverlight
             if (!context.LanguageContext.DomainManager.Platform.DirectoryExists(dirname)) {
                 return new PythonImport.NullImporter(dirname);
             }
-#endif
 
             return null;
         }
@@ -968,10 +966,6 @@ namespace IronPython.Runtime {
         }
 
         private static string GetFullPathAndValidateCase(LanguageContext/*!*/ context, string path, bool isDir) {
-#if !SILVERLIGHT
-            // check for a match in the case of the filename, unfortunately we can't do this
-            // in Silverlight becauase there's no way to get the original filename.
-
             PlatformAdaptationLayer pal = context.DomainManager.Platform;
             string dir = pal.GetDirectoryName(path);
             if (!pal.DirectoryExists(dir)) {
@@ -990,9 +984,6 @@ namespace IronPython.Runtime {
             } catch (IOException) {
                 return null;
             }
-#else
-            return path;
-#endif
         }
 
         internal static PythonModule LoadPackageFromSource(CodeContext/*!*/ context, string/*!*/ name, string/*!*/ path) {

@@ -59,11 +59,7 @@ namespace IronPythonTest {
         public static object FloatValue = (float)0;
         public static object IntValue = (int)0;
         public static object LongValue = (long)0;
-#if !SILVERLIGHT
         public static object ObjectValue = (object)new System.Collections.Hashtable();
-#else
-        public static object ObjectValue = (object)new Dictionary<object, object>();
-#endif
         public static object SByteValue = (sbyte)0;
         public static object ShortValue = (short)0;
         public static object StringValue = (string)String.Empty;
@@ -387,7 +383,6 @@ namespace IronPythonTest {
             return dict;
         }
 
-#if !SILVERLIGHT
         public object ArrayList(System.Collections.ArrayList list) {
             return list;
         }
@@ -395,7 +390,6 @@ namespace IronPythonTest {
         public object HashtableTest(Hashtable dict) {
             return dict;
         }
-#endif
     }
 
     public class MixedDispatch {
@@ -554,11 +548,7 @@ namespace IronPythonTest {
         public double c;
         public decimal d;
         public string e;
-#if !SILVERLIGHT
         public Hashtable f;
-#else
-        public Dictionary<object, object> f;
-#endif
     }
 
     public class MissingValueTest {

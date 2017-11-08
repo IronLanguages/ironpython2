@@ -61,7 +61,6 @@ namespace IronPython.Runtime.Binding {
             }
 
 #if FEATURE_APARTMENTSTATE
-            // no apartment states on Silverlight
             if (method.DeclaringType == typeof(Thread)) {
                 if (method.Name == "Sleep") {
                     info = new WarningInfo(

@@ -75,11 +75,7 @@ namespace IronPython.Runtime {
                                 if (val < 0x010000) {
                                     buf.Append((char)val);
                                 } else {
-#if !SILVERLIGHT && !WP75
                                     buf.Append(char.ConvertFromUtf32(val));
-#else
-                                    throw PythonOps.StandardError(@"'unicodeescape' codec can't decode bytes in position {0}: Unicode character out of range (Silverlight)", i);
-#endif
                                 }
                                 i += len;
                             } else {
