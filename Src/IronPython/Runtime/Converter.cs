@@ -545,7 +545,7 @@ namespace IronPython.Runtime {
 
 #if FEATURE_CUSTOM_TYPE_DESCRIPTOR
             // try available type conversions...
-            var tcas = toType.GetTypeInfo().GetCustomAttributes(typeof(TypeConverterAttribute), true);
+            var tcas = toType.GetCustomAttributes(typeof(TypeConverterAttribute), true);
             foreach (TypeConverterAttribute tca in tcas) {
                 TypeConverter tc = GetTypeConverter(tca);
 

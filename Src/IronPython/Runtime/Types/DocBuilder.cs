@@ -154,7 +154,7 @@ namespace IronPython.Runtime.Types {
 #if FEATURE_XMLDOC
             GetXmlDoc(t, out summary);
 #endif
-            if (t.GetTypeInfo().IsEnum) {
+            if (t.IsEnum) {
                 string[] names = Enum.GetNames(t);
                 Array values = Enum.GetValues(t);
                 for (int i = 0; i < names.Length; i++) {
@@ -169,7 +169,7 @@ namespace IronPython.Runtime.Types {
                 summary = String.Concat(
                     summary,
                     Environment.NewLine, Environment.NewLine, 
-                    "enum ", t.GetTypeInfo().IsDefined(typeof(FlagsAttribute), false) ? "(flags) ": "", GetPythonTypeName(t), ", values: ", 
+                    "enum ", t.IsDefined(typeof(FlagsAttribute), false) ? "(flags) ": "", GetPythonTypeName(t), ", values: ", 
                     String.Join(", ", names));
             }
             return summary;
@@ -494,14 +494,14 @@ namespace IronPython.Runtime.Types {
         /// converted down to their generic type definition.
         /// </summary>
         private static void AppendTypeFormat(Type curType, StringBuilder res, ParameterInfo pi=null) {
-            if (curType.GetTypeInfo().IsGenericType) {
+            if (curType.IsGenericType) {
                 curType = curType.GetGenericTypeDefinition();
             }
 
             if (curType.IsGenericParameter) {
                 res.Append(ReflectionUtils.GenericArityDelimiter);
                 res.Append(curType.GenericParameterPosition);
-            } else if (curType.GetTypeInfo().ContainsGenericParameters) {
+            } else if (curType.ContainsGenericParameters) {
                 if (!string.IsNullOrEmpty(curType.Namespace)) {
                     res.Append(curType.Namespace);
                     res.Append('.');
@@ -623,7 +623,7 @@ namespace IronPython.Runtime.Types {
             returns = null;
             parameters = null;
 
-            XPathDocument xpd = GetXPathDocument(info.DeclaringType.GetTypeInfo().Assembly);
+            XPathDocument xpd = GetXPathDocument(info.DeclaringType.Assembly);
             if (xpd == null) return;
 
             XPathNavigator xpn = xpd.CreateNavigator();
@@ -661,7 +661,7 @@ namespace IronPython.Runtime.Types {
         private static void GetXmlDoc(Type type, out string summary) {
             summary = null;
 
-            XPathDocument xpd = GetXPathDocument(type.GetTypeInfo().Assembly);
+            XPathDocument xpd = GetXPathDocument(type.Assembly);
             if (xpd == null) return;
 
             XPathNavigator xpn = xpd.CreateNavigator();
@@ -682,7 +682,7 @@ namespace IronPython.Runtime.Types {
             summary = null;
             returns = null;
 
-            XPathDocument xpd = GetXPathDocument(declaringType.GetTypeInfo().Assembly);
+            XPathDocument xpd = GetXPathDocument(declaringType.Assembly);
             if (xpd == null) return;
 
             XPathNavigator xpn = xpd.CreateNavigator();
@@ -704,7 +704,7 @@ namespace IronPython.Runtime.Types {
             summary = null;
             returns = null;
 
-            XPathDocument xpd = GetXPathDocument(info.DeclaringType.GetTypeInfo().Assembly);
+            XPathDocument xpd = GetXPathDocument(info.DeclaringType.Assembly);
             if (xpd == null) return;
 
             XPathNavigator xpn = xpd.CreateNavigator();

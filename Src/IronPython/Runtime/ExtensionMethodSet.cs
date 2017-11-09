@@ -127,7 +127,7 @@ namespace IronPython.Runtime {
                     var ns = Namespaces;
                     
                     foreach (var type in _asm.GetExportedTypes()) {
-                        if (type.GetTypeInfo().IsExtension()) {
+                        if (type.IsExtension()) {
                             if (ns != null && ns.Contains(type.Namespace)) {
                                 loadedTypes.Add(DynamicHelpers.GetPythonTypeFromType(type));
                             }
@@ -251,7 +251,7 @@ namespace IronPython.Runtime {
 
             lock (existingSet) {
                 AssemblyLoadInfo assemblyLoadInfo;
-                Assembly assembly = type.UnderlyingSystemType.GetTypeInfo().Assembly;
+                Assembly assembly = type.UnderlyingSystemType.Assembly;
                 if (existingSet._loadedAssemblies.TryGetValue(assembly, out assemblyLoadInfo)) {
                     if (assemblyLoadInfo.IsFullAssemblyLoaded ||
                         (assemblyLoadInfo.Types != null && assemblyLoadInfo.Types.Contains(type)) ||

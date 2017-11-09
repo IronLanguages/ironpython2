@@ -61,12 +61,12 @@ namespace IronPython.Runtime.Types {
                 IList<Type> baseInterfaces = ReflectionUtils.EmptyTypes;
                 Type curTypeToExtend = curBasePythonType.ExtensionType;
 
-                if (curBasePythonType.ExtensionType.GetTypeInfo().IsInterface) {
+                if (curBasePythonType.ExtensionType.IsInterface) {
                     baseInterfaces = new Type[] { curTypeToExtend };
                     curTypeToExtend = typeof(object);
                 } else if (NewTypeMaker.IsInstanceType(curTypeToExtend)) {
                     baseInterfaces = new List<Type>();
-                    curTypeToExtend = GetBaseTypeFromUserType(curBasePythonType, baseInterfaces, curTypeToExtend.GetTypeInfo().BaseType);
+                    curTypeToExtend = GetBaseTypeFromUserType(curBasePythonType, baseInterfaces, curTypeToExtend.BaseType);
                 }
 
                 if (curTypeToExtend == null || typeof(BuiltinFunction).IsAssignableFrom(curTypeToExtend) || typeof(PythonFunction).IsAssignableFrom(curTypeToExtend))
@@ -86,7 +86,7 @@ namespace IronPython.Runtime.Types {
                 // then we better be in some esoteric __slots__ situation
                 if (!baseCLIType.IsSubclassOf(curTypeToExtend)) {
                     if (baseCLIType != typeof(object) && baseCLIType != curTypeToExtend &&
-                        (!baseCLIType.GetTypeInfo().IsDefined(typeof(DynamicBaseTypeAttribute), false) && !curTypeToExtend.IsSubclassOf(baseCLIType))) {
+                        (!baseCLIType.IsDefined(typeof(DynamicBaseTypeAttribute), false) && !curTypeToExtend.IsSubclassOf(baseCLIType))) {
                         throw PythonOps.TypeError(
                             typeName + ": can only extend one CLI or builtin type, not both {0} (for {1}) and {2} (for {3})",
                             baseCLIType.FullName,
@@ -130,7 +130,7 @@ namespace IronPython.Runtime.Types {
                 foreach (PythonType dt in walking.BaseTypes) {
                     if (dt.ExtensionType == curTypeToExtend || curTypeToExtend.IsSubclassOf(dt.ExtensionType)) continue;
 
-                    if (dt.ExtensionType.GetTypeInfo().IsInterface) {
+                    if (dt.ExtensionType.IsInterface) {
                         baseInterfaces.Add(dt.ExtensionType);
                     } else if (NewTypeMaker.IsInstanceType(dt.ExtensionType)) {
                         processing.Enqueue(dt);

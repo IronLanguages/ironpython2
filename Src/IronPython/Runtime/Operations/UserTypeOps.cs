@@ -411,7 +411,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static FastBindResult<T> MakeSetBinding<T>(CodeContext codeContext, CallSite<T> site, IPythonObject self, object value, Binding.PythonSetMemberBinder setBinder) where T : class {
-            if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(self.GetType().GetTypeInfo().BaseType)) {
+            if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(self.GetType().BaseType)) {
                 // very tricky, user is inheriting from a class which implements IDO, we
                 // don't optimize this yet.
                 return new FastBindResult<T>();

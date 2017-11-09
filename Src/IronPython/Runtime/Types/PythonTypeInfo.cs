@@ -34,10 +34,6 @@ using IronPython.Runtime.Operations;
 
 using System.Numerics;
 
-#if !FEATURE_TYPE_INFO
-using TypeInfo = System.Type;
-#endif
-
 namespace IronPython.Runtime.Types {
     /// <summary>
     /// Helpers for interacting w/ .NET types.  This includes:
@@ -230,7 +226,7 @@ namespace IronPython.Runtime.Types {
                     }
                 }
 
-                if (type.GetTypeInfo().IsInterface) {
+                if (type.IsInterface) {
                     foreach (Type t in type.GetInterfaces()) {
                         res = FilterSpecialNames(binder.GetMember(t, name), name, action);
                         if (res.Count > 0) {
@@ -976,7 +972,7 @@ namespace IronPython.Runtime.Types {
         /// Provides a resolution for __len__
         /// </summary>
         private static MemberGroup/*!*/ LengthResolver(MemberBinder/*!*/ binder, Type/*!*/ type) {
-            if (!type.GetTypeInfo().IsDefined(typeof(DontMapICollectionToLenAttribute), true)) {
+            if (!type.IsDefined(typeof(DontMapICollectionToLenAttribute), true)) {
                 if (binder.GetInterfaces(type).Contains(typeof(ICollection))) {
                     return GetInstanceOpsMethod(type, "LengthMethod");
                 }
@@ -1022,7 +1018,7 @@ namespace IronPython.Runtime.Types {
                 }
             }
 
-            if (!type.GetTypeInfo().IsDefined(typeof(DontMapIEnumerableToIterAttribute), true)) {
+            if (!type.IsDefined(typeof(DontMapIEnumerableToIterAttribute), true)) {
                 // no special __iter__, use the default.
                 if (typeof(IEnumerable<>).IsAssignableFrom(type)) {
                     return GetInstanceOpsMethod(type, nameof(InstanceOps.IterMethodForGenericEnumerable));
@@ -1090,7 +1086,7 @@ namespace IronPython.Runtime.Types {
         }
 
         private static MemberGroup/*!*/ DirResolver(MemberBinder/*!*/ binder, Type/*!*/ type) {
-            if (type.GetTypeInfo().IsDefined(typeof(DontMapGetMemberNamesToDirAttribute), true)) {
+            if (type.IsDefined(typeof(DontMapGetMemberNamesToDirAttribute), true)) {
                 return MemberGroup.EmptyGroup;
             }
 
@@ -1141,7 +1137,7 @@ namespace IronPython.Runtime.Types {
         }
 
         private static MemberGroup/*!*/ EnterResolver(MemberBinder/*!*/ binder, Type/*!*/ type) {
-            if (!type.GetTypeInfo().IsDefined(typeof(DontMapIDisposableToContextManagerAttribute), true) && typeof(IDisposable).IsAssignableFrom(type)) {
+            if (!type.IsDefined(typeof(DontMapIDisposableToContextManagerAttribute), true) && typeof(IDisposable).IsAssignableFrom(type)) {
                 return GetInstanceOpsMethod(type, "EnterMethod");
             }
 
@@ -1149,7 +1145,7 @@ namespace IronPython.Runtime.Types {
         }
 
         private static MemberGroup/*!*/ ExitResolver(MemberBinder/*!*/ binder, Type/*!*/ type) {
-            if (!type.GetTypeInfo().IsDefined(typeof(DontMapIDisposableToContextManagerAttribute), true) && typeof(IDisposable).IsAssignableFrom(type)) {
+            if (!type.IsDefined(typeof(DontMapIDisposableToContextManagerAttribute), true) && typeof(IDisposable).IsAssignableFrom(type)) {
                 return GetInstanceOpsMethod(type, "ExitMethod");
             }
 
@@ -1180,7 +1176,7 @@ namespace IronPython.Runtime.Types {
         /// The lookup is well ordered and not dependent upon the order of values returned by reflection.
         /// </summary>
         private static MemberGroup/*!*/ ContainsResolver(MemberBinder/*!*/ binder, Type/*!*/ type) {
-            if (type.GetTypeInfo().IsDefined(typeof(DontMapIEnumerableToContainsAttribute), true)) {
+            if (type.IsDefined(typeof(DontMapIEnumerableToContainsAttribute), true)) {
                 // it's enumerable but doesn't have __contains__
                 return MemberGroup.EmptyGroup;
             }
@@ -1418,7 +1414,7 @@ namespace IronPython.Runtime.Types {
                 List<MemberInfo> filteredMembers = null;
                 for (int i = 0; i < foundMembersArray.Length; i++) {
                     var member = foundMembersArray[i];
-                    if (member.DeclaringType.GetTypeInfo().IsDefined(typeof(PythonHiddenBaseClassAttribute), false)) {
+                    if (member.DeclaringType.IsDefined(typeof(PythonHiddenBaseClassAttribute), false)) {
                         if (filteredMembers == null) {
                             filteredMembers = new List<MemberInfo>();
                             for (int j = 0; j < i; j++) {
@@ -1449,7 +1445,7 @@ namespace IronPython.Runtime.Types {
                 if (genTypes != null) {
                     List<MemberTracker> mt = new List<MemberTracker>(members);
                     foreach (Type t in genTypes) {
-                        mt.Add(MemberTracker.FromMemberInfo(t.GetTypeInfo()));
+                        mt.Add(MemberTracker.FromMemberInfo(t));
                     }
 
                     return new MemberGroup(mt.ToArray());
@@ -1529,7 +1525,7 @@ namespace IronPython.Runtime.Types {
                 List<Type> res = new List<Type>();
                 foreach (Type intf in allInterfaces) {
                     try {
-                        InterfaceMapping imap = t.GetTypeInfo().GetRuntimeInterfaceMap(intf);
+                        InterfaceMapping imap = t.GetInterfaceMap(intf);
                         foreach (MethodInfo mi in imap.TargetMethods) {
                             if (mi != null && mi.DeclaringType == t) {
                                 res.Add(intf);
@@ -1553,7 +1549,7 @@ namespace IronPython.Runtime.Types {
             }
 
             public override MemberGroup/*!*/ GetBaseInstanceMethod(Type/*!*/ type, params string[] name) {
-                if (type.GetTypeInfo().BaseType == typeof(object) || type.GetTypeInfo().BaseType == typeof(ValueType)) {
+                if (type.BaseType == typeof(object) || type.BaseType == typeof(ValueType)) {
                     return GetInstanceOpsMethod(type, name);
                 }
 
@@ -1815,7 +1811,7 @@ namespace IronPython.Runtime.Types {
                 case MemberTypes.Field:
                     return ((FieldInfo)input).IsProtected();
                 case MemberTypes.NestedType:
-                    return ((Type)input).AsType().IsProtected();
+                    return ((Type)input).IsProtected();
                 case MemberTypes.Event:
                     MethodInfo emi = (((EventInfo)input).GetAddMethod(true));
                     return emi != null && ProtectedOnly(emi);

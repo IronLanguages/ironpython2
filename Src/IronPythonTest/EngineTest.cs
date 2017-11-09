@@ -62,7 +62,7 @@ namespace IronPythonTest {
         public static string InputTestDirectory;
 
         static Common() {
-            RuntimeDirectory = Path.GetDirectoryName(typeof(PythonContext).GetTypeInfo().Assembly.Location);
+            RuntimeDirectory = Path.GetDirectoryName(typeof(PythonContext).Assembly.Location);
             RootDirectory = FindRoot();
             ScriptTestDirectory = Path.Combine(RootDirectory, "Tests");
             InputTestDirectory = Path.Combine(ScriptTestDirectory, "Inputs");
@@ -619,7 +619,7 @@ class K(object):
 
         public static void ScenarioInterfaceExtensions() {
             var engine = Python.CreateEngine();
-            engine.Runtime.LoadAssembly(typeof(Fooable).GetTypeInfo().Assembly);
+            engine.Runtime.LoadAssembly(typeof(Fooable).Assembly);
             ScriptSource src = engine.CreateScriptSourceFromString("x.Bar()");
             ScriptScope scope = engine.CreateScope();
             scope.SetVariable("x", new Fooable());

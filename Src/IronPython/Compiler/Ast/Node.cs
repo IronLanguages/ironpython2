@@ -293,7 +293,7 @@ namespace IronPython.Compiler.Ast {
         }
 
         internal static bool CanAssign(Type/*!*/ to, Type/*!*/ from) {
-            return to.IsAssignableFrom(from) && (to.GetTypeInfo().IsValueType == from.GetTypeInfo().IsValueType);
+            return to.IsAssignableFrom(from) && (to.IsValueType == from.IsValueType);
         }
 
         internal static MSAst.Expression/*!*/ ConvertIfNeeded(MSAst.Expression/*!*/ expression, Type/*!*/ type) {
