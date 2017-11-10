@@ -975,11 +975,11 @@ import Namespace.")]
                 Type clrBaseType = info.BaseType;
                 Type tempType = clrBaseType;
                 while (tempType != null) {
-                    if (tempType.GetTypeInfo().IsGenericType && tempType.GetGenericTypeDefinition() == typeof(Extensible<>)) {
+                    if (tempType.IsGenericType && tempType.GetGenericTypeDefinition() == typeof(Extensible<>)) {
                         clrBaseType = tempType.GetGenericArguments()[0];
                         break;
                     }
-                    tempType = tempType.GetTypeInfo().BaseType;
+                    tempType = tempType.BaseType;
                 }
 
                 PythonType baseType = DynamicHelpers.GetPythonTypeFromType(clrBaseType);

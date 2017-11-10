@@ -545,7 +545,7 @@ type(name, bases, dict) -> creates a new type instance with the given name, base
         }
 
         private static bool TryReplaceExtensibleWithBase(Type curType, out Type newType) {
-            if (curType.GetTypeInfo().IsGenericType &&
+            if (curType.IsGenericType &&
                 curType.GetGenericTypeDefinition() == typeof(Extensible<>)) {
                 newType = curType.GetGenericArguments()[0];
                 return true;
@@ -671,7 +671,7 @@ type(name, bases, dict) -> creates a new type instance with the given name, base
 
         [SpecialName, PropertyMethod, WrapperDescriptor, PythonHidden]
         public static string Get__clr_assembly__(PythonType self) {
-            return self.UnderlyingSystemType.Namespace + " in " + self.UnderlyingSystemType.GetTypeInfo().Assembly.FullName;
+            return self.UnderlyingSystemType.Namespace + " in " + self.UnderlyingSystemType.Assembly.FullName;
         }
 
         [SpecialName, PropertyMethod, WrapperDescriptor]
@@ -713,7 +713,7 @@ type(name, bases, dict) -> creates a new type instance with the given name, base
             string name = Name;
 
             if (IsSystemType) {
-                if (PythonTypeOps.IsRuntimeAssembly(UnderlyingSystemType.GetTypeInfo().Assembly) || IsPythonType) {
+                if (PythonTypeOps.IsRuntimeAssembly(UnderlyingSystemType.Assembly) || IsPythonType) {
                     object module = Get__module__(context, this);
                     if (!module.Equals("__builtin__")) {
                         return string.Format("<type '{0}.{1}'>", module, Name);
@@ -2425,7 +2425,7 @@ type(name, bases, dict) -> creates a new type instance with the given name, base
                     baseType = _underlyingSystemType.GetBaseType();
                 }
 
-                while (baseType.GetTypeInfo().IsDefined(typeof(PythonHiddenBaseClassAttribute), false)) {
+                while (baseType.IsDefined(typeof(PythonHiddenBaseClassAttribute), false)) {
                     baseType = baseType.GetBaseType();
                 }
 
@@ -2436,7 +2436,7 @@ type(name, bases, dict) -> creates a new type instance with the given name, base
                     Type newType;
                     if (TryReplaceExtensibleWithBase(curType, out newType)) {
                         mro.Add(DynamicHelpers.GetPythonTypeFromType(newType));
-                    } else if(!curType.GetTypeInfo().IsDefined(typeof(PythonHiddenBaseClassAttribute), false)) {
+                    } else if(!curType.IsDefined(typeof(PythonHiddenBaseClassAttribute), false)) {
                         mro.Add(DynamicHelpers.GetPythonTypeFromType(curType));
                     }
                     curType = curType.GetBaseType();
@@ -2491,7 +2491,7 @@ type(name, bases, dict) -> creates a new type instance with the given name, base
             }
             
             foreach (Type iface in interfaces) {
-                InterfaceMapping mapping = _underlyingSystemType.GetTypeInfo().GetRuntimeInterfaceMap(iface);
+                InterfaceMapping mapping = _underlyingSystemType.GetInterfaceMap(iface);
                 
                 // grab all the interface methods which would hide other members
                 for (int i = 0; i < mapping.TargetMethods.Length; i++) {
@@ -2540,7 +2540,7 @@ type(name, bases, dict) -> creates a new type instance with the given name, base
             if (hasExplicitIface) {
                 // add any non-colliding interfaces into the MRO
                 foreach (Type t in nonCollidingInterfaces) {
-                    Debug.Assert(t.GetTypeInfo().IsInterface);
+                    Debug.Assert(t.IsInterface);
 
                     mro.Add(DynamicHelpers.GetPythonTypeFromType(t));
                 }

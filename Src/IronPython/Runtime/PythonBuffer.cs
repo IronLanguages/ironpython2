@@ -79,7 +79,7 @@ namespace IronPython.Runtime {
                 Array arr = o as Array;
                 if (arr != null) {
                     Type t = arr.GetType().GetElementType();
-                    if (!t.GetTypeInfo().IsPrimitive && t != typeof(string)) {
+                    if (!t.IsPrimitive && t != typeof(string)) {
                         return false;
                     }
                     length = arr.Length;

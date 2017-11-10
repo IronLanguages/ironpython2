@@ -109,7 +109,7 @@ namespace IronPython.Runtime.Types {
                     if (typeInfo.InterfaceTypes.Count == 0) {
                         // types that the have DynamicBaseType attribute can be used as NewType's directly, no 
                         // need to create a new type unless we're adding interfaces
-                        var attrs = typeInfo.BaseType.GetTypeInfo().GetCustomAttributes(typeof(DynamicBaseTypeAttribute), false);
+                        var attrs = typeInfo.BaseType.GetCustomAttributes(typeof(DynamicBaseTypeAttribute), false);
                         if (attrs.Any()) {
                             return typeInfo.BaseType;
                         }
@@ -211,7 +211,7 @@ namespace IronPython.Runtime.Types {
             Assert.NotNull(asm);
 
             Type t = asm.GetType(_constructorTypeName);
-            if (t == null || !t.GetTypeInfo().IsDefined(typeof(PythonCachedTypeInfoAttribute), false)) {
+            if (t == null || !t.IsDefined(typeof(PythonCachedTypeInfoAttribute), false)) {
                 return;
             }
 
@@ -596,11 +596,11 @@ namespace IronPython.Runtime.Types {
             // true if our base type implements IDMOP already
             bool baseIdo = typeof(IDynamicMetaObjectProvider).IsAssignableFrom(_baseType);
             if (baseIdo) {
-                InterfaceMapping mapping = _baseType.GetTypeInfo().GetRuntimeInterfaceMap(typeof(IDynamicMetaObjectProvider));
+                InterfaceMapping mapping = _baseType.GetInterfaceMap(typeof(IDynamicMetaObjectProvider));
                 if (mapping.TargetMethods[0].IsPrivate) {
                     // explicitly implemented IDynamicMetaObjectProvider, we cannot override it.
 
-                    if (_baseType.GetTypeInfo().IsDefined(typeof(DynamicBaseTypeAttribute), true)) {
+                    if (_baseType.IsDefined(typeof(DynamicBaseTypeAttribute), true)) {
                         // but it's been implemented by IronPython so it's going to return a MetaUserObject
                         return;
                     }
@@ -689,7 +689,7 @@ namespace IronPython.Runtime.Types {
                 
             // baseMetaObject
             if (baseIdo) {
-                InterfaceMapping imap = _baseType.GetTypeInfo().GetRuntimeInterfaceMap(typeof(IDynamicMetaObjectProvider));
+                InterfaceMapping imap = _baseType.GetInterfaceMap(typeof(IDynamicMetaObjectProvider));
 
                 il.EmitLoadArg(0);  // this
                 il.EmitLoadArg(1);  // parameter
@@ -935,7 +935,7 @@ namespace IronPython.Runtime.Types {
             if (type.IsAbstract() && !type.IsInterface()) {
                 // abstract types can define interfaces w/o implementations
                 foreach (Type iface in type.GetInterfaces()) {
-                    InterfaceMapping mapping = type.GetTypeInfo().GetRuntimeInterfaceMap(iface);
+                    InterfaceMapping mapping = type.GetInterfaceMap(iface);
                     for (int i = 0; i < mapping.TargetMethods.Length; i++) {
                         
                         if (mapping.TargetMethods[i] == null) {
@@ -1560,7 +1560,7 @@ namespace IronPython.Runtime.Types {
             // The addition is to a seperate cache that NewTypeMaker maintains.  TypeInfo consults this
             // cache when doing member lookup and includes these members in the returned members.
             foreach (MethodInfo mi in finishedType.GetMethods()) {
-                if (IsInstanceType(finishedType.GetTypeInfo().BaseType) && IsInstanceType(mi.DeclaringType)) continue;
+                if (IsInstanceType(finishedType.BaseType) && IsInstanceType(mi.DeclaringType)) continue;
 
                 string methodName = mi.Name;
                 if (methodName.StartsWith(BaseMethodPrefix) || methodName.StartsWith(FieldGetterPrefix) || methodName.StartsWith(FieldSetterPrefix)) {
@@ -1569,7 +1569,7 @@ namespace IronPython.Runtime.Types {
                             // if it's a property we want to override it
                             string propName = newName.Substring(4);
 
-                            MemberInfo[] defaults = finishedType.GetTypeInfo().BaseType.GetDefaultMembers();
+                            MemberInfo[] defaults = finishedType.BaseType.GetDefaultMembers();
                             if (defaults.Length > 0) {
                                 // if it's an indexer then we want to override get_Item/set_Item methods
                                 // which map to __getitem__ and __setitem__ as normal Python methods.

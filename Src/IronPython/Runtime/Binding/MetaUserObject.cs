@@ -341,14 +341,14 @@ namespace IronPython.Runtime.Binding {
         }
 
         private static bool IsBuiltinConversion(CodeContext/*!*/ context, PythonTypeSlot/*!*/ pts, string name, PythonType/*!*/ selfType) {
-            Type baseType = selfType.UnderlyingSystemType.GetTypeInfo().BaseType;
+            Type baseType = selfType.UnderlyingSystemType.BaseType;
             Type tmpType = baseType;
             do {
-                if (tmpType.GetTypeInfo().IsGenericType && tmpType.GetGenericTypeDefinition() == typeof(Extensible<>)) {
+                if (tmpType.IsGenericType && tmpType.GetGenericTypeDefinition() == typeof(Extensible<>)) {
                     baseType = tmpType.GetGenericArguments()[0];
                     break;
                 }
-                tmpType = tmpType.GetTypeInfo().BaseType;
+                tmpType = tmpType.BaseType;
             } while (tmpType != null);
 
             PythonType ptBase = DynamicHelpers.GetPythonTypeFromType(baseType);

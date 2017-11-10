@@ -377,7 +377,7 @@ namespace IronPython.Modules {
 
             private void EnsureLoaded() {
                 if (database == null || nameLookup == null) {
-                    var rsrc = typeof(unicodedata).GetTypeInfo().Assembly.GetManifestResourceStream(UnicodedataResourceName);
+                    var rsrc = typeof(unicodedata).Assembly.GetManifestResourceStream(UnicodedataResourceName);
                     var gzip = new GZipStream(rsrc, CompressionMode.Decompress);
                     var data = new StreamReader(gzip, Encoding.UTF8);
 
