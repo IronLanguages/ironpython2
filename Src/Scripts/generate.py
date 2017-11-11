@@ -20,14 +20,13 @@ import os
 
 def get_root_dir():
     script = os.path.realpath(__file__)
-    return  os.path.normpath(os.path.join(os.path.dirname(script), "../../.."))
+    return  os.path.normpath(os.path.join(os.path.dirname(script), "../.."))
 
 root_dir = get_root_dir()
 
 
 source_directories = [
-    os.path.join(root_dir, "Languages", "IronPython"),
-    os.path.join(root_dir, "Runtime"),
+    os.path.join(root_dir, "Src")
 ]
 
 exclude_directories = [
