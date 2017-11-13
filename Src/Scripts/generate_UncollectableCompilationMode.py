@@ -141,7 +141,7 @@ def _list_type_args(n, transform=(lambda x: x)):
 
 def gen_dynamic(cw):
     def gen_main(n):
-        cw.enter_block("public override MSAst.Expression/*!*/ Dynamic("
+        cw.enter_block("public override MSAst.Expression/*!*/ ReduceDynamic("
                        "DynamicMetaObjectBinder/*!*/ binder, Type/*!*/ retType, %s)" %
                        _list_args(n, "MSAst.Expression/*!*/ "))
         if n <= 2:
