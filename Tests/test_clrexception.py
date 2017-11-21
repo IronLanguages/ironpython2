@@ -14,7 +14,7 @@
 #####################################################################################
 
 import unittest
-from iptest import skipUnlessIronPython, is_netcoreapp, is_cli
+from iptest import skipUnlessIronPython, is_netcoreapp, is_cli, run_test
 
 @skipUnlessIronPython()
 class ClrExceptionTest(unittest.TestCase):
@@ -118,6 +118,4 @@ class ClrExceptionTest(unittest.TestCase):
         # StopIteration can be caught as an Exception
         self.py_to_clr_positive(StopIteration, System.Exception, msg = "StopIteration -> System.Exception")
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

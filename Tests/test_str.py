@@ -18,7 +18,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, run_test, skipUnlessIronPython
 
 class StrTest(IronPythonTestCase):
  
@@ -261,8 +261,7 @@ class StrTest(IronPythonTestCase):
     @skipUnlessIronPython()
     def test_str_char_hash(self):
         import System
-        #System.Char.Parse('a') is not available in Silverlight mscorlib
-        a = 'a'.ToCharArray()[0]
+        a = System.Char.Parse('a')
             
         for x in [{'a':'b'}, set(['a']), 'abc', ['a'], ('a',)]:
             self.assertEqual(a in x, True)
@@ -442,6 +441,4 @@ class StrTest(IronPythonTestCase):
         self.assertRaisesMessage(TypeError, "character mapping must be in range(0x%lx)", lambda: 'a'.translate({ord('a') : 65536}))
         self.assertRaisesMessage(TypeError, "character mapping must return integer, None or unicode", lambda: 'a'.translate({ord('a') : 2.0}))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

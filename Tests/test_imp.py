@@ -19,7 +19,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_posix, path_modifier
+from iptest import IronPythonTestCase, is_cli, is_posix, path_modifier, run_test
 
 def get_builtins_dict():
     if type(__builtins__) is type(sys):
@@ -291,7 +291,6 @@ else:
         self.assertEqual(imp.is_builtin("cPickle"),1)
         self.assertEqual(imp.is_builtin("_random"),1)
             
-        # nt module disabled in Silverlight
         if is_posix:
             self.assertEqual(imp.is_builtin("posix"),1)
         else:
@@ -1323,8 +1322,7 @@ X = 3.14
         # can't access private fields
         self.assertRaises(AttributeError, lambda : test_new_module._value)
 
+run_test(__name__)
 if __name__ == '__main__':
-    from test import test_support
     from iptest.file_util import delete_all_f
-    test_support.run_unittest(__name__)
     delete_all_f(__name__, remove_folders=True)

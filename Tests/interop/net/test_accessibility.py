@@ -12,7 +12,6 @@
 #
 #
 #####################################################################################
-
 '''
 NOTES:
 - needs to be rewritten
@@ -20,7 +19,7 @@ NOTES:
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class AccessibilityTest(IronPythonTestCase):
@@ -183,6 +182,4 @@ class AccessibilityTest(IronPythonTestCase):
             self.assertTrue('protected_instance_field' in dir(x))
             self.assertRaises(TypeError, lambda : x.protected_instance_field)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

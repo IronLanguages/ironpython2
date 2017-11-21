@@ -18,7 +18,7 @@ Calls to constructor.
 
 import unittest 
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class CtorTest(IronPythonTestCase):
@@ -148,7 +148,5 @@ class CtorTest(IronPythonTestCase):
             foo()
             exec "foo()" in globals(), locals() 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

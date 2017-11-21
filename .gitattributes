@@ -10,6 +10,7 @@
 *.cs text
 *.py text
 *.rb text
+*.html text
 
 # Explicitly declare files that should not have line endings modified, ever
 Tests/file_with_BOM.txt -text
@@ -25,7 +26,9 @@ Tests/file_without_BOM.txt -text
 *.vcxproj text eol=crlf
 *.vdproj text eol=crlf
 
-# Declare files that will always have LF line endings on checkout.
+
+# Declare files that will always have LF line endings on checkout
+.gitmodules text eol=lf
 *.sh text eol=lf
 make.ps1 text eol=lf
 

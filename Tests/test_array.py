@@ -19,7 +19,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_posix
+from iptest import IronPythonTestCase, is_cli, is_posix, run_test
 
 if is_cli:
     import System
@@ -231,6 +231,4 @@ class ArrayTest(IronPythonTestCase):
         array1[0,0] = 5
         self.assertEqual(array1[0,0], array1[(0,0)])
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

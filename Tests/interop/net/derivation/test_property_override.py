@@ -12,14 +12,13 @@
 #
 #
 #####################################################################################
-
 '''
 How to re-define a property in Python.
 '''
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_mono
+from iptest import IronPythonTestCase, is_mono, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class PropertyOverrideTest(IronPythonTestCase):
@@ -384,6 +383,4 @@ class PropertyOverrideTest(IronPythonTestCase):
         self.assertEqual(x[1], 90)
     
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

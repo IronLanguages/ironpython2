@@ -17,7 +17,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
 
 class PropertyTest(IronPythonTestCase):
     def setUp(self):
@@ -246,6 +246,4 @@ class PropertyTest(IronPythonTestCase):
             self.assertRaisesMessage(TypeError, "readonly attribute", lambda : setattr(x, attr, 'abc'))
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

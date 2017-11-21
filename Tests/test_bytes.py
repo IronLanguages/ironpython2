@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, ip_supported_encodings, is_cli, is_mono, is_osx
+from iptest import IronPythonTestCase, ip_supported_encodings, is_cli, is_mono, is_osx, run_test
 
 types = [bytearray, bytes]
 class IndexableOC:
@@ -1450,6 +1450,4 @@ class BytesTest(IronPythonTestCase):
     def test_cp35493(self):
         self.assertEqual(bytearray(u'\xde\xad\xbe\xef\x80'), bytearray(b'\xde\xad\xbe\xef\x80'))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

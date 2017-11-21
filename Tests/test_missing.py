@@ -16,7 +16,7 @@
 
 import unittest
 
-from iptest import is_cli, skipUnlessIronPython, is_netcoreapp
+from iptest import is_cli, is_netcoreapp, run_test, skipUnlessIronPython
 
 
 # set this flag to True to have the test trace progress
@@ -249,6 +249,4 @@ class MissingTest(unittest.TestCase):
         ag.Save()
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

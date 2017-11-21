@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
 
 def get_builtins_dict():
     if type(__builtins__) is type(sys):
@@ -2287,6 +2287,4 @@ class NumberTest(IronPythonTestCase):
         self.assertEqual(int(' 0', 0), 0)
         self.assertEqual(int('0', 0), 0)
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

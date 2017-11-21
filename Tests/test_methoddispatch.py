@@ -16,7 +16,7 @@
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, is_posix, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, is_posix, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class MethodDispatchTest(IronPythonTestCase):
@@ -1442,6 +1442,4 @@ class MethodDispatchTest(IronPythonTestCase):
         self.assertEqual(d.P01, 2.0)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

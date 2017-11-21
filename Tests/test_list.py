@@ -16,7 +16,7 @@
 import os
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 hitCount = 0
 
@@ -468,6 +468,4 @@ class ListTest(IronPythonTestCase):
         self.assertEqual(t1 * 3.0, 9.0)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

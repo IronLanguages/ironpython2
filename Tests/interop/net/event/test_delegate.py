@@ -12,14 +12,13 @@
 #
 #
 #####################################################################################
-
 '''
 Operations on delegate type.
 '''
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 class DelegateTest(IronPythonTestCase):
     def setUp(self):
@@ -246,6 +245,4 @@ class DelegateTest(IronPythonTestCase):
         #Flag.Check(642)
     
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

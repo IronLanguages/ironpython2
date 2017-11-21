@@ -12,14 +12,13 @@
 #
 #
 #####################################################################################
-
 '''
 Various method signatures to override.
 '''
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 global expected
 
@@ -316,6 +315,4 @@ class MethodSignatureTest(IronPythonTestCase):
         self.assertEqual(d[0], 100)
     
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

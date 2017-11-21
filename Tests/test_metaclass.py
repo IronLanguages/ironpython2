@@ -16,6 +16,8 @@
 
 import unittest
 
+from iptest import run_test
+
 # ref: http://docs.python.org/ref/metaclasses.html
 
 class Old:
@@ -132,15 +134,15 @@ class MetaclassTest(unittest.TestCase):
             class C(object):
                 __metaclass__ = t
                 def method(self): return 10
-            
+
             x = C()
             self.assertEqual(x.method(), 10)
-        
+
         try_metaclass(type)
         #try_metaclass(type(Old))  # bug 364938
         try_metaclass(dash_attributes)
         try_metaclass(sub_type1)
-        
+
         ## subclassing
         class C1(object):
             __metaclass__ = g_c_modify()
@@ -150,10 +152,10 @@ class MetaclassTest(unittest.TestCase):
         # not defining __metaclass__
         for C in [C1, C2]:
             class D(C): pass
-            
+
             self.assertTrue(hasattr(D, "version"))
             self.assertEqual(D().version, 2.4)
-        
+
         # redefining __metaclass__
         try:
             class D(C1): __metaclass__ = dash_attributes
@@ -377,6 +379,4 @@ class MetaclassTest(unittest.TestCase):
             self.assertEqual('b', A.b)
     
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

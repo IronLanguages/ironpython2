@@ -24,10 +24,8 @@ if clr.IsNetCoreApp:
     clr.AddReference("System.IO.FileSystem")
     clr.AddReference("System.Runtime.Extensions")
 else:
-    if System.Environment.Version.Major >=4:
-        clr.AddReference("System.Core")
-    else:
-        clr.AddReference("Microsoft.Scripting.Core")
+    clr.AddReference("System.Core")
+    
 clr.AddReference("IronPython")
 clr.AddReference("IronPython.Modules")
 

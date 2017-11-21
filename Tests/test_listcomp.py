@@ -15,6 +15,8 @@
 
 import unittest
 
+from iptest import run_test
+
 class ListCompTest(unittest.TestCase):
     def test_positive(self):
         self.assertEqual([x for x in ""], [])
@@ -50,6 +52,4 @@ class ListCompTest(unittest.TestCase):
         self.assertRaises(NameError, lambda: [(x, z) for x in "iron" if z > x for z in "python" ])
         self.assertRaises(NameError, lambda: [(i, j) for i in range(10) if j < 'c' for j in ['a', 'b', 'c'] if i % 3 == 0])
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

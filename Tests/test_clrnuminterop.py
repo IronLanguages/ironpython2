@@ -26,7 +26,7 @@ TODO:
 '''
 
 import unittest
-from iptest import is_cli
+from iptest import is_cli, run_test
 
 #Test Python/CLR number interop.
 clr_integer_types = [ "System.Byte",
@@ -471,6 +471,4 @@ class ClrNumInteropTest(unittest.TestCase):
         self.assertTrue(self.num_ok_for_type( 18446744073709551615000.0, "float"))
     
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

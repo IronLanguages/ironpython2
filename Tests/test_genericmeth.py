@@ -16,9 +16,9 @@
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_cli
+from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
 
-@unittest.skipUnless(is_cli, 'IronPython specific test case')
+@skipUnlessIronPython()
 class GenericMethTest(IronPythonTestCase):
     def setUp(self):
         super(GenericMethTest, self).setUp()
@@ -87,6 +87,4 @@ class GenericMethTest(IronPythonTestCase):
         self.assertEqual(GenMeth.StaticMeth[GenMeth](gm), "StaticMeth<GenMeth>(GenMeth)")
         self.assertEqual(GenMeth.StaticMeth[(str, int)]("", 1), "StaticMeth<String, Int32>(String, Int32)")
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

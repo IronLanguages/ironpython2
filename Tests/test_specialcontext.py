@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import skipUnlessIronPython
+from iptest import run_test, skipUnlessIronPython
 x = None
 @skipUnlessIronPython()
 class SpecialContextTest(unittest.TestCase):
@@ -68,8 +68,7 @@ def assertEqual(first, second):
 
 
 if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+    run_test(__name__)
 
     # these have to be tested at the global scope
     a = "hello world"

@@ -15,6 +15,8 @@
 
 import unittest
 
+from iptest import run_test
+
 class SliceTests(unittest.TestCase):
     def testGet(self):
         m = memoryview(bytearray(xrange(5)))
@@ -59,6 +61,4 @@ class TestGH1387(unittest.TestCase):
         chunk = self.mview[8:12]
         self.assertEqual(len(chunk), 2)
         
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -16,6 +16,8 @@
 import sys
 import unittest
 
+from iptest import run_test
+
 class ConditionalTest(unittest.TestCase):
     
     def test_simple(self):
@@ -1152,6 +1154,4 @@ class ConditionalTest(unittest.TestCase):
             self.assertEqual(f(False), 23)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

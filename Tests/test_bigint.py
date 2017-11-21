@@ -14,6 +14,8 @@
 #####################################################################################
 import unittest
 
+from iptest import run_test
+
 class BigIntTest(unittest.TestCase):
 
     def axiom_helper(self, a, b):
@@ -66,6 +68,4 @@ class BigIntTest(unittest.TestCase):
         self.assertRaises(ValueError, #"invalid literal for long() with base 10: ''",
                     lambda: long(''))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

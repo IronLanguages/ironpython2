@@ -19,7 +19,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class IronMathTest(IronPythonTestCase):
@@ -246,6 +246,4 @@ class IronMathTest(IronPythonTestCase):
         self.assertEqual(BigInteger(1).CompareTo(None), 1)
         self.assertEqual(BigInteger(1).CompareTo(True), 0)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

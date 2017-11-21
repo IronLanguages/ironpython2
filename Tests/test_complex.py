@@ -16,6 +16,7 @@
 import unittest
 
 from iptest.type_util import *
+from iptest import run_test
 
 class ComplexTest(unittest.TestCase):
 
@@ -71,6 +72,4 @@ class ComplexTest(unittest.TestCase):
         self.assertEqual(repr(1.0e340j),  'infj')
         self.assertEqual(repr(-1.0e340j),'-infj')
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

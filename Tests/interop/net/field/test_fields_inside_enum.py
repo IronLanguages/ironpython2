@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class FieldsInsideEnumTest(IronPythonTestCase):
@@ -72,6 +72,4 @@ class FieldsInsideEnumTest(IronPythonTestCase):
             self.assertTrue(not bool(enum_type()))
     
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
