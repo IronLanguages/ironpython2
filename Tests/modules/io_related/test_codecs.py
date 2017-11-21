@@ -125,8 +125,10 @@ class CodecTest(IronPythonTestCase):
         self.assertEqual(codecs.charmap_decode("a", "replace", {})[0], u'\ufffd')
         self.assertEqual(codecs.charmap_decode("a", "replace", {ord('a'): None})[0], u'\ufffd')
         
-        self.assertEqual(codecs.charmap_decode(""),
-                (u'', 0))
+        self.assertEqual(codecs.charmap_decode(""), (u'', 0))
+
+        # using a string mapping
+        self.assertEqual(codecs.charmap_decode(u'\x02\x01\x00', 'strict', u"abc"), (u'cba', 3))
 
         #Negative
         self.assertRaises(UnicodeDecodeError, codecs.charmap_decode, "a", "strict", {})
@@ -553,7 +555,7 @@ class CodecTest(IronPythonTestCase):
         codecs.register_error("test_unicode_error", handler)
         res = u"\xac\u1234\u20ac\u8000".encode("rot_13", "test_unicode_error")
         self.assertEqual(res, "\xac")
-    
+
 if __name__ == '__main__':
     from test import test_support
     test_support.run_unittest(__name__)
