@@ -14,7 +14,7 @@
 #####################################################################################
 import unittest
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, run_test
 
 global flag
 
@@ -271,7 +271,5 @@ class AttributeCustomizeTest(IronPythonTestCase):
         def f(): del D.__getattribute__
         self.assertRaises(AttributeError, f)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

@@ -17,6 +17,8 @@ import array
 import struct
 import unittest
 
+from iptest import run_test
+
 class StructTest(unittest.TestCase):
 
     def test_pack(self):
@@ -69,6 +71,4 @@ class StructTest(unittest.TestCase):
         struct.pack_into(b'>H', result, 0, 0xABCD )
         self.assertSequenceEqual(result, array.array('b', b"\xAB\xCD"))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

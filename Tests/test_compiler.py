@@ -15,7 +15,7 @@
 
 import os
 import unittest
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_cli, is_netcoreapp
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp, run_test, skipUnlessIronPython
 
 @unittest.skipIf(is_netcoreapp, 'no clr.CompileModules')
 @skipUnlessIronPython()
@@ -214,7 +214,5 @@ class CompilerTest(IronPythonTestCase):
         import cp30178
         self.assertEqual(cp30178.mydict, {'a' : ('Fail', 'tuple')})
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

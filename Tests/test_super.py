@@ -19,6 +19,8 @@
 
 import unittest
 
+from iptest import run_test
+
 class A(object):
     """Doc string A"""
     @classmethod
@@ -59,6 +61,4 @@ class SuperTest(unittest.TestCase):
         for cls in (A,B,C,D):
             self.assertEqual(cls().inst_getDoc(), cls.__doc__)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

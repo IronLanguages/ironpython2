@@ -32,6 +32,7 @@ to exhaustively test every possible use of __clrtype__ as we already get much
 of this coverage through our .NET interop inheritance tests.
 '''
 
+
 #--PRE-CLR IMPORT TESTS--------------------------------------------------------
 if hasattr(type, "__clrtype__"):
     exc_msg = "type.__clrtype__ should not exist until the 'clr/System' module has been imported"
@@ -42,7 +43,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_netcoreapp, is_posix
+from iptest import IronPythonTestCase, is_netcoreapp, is_posix, run_test, skipUnlessIronPython
 
 if is_posix:
     import posix as _os
@@ -896,6 +897,4 @@ class ClrTypeTest(IronPythonTestCase):
         self.assertEqual(clr.GetClrType(type(a)), clr.GetClrType(int))
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

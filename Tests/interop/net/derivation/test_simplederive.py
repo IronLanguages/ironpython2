@@ -12,14 +12,13 @@
 #
 #
 #####################################################################################
-
 '''
 Create a Python class which derives from CLR type(s).
 '''
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class SimpleDeriveTest(IronPythonTestCase):
@@ -139,6 +138,7 @@ class SimpleDeriveTest(IronPythonTestCase):
         self.assertRaises(TypeError, inheritValueType)
         self.assertRaises(TypeError, inheritEnum)
 
+
     def test_mbr(self):
         import System
         class C(System.MarshalByRefObject): pass
@@ -152,6 +152,4 @@ class SimpleDeriveTest(IronPythonTestCase):
 # interface's base types: interfaces (implement them)
 # ctor: params/param_dict
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

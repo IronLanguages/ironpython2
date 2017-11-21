@@ -17,7 +17,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, run_test
 
 class SlotsTest(IronPythonTestCase):
     def test_basic(self):
@@ -366,6 +366,4 @@ class SlotsTest(IronPythonTestCase):
         #f(tuple)
 
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

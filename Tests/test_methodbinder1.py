@@ -19,7 +19,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, run_test, skipUnlessIronPython
 from iptest.type_util import *
 
 myint1,     myint2      = myint(20),    myint(-20)
@@ -1163,7 +1163,5 @@ IListInt Array IEnumerableInt IEnumeratorInt NullableInt
             self.assertRaises(excep, method, *args)    
     
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

@@ -2,9 +2,9 @@
 import unittest
 from decimal import *
 
-from iptest import is_cli
+from iptest import run_test, skipUnlessIronPython
 
-@unittest.skipUnless(is_cli, 'IronPython specific test case')
+@skipUnlessIronPython()
 class DecimalTest(unittest.TestCase):
     def test_explicit_from_System_Decimal(self):
         import System
@@ -27,6 +27,4 @@ class DecimalTest(unittest.TestCase):
         self.assertEqual('{:e}'.format(d), '4.000000000400e+09')
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

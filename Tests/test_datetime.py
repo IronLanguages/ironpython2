@@ -18,7 +18,7 @@ import unittest
 import datetime
 import time
 
-from iptest import is_cli
+from iptest import is_cli, run_test
 
 class TestDatetime(unittest.TestCase):
 
@@ -160,8 +160,6 @@ class TestDatetime(unittest.TestCase):
         
         self.assertEqual(expected, result)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 
 

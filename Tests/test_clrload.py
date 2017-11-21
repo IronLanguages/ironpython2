@@ -17,7 +17,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_cli, is_netcoreapp, is_mono, is_osx, is_posix
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp, is_mono, is_osx, is_posix, run_test, skipUnlessIronPython
 from shutil import copyfile
 
 @skipUnlessIronPython()
@@ -460,6 +460,4 @@ result = Test()
         # The integer must have increased value by 1
         self.assertEqual(int(before[start:-end]) + 1, int(after[start:-end]))
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

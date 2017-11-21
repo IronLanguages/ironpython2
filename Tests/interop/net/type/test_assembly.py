@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_mono, is_netcoreapp
+from iptest import IronPythonTestCase, is_mono, is_netcoreapp, run_test, skipUnlessIronPython
 
 @unittest.skipIf(is_netcoreapp, 'TODO')
 @skipUnlessIronPython()
@@ -24,7 +24,7 @@ class AssemlbyTest(IronPythonTestCase):
     def test_assembly_instance(self):
         import clr
         mscorlib = clr.LoadAssemblyByName("mscorlib")
-            
+
         #GetMemberNames
         self.assertEqual(len(dir(mscorlib)), 78)
         for x in ["System", "Microsoft"]:
@@ -64,6 +64,4 @@ class AssemlbyTest(IronPythonTestCase):
         else:
             self.assertEqual(len(dir(AssemblyBuilder)), 89)
         
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

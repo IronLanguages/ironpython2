@@ -25,7 +25,7 @@ import os
 import sys
 import unittest
 
-from iptest import is_cli, stdout_trapper, path_modifier
+from iptest import is_cli, stdout_trapper, path_modifier, run_test
 
 #------------------------------------------------------------------------------
 #--GLOBALS
@@ -157,6 +157,4 @@ class ClrUseTest(unittest.TestCase):
                 os.remove(test_name)
             except: pass
         
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, run_test
 
 class NoneTypeTest(IronPythonTestCase):
         
@@ -26,6 +26,4 @@ class NoneTypeTest(IronPythonTestCase):
         None.__init__('abc')
         self.assertRaisesMessage(TypeError, 'NoneType', lambda : None())
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

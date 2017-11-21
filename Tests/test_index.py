@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_cli
+from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
 
 class IndexTest(IronPythonTestCase):
 
@@ -454,6 +454,4 @@ class IndexTest(IronPythonTestCase):
         f('one', 'two') 
         self.assertEqual(keyValue, ('one', 'two'))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -283,10 +283,7 @@ class FunctionTest(IronPythonTestCase):
         if is_cli:
             import System
             
-            # Test Hashtable and Dictionary on desktop, and just Dictionary in Silverlight
-            # (Hashtable is not available)
-            htlist = [System.Collections.Generic.Dictionary[System.Object, System.Object]()]
-            htlist += [System.Collections.Hashtable()]
+            htlist = [System.Collections.Generic.Dictionary[System.Object, System.Object](), System.Collections.Hashtable()]
 
             for ht in htlist:
                 def foo(**kwargs):

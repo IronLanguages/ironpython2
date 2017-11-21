@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import is_cli
+from iptest import is_cli, run_test
 
 class BoolTest(unittest.TestCase):
     def test_types(self):
@@ -75,7 +75,5 @@ class BoolTest(unittest.TestCase):
         self.assertEqual(System.Decimal(True), System.Decimal(1))
         self.assertEqual(System.Decimal(False), System.Decimal(0))
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

@@ -16,6 +16,7 @@
 import sys
 import unittest
 
+from iptest import run_test
 #-----------------------------------------------------------------------------------
 #These have to be run first: importing iptest.assert_util masked a bug. Just make sure
 #these do not throw
@@ -730,7 +731,5 @@ class BuiltinsTest2(IronPythonTestCase):
 # locals_globals = 7
 # temp_func()
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, run_test
 
 # from Merlin.Testing import *
 # from Merlin.Testing.Indexer import *
@@ -189,6 +189,4 @@ class IndexerCSTest(IronPythonTestCase):
         x[3] = 10
         #AssertError(TypeError, lambda: x[3])  # bug 362877
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -21,6 +21,7 @@
 import struct
 import unittest
 
+from iptest import run_test
 from threading import Thread
 from random import shuffle
 
@@ -65,6 +66,4 @@ class StructThreadsafeTest(unittest.TestCase):
             t.join()
         self.assertTrue(all(t.retval for t in pack_threads), "struct.pack: Is not threadsafe")
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -538,28 +538,28 @@ class Python25Test(unittest.TestCase):
             TestTargets(r)
         self.assertEqual(globals()["gblvar"],403)
     
-def test_yield_in_finally(self):
-    """test yield in finally"""
-    globals()["gblvar"] = 1
-    def setvar() : globals()["gblvar"] += 1
-    def test_yield_finally():
-        setvar()
-        try: setvar();1/0
-        except:setvar()
-        else: setvar()
-        finally:
-            setvar();yield 100
-            setvar();yield 100
+    def test_yield_in_finally(self):
+        """test yield in finally"""
+        globals()["gblvar"] = 1
+        def setvar() : globals()["gblvar"] += 1
+        def test_yield_finally():
             setvar()
-        setvar()
-    
-    try:
-        k = test_yield_finally()
-        while(1):
-            k.next()
-    except StopIteration: pass
-    
-    self.assertEqual(globals()["gblvar"],8)
+            try: setvar();1/0
+            except:setvar()
+            else: setvar()
+            finally:
+                setvar();yield 100
+                setvar();yield 100
+                setvar()
+            setvar()
+
+        try:
+            k = test_yield_finally()
+            while(1):
+                next(k)
+        except StopIteration: pass
+
+        self.assertEqual(globals()["gblvar"],8)
 
 
     def test_string_partition(self):

@@ -17,7 +17,7 @@ import sys
 import unittest
 me = sys.modules[__name__]
 
-from iptest import IronPythonTestCase, is_cli, is_posix, path_modifier
+from iptest import IronPythonTestCase, is_cli, is_posix, path_modifier, run_test
 
 class AttrTest(IronPythonTestCase):
 
@@ -291,6 +291,4 @@ class AttrTest(IronPythonTestCase):
         except SystemExit:
             pass
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

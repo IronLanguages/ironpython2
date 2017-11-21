@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class StaticsTest(IronPythonTestCase):
@@ -355,6 +355,4 @@ class StaticsTest(IronPythonTestCase):
         self.assertEqual((y.Field1, y.Field2), (456, None))
         self.assertEqual((z.Field1, z.Field2), (None, 456))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -19,7 +19,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, is_cli
+from iptest import IronPythonTestCase, is_cli, run_test
 from iptest.type_util import myset, myfrozenset
 
 #--GLOBALS---------------------------------------------------------------------
@@ -353,6 +353,4 @@ class SetTest(IronPythonTestCase):
         s.add(8)
         self.assertEqual(s, set([3, 4, 5, 6, 7, 8]))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

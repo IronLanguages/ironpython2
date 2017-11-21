@@ -39,6 +39,7 @@ $_FRAMEWORKS = @{
             "smoke" = "Category==StandardCPython";
             "cpython" = "Category==StandardCPython || Category==AllCPython";
             "ironpython" = "Category==IronPython";
+            "single" = "name==__TESTNAME__";
         }
     };
     "net45" = @{
@@ -50,6 +51,7 @@ $_FRAMEWORKS = @{
             "smoke" = "TestCategory=StandardCPython";
             "cpython" = "TestCategory=StandardCPython | TestCategory=AllCPython";
             "ironpython" = "TestCategory=IronPython";
+            "single" = "Name=__TESTNAME__";
         }
     };
     "netcoreapp2.0" = @{
@@ -61,6 +63,7 @@ $_FRAMEWORKS = @{
             "smoke" = "TestCategory=StandardCPython";
             "cpython" = "TestCategory=StandardCPython | TestCategory=AllCPython";
             "ironpython" = "TestCategory=IronPython";
+            "single" = "Name=__TESTNAME__";
         }
     }
 }
@@ -71,9 +74,11 @@ function Main([String] $target, [String] $configuration) {
 
 function Test([String] $target, [String] $configuration, [String[]] $frameworks) {
     foreach ($framework in $frameworks) {
+        $testname = "";
         if(!$_FRAMEWORKS[$framework]["filters"].ContainsKey($target)) {
-            Write-Error "No tests available for '$target'"
-            exit 1
+            Write-Warning "No tests available for '$target' trying to run single test '$framework.$target'"
+            $testname = "$framework.$target"
+            $target = "single"
         }
 
         $filter = $_FRAMEWORKS[$framework]["filters"][$target]
@@ -84,6 +89,7 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
             "__FILTERNAME__" = $target;
             "__FILTER__" = $filter;
             "__BASEDIR__" = $_BASEDIR;
+            "__TESTNAME__" = $testname;
         };
 
         $runner = $_FRAMEWORKS[$framework]["runner"]
@@ -98,10 +104,14 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
         }
 
         if($filter.Length -gt 0) {
+            $tmp = $_FRAMEWORKS[$framework]["filterArg"].Replace('__FILTER__', $replacements['__FILTER__'])
             foreach($r in $replacements.Keys) {
-                $filter = $_FRAMEWORKS[$framework]["filterArg"].Replace($r, $replacements[$r])
+                $tmp = $tmp.Replace($r, $replacements[$r])
             }
+            $filter = $tmp
         }
+
+        Write-Host "$runner $args $filter"
 
         # execute the tests
         & $runner $args $filter
@@ -123,7 +133,7 @@ switch -wildcard ($target) {
     "test-debug-*"  { Test $target.Substring(10) "Debug" $frameworks }
     
     # release targets
-    "restore"       { Main "RestoreReferences" "Release" }   
+    "restore"       { Main "RestoreReferences" "Release" }
     "release"       { Main "Build" "Release" }
     "clean"         { Main "Clean" "Release" }
     "stage"         { Main "Stage" "Release" }

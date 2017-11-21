@@ -16,6 +16,8 @@
 import sys
 import unittest
 
+from iptest import run_test
+
 x="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 class SliceTest(unittest.TestCase):
 
@@ -3151,6 +3153,4 @@ class SliceTest(unittest.TestCase):
                     self.assertEqual(inp, loads(dumps(inp)))
         
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

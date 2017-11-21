@@ -12,20 +12,20 @@
 #
 #
 #####################################################################################
-
 '''
 Test cases try to access a .NET type.
 '''
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_netcoreapp, is_mono
+from iptest import IronPythonTestCase, is_netcoreapp, is_mono, run_test, skipUnlessIronPython
 
 keywords = ['pass', 'import', 'def', 'exec', 'except']
 bultin_funcs = ['abs', 'type', 'file']
 bultin_types = ['complex', 'StandardError']
 bultin_constants = ['None', 'False']
 modules = ['__builtin__', 'datetime', '_collections', 'site']
+
 
 @skipUnlessIronPython()
 class ReachTypeTest(IronPythonTestCase):
@@ -249,7 +249,5 @@ class ReachTypeTest(IronPythonTestCase):
         self.assertEqual(NSWithDigits.Case2.Z0.A, 0)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

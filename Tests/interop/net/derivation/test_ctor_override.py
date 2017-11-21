@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 # http://docs.python.org/ref/customization.html
 
@@ -253,7 +253,5 @@ class CtorOverrideTest(IronPythonTestCase):
         C(6)
         Flag.Check(7)
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

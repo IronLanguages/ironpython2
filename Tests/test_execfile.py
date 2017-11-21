@@ -16,7 +16,7 @@
 import os
 import unittest
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, run_test
 
 
 class ExecFileTest(IronPythonTestCase):
@@ -38,6 +38,4 @@ class ExecFileTest(IronPythonTestCase):
         z = 10
         execfile(os.path.join(root, "Inc", "execfile_scope.py"))
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -17,7 +17,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, path_modifier, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, path_modifier, run_test, skipUnlessIronPython
 
 class IsInstanceTest(IronPythonTestCase):
 
@@ -1002,6 +1002,4 @@ class IsInstanceTest(IronPythonTestCase):
         self.assertRaises(TypeError, tuple.__new__, str)
         self.assertRaises(TypeError, tuple.__new__, str, 'abc')
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
