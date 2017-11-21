@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Threading;
 
 using Microsoft.Scripting.Actions;
 using Microsoft.Scripting.Runtime;
@@ -26,7 +27,6 @@ using IronPython.Runtime.Binding;
 using IronPython.Runtime.Operations;
 
 namespace IronPython.Runtime {
-    using System.Threading;
 
     /// <summary>
     /// single finalizable instance used to track and deliver all the 
