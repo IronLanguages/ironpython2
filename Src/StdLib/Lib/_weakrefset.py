@@ -70,9 +70,9 @@ class WeakSet(object):
     def __contains__(self, item):
         try:
             wr = ref(item)
+            return wr in self.data
         except TypeError:
             return False
-        return wr in self.data
 
     def __reduce__(self):
         return (self.__class__, (list(self),),
