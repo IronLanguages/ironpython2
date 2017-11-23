@@ -22,6 +22,8 @@ import unittest
 
 import io as cStringIO
 
+from iptest import run_test
+
 text = "Line 1\nLine 2\nLine 3\nLine 4\nLine 5"
 
 class StringIOTest(unittest.TestCase):
@@ -371,6 +373,4 @@ class StringIOTest(unittest.TestCase):
         sys.stdout = stdout_save
         self.assertEqual(capture.getvalue(), "Testing\n")
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

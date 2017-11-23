@@ -18,7 +18,7 @@ import gc
 import time
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_osx
+from iptest import IronPythonTestCase, is_cli, is_osx, run_test
 
 class NonCallableClass(object): pass
 
@@ -175,6 +175,4 @@ def %s(self, *args, **kwargs):
                 self.assertEqual(called, None)
                 self.assertTrue((res1 == True and res2 == False) or (res1 == False and res2 == True))
         
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

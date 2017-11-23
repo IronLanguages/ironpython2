@@ -22,7 +22,7 @@ from __future__ import absolute_import
 import _sha256
 import unittest
 
-from iptest import is_cli
+from iptest import is_cli, run_test
 
 class _Sha256Test(unittest.TestCase):
 
@@ -73,6 +73,4 @@ class _Sha256Test(unittest.TestCase):
         self.assertEqual(x.hexdigest(), x_copy.hexdigest())
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

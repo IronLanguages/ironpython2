@@ -19,7 +19,7 @@ for Python.
 
 import unittest 
 
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_netcoreapp
+from iptest import IronPythonTestCase, is_netcoreapp, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class FourDotZeroTest(IronPythonTestCase):
@@ -226,6 +226,4 @@ class FourDotZeroTest(IronPythonTestCase):
         
         print "TODO"
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

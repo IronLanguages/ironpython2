@@ -17,7 +17,7 @@ import _locale
 import random
 import unittest
 
-from iptest import is_cli
+from iptest import is_cli, run_test
 
 class _LocaleTest(unittest.TestCase):
 
@@ -180,6 +180,4 @@ class _LocaleTest(unittest.TestCase):
         self.assertRaises(TypeError, _locale.setlocale, 'LC_NUMERIC', 'en_US.UTF8')
         self.assertRaises(TypeError, _locale.setlocale, 'LC_NUMERIC', None)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

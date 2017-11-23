@@ -17,7 +17,7 @@ import marshal
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_cli64, is_osx
+from iptest import IronPythonTestCase, is_cli, is_cli64, is_osx, run_test
 
 class MarshalTest(IronPythonTestCase):
     def setUp(self):
@@ -149,6 +149,4 @@ class MarshalTest(IronPythonTestCase):
     def test_cp24547(self):
         self.assertEqual(marshal.dumps(2**33), "l\x03\x00\x00\x00\x00\x00\x00\x00\x08\x00")
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

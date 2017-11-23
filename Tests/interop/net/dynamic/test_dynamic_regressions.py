@@ -28,7 +28,7 @@ Work Item number.
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_netcoreapp, is_mono
+from iptest import IronPythonTestCase, is_netcoreapp, is_mono, run_test, skipUnlessIronPython
 
 #--CodePlex 24118--#
 def GetMethodTest():
@@ -178,6 +178,4 @@ class DynamicRegressionTest(IronPythonTestCase):
         os.remove(cp20519_vb_filename)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -26,6 +26,8 @@
 import sys
 import unittest
 
+from iptest import run_test
+
 class ExtensibleStringClass(str):
     pass
 
@@ -267,6 +269,4 @@ class StrBytesTest(unittest.TestCase):
         # self.assertEqual(b"b", b"a".join([esb]))
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -20,7 +20,7 @@
 import binascii
 import unittest
 
-from iptest import skipUnlessIronPython
+from iptest import run_test, skipUnlessIronPython
 
 
 class BinasciiTest(unittest.TestCase):
@@ -53,6 +53,4 @@ class BinasciiTest(unittest.TestCase):
         for temp_func in test_cases:
             self.assertRaises(NotImplementedError, temp_func)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

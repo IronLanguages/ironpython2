@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import is_netcoreapp, is_posix
+from iptest import is_netcoreapp, is_posix, run_test
 
 if not is_netcoreapp:
     import ctypes
@@ -54,7 +54,5 @@ class CtypesTest(unittest.TestCase):
             self.fail("Unexpected exception: %s" % ex)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

@@ -156,8 +156,8 @@ namespace IronPython.Modules {
                 filters = PythonOps.GetBoundAttr(context, warnings, "filters") as List;
                 if(filters == null) {
                     throw PythonOps.ValueError("_warnings.filters must be a list");
-                }                
-            }            
+                }
+            }
 
             foreach (PythonTuple filter in filters) {
                 last_filter = filter;
@@ -216,15 +216,15 @@ namespace IronPython.Modules {
                     throw PythonOps.RuntimeError("Unrecognized action ({0}) in warnings.filters:\n {1}", action, last_filter);
             }
 
-            if (warnings != null) {   
+            if (warnings != null) {
                 object show_fxn = PythonOps.GetBoundAttr(context, warnings, "showwarning");
-                if(show_fxn != null) {    
+                if(show_fxn != null) {
                     PythonCalls.Call(
                         context,
                         show_fxn,
                         msg, category, filename, lineno, null, null);
                 } else {
-                    showwarning(context, msg, category, filename, lineno, null, null);    
+                    showwarning(context, msg, category, filename, lineno, null, null);
                 }
             } else {
                 showwarning(context, msg, category, filename, lineno, null, null);

@@ -22,7 +22,7 @@ import _ssl as real_ssl
 import socket
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, retryOnFailure
+from iptest import IronPythonTestCase, is_cli, retryOnFailure, run_test
 
 SSL_URL      = "www.microsoft.com"
 SSL_ISSUER   = "CN=Symantec Class 3 Secure Server CA - G4, OU=Symantec Trust Network, O=Symantec Corporation, C=US"
@@ -269,6 +269,4 @@ for documentation."""
         ssl_s.shutdown()  
         s.close()
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

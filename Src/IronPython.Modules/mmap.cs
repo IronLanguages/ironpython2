@@ -203,8 +203,12 @@ namespace IronPython.Modules {
                     }
 
                     _file = CreateFromFile(
-                        _sourceStream, _mapName, _sourceStream.Length, _fileAccess, HandleInheritability.None, true
-                    );
+                        _sourceStream,
+                        _mapName,
+                        _sourceStream.Length,
+                        _fileAccess,
+                        HandleInheritability.None,
+                        true);
                 }
 
                 try {
@@ -313,7 +317,6 @@ namespace IronPython.Modules {
                 }
             }
 
-            
             public void __delslice__(Slice slice) {
                 using (new MmapLocker(this)) {
                     throw PythonOps.TypeError("mmap object doesn't support slice deletion");
@@ -597,8 +600,12 @@ namespace IronPython.Modules {
                         }
 
                         _file = CreateFromFile(
-                            _sourceStream, _mapName, _sourceStream.Length, _fileAccess, HandleInheritability.None, leaveOpen
-                        );
+                            _sourceStream,
+                            _mapName,
+                            _sourceStream.Length,
+                            _fileAccess,
+                            HandleInheritability.None,
+                            leaveOpen);
 
                         _view = _file.CreateViewAccessor(_offset, newsize, _fileAccess);
                     } catch {

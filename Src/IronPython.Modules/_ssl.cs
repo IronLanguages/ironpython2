@@ -108,7 +108,7 @@ namespace IronPython.Modules {
             context.EnsureModuleException("SSLWantReadError", sslError, dict, "SSLWantReadError", "ssl");
         }
 
-#region Stubs for RAND functions
+        #region Stubs for RAND functions
 
         // The RAND_ functions are effectively no-ops, as the BCL draws on system sources
         // for cryptographically-strong randomness and doesn't need (or accept) user input
@@ -125,9 +125,9 @@ namespace IronPython.Modules {
             return 1; // always ready
         }
 
-#endregion
+        #endregion
 
-#region SSLContext
+        #region SSLContext
         [PythonType]
         public class _SSLContext {
             private X509Certificate2Collection _cert_store = new X509Certificate2Collection();
@@ -210,7 +210,7 @@ namespace IronPython.Modules {
                             var cert = new X509Certificate2(curr);
                             _cert_store.Add(cert);
                             pos += cert.GetRawCertData().Length;
-                        }                        
+                        }
                     }
                 }
             }
@@ -220,7 +220,7 @@ namespace IronPython.Modules {
             }
         }
 
-#endregion
+        #endregion
 
         public static PythonType SSLType = DynamicHelpers.GetPythonTypeFromType(typeof(PythonSocket.ssl));
         
@@ -254,7 +254,7 @@ namespace IronPython.Modules {
                 obj = _asn1Objects.Where(x => txt == x.OIDString || txt == x.ShortName || txt == x.LongName).FirstOrDefault();
             } else {
                 obj = _asn1Objects.Where(x => txt == x.OIDString).FirstOrDefault();
-            }         
+            }
 
             if(obj == null) {
                 throw PythonOps.ValueError("unknown object '{0}'", txt);
@@ -315,9 +315,7 @@ namespace IronPython.Modules {
             } catch {
 
             } finally {
-                if(store != null) {
-                    store.Close();
-                }
+                store?.Close();
             }
             return new List();
         }
@@ -325,22 +323,17 @@ namespace IronPython.Modules {
         public static List enum_crls(string store_name) {
             X509Store store = null;
             try {
-                
                 store = new X509Store(store_name, StoreLocation.LocalMachine);
                 store.Open(OpenFlags.ReadOnly);
                 var result = new List();
 
                 foreach (var cert in store.Certificates) {
                     string format = cert.GetFormat();
-
-
                 }
             } catch {
 
             } finally {
-                if (store != null) {
-                    store.Close();
-                }
+                store?.Close();
             }
             return new List();
         }
@@ -511,12 +504,13 @@ namespace IronPython.Modules {
                         throw ErrorDecoding(context, filename, "cert and private key are incompatible", e);
                     }
                 }
+
                 return cert;
             }
             throw ErrorDecoding(context, filename, "certificate not found");
         }
 
-#region Private Key Parsing
+        #region Private Key Parsing
 
         const int ClassOffset = 6;
         const int ClassMask = 0xc0;
@@ -656,13 +650,13 @@ namespace IronPython.Modules {
             return null;
         }
 
-#endregion
+        #endregion
 
         private static Exception ErrorDecoding(CodeContext context, params object[] args) {
             return PythonExceptions.CreateThrowable(SSLError(context), ArrayUtils.Insert("Error decoding PEM-encoded file ", args));
         }
 
-#region Exported constants
+        #region Exported constants
 
         public const int CERT_NONE = 0;
         public const int CERT_OPTIONAL = 1;
@@ -676,7 +670,7 @@ namespace IronPython.Modules {
         public const int PROTOCOL_TLSv1_2 = 5;
 
         public const uint OP_ALL = 0x80000BFF;
-        public const uint OP_DONT_INSERT_EMPTY_FRAGMENTS = 0x00000800;        
+        public const uint OP_DONT_INSERT_EMPTY_FRAGMENTS = 0x00000800;
         public const int OP_NO_SSLv2 = 0x01000000;
         public const int OP_NO_SSLv3 = 0x02000000;
         public const int OP_NO_TLSv1 = 0x04000000;
@@ -707,7 +701,7 @@ namespace IronPython.Modules {
         public const bool HAS_NPN = false;
         public const bool HAS_ALPN = false;
         public const bool HAS_TLS_UNIQUE = false;
-        
+
         private const int SSL_VERIFY_NONE = 0x00;
         private const int SSL_VERIFY_PEER = 0x01;
         private const int SSL_VERIFY_FAIL_IF_NO_PEER_CERT = 0x02;

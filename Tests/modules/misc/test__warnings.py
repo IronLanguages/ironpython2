@@ -18,7 +18,7 @@ CPython's _warnings module. http://docs.python.org/library/warnings.html
 
 import unittest
 import _warnings
-from iptest import IronPythonTestCase, stderr_trapper as stderr_trapper
+from iptest import IronPythonTestCase, run_test, stderr_trapper as stderr_trapper
 
 #--GLOBALS---------------------------------------------------------------------
 EXPECTED = [] # expected output (ignoring filename, lineno, and line)
@@ -102,6 +102,4 @@ class _WarningsTest(IronPythonTestCase):
         print "TODO"
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -19,7 +19,7 @@ Ensures we can import from .NET 2.0 namespaces and types
 
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, run_test, skipUnlessIronPython
 
 if is_cli and not is_netcoreapp:
     import clr
@@ -248,6 +248,4 @@ class SystemNamespacesTest(IronPythonTestCase):
         import System
         deep_dive("System", System)
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

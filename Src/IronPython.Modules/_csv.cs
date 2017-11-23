@@ -739,8 +739,6 @@ in CSV format.")]
 
                     } while (_state != State.StartRecord);
 
-
-
                     return result;
                 }
 

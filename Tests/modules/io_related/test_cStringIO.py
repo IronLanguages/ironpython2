@@ -20,6 +20,8 @@
 import cStringIO
 import unittest
 
+from iptest import rnu_test
+
 text = "Line 1\nLine 2\nLine 3\nLine 4\nLine 5"
 
 class CStringIOTest(unittest.TestCase):
@@ -334,6 +336,4 @@ class CStringIOTest(unittest.TestCase):
         m.seek(2)
         self.assertEqual(m.getvalue(), '\x00\x00hello!')
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
