@@ -12,7 +12,6 @@
 #
 #
 #####################################################################################
-
 '''
 How to re-define operators methods, __hash__, etc.
 
@@ -23,7 +22,7 @@ NOTES:
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 class SpecialMethodTest(IronPythonTestCase):
     def setUp(self):
@@ -44,6 +43,4 @@ class SpecialMethodTest(IronPythonTestCase):
         z = Callback.On(x, y)
         #AreEqual(z.Value, 20)  
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

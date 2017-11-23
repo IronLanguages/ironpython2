@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli
+from iptest import IronPythonTestCase, is_cli, run_test
 
 @unittest.skipUnless(is_cli, 'IronPython specific test')
 class AttrInjectorTestCase(IronPythonTestCase):
@@ -87,6 +87,4 @@ class AttrInjectorTestCase(IronPythonTestCase):
             del x.Prop
         self.assertRaises(AttributeError, f)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

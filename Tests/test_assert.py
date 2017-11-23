@@ -16,6 +16,8 @@
 import sys
 import unittest
 
+from iptest import run_test
+
 @unittest.skipIf(sys.flags.optimize, "should be run without optimize")
 class AssertTest(unittest.TestCase):
 
@@ -99,7 +101,5 @@ class AssertTest(unittest.TestCase):
 # else:
 #     run_test(__name__)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

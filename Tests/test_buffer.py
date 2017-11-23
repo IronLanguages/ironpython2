@@ -16,7 +16,7 @@
 import array
 import unittest
 
-from iptest import IronPythonTestCase, is_cli
+from iptest import IronPythonTestCase, is_cli, run_test
 
 class BufferTest(IronPythonTestCase):
     def test_negative(self):
@@ -167,6 +167,4 @@ class BufferTest(IronPythonTestCase):
 
         self.delete_files('foo')
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

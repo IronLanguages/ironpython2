@@ -21,7 +21,7 @@ NOTES:
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 EVENT_COUNT = 0
 
@@ -93,6 +93,4 @@ class EventOverrideTest(IronPythonTestCase):
         #self.assertEqual(EVENT_COUNT, 1)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

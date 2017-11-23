@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class StaticFieldsTest(IronPythonTestCase):
@@ -481,6 +481,4 @@ class StaticFieldsTest(IronPythonTestCase):
             self.assertTrue('StaticByteField' not in current_type.__dict__)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

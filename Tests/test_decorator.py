@@ -15,6 +15,8 @@
 
 import unittest
 
+from iptest import run_test
+
 class dn:
     def d1(self, a):
         a.append("dn.d1")
@@ -159,6 +161,4 @@ class DecoratorTest(unittest.TestCase):
 
         self.assertEqual(f, ['first', 'dn.d5', 'd4', 'dn.d3', 'd2', 'dn.d1'])
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

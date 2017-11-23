@@ -49,14 +49,13 @@ class ExceptionInfo(object):
         self.args = args
         self.fields = fields
         self.subclasses = subclasses
-        self.silverlightSupported = silverlightSupported
         self.parent = None
         self.baseMapping = baseMapping
         for child in subclasses:
             child.parent = self
     
     @property
-    def ConcreteParent(self):        
+    def ConcreteParent(self):
         while not self.parent.fields:
             self = self.parent
             if self.parent == None: return exceptionHierarchy
@@ -96,16 +95,6 @@ class ExceptionInfo(object):
         else:
             return 'PythonExceptions.' + self.name
 
-    def BeginSilverlight(self, cw):
-        if not self.silverlightSupported:
-            cw.writeline('')
-            cw.writeline('#if !SILVERLIGHT');
-
-    def EndSilverlight(self, cw):
-        if not self.silverlightSupported:
-            cw.writeline('#endif // !SILVERLIGHT')
-            cw.writeline('');
-    
     def MakeNewException(self):
         if self.fields or self.name == 'BaseException':        
             return 'new PythonExceptions._%s()' % (self.name)
@@ -253,7 +242,7 @@ def compare_exceptions(a, b):
     
     if ta == None:
         raise Exception("Exception class not found %s " % a)
-            
+
     if tb == None:
         raise Exception("Exception class not found %s " % b)
     
@@ -275,10 +264,8 @@ def gen_topython_helper(cw):
     allExceps.sort(cmp=compare_exceptions)
     
     for x in allExceps:
-        if not x.silverlightSupported: cw.writeline('#if !SILVERLIGHT')
         cw.writeline('if (clrException is %s) return %s;' % (x.ExceptionMappingName, x.MakeNewException()))
-        if not x.silverlightSupported: cw.writeline('#endif')
-        
+
     cw.writeline('return new BaseException(Exception);')    
     cw.exit_block()
 
@@ -360,8 +347,6 @@ def fix_object(name):
 
 def gen_one_new_exception(cw, exception, parent):
     if exception.fields:
-        exception.BeginSilverlight(cw)
-        
         cw.writeline('[MultiRuntimeAware]')
         cw.writeline('private static PythonType %sStorage;' % (exception.name, ))
         cw.enter_block('public static PythonType %s' % (exception.name, ))
@@ -421,8 +406,6 @@ def gen_one_new_exception(cw, exception, parent):
         cw.exit_block()
         cw.writeline('')
 
-        exception.EndSilverlight(cw)
-        
     else:
         cw.writeline('[MultiRuntimeAware]')
         cw.writeline('private static PythonType %sStorage;' % (exception.name, ))
@@ -444,12 +427,7 @@ def newstyle_gen(cw):
         gen_one_new_exception(cw, child, exceptionHierarchy)
         
 def gen_one_exception_module_entry(cw, exception, parent):
-    exception.BeginSilverlight(cw)
-
     cw.write("public static PythonType %s = %s;" % (exception.name, exception.InternalPythonType))
-
-    exception.EndSilverlight(cw)
-
     for child in exception.subclasses:
         gen_one_exception_module_entry(cw, child, exception)
         
@@ -460,16 +438,12 @@ def module_gen(cw):
         gen_one_exception_module_entry(cw, child, exceptionHierarchy)
 
 def gen_one_exception_builtin_entry(cw, exception, parent):
-    exception.BeginSilverlight(cw)
-
     cw.enter_block("public static PythonType %s" % (exception.name, ))
     if exception.fields:
         cw.write('get { return %s; }' % (exception.InternalPythonType, ))
     else:
         cw.write('get { return %s; }' % (exception.InternalPythonType, ))
     cw.exit_block()
-
-    exception.EndSilverlight(cw)
 
     for child in exception.subclasses:
         gen_one_exception_builtin_entry(cw, child, exception)

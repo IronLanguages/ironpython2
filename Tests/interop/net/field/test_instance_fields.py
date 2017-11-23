@@ -16,7 +16,7 @@
 import unittest
 import warnings
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 
 @skipUnlessIronPython()
@@ -523,7 +523,5 @@ class InstanceFieldsTest(IronPythonTestCase):
             self._test_delete_by_instance(current_type) 
             self._test_delete_by_type(current_type)    
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

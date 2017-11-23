@@ -27,7 +27,7 @@ Array Type
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class ClrArrayTest(IronPythonTestCase):
@@ -35,6 +35,4 @@ class ClrArrayTest(IronPythonTestCase):
         from System import Array
         Array[int]([1,2])
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

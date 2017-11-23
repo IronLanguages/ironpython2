@@ -17,7 +17,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, is_ironpython
+from iptest import IronPythonTestCase, is_cli, is_mono, is_ironpython, run_test
 
 GETATTRIBUTE_CALLED = False
 class myint(int): pass
@@ -1900,7 +1900,6 @@ class ClassTest(IronPythonTestCase):
             del x
         
         testit()
-        #collect not defined for silverlight
         gc.collect()
         self.assertEqual(Counter.c, 0)
 
@@ -3732,6 +3731,4 @@ class ClassTest(IronPythonTestCase):
 #     unittest.main(defaultTest='test_suite')
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import skipUnlessIronPython
+from iptest import run_test, skipUnlessIronPython
 
 
 class IsTest(unittest.TestCase):
@@ -49,6 +49,4 @@ class IsTest(unittest.TestCase):
             self.assertEqual(not result, a is not b)
             self.assertEqual(not result, b is not a)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

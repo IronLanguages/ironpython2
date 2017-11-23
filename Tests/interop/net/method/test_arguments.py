@@ -12,14 +12,13 @@
 #
 #
 #####################################################################################
-
 '''
 Try different python calls to clr method with different signatures.
 '''
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class ArgumentsTest(IronPythonTestCase):
@@ -552,7 +551,5 @@ class ArgumentsTest(IronPythonTestCase):
         self.assertRaisesMessage(TypeError, "expected int, got str", lambda: f(*'x'))
         self.assertRaisesMessage(TypeError, "M200() argument after * must be a sequence, not int", lambda: f(*1))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

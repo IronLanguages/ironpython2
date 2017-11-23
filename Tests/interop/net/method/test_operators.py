@@ -18,7 +18,7 @@ All operators
 
 import unittest 
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class OperatorsTest(IronPythonTestCase):
@@ -299,6 +299,4 @@ class OperatorsTest(IronPythonTestCase):
         self.assertEqual(AllOpsClass.__gt__(x, y), True); Flag.Check(310)
         self.assertEqual(AllOpsClass.__ge__(x, y), True); Flag.Check(340)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -18,7 +18,7 @@
 import sys
 import unittest
 
-from iptest import is_ironpython
+from iptest import is_ironpython, run_test
 
 # Rules:
 # 1) thread has a current exception
@@ -555,6 +555,4 @@ class ExcInfoTest(unittest.TestCase):
                 self.A(34)
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

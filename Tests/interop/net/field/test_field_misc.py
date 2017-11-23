@@ -19,7 +19,7 @@ Operations on enum type and its' members
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class FieldMiscTest(IronPythonTestCase):
@@ -41,7 +41,5 @@ class FieldMiscTest(IronPythonTestCase):
         self.assertEqual(o.PublicField, 400)
         self.assertTrue(not hasattr(o, 'ProtectedField'))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

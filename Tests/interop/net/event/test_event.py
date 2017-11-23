@@ -12,14 +12,13 @@
 #
 #
 #####################################################################################
-
 '''
 Operations on event type.
 '''
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class EventTest(IronPythonTestCase):
@@ -276,9 +275,8 @@ class EventTest(IronPythonTestCase):
         
         x.OnAction += TargetClass.s_Negate
         #x.OnAction(3)  # 362449
+
     
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
 

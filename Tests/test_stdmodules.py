@@ -23,7 +23,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cpython, is_posix, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cpython, is_posix, run_test, skipUnlessIronPython
 
 class StdModulesTest(IronPythonTestCase):
 
@@ -266,6 +266,4 @@ class StdModulesTest(IronPythonTestCase):
         a.append("a")
         self.assertEqual(len(a), 0)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

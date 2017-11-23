@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
 from iptest.type_util import *
 
 def add(x, y): return x + y
@@ -1395,6 +1395,4 @@ class InheritanceTest(IronPythonTestCase):
             self.assertEqual(a.GetFoo(), 42)
             self.assertEqual(a.GetBar(), 23)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__);
+run_test(__name__);

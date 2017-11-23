@@ -23,7 +23,7 @@ results produced by the operators implemented on the .NET types.
 import unittest
 from operator import add, sub, mul, div, mod, and_, or_, xor, floordiv, truediv, lshift, rshift, neg, pos, abs, invert
 
-from iptest import is_cli, skipUnlessIronPython
+from iptest import is_cli, run_test, skipUnlessIronPython
 from iptest.type_util import *
 
 if is_cli:
@@ -394,6 +394,4 @@ class NumTypesTest(unittest.TestCase):
         total = self.validate_constructors(values)
         print total, "tests ran."
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

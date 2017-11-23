@@ -21,7 +21,7 @@
 
 import unittest
 
-from iptest import skipUnlessIronPython
+from iptest import run_test, skipUnlessIronPython
 
 class NumberHashTest(unittest.TestCase):
 
@@ -100,6 +100,4 @@ class NumberHashTest(unittest.TestCase):
             
         self.assertEqual(hash(x()), 42)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

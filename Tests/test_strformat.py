@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_cpython, is_mono, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_cpython, is_mono, run_test, skipUnlessIronPython
 
 allChars = ''
 for y in [chr(x) for x in xrange(256) if chr(x) != '[' and chr(x) != '.']:
@@ -1219,6 +1219,4 @@ class StrFormatTest(IronPythonTestCase):
         self.assertEqual("{0} {1}".format(None, 10), "None 10")
         self.assertEqual("{0}".format(None), 'None')
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

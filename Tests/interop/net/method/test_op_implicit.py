@@ -12,7 +12,6 @@
 #
 #
 #####################################################################################
-
 '''
 See how IronPython treats implicit coversion.
 '''
@@ -20,7 +19,7 @@ See how IronPython treats implicit coversion.
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class OpImplicitTest(IronPythonTestCase):
@@ -237,8 +236,7 @@ class OpImplicitTest(IronPythonTestCase):
         from Merlin.Testing.Call import Consumer
         Consumer.EatEnum(System.Int16(0)); Flag.Check(640)  # tracking as 316744
         self.assertRaises(TypeError, Consumer.EatEnum, 1)
+
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__);
+run_test(__name__)
 

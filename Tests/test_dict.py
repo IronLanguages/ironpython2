@@ -23,7 +23,7 @@ import os
 import unittest
 import sys
 
-from iptest import IronPythonTestCase, is_cli, path_modifier, source_root
+from iptest import IronPythonTestCase, is_cli, path_modifier, run_test, source_root
 
 class DictTest(IronPythonTestCase):
     def test_sanity(self):
@@ -1224,6 +1224,4 @@ class DictTest(IronPythonTestCase):
         m[u64] = 'b'
         self.assertEqual(m[9223372036854775808L], 'b')
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

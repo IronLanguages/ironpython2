@@ -15,6 +15,8 @@
 
 import unittest
 
+from iptest import run_test
+
 class C:
     x = "Hello"
     def __contains__(self, y):
@@ -44,6 +46,4 @@ class InTest(unittest.TestCase):
         self.assertTrue(1 in d)
         self.assertTrue(not(11 in d))
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

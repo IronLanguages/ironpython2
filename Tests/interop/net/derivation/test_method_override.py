@@ -12,14 +12,13 @@
 #
 #
 #####################################################################################
-
 '''
 How to re-define a method in Python.
 '''
 
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 # from Merlin.Testing import *
 # from Merlin.Testing.BaseClass import *
@@ -501,6 +500,4 @@ class MethodOverrideTest(IronPythonTestCase):
         Callback.On(x)
         Flag.Check(30)
                 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

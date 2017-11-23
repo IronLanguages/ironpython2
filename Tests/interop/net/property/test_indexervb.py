@@ -12,14 +12,13 @@
 #
 #
 #####################################################################################
-
 '''
 Named indexer
 '''
 
 import unittest
 
-from iptest import IronPythonTestCase, is_mono, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_mono, run_test, skipUnlessIronPython
 
 @unittest.skipIf(is_mono, 'https://github.com/IronLanguages/main/issues/1438')
 @skipUnlessIronPython()
@@ -116,6 +115,4 @@ class IndexerVbTest(IronPythonTestCase):
                 range(10)) #should be [2]?
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

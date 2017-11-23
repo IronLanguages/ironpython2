@@ -19,7 +19,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
 from iptest.type_util import array_int, array_byte, array_object, myint, mystr, types
 
 class PT_int_old:
@@ -537,6 +537,4 @@ class MethodBinder2Test(IronPythonTestCase):
             ]:
             self._try_arg(target, arg, mapping, funcTypeError, funcOverflowError)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
