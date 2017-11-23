@@ -98,9 +98,7 @@ namespace IronPython.Runtime {
             try
             {
                 _callbacks.Add(new CallbackInfo(callback, weakRef));
-            }
-            finally
-            {
+            } finally {
                 _lock.ExitWriteLock();
             }
         }
@@ -111,9 +109,7 @@ namespace IronPython.Runtime {
                 try
                 {
                     return _callbacks.Count;
-                }
-                finally
-                {
+                } finally {
                     _lock.ExitReadLock();
                 }
             }
@@ -121,30 +117,23 @@ namespace IronPython.Runtime {
 
         public void RemoveHandlerAt(int index) {
             _lock.EnterWriteLock();
-            try
-            {
+            try {
                 _callbacks.RemoveAt(index);
-            }
-            finally
-            {
+            } finally {
                 _lock.ExitWriteLock();
             }
         }
 
         public void RemoveHandler(object o) {
             _lock.EnterWriteLock();
-            try
-            {
+            try {
                 for (int i = 0; i < _callbacks.Count; i++) {
-                    if (_callbacks[i].WeakRef == o)
-                    {
+                    if (_callbacks[i].WeakRef == o) {
                         _callbacks.RemoveAt(i);
                         break;
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 _lock.ExitWriteLock();
             }
 
@@ -152,63 +141,48 @@ namespace IronPython.Runtime {
 
         public object GetHandlerCallback(int index) {
             _lock.EnterReadLock();
-            try
-            {
+            try {
                 return _callbacks[index].Callback;
-            }
-            finally
-            {
+            } finally {
                 _lock.ExitReadLock();
             }
         }
 
         public object GetWeakRef(int index) {
             _lock.EnterReadLock();
-            try
-            {
+            try {
                 return _callbacks[index].WeakRef;
-            }
-            finally
-            {
+            } finally {
                 _lock.ExitReadLock();
             }
         }
 
         ~WeakRefTracker() {
             _lock.EnterWriteLock();
-            try
-            {
+            try {
                 // callbacks are delivered last registered to first registered.
-                for (int i = _callbacks.Count - 1; i >= 0; i--)
-                {
+                for (int i = _callbacks.Count - 1; i >= 0; i--) {
 
                     CallbackInfo ci = _callbacks[i];
-                    try
-                    {
-                        if (ci.Callback != null)
-                        {
+                    try {
+                        if (ci.Callback != null) {
                             // a little ugly - we only run callbacks that aren't a part
                             // of cyclic trash.  but classes use a single field for
                             // finalization & GC - and that's always cyclic, so we need to special case it.
                             InstanceFinalizer fin = ci.Callback as InstanceFinalizer;
-                            if (fin != null)
-                            {
+                            if (fin != null) {
                                 // Going through PythonCalls / Rules requires the types be public.
                                 // Explicit check so that we can keep InstanceFinalizer internal.
                                 fin.CallDirect(DefaultContext.Default);
 
-                            }
-                            else
-                            {
+                            } else {
                                 // Non-instance finalizer goes through normal call mechanism.
                                 object weakRef = ci.WeakRef;
                                 if (weakRef != null)
                                     PythonCalls.Call(ci.Callback, weakRef);
                             }
                         }
-                    }
-                    catch (Exception)
-                    {
+                    } catch (Exception) {
                         // TODO (from Python docs):
                         // Exceptions raised by the callback will be noted on the standard error output, 
                         // but cannot be propagated; they are handled in exactly the same way as exceptions 
@@ -217,9 +191,7 @@ namespace IronPython.Runtime {
 
                     ci.Free();
                 }
-            }
-            finally
-            {
+            } finally {
                 _lock.ExitWriteLock();
             }
         }
