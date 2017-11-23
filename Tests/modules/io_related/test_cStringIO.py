@@ -20,7 +20,7 @@
 import cStringIO
 import unittest
 
-from iptest import rnu_test
+from iptest import run_test
 
 text = "Line 1\nLine 2\nLine 3\nLine 4\nLine 5"
 
