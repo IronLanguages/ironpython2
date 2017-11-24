@@ -85,6 +85,10 @@ artifacts:
     name: NuGet Package
     type: NuGetPackage
 
+  - path: Package/Release/Packages/**/*.msi
+    name: MSI Package
+    type: File
+
   - path: build-*.binlog
     name: Binary Build Log
     type: File
