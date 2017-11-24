@@ -19,7 +19,7 @@ import random
 import sys
 import unittest
 
-#from iptest import is_cli
+from iptest import run_test
 
 class testclass(object):
     pass
@@ -284,6 +284,4 @@ class CopyRegTest(unittest.TestCase):
         obj2 = myCustom2()
         self.assertRaises(AttributeError,copy_reg.pickle_complex,obj2)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

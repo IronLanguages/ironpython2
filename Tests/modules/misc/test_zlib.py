@@ -17,7 +17,7 @@ import os
 import unittest
 import zlib
 
-from iptest import IronPythonTestCase
+from iptest import IronPythonTestCase, run_test
 
 def create_gzip(text):
     import gzip
@@ -111,6 +111,4 @@ Curabitur non eros. Nullam hendrerit bibendum justo. Fusce iaculis, est quis lac
             bufs.append(do.flush())
             self.assertEqual("".join(bufs), 'hello there\n')
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

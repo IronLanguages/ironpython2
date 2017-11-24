@@ -16,7 +16,7 @@
 import operator
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_netcoreapp, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp, run_test, skipUnlessIronPython
 
 class OperaterTest(IronPythonTestCase):
     def setUp(self):
@@ -632,6 +632,4 @@ def test_bool_obj_id(self):
     def test_addition_error(self):
         self.assertRaisesMessage(TypeError, "unsupported operand type(s) for +: 'int' and 'str'", lambda : 2 + 'abc')
         
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

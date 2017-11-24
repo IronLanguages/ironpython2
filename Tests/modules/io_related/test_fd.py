@@ -16,7 +16,7 @@
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_posix
+from iptest import IronPythonTestCase, is_posix, run_test
 from threading import Timer
 
 flags = os.O_CREAT | os.O_TRUNC | os.O_RDWR
@@ -229,6 +229,4 @@ class FdTest(IronPythonTestCase):
             os.unlink(test_filename + str(i))
 
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

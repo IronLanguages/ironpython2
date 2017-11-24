@@ -21,7 +21,7 @@ import datetime
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
 
 class mytzinfo(datetime.tzinfo):
     def __repr__(self): return 'hello'
@@ -1135,6 +1135,4 @@ class DatetimeTest(IronPythonTestCase):
     def test_datetime_repr(self):
         self.assertEqual(repr(datetime.datetime(2009, 1, 2, 3, 4, 5, 6, mytzinfo())), "datetime.datetime(2009, 1, 2, 3, 4, 5, 6, tzinfo=hello)")
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

@@ -29,7 +29,7 @@ import shutil
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, is_posix, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, is_netcoreapp, is_posix, run_test, skipUnlessIronPython
 from iptest.misc_util import ip_supported_encodings
 
 
@@ -555,7 +555,5 @@ class CodecTest(IronPythonTestCase):
         codecs.register_error("test_unicode_error", handler)
         res = u"\xac\u1234\u20ac\u8000".encode("rot_13", "test_unicode_error")
         self.assertEqual(res, "\xac")
-
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+    
+run_test(__name__)

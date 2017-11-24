@@ -15,7 +15,7 @@
 
 import _random
 import unittest
-from iptest import is_netcoreapp
+from iptest import is_netcoreapp, run_test
 
 @unittest.skipIf(is_netcoreapp, "TODO: figure out")
 class _RandomTest(unittest.TestCase):
@@ -131,6 +131,4 @@ class _RandomTest(unittest.TestCase):
             self.fail("seed(x) method can't change the current internal state of the generator when x is \
             string type.")
      
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

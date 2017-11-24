@@ -20,6 +20,7 @@ import sys
 import unittest
 
 from _io import BytesIO
+from iptest import run_test
 
 def bytesio_helper():
     return (BytesIO(bytearray(b'')),
@@ -309,6 +310,4 @@ class BytesIOTest(unittest.TestCase):
                 self.assertEqual(a.tolist(),
                         a_expected[i])
            
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

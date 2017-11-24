@@ -20,7 +20,7 @@ This tests what CPythons test_sha.py does not hit.
 import _sha512
 import unittest
 
-from iptest import is_cli
+from iptest import is_cli, run_test
 
 
 class _Sha512Test(unittest.TestCase):
@@ -69,6 +69,4 @@ class _Sha512Test(unittest.TestCase):
         self.assertTrue(x!=x_copy)
         self.assertEqual(x.hexdigest(), x_copy.hexdigest())
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

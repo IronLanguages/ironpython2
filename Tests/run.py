@@ -92,8 +92,7 @@ SLOW_LIST = [
 
 #tests we do not wish to run. These should be in the "Tests" directory
 EXCLUDE_LIST = [
-                "test_dllsite.py",    #disabled for 2.0 branch
-                "test_builds.py"      #Silverlight-only
+                "test_dllsite.py"    #disabled for 2.0 branch
                 ]
 
 #List of extra tests in "Tests" which do not follow the "test_*.py" pattern.

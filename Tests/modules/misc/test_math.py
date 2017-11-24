@@ -17,7 +17,7 @@ import itertools
 import math
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
 
 if is_cli:
     from System import Int64, Byte, Int16
@@ -702,6 +702,4 @@ def %s(self, other):
         for flt, res in int_ratio_tests:
             self.assertEqual(flt.as_integer_ratio(), res)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

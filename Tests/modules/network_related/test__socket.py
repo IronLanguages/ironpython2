@@ -24,7 +24,7 @@ import thread
 import time
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_mono, retryOnFailure, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, retryOnFailure, run_test, skipUnlessIronPython
 
 AF_DICT = {"AF_APPLETALK" : 5,
            "AF_DECnet" : 12,
@@ -601,6 +601,4 @@ finally:
         #Verification
         self.assertEqual(f.read(6), "stuff2")
     
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

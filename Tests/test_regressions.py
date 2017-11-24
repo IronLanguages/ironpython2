@@ -29,7 +29,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, skipUnlessIronPython, is_netcoreapp, is_cli, is_posix, stdout_trapper
+from iptest import IronPythonTestCase, is_netcoreapp, is_cli, is_posix, run_test, skipUnlessIronPython, stdout_trapper
 
 class RegressionTest(IronPythonTestCase):
 
@@ -1013,6 +1013,4 @@ class C:
 
         self.assertEqual(two().cnt, 3)
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)

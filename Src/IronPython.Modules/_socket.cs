@@ -1019,8 +1019,7 @@ namespace IronPython.Modules {
                 get { return (int)_socket.ProtocolType; }
             }
 
-            public int ioctl(BigInteger cmd, object option)
-            {
+            public int ioctl(BigInteger cmd, object option) {
                 if(cmd == SIO_KEEPALIVE_VALS){ 
                     if (!(option is PythonTuple))
                         throw PythonOps.TypeError("option must be 3-item sequence, not int");
@@ -2472,7 +2471,7 @@ namespace IronPython.Modules {
                 if (sock == null) {
                     throw PythonOps.TypeError("expected socket object, got None");
                 }
-                
+
                 _serverSide = server_side;
                 bool validate;
                 _certsMode = certs_mode;
@@ -2497,22 +2496,22 @@ namespace IronPython.Modules {
 
                 _callback = callback;
 
-                if(certs != null) {
+                if (certs != null) {
                     _certCollection = certs;
                 }
-                
+
                 if (certfile != null) {
                     _cert = PythonSsl.ReadCertificate(context, certfile);
                 }
-                
-                if(cacertsfile != null) {
+
+                if (cacertsfile != null) {
                     _certCollection = new X509Certificate2Collection(new[] { PythonSsl.ReadCertificate(context, cacertsfile) });
                 }
 
                 _socket = sock;
 
                 EnsureSslStream(false);
-                                
+
                 _protocol = protocol;
                 _validate = validate;
                 _context = context;

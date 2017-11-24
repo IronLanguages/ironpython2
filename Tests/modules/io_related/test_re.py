@@ -16,7 +16,7 @@
 import re
 import unittest
 
-from iptest import is_cli
+from iptest import is_cli, run_test
 
 class ReTest(unittest.TestCase):
 
@@ -824,6 +824,4 @@ class ReTest(unittest.TestCase):
         self.assertEqual(re.compile("\Z").match("\n"), None)
         self.assertEqual(re.compile("\Z").match("").group(0), "")
 
-if __name__ == '__main__':
-    from test import test_support
-    test_support.run_unittest(__name__)
+run_test(__name__)
