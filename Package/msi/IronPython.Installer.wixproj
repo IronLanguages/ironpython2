@@ -40,16 +40,9 @@
       <Value>$(BuildDir)</Value>
     </WixConstant>
     
-    <!-- These are needed by HarvestDirectory, one for each directory. -->
-    <!-- <WixConstant Include="DocDir">
-      <Value>Doc</Value>
-    </WixConstant> -->
     <WixConstant Include="StdLibDir">
       <Value>$(BindInputPaths)\Lib</Value>
     </WixConstant>
-    <!-- <WixConstant Include="TutorialDir">
-      <Value>Tutorial</Value>
-    </WixConstant> -->
 
     <WixConstant Include="PlatformDir">
       <Value>$(BindInputPaths)\net45</Value>
@@ -91,38 +84,12 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <!-- <HarvestDirectory Include="$(BindInputPaths)\Doc">
-      <DirectoryRefId>INSTALLDIR</DirectoryRefId>
-      <ComponentGroupName>IronPythonDocs</ComponentGroupName>
-      <PreprocessorVariable>var.DocDir</PreprocessorVariable>
-    </HarvestDirectory> -->
-
     <HarvestDirectory Include="$(BindInputPaths)\Lib">
       <DirectoryRefId>INSTALLDIR</DirectoryRefId>
       <ComponentGroupName>IronPythonStdLib</ComponentGroupName>
       <PreprocessorVariable>var.StdLibDir</PreprocessorVariable>
       <SuppressRegistry>True</SuppressRegistry>
     </HarvestDirectory>
-    
-    <!-- <HarvestDirectory Include="$(BindInputPaths)\net45">
-      <DirectoryRefId>INSTALLDIR</DirectoryRefId>
-      <ComponentGroupName>IronPythonPlatform</ComponentGroupName>
-      <PreprocessorVariable>var.PlatformDir</PreprocessorVariable>
-      <SuppressRegistry>True</SuppressRegistry>
-      <SuppressRootDirectory>True</SuppressRootDirectory>
-    </HarvestDirectory> -->
-
-    <!-- <HarvestDirectory Include="$(BindInputPaths)\Tools">
-      <DirectoryRefId>INSTALLDIR</DirectoryRefId>
-      <ComponentGroupName>IronPythonTools</ComponentGroupName>
-      <PreprocessorVariable>var.ToolsDir</PreprocessorVariable>
-    </HarvestDirectory>
-
-    <HarvestDirectory Include="$(BindInputPaths)\Tutorial">
-      <DirectoryRefId>INSTALLDIR</DirectoryRefId>
-      <ComponentGroupName>IronPythonTutorial</ComponentGroupName>
-      <PreprocessorVariable>var.TutorialDir</PreprocessorVariable>
-    </HarvestDirectory> -->
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--

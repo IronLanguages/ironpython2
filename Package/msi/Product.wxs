@@ -61,7 +61,6 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
 
     <DirectoryRef Id="IronPythonStartMenu">
       <Component Id="IronPythonCommonShortcuts">
-        <Shortcut Id="IronPython_Help" Name="IronPython Documentation" Target="[INSTALLDIR]Doc\IronPython.chm" />
         <Shortcut Id="IronPython_Readme" Name="IronPython Readme" Target="[INSTALLDIR]README.md" />
         <Shortcut Id="IronPython_Console" Name="IronPython Console" Target="[INSTALLDIR]ipy.exe" />
         
