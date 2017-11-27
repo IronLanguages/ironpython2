@@ -818,6 +818,7 @@ class ReTests(unittest.TestCase):
         self.assertIsNone(re.match(r'(?:a?)+?y', 'z'))
         self.assertIsNone(re.match(r'(?:a?){2,}?y', 'z'))
 
+    @unittest.skipIf(sys.platform == 'cli', 'CPython impl detail')
     def test_scanner(self):
         def s_ident(scanner, token): return token
         def s_operator(scanner, token): return "op%s" % token
@@ -886,6 +887,7 @@ class ReTests(unittest.TestCase):
                          [":", "::", ":::"])
 
     @requires_unicode
+    @unittest.skipIf(sys.platform == 'cli', 'Strings are unicode in IronPython')
     def test_bug_926075(self):
         self.assertIsNot(re.compile('bug_926075'),
                          re.compile(u'bug_926075'))

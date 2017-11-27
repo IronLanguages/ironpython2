@@ -4,6 +4,7 @@
 
 import os
 import stat
+import sys
 import unittest
 import dumbdbm
 from test import test_support
@@ -49,8 +50,8 @@ class DumbDBMTestCase(unittest.TestCase):
             os.umask(old_umask)
 
         expected_mode = 0635
-        if os.name != 'posix':
-            # Windows only supports setting the read-only attribute.
+        if os.name != 'posix' or sys.platform == 'cli':
+            # Windows and IronPython only support setting the read-only attribute.
             # This shouldn't fail, but doesn't work like Unix either.
             expected_mode = 0666
 
@@ -105,14 +106,17 @@ class DumbDBMTestCase(unittest.TestCase):
         f.close()
 
         # Mangle the file by adding \r before each newline
-        data = open(_fname + '.dir').read()
+        with open(_fname + '.dir') as f:
+            data = f.read()
         data = data.replace('\n', '\r\n')
-        open(_fname + '.dir', 'wb').write(data)
+        with open(_fname + '.dir', 'wb') as f:
+            f.write(data)
 
         f = dumbdbm.open(_fname)
         self.assertEqual(f['1'], 'hello')
         self.assertEqual(f['2'], 'hello2')
 
+        f.close()
 
     def read_helper(self, f):
         keys = self.keys_helper(f)

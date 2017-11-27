@@ -30,10 +30,10 @@ PIPE:    Special value that indicates a pipe should be created
 STDOUT:  Special value that indicates that stderr should go to stdout
 """
 
-import sys
-mswindows = (sys.platform == "win32")
+import sys, os
+mswindows = (sys.platform == "win32" or (sys.platform == "cli" and os.name == "nt"))
+mono = (sys.platform == "cli" and os.name == "posix")
 
-import os
 import types
 import traceback
 import gc
@@ -68,6 +68,14 @@ if mswindows:
         wShowWindow = 0
     class pywintypes:
         error = IOError
+elif mono:
+    import threading
+    _has_poll = False
+    import clr
+    if clr.IsNetCoreApp:
+        clr.AddReference("System.Diagnostics.Process")
+    from System.Diagnostics import Process
+    from System.IO import MemoryStream
 else:
     import select
     _has_poll = hasattr(select, 'poll')
@@ -207,6 +215,8 @@ def check_output(*popenargs, **kwargs):
     ...              stderr=STDOUT)
     'ls: non_existent_file: No such file or directory\n'
     """
+    if mono:
+        raise NotImplementedError("check_output not currently supported on .NET platforms")
     if 'stdout' in kwargs:
         raise ValueError('stdout argument not allowed, it will be overridden.')
     process = Popen(stdout=PIPE, *popenargs, **kwargs)
@@ -346,6 +356,27 @@ class Popen(object):
                               stderr is not None):
                 raise ValueError("close_fds is not supported on Windows "
                                  "platforms if you redirect stdin/stdout/stderr")
+        elif mono:
+            if preexec_fn:
+                raise ValueError("preexec_fn is not supported on .NET platforms")
+
+            if close_fds:
+                raise ValueError("close_fds is not supported on .NET platforms")
+
+            if universal_newlines:
+                raise ValueError("universal_newlines is not supported on .NET platforms")
+
+            if startupinfo:
+                raise ValueError("startupinfo is not supported on .NET platforms")
+
+            if creationflags:
+                raise ValueError("creationflags is not supported on .NET platforms")
+
+            if stdin is not None and stdin != PIPE:
+                raise NotImplementedError("Cannont redirect stdin yet.")
+
+            if stderr == STDOUT:
+                raise NotImplementedError("Cannont redirect stderr to stdout yet.")
         else:
             # POSIX
             if startupinfo is not None:
@@ -782,6 +813,138 @@ class Popen(object):
                 self.returncode = rc
 
         kill = terminate
+
+    elif mono:
+        def _get_handles(self, stdin, stdout, stderr):
+            if stdin is None and stdout is None and stderr is None:
+                return (None, None, None, None, None, None)
+
+            to_close = set()
+            p2cread, p2cwrite = None, None
+            c2pread, c2pwrite = None, None
+            errread, errwrite = None, None
+
+            self._redirectStdin = stdin == PIPE
+            self._redirectStdout = stdout == PIPE
+            self._redirectStderr = stderr == PIPE
+
+            return (p2cread, p2cwrite,
+                    c2pread, c2pwrite,
+                    errread, errwrite), to_close
+
+        def _execute_child(self, args, executable, preexec_fn, close_fds,
+                           cwd, env, universal_newlines,
+                           startupinfo, creationflags, shell, to_close,
+                           p2cread, p2cwrite,
+                           c2pread, c2pwrite,
+                           errread, errwrite):
+
+            if isinstance(args, types.StringTypes):
+                args = [args]
+            else:
+                args = list(args)
+
+            if shell:
+                args = ["/bin/sh", "-c"] + args
+                if executable:
+                    args[0] = executable
+
+            if executable is None:
+                executable = args[0]
+
+            self.process = Process()
+            self.process.StartInfo.UseShellExecute = False
+
+            self.process.StartInfo.FileName = executable
+            self.process.StartInfo.Arguments = list2cmdline(args[1:])
+
+            if env:
+                self.process.StartInfo.EnvironmentVariables.Clear()
+                for k, v in env.items():
+                    self.process.StartInfo.EnvironmentVariables.Add(k, v)
+
+            self.process.StartInfo.WorkingDirectory = cwd or os.getcwd()
+
+            self.process.StartInfo.RedirectStandardInput = self._redirectStdin
+            self.process.StartInfo.RedirectStandardOutput = self._redirectStdout
+            self.process.StartInfo.RedirectStandardError = self._redirectStderr
+
+            self.process.Start()
+            self.pid = self.process.Id
+
+            self.stdin = file(self.process.StandardInput.BaseStream) if self._redirectStdin else None
+            self.stdout = file(self.process.StandardOutput.BaseStream) if self._redirectStdout else None
+            self.stderr = file(self.process.StandardError.BaseStream) if self._redirectStderr else None
+
+        def _internal_poll(self):
+            return self.process.ExitCode if self.process.HasExited else None
+
+        def wait(self):
+            """Wait for child process to terminate.  Returns returncode
+            attribute."""
+            self.process.WaitForExit()
+            return self.process.ExitCode
+
+        def _readerthread(self, fh, buffer):
+            buffer.append(fh.read())
+
+        def _communicate(self, input):
+            stdout = None # Return
+            stderr = None # Return
+
+            if self.stdout:
+                stdout = []
+                stdout_thread = threading.Thread(target=self._readerthread,
+                                                 args=(self.stdout, stdout))
+                stdout_thread.setDaemon(True)
+                stdout_thread.start()
+            if self.stderr:
+                stderr = []
+                stderr_thread = threading.Thread(target=self._readerthread,
+                                                 args=(self.stderr, stderr))
+                stderr_thread.setDaemon(True)
+                stderr_thread.start()
+
+            if self.stdin:
+                if input is not None:
+                    try:
+                        self.stdin.write(input)
+                    except IOError as e:
+                        if e.errno == errno.EPIPE:
+                            # communicate() should ignore broken pipe error
+                            pass
+                        elif (e.errno == errno.EINVAL
+                              and self.poll() is not None):
+                            # Issue #19612: stdin.write() fails with EINVAL
+                            # if the process already exited before the write
+                            pass
+                        else:
+                            raise
+                self.stdin.close()
+
+            if self.stdout:
+                stdout_thread.join()
+            if self.stderr:
+                stderr_thread.join()
+
+            # All data exchanged.  Translate lists into strings.
+            if stdout is not None:
+                stdout = stdout[0]
+            if stderr is not None:
+                stderr = stderr[0]
+
+            # Translate newlines, if requested.  We cannot let the file
+            # object do the translation: It is based on stdio, which is
+            # impossible to combine with select (unless forcing no
+            # buffering).
+            if self.universal_newlines and hasattr(file, 'newlines'):
+                if stdout:
+                    stdout = self._translate_newlines(stdout)
+                if stderr:
+                    stderr = self._translate_newlines(stderr)
+
+            self.wait()
+            return (stdout, stderr)
 
     else:
         #
