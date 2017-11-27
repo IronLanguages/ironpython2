@@ -60,6 +60,8 @@ namespace IronPython.Modules {
             }
         }
 
+        public static void _remove_dead_weakref(CodeContext context, PythonDictionary dict, object key) => dict.TryRemoveValue(key, out _);
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly PythonType CallableProxyType = DynamicHelpers.GetPythonTypeFromType(typeof(weakcallableproxy));
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]

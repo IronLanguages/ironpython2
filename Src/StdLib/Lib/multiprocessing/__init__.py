@@ -114,7 +114,7 @@ def cpu_count():
     '''
     Returns the number of CPUs in the system
     '''
-    if sys.platform == 'win32':
+    if sys.platform == 'win32' or (sys.platform == 'cli' and os.name == 'nt'):
         try:
             num = int(os.environ['NUMBER_OF_PROCESSORS'])
         except (ValueError, KeyError):
