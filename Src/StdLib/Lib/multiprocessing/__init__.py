@@ -81,11 +81,7 @@ class AuthenticationError(ProcessError):
     pass
 
 # This is down here because _multiprocessing uses BufferTooShort
-try:
-    # IronPython does not provide _multiprocessing
-    import _multiprocessing
-except ImportError:
-    pass
+import _multiprocessing
 
 #
 # Definitions not depending on native semaphores

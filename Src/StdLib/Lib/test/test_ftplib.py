@@ -218,12 +218,18 @@ class DummyFTPServer(asyncore.dispatcher, threading.Thread):
         threading.Thread.__init__(self)
         asyncore.dispatcher.__init__(self)
         self.create_socket(af, socket.SOCK_STREAM)
-        self.bind(address)
-        self.listen(5)
-        self.active = False
-        self.active_lock = threading.Lock()
-        self.host, self.port = self.socket.getsockname()[:2]
-        self.handler_instance = None
+        try:
+            self.bind(address)
+            self.listen(5)
+            self.active = False
+            self.active_lock = threading.Lock()
+            self.host, self.port = self.socket.getsockname()[:2]
+            self.handler_instance = None
+        except:
+            # unregister the server on bind() error,
+            # needed by TestIPv6Environment.setUpClass()
+            self.del_channel()
+            raise
 
     def start(self):
         assert not self.active
@@ -433,6 +439,9 @@ class TestFTPClass(TestCase):
         self.assertEqual(self.client.sanitize('PASS 12345'), repr('PASS *****'))
 
     def test_exceptions(self):
+        self.assertRaises(ValueError, self.client.sendcmd, 'echo 40\r\n0')
+        self.assertRaises(ValueError, self.client.sendcmd, 'echo 40\n0')
+        self.assertRaises(ValueError, self.client.sendcmd, 'echo 40\r0')
         self.assertRaises(ftplib.error_temp, self.client.sendcmd, 'echo 400')
         self.assertRaises(ftplib.error_temp, self.client.sendcmd, 'echo 499')
         self.assertRaises(ftplib.error_perm, self.client.sendcmd, 'echo 500')

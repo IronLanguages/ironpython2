@@ -3,7 +3,7 @@
 """
 
 import os
-import sys
+import stat
 import unittest
 import dumbdbm
 from test import test_support
@@ -49,8 +49,8 @@ class DumbDBMTestCase(unittest.TestCase):
             os.umask(old_umask)
 
         expected_mode = 0635
-        if os.name != 'posix' or sys.platform == 'cli':
-            # Windows and IronPython only support setting the read-only attribute.
+        if os.name != 'posix':
+            # Windows only supports setting the read-only attribute.
             # This shouldn't fail, but doesn't work like Unix either.
             expected_mode = 0666
 
@@ -105,17 +105,13 @@ class DumbDBMTestCase(unittest.TestCase):
         f.close()
 
         # Mangle the file by adding \r before each newline
-        with open(_fname + '.dir') as f:
-            data = f.read()
+        data = open(_fname + '.dir').read()
         data = data.replace('\n', '\r\n')
-        with open(_fname + '.dir', 'wb') as f:
-            f.write(data)
+        open(_fname + '.dir', 'wb').write(data)
 
         f = dumbdbm.open(_fname)
         self.assertEqual(f['1'], 'hello')
         self.assertEqual(f['2'], 'hello2')
-
-        f.close()
 
 
     def read_helper(self, f):
@@ -172,6 +168,26 @@ class DumbDBMTestCase(unittest.TestCase):
             with self.assertRaises(ValueError):
                 dumbdbm.open(_fname).close()
             self.assertEqual(stdout.getvalue(), '')
+
+    @unittest.skipUnless(hasattr(os, 'chmod'), 'test needs os.chmod()')
+    def test_readonly_files(self):
+        dir = _fname
+        os.mkdir(dir)
+        try:
+            fname = os.path.join(dir, 'db')
+            f = dumbdbm.open(fname, 'n')
+            self.assertEqual(list(f.keys()), [])
+            for key in self._dict:
+                f[key] = self._dict[key]
+            f.close()
+            os.chmod(fname + ".dir", stat.S_IRUSR)
+            os.chmod(fname + ".dat", stat.S_IRUSR)
+            os.chmod(dir, stat.S_IRUSR|stat.S_IXUSR)
+            f = dumbdbm.open(fname, 'r')
+            self.assertEqual(sorted(f.keys()), sorted(self._dict))
+            f.close()  # don't write
+        finally:
+            test_support.rmtree(dir)
 
     def tearDown(self):
         _delete_files()

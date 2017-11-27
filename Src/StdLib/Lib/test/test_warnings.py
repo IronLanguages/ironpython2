@@ -15,10 +15,6 @@ import warnings as original_warnings
 py_warnings = test_support.import_fresh_module('warnings', blocked=['_warnings'])
 c_warnings = test_support.import_fresh_module('warnings', fresh=['_warnings'])
 
-warnings_env_var = "PYTHONWARNINGS"
-if sys.platform == 'cli':
-    warnings_env_var = "IRONPYTHONWARNINGS"
-
 @contextmanager
 def warnings_state(module):
     """Use a specific warnings implementation in warning_tests."""
@@ -209,6 +205,18 @@ class FilterTests(object):
             self.assertEqual(str(w[-1].message), text)
             self.assertTrue(w[-1].category is UserWarning)
 
+    def test_message_matching(self):
+        with original_warnings.catch_warnings(record=True,
+                module=self.module) as w:
+            self.module.simplefilter("ignore", UserWarning)
+            self.module.filterwarnings("error", "match", UserWarning)
+            self.assertRaises(UserWarning, self.module.warn, "match")
+            self.assertRaises(UserWarning, self.module.warn, "match prefix")
+            self.module.warn("suffix match")
+            self.assertEqual(w, [])
+            self.module.warn("something completely different")
+            self.assertEqual(w, [])
+
 class CFilterTests(BaseTest, FilterTests):
     module = c_warnings
 
@@ -375,7 +383,6 @@ class CWarnTests(BaseTest, WarnTests):
 
     # As an early adopter, we sanity check the
     # test_support.import_fresh_module utility function
-    @unittest.skipIf(sys.platform=='cli', 'IronPython has an implementation of warn')
     def test_accelerated(self):
         self.assertFalse(original_warnings is self.module)
         self.assertFalse(hasattr(self.module.warn, 'func_code'))
@@ -800,7 +807,7 @@ class EnvironmentVariableTests(BaseTest):
 
     def test_single_warning(self):
         newenv = os.environ.copy()
-        newenv[warnings_env_var] = "ignore::DeprecationWarning"
+        newenv["PYTHONWARNINGS"] = "ignore::DeprecationWarning"
         p = subprocess.Popen([sys.executable,
                 "-c", "import sys; sys.stdout.write(str(sys.warnoptions))"],
                 stdout=subprocess.PIPE, env=newenv)
@@ -809,7 +816,7 @@ class EnvironmentVariableTests(BaseTest):
 
     def test_comma_separated_warnings(self):
         newenv = os.environ.copy()
-        newenv[warnings_env_var] = ("ignore::DeprecationWarning,"
+        newenv["PYTHONWARNINGS"] = ("ignore::DeprecationWarning,"
                                     "ignore::UnicodeWarning")
         p = subprocess.Popen([sys.executable,
                 "-c", "import sys; sys.stdout.write(str(sys.warnoptions))"],
@@ -820,7 +827,7 @@ class EnvironmentVariableTests(BaseTest):
 
     def test_envvar_and_command_line(self):
         newenv = os.environ.copy()
-        newenv[warnings_env_var] = "ignore::DeprecationWarning"
+        newenv["PYTHONWARNINGS"] = "ignore::DeprecationWarning"
         p = subprocess.Popen([sys.executable, "-W" "ignore::UnicodeWarning",
                 "-c", "import sys; sys.stdout.write(str(sys.warnoptions))"],
                 stdout=subprocess.PIPE, env=newenv)

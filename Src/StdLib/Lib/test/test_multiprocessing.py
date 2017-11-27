@@ -14,6 +14,7 @@ import socket
 import random
 import logging
 import errno
+import weakref
 import test.script_helper
 from test import test_support
 from StringIO import StringIO
@@ -173,6 +174,12 @@ def get_value(self):
 #
 # Testcases
 #
+
+class DummyCallable(object):
+    def __call__(self, q, c):
+        assert isinstance(c, DummyCallable)
+        q.put(5)
+
 
 class _TestProcess(BaseTestCase):
 
@@ -353,6 +360,18 @@ class _TestProcess(BaseTestCase):
             p.start()
             p.join(5)
             self.assertEqual(p.exitcode, reason)
+
+    def test_lose_target_ref(self):
+        c = DummyCallable()
+        wr = weakref.ref(c)
+        q = self.Queue()
+        p = self.Process(target=c, args=(q, c))
+        del c
+        p.start()
+        p.join()
+        self.assertIs(wr(), None)
+        self.assertEqual(q.get(), 5)
+
 
 #
 #
@@ -640,6 +659,21 @@ class _TestQueue(BaseTestCase):
                     self.fail("Probable regression on import lock contention;"
                               " see Issue #22853")
 
+    def test_queue_feeder_donot_stop_onexc(self):
+        # bpo-30414: verify feeder handles exceptions correctly
+        if self.TYPE != 'processes':
+            self.skipTest('test not appropriate for {}'.format(self.TYPE))
+
+        class NotSerializable(object):
+            def __reduce__(self):
+                raise AttributeError
+        with test.support.captured_stderr():
+            q = self.Queue()
+            q.put(NotSerializable())
+            q.put(True)
+            self.assertTrue(q.get(timeout=0.1))
+
+
 #
 #
 #
@@ -839,7 +873,13 @@ class _TestCondition(BaseTestCase):
         cond.release()
 
         # check they have all woken
-        time.sleep(DELTA)
+        for i in range(10):
+            try:
+                if get_value(woken) == 6:
+                    break
+            except NotImplementedError:
+                break
+            time.sleep(DELTA)
         self.assertReturnsIfImplemented(6, get_value, woken)
 
         # check state is not mucked up
@@ -1123,6 +1163,19 @@ def sqr(x, wait=0.0):
     time.sleep(wait)
     return x*x
 
+def identity(x):
+    return x
+
+class CountedObject(object):
+    n_instances = 0
+
+    def __new__(cls):
+        cls.n_instances += 1
+        return object.__new__(cls)
+
+    def __del__(self):
+        type(self).n_instances -= 1
+
 class SayWhenError(ValueError): pass
 
 def exception_throwing_generator(total, when):
@@ -1267,6 +1320,21 @@ class _TestPool(BaseTestCase):
 
         p.close()
         p.join()
+
+    def test_release_task_refs(self):
+        # Issue #29861: task arguments and results should not be kept
+        # alive after we are done with them.
+        objs = list(CountedObject() for i in range(10))
+        refs = list(weakref.ref(o) for o in objs)
+        self.pool.map(identity, objs)
+
+        del objs
+        time.sleep(DELTA)  # let threaded cleanup code run
+        self.assertEqual(set(wr() for wr in refs), {None})
+        # With a process pool, copies of the objects are returned, check
+        # they were released too.
+        self.assertEqual(CountedObject.n_instances, 0)
+
 
 def unpickleable_result():
     return lambda: 42
@@ -1515,12 +1583,13 @@ class _TestManagerRestart(BaseTestCase):
         manager.start()
 
         p = self.Process(target=self._putter, args=(manager.address, authkey))
-        p.daemon = True
         p.start()
+        p.join()
         queue = manager.get_queue()
         self.assertEqual(queue.get(), 'hello world')
         del queue
         manager.shutdown()
+
         manager = QueueManager(
             address=addr, authkey=authkey, serializer=SERIALIZER)
         manager.start()
@@ -2038,6 +2107,14 @@ class _TestFinalize(BaseTestCase):
 
     ALLOWED_TYPES = ('processes',)
 
+    def setUp(self):
+        self.registry_backup = util._finalizer_registry.copy()
+        util._finalizer_registry.clear()
+
+    def tearDown(self):
+        self.assertFalse(util._finalizer_registry)
+        util._finalizer_registry.update(self.registry_backup)
+
     @classmethod
     def _test_finalize(cls, conn):
         class Foo(object):
@@ -2086,6 +2163,59 @@ class _TestFinalize(BaseTestCase):
 
         result = [obj for obj in iter(conn.recv, 'STOP')]
         self.assertEqual(result, ['a', 'b', 'd10', 'd03', 'd02', 'd01', 'e'])
+
+    def test_thread_safety(self):
+        # bpo-24484: _run_finalizers() should be thread-safe
+        def cb():
+            pass
+
+        class Foo(object):
+            def __init__(self):
+                self.ref = self  # create reference cycle
+                # insert finalizer at random key
+                util.Finalize(self, cb, exitpriority=random.randint(1, 100))
+
+        finish = False
+        exc = []
+
+        def run_finalizers():
+            while not finish:
+                time.sleep(random.random() * 1e-1)
+                try:
+                    # A GC run will eventually happen during this,
+                    # collecting stale Foo's and mutating the registry
+                    util._run_finalizers()
+                except Exception as e:
+                    exc.append(e)
+
+        def make_finalizers():
+            d = {}
+            while not finish:
+                try:
+                    # Old Foo's get gradually replaced and later
+                    # collected by the GC (because of the cyclic ref)
+                    d[random.getrandbits(5)] = {Foo() for i in range(10)}
+                except Exception as e:
+                    exc.append(e)
+                    d.clear()
+
+        old_interval = sys.getcheckinterval()
+        old_threshold = gc.get_threshold()
+        try:
+            sys.setcheckinterval(10)
+            gc.set_threshold(5, 5, 5)
+            threads = [threading.Thread(target=run_finalizers),
+                       threading.Thread(target=make_finalizers)]
+            with test_support.start_threads(threads):
+                time.sleep(4.0)  # Wait a bit to trigger race condition
+                finish = True
+            if exc:
+                raise exc[0]
+        finally:
+            sys.setcheckinterval(old_interval)
+            gc.set_threshold(*old_threshold)
+            gc.collect()  # Collect remaining Foo's
+
 
 #
 # Test that from ... import * works for each module

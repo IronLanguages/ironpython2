@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import sys
 import unittest
 from test import test_support
@@ -208,7 +209,6 @@ class TestBisect(unittest.TestCase):
                         self.assertTrue(data[ip-1] <= elem)
                     self.assertEqual(ip, max(lo, min(hi, expected)))
 
-    @unittest.skipIf(sys.platform == 'cli', "not equal in ipy")
     def test_backcompatibility(self):
         self.assertEqual(self.module.bisect, self.module.bisect_right)
 
@@ -245,7 +245,6 @@ class TestInsort(unittest.TestCase):
                 f(insorted, digit)
             self.assertEqual(sorted(insorted), insorted)
 
-    @unittest.skipIf(sys.platform == 'cli', "not equal in ipy")
     def test_backcompatibility(self):
         self.assertEqual(self.module.insort, self.module.insort_right)
 

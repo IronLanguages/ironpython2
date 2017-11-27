@@ -1,4 +1,4 @@
-"""Regresssion tests for urllib"""
+"""Regression tests for urllib"""
 
 import collections
 import urllib
@@ -170,14 +170,27 @@ class ProxyTests(unittest.TestCase):
         self.assertTrue(urllib.proxy_bypass_environment('anotherdomain.com:8888'))
         self.assertTrue(urllib.proxy_bypass_environment('newdomain.com:1234'))
 
+    def test_proxy_cgi_ignore(self):
+        try:
+            self.env.set('HTTP_PROXY', 'http://somewhere:3128')
+            proxies = urllib.getproxies_environment()
+            self.assertEqual('http://somewhere:3128', proxies['http'])
+            self.env.set('REQUEST_METHOD', 'GET')
+            proxies = urllib.getproxies_environment()
+            self.assertNotIn('http', proxies)
+        finally:
+            self.env.unset('REQUEST_METHOD')
+            self.env.unset('HTTP_PROXY')
+
     def test_proxy_bypass_environment_host_match(self):
         bypass = urllib.proxy_bypass_environment
         self.env.set('NO_PROXY',
-            'localhost, anotherdomain.com, newdomain.com:1234')
+                     'localhost, anotherdomain.com, newdomain.com:1234, .d.o.t')
         self.assertTrue(bypass('localhost'))
         self.assertTrue(bypass('LocalHost'))                 # MixedCase
         self.assertTrue(bypass('LOCALHOST'))                 # UPPERCASE
         self.assertTrue(bypass('newdomain.com:1234'))
+        self.assertTrue(bypass('foo.d.o.t'))                 # issue 29142
         self.assertTrue(bypass('anotherdomain.com:8888'))
         self.assertTrue(bypass('www.newdomain.com:1234'))
         self.assertFalse(bypass('prelocalhost'))
@@ -257,7 +270,6 @@ Content-Type: text/html; charset=iso-8859-1
         finally:
             self.unfakehttp()
 
-    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/main/issues/1626') 
     def test_invalid_redirect(self):
         # urlopen() should raise IOError for many error codes.
         self.fakehttp("""HTTP/1.1 302 Found
@@ -866,6 +878,26 @@ class Utility_Tests(unittest.TestCase):
                          ('www.example.org:80', ''))
         self.assertEqual(splithost('/foo/bar/baz.html'),
                          (None, '/foo/bar/baz.html'))
+
+        # bpo-30500: # starts a fragment.
+        self.assertEqual(splithost('//127.0.0.1#@host.com'),
+                         ('127.0.0.1', '/#@host.com'))
+        self.assertEqual(splithost('//127.0.0.1#@host.com:80'),
+                         ('127.0.0.1', '/#@host.com:80'))
+        self.assertEqual(splithost('//127.0.0.1:80#@host.com'),
+                         ('127.0.0.1:80', '/#@host.com'))
+
+        # Empty host is returned as empty string.
+        self.assertEqual(splithost("///file"),
+                         ('', '/file'))
+
+        # Trailing semicolon, question mark and hash symbol are kept.
+        self.assertEqual(splithost("//example.net/file;"),
+                         ('example.net', '/file;'))
+        self.assertEqual(splithost("//example.net/file?"),
+                         ('example.net', '/file?'))
+        self.assertEqual(splithost("//example.net/file#"),
+                         ('example.net', '/file#'))
 
     def test_splituser(self):
         splituser = urllib.splituser

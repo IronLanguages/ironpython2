@@ -443,12 +443,12 @@ def _netbios_getnode():
 _uuid_generate_time = _UuidCreate = None
 try:
     import ctypes, ctypes.util
-    import sys, os
+    import sys
 
     # The uuid_generate_* routines are provided by libuuid on at least
     # Linux and FreeBSD, and provided by libc on Mac OS X.
     _libnames = ['uuid']
-    if not sys.platform.startswith('win') and os.name != 'nt':
+    if not sys.platform.startswith('win'):
         _libnames.append('c')
     for libname in _libnames:
         try:

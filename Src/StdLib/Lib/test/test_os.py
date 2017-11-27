@@ -599,10 +599,31 @@ class URandomFDTests(unittest.TestCase):
         assert_python_ok('-c', code)
 
 
-class ExecvpeTests(unittest.TestCase):
+class ExecTests(unittest.TestCase):
 
     def test_execvpe_with_bad_arglist(self):
         self.assertRaises(ValueError, os.execvpe, 'notepad', [], None)
+
+    def test_execve_invalid_env(self):
+        args = [sys.executable, '-c', 'pass']
+
+        # null character in the enviroment variable name
+        newenv = os.environ.copy()
+        newenv["FRUIT\0VEGETABLE"] = "cabbage"
+        with self.assertRaises(TypeError):
+            os.execve(args[0], args, newenv)
+
+        # null character in the enviroment variable value
+        newenv = os.environ.copy()
+        newenv["FRUIT"] = "orange\0VEGETABLE=cabbage"
+        with self.assertRaises(TypeError):
+            os.execve(args[0], args, newenv)
+
+        # equal character in the enviroment variable name
+        newenv = os.environ.copy()
+        newenv["FRUIT=ORANGE"] = "lemon"
+        with self.assertRaises(ValueError):
+            os.execve(args[0], args, newenv)
 
 
 @unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
@@ -634,7 +655,7 @@ class TestInvalidFD(unittest.TestCase):
     singles = ["fchdir", "fdopen", "dup", "fdatasync", "fstat",
                "fstatvfs", "fsync", "tcgetpgrp", "ttyname"]
     #singles.append("close")
-    #We omit close because it doesn'r raise an exception on some platforms
+    #We omit close because it doesn't raise an exception on some platforms
     def get_single(f):
         def helper(self):
             if  hasattr(os, f):
@@ -649,7 +670,7 @@ class TestInvalidFD(unittest.TestCase):
         except OSError as e:
             self.assertEqual(e.errno, errno.EBADF)
         else:
-            self.fail("%r didn't raise a OSError with a bad file descriptor"
+            self.fail("%r didn't raise an OSError with a bad file descriptor"
                       % f)
 
     @unittest.skipUnless(hasattr(os, 'isatty'), 'test needs os.isatty()')
@@ -821,12 +842,10 @@ class Win32KillTests(unittest.TestCase):
         os.kill(proc.pid, sig)
         self.assertEqual(proc.wait(), sig)
 
-    @unittest.skipIf(sys.platform == 'cli', 'ipy.exe does not support getting killed by signals.')
     def test_kill_sigterm(self):
         # SIGTERM doesn't mean anything special, but make sure it works
         self._kill(signal.SIGTERM)
 
-    @unittest.skipIf(sys.platform == 'cli', 'ipy.exe does not support getting killed by signals.')
     def test_kill_int(self):
         # os.kill on Windows can take an int which gets set as the exit code
         self._kill(100)
@@ -881,6 +900,62 @@ class Win32KillTests(unittest.TestCase):
         self._kill_with_event(signal.CTRL_BREAK_EVENT, "CTRL_BREAK_EVENT")
 
 
+class SpawnTests(unittest.TestCase):
+    def _test_invalid_env(self, spawn):
+        args = [sys.executable, '-c', 'pass']
+
+        # null character in the enviroment variable name
+        newenv = os.environ.copy()
+        newenv["FRUIT\0VEGETABLE"] = "cabbage"
+        try:
+            exitcode = spawn(os.P_WAIT, args[0], args, newenv)
+        except TypeError:
+            pass
+        else:
+            self.assertEqual(exitcode, 127)
+
+        # null character in the enviroment variable value
+        newenv = os.environ.copy()
+        newenv["FRUIT"] = "orange\0VEGETABLE=cabbage"
+        try:
+            exitcode = spawn(os.P_WAIT, args[0], args, newenv)
+        except TypeError:
+            pass
+        else:
+            self.assertEqual(exitcode, 127)
+
+        # equal character in the enviroment variable name
+        newenv = os.environ.copy()
+        newenv["FRUIT=ORANGE"] = "lemon"
+        try:
+            exitcode = spawn(os.P_WAIT, args[0], args, newenv)
+        except ValueError:
+            pass
+        else:
+            self.assertEqual(exitcode, 127)
+
+        # equal character in the enviroment variable value
+        filename = test_support.TESTFN
+        self.addCleanup(test_support.unlink, filename)
+        with open(filename, "w") as fp:
+            fp.write('import sys, os\n'
+                     'if os.getenv("FRUIT") != "orange=lemon":\n'
+                     '    raise AssertionError')
+        args = [sys.executable, filename]
+        newenv = os.environ.copy()
+        newenv["FRUIT"] = "orange=lemon"
+        exitcode = spawn(os.P_WAIT, args[0], args, newenv)
+        self.assertEqual(exitcode, 0)
+
+    @unittest.skipUnless(hasattr(os, 'spawnve'), 'test needs os.spawnve()')
+    def test_spawnve_invalid_env(self):
+        self._test_invalid_env(os.spawnve)
+
+    @unittest.skipUnless(hasattr(os, 'spawnvpe'), 'test needs os.spawnvpe()')
+    def test_spawnvpe_invalid_env(self):
+        self._test_invalid_env(os.spawnvpe)
+
+
 def test_main():
     test_support.run_unittest(
         FileTests,
@@ -892,11 +967,12 @@ def test_main():
         DevNullTests,
         URandomTests,
         URandomFDTests,
-        ExecvpeTests,
+        ExecTests,
         Win32ErrorTests,
         TestInvalidFD,
         PosixUidGidTests,
-        Win32KillTests
+        Win32KillTests,
+        SpawnTests,
     )
 
 if __name__ == "__main__":

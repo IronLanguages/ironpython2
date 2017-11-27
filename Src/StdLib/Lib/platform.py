@@ -63,7 +63,7 @@
 #            though
 #    0.5.2 - fixed uname() to return '' instead of 'unknown' in all
 #            return values (the system uname command tends to return
-#            'unknown' instead of just leaving the field emtpy)
+#            'unknown' instead of just leaving the field empty)
 #    0.5.1 - included code for slackware dist; added exception handlers
 #            to cover up situations where platforms don't have os.popen
 #            (e.g. Mac) or fail on socket.gethostname(); fixed libc
@@ -567,7 +567,7 @@ def _get_real_winver(maj, min, build):
         return maj, min, build
 
     from ctypes import (c_buffer, POINTER, byref, create_unicode_buffer,
-                        Structure, WinDLL)
+                        Structure, WinDLL, _Pointer)
     from ctypes.wintypes import DWORD, HANDLE
 
     class VS_FIXEDFILEINFO(Structure):
@@ -586,6 +586,8 @@ def _get_real_winver(maj, min, build):
             ("dwFileDateMS", DWORD),
             ("dwFileDateLS", DWORD),
         ]
+    class PVS_FIXEDFILEINFO(_Pointer):
+        _type_ = VS_FIXEDFILEINFO
 
     kernel32 = WinDLL('kernel32')
     version = WinDLL('version')
@@ -611,7 +613,7 @@ def _get_real_winver(maj, min, build):
         not ver_block):
         return maj, min, build
 
-    pvi = POINTER(VS_FIXEDFILEINFO)()
+    pvi = PVS_FIXEDFILEINFO()
     if not version.VerQueryValueW(ver_block, "", byref(pvi), byref(DWORD())):
         return maj, min, build
 
@@ -650,7 +652,7 @@ def win32_ver(release='', version='', csd='', ptype=''):
                 csd = 'SP' + csd[13:]
 
     # VER_NT_SERVER = 3
-    if getattr(winver, 'product', None) == 3:
+    if getattr(winver, 'product_type', None) == 3:
         release = (_WIN32_SERVER_RELEASES.get((maj, min)) or
                    _WIN32_SERVER_RELEASES.get((maj, None)) or
                    release)
@@ -1155,7 +1157,7 @@ def uname():
         use_syscmd_ver = 1
 
         # Try win32_ver() on win32 platforms
-        if system == 'win32' or (system == 'cli' and os.name == 'nt'):
+        if system == 'win32':
             release,version,csd,ptype = win32_ver()
             if release and version:
                 use_syscmd_ver = 0
@@ -1321,11 +1323,18 @@ _sys_version_parser = re.compile(
     r'\[([^\]]+)\]?')  # "[compiler]"
 
 _ironpython_sys_version_parser = re.compile(
-    r'([\w\.]+)\s*\('
-    'IronPython\s*[\w\.]+'
-    '(?: (?:Alpha|Beta|RC) ?[\d\.]+)?(?: DEBUG)?'
+    r'IronPython\s*'
+    '([\d\.]+)'
     '(?: \(([\d\.]+)\))?'
-    ' on ((?:.NET|Mono) [\d\.]+ \((?:32|64)-bit\))\)')
+    ' on (.NET [\d\.]+)')
+
+# IronPython covering 2.6 and 2.7
+_ironpython26_sys_version_parser = re.compile(
+    r'([\d.]+)\s*'
+    '\(IronPython\s*'
+    '[\d.]+\s*'
+    '\(([\d.]+)\) on ([\w.]+ [\d.]+(?: \(\d+-bit\))?)\)'
+)
 
 _pypy_sys_version_parser = re.compile(
     r'([\w.+]+)\s*'
@@ -1367,7 +1376,11 @@ def _sys_version(sys_version=None):
     if 'IronPython' in sys_version:
         # IronPython
         name = 'IronPython'
-        match = _ironpython_sys_version_parser.match(sys_version)
+        if sys_version.startswith('IronPython'):
+            match = _ironpython_sys_version_parser.match(sys_version)
+        else:
+            match = _ironpython26_sys_version_parser.match(sys_version)
+
         if match is None:
             raise ValueError(
                 'failed to parse IronPython sys.version: %s' %

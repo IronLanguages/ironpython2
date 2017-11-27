@@ -253,25 +253,23 @@ class MimeTypes:
         default_encoding = sys.getdefaultencoding()
         with _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '') as hkcr:
             for subkeyname in enum_types(hkcr):
-                with _winreg.OpenKey(hkcr, subkeyname) as subkey:
-                    # Only check file extensions
-                    if not subkeyname.startswith("."):
-                        continue
-                    try:
+                try:
+                    with _winreg.OpenKey(hkcr, subkeyname) as subkey:
+                        # Only check file extensions
+                        if not subkeyname.startswith("."):
+                            continue
                         # raises EnvironmentError if no 'Content Type' value
                         mimetype, datatype = _winreg.QueryValueEx(
                             subkey, 'Content Type')
-                    except EnvironmentError:
-                        pass
-                    else:
                         if datatype != _winreg.REG_SZ:
                             continue
                         try:
                             mimetype = mimetype.encode(default_encoding)
                         except UnicodeEncodeError:
-                            pass
-                        else:
-                            self.add_type(mimetype, subkeyname, strict)
+                            continue
+                        self.add_type(mimetype, subkeyname, strict)
+                except EnvironmentError:
+                    continue
 
 def guess_type(url, strict=True):
     """Guess the type of a file based on its URL.

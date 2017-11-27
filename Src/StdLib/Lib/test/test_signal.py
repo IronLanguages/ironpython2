@@ -185,6 +185,9 @@ class InterProcessSignalTests(unittest.TestCase):
                 self.fail('Test deadlocked after %d seconds.' %
                           self.MAX_DURATION)
 
+            # read the exit status to not leak a zombie process
+            os.waitpid(child, 0)
+
 
 @unittest.skipIf(sys.platform == "win32", "Not valid on Windows")
 class BasicSignalTests(unittest.TestCase):
@@ -489,6 +492,16 @@ class ItimerTest(unittest.TestCase):
         self.assertEqual(signal.getitimer(self.itimer), (0.0, 0.0))
         # and the handler should have been called
         self.assertEqual(self.hndl_called, True)
+
+    def test_setitimer_tiny(self):
+        # bpo-30807: C setitimer() takes a microsecond-resolution interval.
+        # Check that float -> timeval conversion doesn't round
+        # the interval down to zero, which would disable the timer.
+        self.itimer = signal.ITIMER_REAL
+        signal.setitimer(self.itimer, 1e-6)
+        time.sleep(1)
+        self.assertEqual(self.hndl_called, True)
+
 
 def test_main():
     test_support.run_unittest(BasicSignalTests, InterProcessSignalTests,

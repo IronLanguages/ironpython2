@@ -285,7 +285,7 @@ def getsitepackages():
             continue
         seen.add(prefix)
 
-        if sys.platform in ('os2emx', 'riscos', 'cli'):
+        if sys.platform in ('os2emx', 'riscos'):
             sitepackages.append(os.path.join(prefix, "Lib", "site-packages"))
         elif os.sep == '/':
             sitepackages.append(os.path.join(prefix, "lib",
@@ -295,15 +295,6 @@ def getsitepackages():
         else:
             sitepackages.append(prefix)
             sitepackages.append(os.path.join(prefix, "lib", "site-packages"))
-        if sys.platform == "darwin":
-            # for framework builds *only* we add the standard Apple
-            # locations.
-            from sysconfig import get_config_var
-            framework = get_config_var("PYTHONFRAMEWORK")
-            if framework:
-                sitepackages.append(
-                        os.path.join("/Library", framework,
-                            sys.version[:3], "site-packages"))
     return sitepackages
 
 def addsitepackages(known_paths):
@@ -430,10 +421,6 @@ def setcopyright():
         __builtin__.credits = _Printer(
             "credits",
             "Jython is maintained by the Jython developers (www.jython.org).")
-    elif sys.platform == 'cli':
-        __builtin__.credits = _Printer(
-            "credits",
-            "IronPython is maintained by the IronPython developers (www.ironpython.net).")
     else:
         __builtin__.credits = _Printer("credits", """\
     Thanks to CWI, CNRI, BeOpen.com, Zope Corporation and a cast of thousands

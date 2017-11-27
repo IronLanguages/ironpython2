@@ -138,7 +138,7 @@ class URLopener:
         self.key_file = x509.get('key_file')
         self.cert_file = x509.get('cert_file')
         self.context = context
-        self.addheaders = [('User-Agent', self.version)]
+        self.addheaders = [('User-Agent', self.version), ('Accept', '*/*')]
         self.__tempfiles = []
         self.__unlink = os.unlink # See cleanup()
         self.tempcache = None
@@ -1093,8 +1093,7 @@ def splithost(url):
     """splithost('//host[:port]/path') --> 'host[:port]', '/path'."""
     global _hostprog
     if _hostprog is None:
-        import re
-        _hostprog = re.compile('^//([^/?]*)(.*)$')
+        _hostprog = re.compile('//([^/#?]*)(.*)', re.DOTALL)
 
     match = _hostprog.match(url)
     if match:
@@ -1218,16 +1217,16 @@ _hextochr = dict((a + b, chr(int(a + b, 16)))
                  for a in _hexdig for b in _hexdig)
 _asciire = re.compile('([\x00-\x7f]+)')
 
-def unquote(s, recurse=False):
+def unquote(s):
     """unquote('abc%20def') -> 'abc def'."""
-    if _is_unicode(s) and not recurse:
+    if _is_unicode(s):
         if '%' not in s:
             return s
         bits = _asciire.split(s)
         res = [bits[0]]
         append = res.append
         for i in range(1, len(bits), 2):
-            append(unquote(str(bits[i]), True).decode('latin1'))
+            append(unquote(str(bits[i])).decode('latin1'))
             append(bits[i + 1])
         return ''.join(res)
 
@@ -1380,12 +1379,21 @@ def getproxies_environment():
     If you need a different way, you can pass a proxies dictionary to the
     [Fancy]URLopener constructor.
     """
+    # Get all variables
     proxies = {}
     for name, value in os.environ.items():
         name = name.lower()
         if value and name[-6:] == '_proxy':
             proxies[name[:-6]] = value
 
+    # CVE-2016-1000110 - If we are running as CGI script, forget HTTP_PROXY
+    # (non-all-lowercase) as it may be set from the web server by a "Proxy:"
+    # header from the client
+    # If "proxy" is lowercase, it will still be used thanks to the next block
+    if 'REQUEST_METHOD' in os.environ:
+        proxies.pop('http', None)
+
+    # Get lowercase variables
     for name, value in os.environ.items():
         if name[-6:] == '_proxy':
             name = name.lower()
@@ -1418,6 +1426,7 @@ def proxy_bypass_environment(host, proxies=None):
     no_proxy_list = [proxy.strip() for proxy in no_proxy.split(',')]
     for name in no_proxy_list:
         if name:
+            name = name.lstrip('.')  # ignore leading dots
             name = re.escape(name)
             pattern = r'(.+\.)?%s$' % name
             if (re.match(pattern, hostonly, re.I)
