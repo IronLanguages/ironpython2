@@ -92,18 +92,6 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
           <ComponentGroupRef Id='IronPythonGac' />
         </Feature>
       </Feature>
-
-      <!-- <Feature Id='IronPython_Docs' AllowAdvertise='no' Level='1' Title='Documentation' Description='IronPython Documentation'>
-        <ComponentGroupRef Id='IronPythonDocs' />
-      </Feature>
-
-      <Feature Id='IronPython_Tools' AllowAdvertise='no' Level='1' Title='Scripts' Description='Some useful scripts that have been written for IronPython.'>
-        <ComponentGroupRef Id='IronPythonTools' />
-      </Feature>
-
-      <Feature Id='IronPython_Tutorial' AllowAdvertise='no' Level='1' Title='Tutorial' Description='IronPython Tutorial'>
-        <ComponentGroupRef Id='IronPythonTutorial' />
-      </Feature> -->
     </Feature>
 
     <!-- Sequences -->
@@ -119,7 +107,9 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
 
     <!-- User interface -->
     <UIRef Id="WixUI_FeatureTree" />
-    <WixVariable Id="WixUILicenseRtf" Value="..\..\..\..\License.rtf" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <WixVariable Id="WixUIDialogBmp" Value="ironpython.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
 
     <!-- InstallLocation key -->
     <CustomAction Id="SetInstallLocation" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />

@@ -34,19 +34,13 @@
     </WixConstant>
     <WixConstant Include="ReleaseSeries">
       <Value>$(MajorVersion).$(MinorVersion)</Value>
-    </WixConstant>
-    
+    </WixConstant>    
     <WixConstant Include="BuildDir">
       <Value>$(BuildDir)</Value>
-    </WixConstant>
-    
+    </WixConstant>    
     <WixConstant Include="StdLibDir">
       <Value>$(BindInputPaths)\Lib</Value>
     </WixConstant>
-
-    <WixConstant Include="PlatformDir">
-      <Value>$(BindInputPaths)\net45</Value>
-
     <WixConstant Include="PlatformDir">
       <Value>$(BindInputPaths)\net45</Value>
     </WixConstant>
