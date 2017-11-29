@@ -95,8 +95,7 @@ namespace IronPython.Runtime {
 
         public void ChainCallback(object callback, object weakRef) {
             _lock.EnterWriteLock();
-            try
-            {
+            try {
                 _callbacks.Add(new CallbackInfo(callback, weakRef));
             } finally {
                 _lock.ExitWriteLock();
@@ -106,8 +105,7 @@ namespace IronPython.Runtime {
         public int HandlerCount {
             get {
                 _lock.EnterReadLock();
-                try
-                {
+                try {
                     return _callbacks.Count;
                 } finally {
                     _lock.ExitReadLock();
