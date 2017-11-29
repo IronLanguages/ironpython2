@@ -70,6 +70,8 @@ $_FRAMEWORKS = @{
 
 function Main([String] $target, [String] $configuration) {
     msbuild Build.proj /m /t:$target /p:BuildFlavour=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
+    # use the exit code of msbuild as the exit code for this script
+    $global:Result = $LastExitCode
 }
 
 function Test([String] $target, [String] $configuration, [String[]] $frameworks) {
