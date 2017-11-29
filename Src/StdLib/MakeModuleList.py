@@ -20,11 +20,6 @@
 import sys, os
 import clr
 import shutil
-clr.AddReference("System.Xml")
-
-from System.Xml import XmlDocument, XmlNamespaceManager
-from System import Guid
-from System.IO import File, Path, Directory, FileInfo, FileAttributes
 
 #List of predetermined directories and files which should not be included in
 #the MSI
@@ -69,16 +64,18 @@ excludedFiles += [
                   "/Lib/copy_reg.py",
                   "/Lib/re.py",
                 ]
-excludedFiles += [x for x in BROKEN_LIST if x.endswith(".py")]
+excludedFiles += [x for x in BROKEN_LIST if x.endswith(".py") and not any(x.startswith(y) for y in excludedDirectories)]
 
-excludedDirectories = [os.path.join(base_dir, x[1:]).lower().replace('/', '\\') + '\\' for x in excludedDirectories]
-excludedFiles = [os.path.join(base_dir, x[1:]).lower().replace('/', '\\') for x in excludedFiles]
+excludedDirectoriesCase = [os.path.join(base_dir, x[1:]).replace('/', '\\') + '\\' for x in excludedDirectories]
+excludedDirectories = [x.lower() for x in excludedDirectoriesCase]
+excludedFilesCase = [os.path.join(base_dir, x[1:]).replace('/', '\\') for x in excludedFiles]
+excludedFiles = [x.lower() for x in excludedFilesCase]
 
 f = file('StdLib.pyproj')
 content = ''.join(f.readlines())
-header = '    <!-- Begin Generated Project Items -->'
+header = '      <!-- Begin Generated Project Items -->'
     
-footer = '    <!-- End Generated Project Items -->'
+footer = '      <!-- End Generated Project Items -->'
 if header == -1 or footer == -1:
     print "no header or footer"
     sys.exit(1)
@@ -90,33 +87,11 @@ content_start = content[:start + len(header)] + '\n'
 content_end = content[end:]
 files = []
 
-for dirpath, dirnames, filenames in os.walk(base_dir):
-    for filename in filenames:
-        if not filename.endswith('.py') and filename != 'LICENSE.txt':
-            continue
-        filename = os.path.join(dirpath, filename)
-        for excluded in excludedFiles:
-            if filename.lower() == excluded:
-                break
-        else:
-            for excluded in excludedDirectories:
-                if filename.lower().startswith(excluded) or r'\test' in filename.lower():
-                    break
-            else:
-                sub_name = filename[len(base_dir) + 1:]
-                if sub_name.startswith('Lib\\'):
-                    sub_name = sub_name[4:]
-                    if sub_name.endswith('.exe'):
-                        continue
-                    
-                    files.append('    <Content Include="$(StdLibPath)\\%s" />\n' % (sub_name, ))
+for excluded in excludedDirectoriesCase:
+    files.append("      $(StdLibPath)\\{}**\\*;\n".format(excluded[len(base_dir) + 5:]))
 
-# Add site-packages manually
-files.append('    <Content Include="$(StdLibPath)\\site-packages\\README.txt" />\n')
-
-print 'excluding these files:'
-for excluded_file in excludedDirectories + excludedFiles:
-    print excluded_file
+for excluded in excludedFilesCase:
+    files.append("      $(StdLibPath)\\{};\n".format(excluded[len(base_dir) + 5:]))
 
 file_list = ''.join(files)
 f = file('StdLib.pyproj', 'w')
