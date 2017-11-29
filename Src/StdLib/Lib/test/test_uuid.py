@@ -376,7 +376,7 @@ class TestUUID(unittest.TestCase):
             equal(str(u), v)
 
     @unittest.skipUnless(os.name == 'posix', 'requires Posix')
-    @unittest.skipIf(os.name == 'posix' and sys.platform == 'cli', 
+    @unittest.skipIf(sys.platform == 'cli' and os.name == 'posix',
                      'IronPython does not implement fork yet https://github.com/IronLanguages/main/issues/1606')
     def testIssue8621(self):
         # On at least some versions of OSX uuid.uuid4 generates

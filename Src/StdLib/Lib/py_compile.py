@@ -69,8 +69,8 @@ def wr_long(f, x):
     f.write(chr((x >> 24) & 0xff))
 
 def compile(file, cfile=None, dfile=None, doraise=False):
-    """Does nothig on IronPython.
-    
+    """Does nothing on IronPython.
+
     IronPython does not currently support compiling to .pyc
     or any other format.
     """

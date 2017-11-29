@@ -134,8 +134,8 @@ namespace IronPython.Modules {
             private string _cafile;
             private int _verify_mode = SSL_VERIFY_NONE;
 
-            public _SSLContext(CodeContext context, [DefaultParameterValue(PROTOCOL_SSLv23)] int protocol) {
-                if (protocol != PROTOCOL_SSLv2 && protocol != PROTOCOL_SSLv23 && protocol != PROTOCOL_SSLv3 &&
+            public _SSLContext(CodeContext context, [DefaultParameterValue(PROTOCOL_TLS)] int protocol) {
+                if (protocol != PROTOCOL_SSLv2 && protocol != PROTOCOL_TLS && protocol != PROTOCOL_SSLv3 &&
                     protocol != PROTOCOL_TLSv1 && protocol != PROTOCOL_TLSv1_1 && protocol != PROTOCOL_TLSv1_2) {
                     throw PythonOps.ValueError("invalid protocol version");
                 }
@@ -231,7 +231,7 @@ namespace IronPython.Modules {
             [DefaultParameterValue(null)] string keyfile, 
             [DefaultParameterValue(null)] string certfile,
             [DefaultParameterValue(PythonSsl.CERT_NONE)]int certs_mode,
-            [DefaultParameterValue(PythonSsl.PROTOCOL_SSLv23 | PythonSsl.OP_NO_SSLv2 | PythonSsl.OP_NO_SSLv3)]int protocol,
+            [DefaultParameterValue(PythonSsl.PROTOCOL_TLS | PythonSsl.OP_NO_SSLv2 | PythonSsl.OP_NO_SSLv3)]int protocol,
             [DefaultParameterValue(null)]string cacertsfile,
             [DefaultParameterValue(null)]object ciphers) {
             return new PythonSocket.ssl(
@@ -664,7 +664,8 @@ namespace IronPython.Modules {
 
         public const int PROTOCOL_SSLv2 = 0;
         public const int PROTOCOL_SSLv3 = 1;
-        public const int PROTOCOL_SSLv23 = 2;
+        public const int PROTOCOL_SSLv23 = PROTOCOL_TLS;
+        public const int PROTOCOL_TLS = 2;
         public const int PROTOCOL_TLSv1 = 3;
         public const int PROTOCOL_TLSv1_1 = 4;
         public const int PROTOCOL_TLSv1_2 = 5;

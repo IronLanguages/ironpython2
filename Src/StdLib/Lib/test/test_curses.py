@@ -10,6 +10,7 @@
 #
 
 import os
+import string
 import sys
 import tempfile
 import unittest
@@ -25,6 +26,7 @@ requires('curses')
 curses = import_module('curses')
 import_module('curses.panel')
 import_module('curses.ascii')
+import_module('curses.textpad')
 
 def requires_curses_func(name):
     return unittest.skipUnless(hasattr(curses, name),
@@ -62,7 +64,7 @@ class TestCurses(unittest.TestCase):
     def setUp(self):
         if verbose:
             # just to make the test output a little more readable
-            print()
+            print('')
         self.stdscr = curses.initscr()
         curses.savetty()
 
@@ -184,6 +186,11 @@ class TestCurses(unittest.TestCase):
         if hasattr(curses, 'enclose'):
             stdscr.enclose()
 
+        self.assertRaises(ValueError, stdscr.getstr, -400)
+        self.assertRaises(ValueError, stdscr.getstr, 2, 3, -400)
+        self.assertRaises(ValueError, stdscr.instr, -2)
+        self.assertRaises(ValueError, stdscr.instr, 2, 3, -2)
+
 
     def test_module_funcs(self):
         "Test module-level functions"
@@ -233,7 +240,7 @@ class TestCurses(unittest.TestCase):
     # Functions only available on a few platforms
     def test_colors_funcs(self):
         if not curses.has_colors():
-            self.skip('requires colors support')
+            self.skipTest('requires colors support')
         curses.start_color()
         curses.init_pair(2, 1,1)
         curses.color_content(1)
@@ -256,7 +263,7 @@ class TestCurses(unittest.TestCase):
     def test_getmouse(self):
         (availmask, oldmask) = curses.mousemask(curses.BUTTON1_PRESSED)
         if availmask == 0:
-            self.skip('mouse stuff not available')
+            self.skipTest('mouse stuff not available')
         curses.mouseinterval(10)
         # just verify these don't cause errors
         curses.ungetmouse(0, 0, 0, 0, curses.BUTTON1_PRESSED)
@@ -321,8 +328,82 @@ class TestCurses(unittest.TestCase):
         b = curses.tparm(curses.tigetstr("cup"), 5, 3)
         self.assertIs(type(b), bytes)
 
+    def test_issue13051(self):
+        stdscr = self.stdscr
+        box = curses.textpad.Textbox(stdscr, insert_mode=True)
+        lines, cols = stdscr.getmaxyx()
+        stdscr.resize(lines-2, cols-2)
+        # this may cause infinite recursion, leading to a RuntimeError
+        box._insert_printable_char('a')
+
 
 class TestAscii(unittest.TestCase):
+
+    def test_controlnames(self):
+        for name in curses.ascii.controlnames:
+            self.assertTrue(hasattr(curses.ascii, name), name)
+
+    def test_ctypes(self):
+        def check(func, expected):
+            self.assertEqual(func(i), expected)
+            self.assertEqual(func(c), expected)
+
+        for i in range(256):
+            c = b = chr(i)
+            check(curses.ascii.isalnum, b.isalnum())
+            check(curses.ascii.isalpha, b.isalpha())
+            check(curses.ascii.isdigit, b.isdigit())
+            check(curses.ascii.islower, b.islower())
+            check(curses.ascii.isspace, b.isspace())
+            check(curses.ascii.isupper, b.isupper())
+
+            check(curses.ascii.isascii, i < 128)
+            check(curses.ascii.ismeta, i >= 128)
+            check(curses.ascii.isctrl, i < 32)
+            check(curses.ascii.iscntrl, i < 32 or i == 127)
+            check(curses.ascii.isblank, c in ' \t')
+            check(curses.ascii.isgraph, 32 < i <= 126)
+            check(curses.ascii.isprint, 32 <= i <= 126)
+            check(curses.ascii.ispunct, c in string.punctuation)
+            check(curses.ascii.isxdigit, c in string.hexdigits)
+
+        for i in (-2, -1, 256, sys.maxunicode, sys.maxunicode+1):
+            self.assertFalse(curses.ascii.isalnum(i))
+            self.assertFalse(curses.ascii.isalpha(i))
+            self.assertFalse(curses.ascii.isdigit(i))
+            self.assertFalse(curses.ascii.islower(i))
+            self.assertFalse(curses.ascii.isspace(i))
+            self.assertFalse(curses.ascii.isupper(i))
+
+            self.assertFalse(curses.ascii.isascii(i))
+            self.assertFalse(curses.ascii.isctrl(i))
+            self.assertFalse(curses.ascii.iscntrl(i))
+            self.assertFalse(curses.ascii.isblank(i))
+            self.assertFalse(curses.ascii.isgraph(i))
+            self.assertFalse(curses.ascii.isprint(i))
+            self.assertFalse(curses.ascii.ispunct(i))
+            self.assertFalse(curses.ascii.isxdigit(i))
+
+        self.assertFalse(curses.ascii.ismeta(-1))
+
+    def test_ascii(self):
+        ascii = curses.ascii.ascii
+        self.assertEqual(ascii('\xc1'), 'A')
+        self.assertEqual(ascii('A'), 'A')
+        self.assertEqual(ascii(ord('\xc1')), ord('A'))
+
+    def test_ctrl(self):
+        ctrl = curses.ascii.ctrl
+        self.assertEqual(ctrl('J'), '\n')
+        self.assertEqual(ctrl('\n'), '\n')
+        self.assertEqual(ctrl('@'), '\0')
+        self.assertEqual(ctrl(ord('J')), ord('\n'))
+
+    def test_alt(self):
+        alt = curses.ascii.alt
+        self.assertEqual(alt('\n'), '\x8a')
+        self.assertEqual(alt('A'), '\xc1')
+        self.assertEqual(alt(ord('A')), 0xc1)
 
     def test_unctrl(self):
         unctrl = curses.ascii.unctrl
@@ -333,9 +414,13 @@ class TestAscii(unittest.TestCase):
         self.assertEqual(unctrl('\x7f'), '^?')
         self.assertEqual(unctrl('\n'), '^J')
         self.assertEqual(unctrl('\0'), '^@')
+        self.assertEqual(unctrl(ord('A')), 'A')
+        self.assertEqual(unctrl(ord('\n')), '^J')
         # Meta-bit characters
         self.assertEqual(unctrl('\x8a'), '!^J')
         self.assertEqual(unctrl('\xc1'), '!A')
+        self.assertEqual(unctrl(ord('\x8a')), '!^J')
+        self.assertEqual(unctrl(ord('\xc1')), '!A')
 
 
 def test_main():

@@ -336,7 +336,7 @@ class BZ2FileTest(BaseTest):
             self.assertRaises(ValueError, f.readline)
             self.assertRaises(ValueError, f.readlines)
 
-    @unittest.skipIf(sys.platform == 'win32' or sys.platform=='cli',
+    @unittest.skipIf(sys.platform == 'win32' or sys.platform == 'cli',
                      'test depends on being able to delete a still-open file,'
                      ' which is not possible on Windows')
     def testInitNonExistentFile(self):

@@ -2419,6 +2419,7 @@ namespace IronPython.Modules {
 
             static ssl()
             {
+#if NET40
                 // If .Net 4.5 or 4.6 are installed, try and detect
                 // the availability of Tls11/Tls12 dynamically:
                 SslProtocols result = SslProtocols.None;
@@ -2448,13 +2449,18 @@ namespace IronPython.Modules {
                     _SslProtocol_Tls11 = SslProtocols.None;
                     _SslProtocol_Tls12 = SslProtocols.None;
                 }
+#else
+                _supportsTls12 = true;
+                _SslProtocol_Tls11 = SslProtocols.Tls11;
+                _SslProtocol_Tls12 = SslProtocols.Tls12;
+#endif
             }
 
             public ssl(CodeContext context, PythonSocket.socket sock, [DefaultParameterValue(null)] string keyfile, [DefaultParameterValue(null)] string certfile, [DefaultParameterValue(null)] X509Certificate2Collection certs) {
                 _context = context;
                 _sslStream = new SslStream(new NetworkStream(sock._socket, false), true, CertValidationCallback);
                 _socket = sock;
-                _protocol = PythonSsl.PROTOCOL_SSLv23 | PythonSsl.OP_NO_SSLv2 | PythonSsl.OP_NO_SSLv3;
+                _protocol = PythonSsl.PROTOCOL_TLS | PythonSsl.OP_NO_SSLv2 | PythonSsl.OP_NO_SSLv3;
                 _validate = false;
                 _certCollection = certs ?? new X509Certificate2Collection();
             }
@@ -2465,7 +2471,7 @@ namespace IronPython.Modules {
                [DefaultParameterValue(null)] string keyfile,
                [DefaultParameterValue(null)] string certfile,
                [DefaultParameterValue(PythonSsl.CERT_NONE)]int certs_mode,
-               [DefaultParameterValue(PythonSsl.PROTOCOL_SSLv23 | PythonSsl.OP_NO_SSLv2 | PythonSsl.OP_NO_SSLv3)]int protocol,
+               [DefaultParameterValue(PythonSsl.PROTOCOL_TLS | PythonSsl.OP_NO_SSLv2 | PythonSsl.OP_NO_SSLv3)]int protocol,
                string cacertsfile,
                [DefaultParameterValue(null)] X509Certificate2Collection certs) {
                 if (sock == null) {
@@ -2690,7 +2696,7 @@ namespace IronPython.Modules {
                     case PythonSsl.PROTOCOL_SSLv3:
                         result = SslProtocols.Ssl3;
                         break;
-                    case PythonSsl.PROTOCOL_SSLv23:
+                    case PythonSsl.PROTOCOL_TLS:
                         result = SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls | _SslProtocol_Tls11 | _SslProtocol_Tls12;
                         break;
 #pragma warning restore CS0618 // Type or member is obsolete

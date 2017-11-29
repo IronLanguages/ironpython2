@@ -287,6 +287,10 @@ class PosixTester(unittest.TestCase):
         self.assertRaises(TypeError, posix.minor)
         self.assertRaises((ValueError, OverflowError), posix.minor, -1)
 
+        if sys.platform.startswith('freebsd') and dev >= 0x100000000:
+            self.skipTest("bpo-31044: on FreeBSD CURRENT, minor() truncates "
+                          "64-bit dev to 32-bit")
+
         self.assertEqual(posix.makedev(major, minor), dev)
         self.assertEqual(posix.makedev(int(major), int(minor)), dev)
         self.assertEqual(posix.makedev(long(major), long(minor)), dev)
@@ -504,6 +508,15 @@ class PosixTester(unittest.TestCase):
         finally:
             posix.lchflags(_DUMMY_SYMLINK, dummy_symlink_st.st_flags)
 
+    @unittest.skipUnless(hasattr(os, "putenv"), "requires os.putenv()")
+    def test_putenv(self):
+        with self.assertRaises(TypeError):
+            os.putenv('FRUIT\0VEGETABLE', 'cabbage')
+        with self.assertRaises(TypeError):
+            os.putenv('FRUIT', 'orange\0VEGETABLE=cabbage')
+        with self.assertRaises(ValueError):
+            os.putenv('FRUIT=ORANGE', 'lemon')
+
     @unittest.skipUnless(hasattr(posix, 'getcwd'),
                          'test needs posix.getcwd()')
     def test_getcwd_long_pathnames(self):
@@ -576,6 +589,48 @@ class PosixTester(unittest.TestCase):
         self.assertEqual(
                 set([int(x) for x in groups.split()]),
                 set(posix.getgroups() + [posix.getegid()]))
+
+    @test_support.requires_unicode
+    def test_path_with_null_unicode(self):
+        fn = test_support.TESTFN_UNICODE
+        try:
+            fn.encode(test_support.TESTFN_ENCODING)
+        except (UnicodeError, TypeError):
+            self.skipTest("Requires unicode filenames support")
+        fn_with_NUL = fn + u'\0'
+        self.addCleanup(test_support.unlink, fn)
+        test_support.unlink(fn)
+        fd = None
+        try:
+            with self.assertRaises(TypeError):
+                fd = os.open(fn_with_NUL, os.O_WRONLY | os.O_CREAT) # raises
+        finally:
+            if fd is not None:
+                os.close(fd)
+        self.assertFalse(os.path.exists(fn))
+        self.assertRaises(TypeError, os.mkdir, fn_with_NUL)
+        self.assertFalse(os.path.exists(fn))
+        open(fn, 'wb').close()
+        self.assertRaises(TypeError, os.stat, fn_with_NUL)
+
+    def test_path_with_null_byte(self):
+        fn = test_support.TESTFN
+        fn_with_NUL = fn + '\0'
+        self.addCleanup(test_support.unlink, fn)
+        test_support.unlink(fn)
+        fd = None
+        try:
+            with self.assertRaises(TypeError):
+                fd = os.open(fn_with_NUL, os.O_WRONLY | os.O_CREAT) # raises
+        finally:
+            if fd is not None:
+                os.close(fd)
+        self.assertFalse(os.path.exists(fn))
+        self.assertRaises(TypeError, os.mkdir, fn_with_NUL)
+        self.assertFalse(os.path.exists(fn))
+        open(fn, 'wb').close()
+        self.assertRaises(TypeError, os.stat, fn_with_NUL)
+
 
 class PosixGroupsTester(unittest.TestCase):
 

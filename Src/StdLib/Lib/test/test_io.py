@@ -349,6 +349,15 @@ class IOTest(unittest.TestCase):
             self.assertRaises(IOError, fp.write, "blah")
             self.assertRaises(IOError, fp.writelines, ["blah\n"])
 
+    def test_open_handles_NUL_chars(self):
+        fn_with_NUL = 'foo\0bar'
+        self.assertRaises(TypeError, self.open, fn_with_NUL, 'w')
+
+        bytes_fn = fn_with_NUL.encode('ascii')
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            self.assertRaises(TypeError, self.open, bytes_fn, 'w')
+
     def test_raw_file_io(self):
         with self.open(support.TESTFN, "wb", buffering=0) as f:
             self.assertEqual(f.readable(), False)
@@ -386,6 +395,22 @@ class IOTest(unittest.TestCase):
             self.assertRaises(TypeError, f.readline, 5.3)
         with self.open(support.TESTFN, "r") as f:
             self.assertRaises(TypeError, f.readline, 5.3)
+
+    def test_readline_nonsizeable(self):
+        # Issue #30061
+        # Crash when readline() returns an object without __len__
+        class R(self.IOBase):
+            def readline(self):
+                return None
+        self.assertRaises((TypeError, StopIteration), next, R())
+
+    def test_next_nonsizeable(self):
+        # Issue #30061
+        # Crash when next() returns an object without __len__
+        class R(self.IOBase):
+            def next(self):
+                return None
+        self.assertRaises(TypeError, R().readlines, 1)
 
     def test_raw_bytes_io(self):
         f = self.BytesIO()
@@ -2216,7 +2241,7 @@ class TextIOWrapperTest(unittest.TestCase):
         support.gc_collect()
         self.assertEqual([b"abc"], l)
 
-	@unittest.skipIf(sys.platform == 'cli', 'Bad behaviour in ironpython')
+    @unittest.skipIf(sys.platform == 'cli', 'Bad behaviour in ironpython')
     def test_override_destructor(self):
         record = []
         class MyTextIO(self.TextIOWrapper):
@@ -2926,6 +2951,7 @@ class MiscIOTest(unittest.TestCase):
                 self.assertRaises(ValueError, f.readinto, bytearray(1024))
             self.assertRaises(ValueError, f.readline)
             self.assertRaises(ValueError, f.readlines)
+            self.assertRaises(ValueError, f.readlines, 1)
             self.assertRaises(ValueError, f.seek, 0)
             self.assertRaises(ValueError, f.tell)
             self.assertRaises(ValueError, f.truncate)

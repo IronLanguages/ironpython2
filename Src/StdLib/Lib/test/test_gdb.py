@@ -7,6 +7,7 @@ import os
 import re
 import subprocess
 import sys
+import sysconfig
 import unittest
 import sysconfig
 
@@ -23,6 +24,7 @@ def get_gdb_version():
     try:
         proc = subprocess.Popen(["gdb", "-nx", "--version"],
                                 stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
                                 universal_newlines=True)
         version = proc.communicate()[0]
     except OSError:
@@ -76,6 +78,9 @@ def run_gdb(*args, **env_vars):
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env,
         ).communicate()
     return out, err
+
+if not sysconfig.is_python_build():
+    raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
 
 # Verify that "gdb" was built with the embedded python support enabled:
 gdbpy_version, _ = run_gdb("--eval-command=python import sys; print(sys.version_info)")
@@ -198,27 +203,17 @@ class DebuggerTests(unittest.TestCase):
         # Ignore some benign messages on stderr.
         ignore_patterns = (
             'Function "%s" not defined.' % breakpoint,
-            "warning: no loadable sections found in added symbol-file"
-            " system-supplied DSO",
-            "warning: Unable to find libthread_db matching"
-            " inferior's thread library, thread debugging will"
-            " not be available.",
-            "warning: Cannot initialize thread debugging"
-            " library: Debugger service failed",
-            'warning: Could not load shared library symbols for '
-            'linux-vdso.so',
-            'warning: Could not load shared library symbols for '
-            'linux-gate.so',
-            'warning: Could not load shared library symbols for '
-            'linux-vdso64.so',
             'Do you need "set solib-search-path" or '
             '"set sysroot"?',
-            'warning: Source file is more recent than executable.',
-            # Issue #19753: missing symbols on System Z
-            'Missing separate debuginfo for ',
-            'Try: zypper install -C ',
+            # BFD: /usr/lib/debug/(...): unable to initialize decompress
+            # status for section .debug_aranges
+            'BFD: ',
+            # ignore all warnings
+            'warning: ',
             )
         for line in errlines:
+            if not line:
+                continue
             if not line.startswith(ignore_patterns):
                 unexpected_errlines.append(line)
 
@@ -260,6 +255,9 @@ class DebuggerTests(unittest.TestCase):
     def get_sample_script(self):
         return findfile('gdb_sample.py')
 
+
+@unittest.skipIf(python_is_optimized(),
+                 "Python was compiled with optimizations")
 class PrettyPrintTests(DebuggerTests):
     def test_getting_backtrace(self):
         gdb_output = self.get_stack_trace('print 42')
@@ -712,6 +710,8 @@ $''')
                             'Unable to find a newer python frame\n')
 
     @unittest.skipUnless(HAS_PYUP_PYDOWN, "test requires py-up/py-down commands")
+    @unittest.skipIf(python_is_optimized(),
+                     "Python was compiled with optimizations")
     def test_up_at_top(self):
         'Verify handling of "py-up" at the top of the stack'
         bt = self.get_stack_trace(script=self.get_sample_script(),
@@ -772,6 +772,8 @@ Traceback \(most recent call first\):
 
     @unittest.skipUnless(thread,
                          "Python was compiled without thread support")
+    @unittest.skipIf(python_is_optimized(),
+                     "Python was compiled with optimizations")
     def test_threads(self):
         'Verify that "py-bt" indicates threads that are waiting for the GIL'
         cmd = '''

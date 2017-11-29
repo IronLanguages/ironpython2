@@ -209,6 +209,18 @@ class FilterTests(object):
             self.assertEqual(str(w[-1].message), text)
             self.assertTrue(w[-1].category is UserWarning)
 
+    def test_message_matching(self):
+        with original_warnings.catch_warnings(record=True,
+                module=self.module) as w:
+            self.module.simplefilter("ignore", UserWarning)
+            self.module.filterwarnings("error", "match", UserWarning)
+            self.assertRaises(UserWarning, self.module.warn, "match")
+            self.assertRaises(UserWarning, self.module.warn, "match prefix")
+            self.module.warn("suffix match")
+            self.assertEqual(w, [])
+            self.module.warn("something completely different")
+            self.assertEqual(w, [])
+
 class CFilterTests(BaseTest, FilterTests):
     module = c_warnings
 
@@ -375,7 +387,7 @@ class CWarnTests(BaseTest, WarnTests):
 
     # As an early adopter, we sanity check the
     # test_support.import_fresh_module utility function
-    @unittest.skipIf(sys.platform=='cli', 'IronPython has an implementation of warn')
+    @unittest.skipIf(sys.platform == 'cli', 'IronPython has an implementation of warn')
     def test_accelerated(self):
         self.assertFalse(original_warnings is self.module)
         self.assertFalse(hasattr(self.module.warn, 'func_code'))

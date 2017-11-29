@@ -251,7 +251,7 @@ class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
         finally:
             z.close()
             os.remove(TEMP_ZIP)
-    
+
     @unittest.skipIf(sys.platform == 'cli', 'IronPython does not support pyc')
     def testZipImporterMethodsInSubDirectory(self):
         packdir = TESTPACK + os.sep

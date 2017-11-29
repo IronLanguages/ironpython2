@@ -963,7 +963,7 @@ class MathTests(unittest.TestCase):
 
     @unittest.skipUnless(float.__getformat__("double").startswith("IEEE"),
                          "test requires IEEE 754 doubles")
-    @unittest.skipUnless(not (sys.platform == "cli" and os.name == "posix"), 
+    @unittest.skipUnless(not (sys.platform == "cli" and os.name == "posix"),
                          "test has OverflowError on IronPython on Mono https://github.com/IronLanguages/main/issues/1603")
     def test_mtestfile(self):
         ALLOWED_ERROR = 20  # permitted error, in ulps

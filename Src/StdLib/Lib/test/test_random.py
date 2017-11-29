@@ -148,7 +148,7 @@ class TestBasicOps(unittest.TestCase):
             restoredseq = [newgen.random() for i in xrange(10)]
             self.assertEqual(origseq, restoredseq)
 
-    @unittest.skipIf(sys.platform=='cli', 'CPython implementation pickles')
+    @unittest.skipIf(sys.platform == 'cli', 'CPython implementation pickles')
     def test_bug_1727780(self):
         # verify that version-2-pickles can be loaded
         # fine, whether they are created on 32-bit or 64-bit
@@ -309,12 +309,13 @@ class SystemRandom_TestBasicOps(TestBasicOps):
 class MersenneTwister_TestBasicOps(TestBasicOps):
     gen = random.Random()
 
-    @unittest.skipIf(sys.platform=='cli', 'CPython implementation detail')
+    @unittest.skipIf(sys.platform == 'cli', 'CPython implementation detail')
     def test_setstate_first_arg(self):
         self.assertRaises(ValueError, self.gen.setstate, (1, None, None))
 
-    @unittest.skipIf(sys.platform=='cli', 'CPython implementation detail')
+    @unittest.skipIf(sys.platform == 'cli', 'CPython implementation detail')
     def test_setstate_middle_arg(self):
+        start_state = self.gen.getstate()
         # Wrong type, s/b tuple
         self.assertRaises(TypeError, self.gen.setstate, (2, None, None))
         # Wrong length, s/b 625
@@ -328,6 +329,10 @@ class MersenneTwister_TestBasicOps(TestBasicOps):
             self.gen.setstate((2, (1,)*624+(625,), None))
         with self.assertRaises((ValueError, OverflowError)):
             self.gen.setstate((2, (1,)*624+(-1,), None))
+        # Failed calls to setstate() should not have changed the state.
+        bits100 = self.gen.getrandbits(100)
+        self.gen.setstate(start_state)
+        self.assertEqual(self.gen.getrandbits(100), bits100)
 
     def test_referenceImplementation(self):
         # Compare the python implementation with results from the original

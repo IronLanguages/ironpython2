@@ -11,7 +11,6 @@ from inspect import isabstract
 
 import sys
 
-
 class TestABC(unittest.TestCase):
 
     def test_abstractmethod_basics(self):
@@ -210,7 +209,7 @@ class TestABC(unittest.TestCase):
         C()
         self.assertEqual(B.counter, 1)
 
-    @unittest.skipIf(sys.platform=='cli', 'GC implementation detail')
+    @unittest.skipIf(sys.platform == 'cli', 'GC implementation detail')
     def test_cache_leak(self):
         # See issue #2521.
         class A(object):

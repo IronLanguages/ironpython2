@@ -1164,16 +1164,16 @@ class TestLeaks(unittest.TestCase):
 ## class TestUnicode(unittest.TestCase):
 ##     def test_unicode_read(self):
 ##         import codecs
-##         f = codecs.EncodedFile(StringIO("Martin von LÃ¶wis,"
-##                                         "Marc AndrÃ© Lemburg,"
+##         f = codecs.EncodedFile(StringIO("Martin von Löwis,"
+##                                         "Marc André Lemburg,"
 ##                                         "Guido van Rossum,"
-##                                         "FranÃ§ois Pinard\r\n"),
+##                                         "François Pinard\r\n"),
 ##                                data_encoding='iso-8859-1')
 ##         reader = csv.reader(f)
-##         self.assertEqual(list(reader), [[u"Martin von LÃ¶wis",
-##                                          u"Marc AndrÃ© Lemburg",
+##         self.assertEqual(list(reader), [[u"Martin von Löwis",
+##                                          u"Marc André Lemburg",
 ##                                          u"Guido van Rossum",
-##                                          u"FranÃ§ois Pinardn"]])
+##                                          u"François Pinardn"]])
 
 def test_main():
     mod = sys.modules[__name__]
