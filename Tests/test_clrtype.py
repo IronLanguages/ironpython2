@@ -13,28 +13,35 @@
 #
 #####################################################################################
 
-from iptest import IronPythonTestCase, run_test
+import unittest
+
+from iptest import IronPythonTestCase, is_netcoreapp, run_test
 
 import clr
 import clrtype
+
+if is_netcoreapp:
+    clr.AddReference("System.Private.Xml")
+clr.AddReference("System.Xml")
+
 import System
 from System.Reflection import BindingFlags
 
 class IProduct(object):
     __metaclass__ = clrtype.ClrInterface
 
-    _clrnamespace = "IronPython.Samples.ClrType"   
+    _clrnamespace = "IronPython.Samples.ClrType"
 
     @property
     @clrtype.accepts()
     @clrtype.returns(str)
     def Name(self): raise RuntimeError("this should not get called")
-      
+    
     @property
     @clrtype.accepts()
     @clrtype.returns(float)
     def Cost(self): raise RuntimeError("this should not get called")
-      
+    
     @clrtype.accepts()
     @clrtype.returns(bool)
     def IsAvailable(self): raise RuntimeError("this should not get called")
@@ -49,7 +56,7 @@ class Product(IProduct):
         "cost" : float,
         "_quantity" : int
     }
-      
+    
     CLSCompliant = clrtype.attribute(System.CLSCompliantAttribute)
     clr.AddReference("System.Xml")
     XmlRoot = clrtype.attribute(System.Xml.Serialization.XmlRootAttribute)
@@ -87,33 +94,35 @@ class Product(IProduct):
     def calc_total(self, discount=0.0):
         return (self.cost - discount) * self.quantity
 
-class NativeMethods(object):
-    # Note that you could also the "ctypes" modules instead of pinvoke declarations
-    __metaclass__ = clrtype.ClrClass
+if not is_netcoreapp:
+    class NativeMethods(object):
+        # Note that you could also the "ctypes" modules instead of pinvoke declarations
+        __metaclass__ = clrtype.ClrClass
 
-    from System.Runtime.InteropServices import DllImportAttribute, PreserveSigAttribute
-    DllImport = clrtype.attribute(DllImportAttribute)
-    PreserveSig = clrtype.attribute(PreserveSigAttribute)
-    
-    @staticmethod
-    @DllImport("user32.dll")
-    @PreserveSig()
-    @clrtype.accepts(System.Char)
-    @clrtype.returns(System.Boolean)
-    def IsCharAlpha(c): raise RuntimeError("this should not get called")
+        from System.Runtime.InteropServices import DllImportAttribute, PreserveSigAttribute
+        DllImport = clrtype.attribute(DllImportAttribute)
+        PreserveSig = clrtype.attribute(PreserveSigAttribute)
+        
+        @staticmethod
+        @DllImport("user32.dll")
+        @PreserveSig()
+        @clrtype.accepts(System.Char)
+        @clrtype.returns(System.Boolean)
+        def IsCharAlpha(c): raise RuntimeError("this should not get called")
 
-    @staticmethod
-    @DllImport("user32.dll")
-    @PreserveSig()
-    @clrtype.accepts(System.IntPtr, System.String, System.String, System.UInt32)
-    @clrtype.returns(System.Int32)
-    def MessageBox(hwnd, text, caption, type): raise RuntimeError("this should not get called")
+        @staticmethod
+        @DllImport("user32.dll")
+        @PreserveSig()
+        @clrtype.accepts(System.IntPtr, System.String, System.String, System.UInt32)
+        @clrtype.returns(System.Int32)
+        def MessageBox(hwnd, text, caption, type): raise RuntimeError("this should not get called")
 
 class ClrTypeTest(IronPythonTestCase):
     def setUp(self):
         super(ClrTypeTest, self).setUp()
         self.p = Product("Widget", 10.0, 42)
 
+    @unittest.skipIf(is_netcoreapp, 'No DefinePInvokeMethod')
     def test_pinvoke_method(self):
         self.assertTrue(NativeMethods.IsCharAlpha('A'))
         # Call statically-typed method from another .NET language (simulated using Reflection)

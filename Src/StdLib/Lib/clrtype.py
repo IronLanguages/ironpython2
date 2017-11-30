@@ -19,11 +19,15 @@ import clr
 clr.AddReference("Microsoft.Dynamic")
 clr.AddReference("Microsoft.Scripting")
 clr.AddReference("IronPython")
+
+if clr.IsNetCoreApp:
+    clr.AddReference("System.Reflection.Emit")
+
 import System
 from System import Char, Void, Boolean, Array, Type, AppDomain
 from System.Reflection import FieldAttributes, MethodAttributes, PropertyAttributes, ParameterAttributes
 from System.Reflection import CallingConventions, TypeAttributes, AssemblyName
-from System.Reflection.Emit import OpCodes, CustomAttributeBuilder, AssemblyBuilderAccess
+from System.Reflection.Emit import OpCodes, CustomAttributeBuilder, AssemblyBuilder, AssemblyBuilderAccess
 from System.Runtime.InteropServices import DllImportAttribute, CallingConvention, CharSet
 from Microsoft.Scripting.Generation import Snippets
 from Microsoft.Scripting.Runtime import DynamicOperations
@@ -223,13 +227,7 @@ class ClrInterface(ClrType):
         if not ClrInterface.interface_module_builder:
             name = AssemblyName("interfaces")
             access = AssemblyBuilderAccess.Run
-            # Workaround for http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=25330
-            for i in xrange(1000):
-                try:
-                    ad = AppDomain.CurrentDomain
-                    assembly_builder = ad.DefineDynamicAssembly(name, access)
-                except: pass
-                else: break
+            assembly_builder = AssemblyBuilder.DefineDynamicAssembly(name, access)
             ClrInterface.interface_module_builder = assembly_builder.DefineDynamicModule("interfaces")
         attrs = TypeAttributes.Public | TypeAttributes.Interface | TypeAttributes.Abstract
         return ClrInterface.interface_module_builder.DefineType(typename, attrs, None, bases)
