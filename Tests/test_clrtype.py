@@ -111,6 +111,7 @@ class NativeMethods(object):
 
 class ClrTypeTest(IronPythonTestCase):
     def setUp(self):
+        super(ClrTypeTest, self).setUp()
         self.p = Product("Widget", 10.0, 42)
 
     def test_pinvoke_method(self):
