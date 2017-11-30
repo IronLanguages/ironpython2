@@ -31,6 +31,7 @@ from System.Reflection.Emit import OpCodes, CustomAttributeBuilder, AssemblyBuil
 from System.Runtime.InteropServices import DllImportAttribute, CallingConvention, CharSet
 from Microsoft.Scripting.Generation import Snippets
 from Microsoft.Scripting.Runtime import DynamicOperations
+from Microsoft.Scripting.Utils import ReflectionUtils
 from IronPython.Runtime import NameType, PythonContext
 from IronPython.Runtime.Types import PythonType, ReflectedField, ReflectedProperty
 
@@ -227,7 +228,7 @@ class ClrInterface(ClrType):
         if not ClrInterface.interface_module_builder:
             name = AssemblyName("interfaces")
             access = AssemblyBuilderAccess.Run
-            assembly_builder = AssemblyBuilder.DefineDynamicAssembly(name, access)
+            assembly_builder = ReflectionUtils.DefineDynamicAssembly(name, access)
             ClrInterface.interface_module_builder = assembly_builder.DefineDynamicModule("interfaces")
         attrs = TypeAttributes.Public | TypeAttributes.Interface | TypeAttributes.Abstract
         return ClrInterface.interface_module_builder.DefineType(typename, attrs, None, bases)
