@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -32,7 +33,6 @@ using IronPython.Runtime;
 using IronPython.Runtime.Exceptions;
 using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
-
 
 [assembly: PythonModule("_ssl", typeof(IronPython.Modules.PythonSsl))]
 namespace IronPython.Modules {
@@ -354,10 +354,10 @@ namespace IronPython.Modules {
         internal static PythonDictionary CertificateToPython(CodeContext context, X509Certificate2 cert, bool complete) {
             var dict = new CommonDictionaryStorage();
 
-            dict.AddNoLock("notAfter", ToPythonDateFormat(cert.NotAfter.ToString()));
+            dict.AddNoLock("notAfter", ToPythonDateFormat(cert.NotAfter));
             dict.AddNoLock("subject", IssuerToPython(context, cert.Subject));
             if (complete) {
-                dict.AddNoLock("notBefore", ToPythonDateFormat(cert.NotBefore.ToString()));
+                dict.AddNoLock("notBefore", ToPythonDateFormat(cert.NotBefore));
                 dict.AddNoLock("serialNumber", SerialNumberToPython(cert));
                 dict.AddNoLock("version", cert.GetCertHashString());
                 dict.AddNoLock("issuer", IssuerToPython(context, cert.Issuer));
@@ -365,6 +365,10 @@ namespace IronPython.Modules {
             }
 
             return new PythonDictionary(dict);
+
+            string ToPythonDateFormat(DateTime date) {
+                return date.ToUniversalTime().ToString("MMM d HH:mm:ss yyyy", CultureInfo.InvariantCulture) + " GMT";
+            }
         }
 
         private static void AddSubjectAltNames(CommonDictionaryStorage dict, X509Certificate2 cert2) {
@@ -378,17 +382,14 @@ namespace IronPython.Modules {
                 while (null != (line = sr.ReadLine())) {
                     line = line.Trim();
                     var keyValue = line.Split('=');
-                    if (keyValue[0] == "DNS Name" && keyValue.Length == 2) {
+                    // Format produces different results based on the locale so we can't check for a specific key
+                    if (keyValue[0].Contains("DNS") && keyValue.Length == 2) {
                         altNames.Add(PythonTuple.MakeTuple("DNS", keyValue[1]));
                     }
                 }
                 dict.AddNoLock("subjectAltName", PythonTuple.MakeTuple(altNames.ToArray()));
                 break;
             }
-        }
-
-        private static string ToPythonDateFormat(string date) {
-            return DateTime.Parse(date).ToUniversalTime().ToString("MMM d HH:mm:ss yyyy") + " GMT";
         }
 
         private static string SerialNumberToPython(X509Certificate cert) {
@@ -432,7 +433,7 @@ namespace IronPython.Modules {
             foreach (var part in IssuerParts(issuer)) {
                 var field = IssuerFieldToPython(context, part);
                 if (field != null) {
-                    collector.Add(field); 
+                    collector.Add(PythonTuple.MakeTuple(new object[] { field }));
                 }
             }
             return PythonTuple.MakeTuple(collector.ToArray());
