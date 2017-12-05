@@ -342,32 +342,34 @@ namespace IronPython.Modules {
             return (PythonType)context.LanguageContext.GetModuleState("SSLError");
         }
 
-        public static PythonDictionary _test_decode_cert(CodeContext context, string filename, [DefaultParameterValue(false)]bool complete) {
-            var cert = ReadCertificate(context, filename);
-            return CertificateToPython(context, cert, complete);
+        public static PythonDictionary _test_decode_cert(CodeContext context, string path) {
+            var cert = ReadCertificate(context, path);
+            return CertificateToPython(context, cert);
         }
 
-        internal static PythonDictionary CertificateToPython(CodeContext context, X509Certificate cert, bool complete) {
-            return CertificateToPython(context, new X509Certificate2(cert.GetRawCertData()), complete);
+        internal static PythonDictionary CertificateToPython(CodeContext context, X509Certificate cert) {
+            if (cert is X509Certificate2 cert2)
+                return CertificateToPython(context, cert2);
+            return CertificateToPython(context, new X509Certificate2(cert.GetRawCertData()));
         }
 
-        internal static PythonDictionary CertificateToPython(CodeContext context, X509Certificate2 cert, bool complete) {
+        internal static PythonDictionary CertificateToPython(CodeContext context, X509Certificate2 cert) {
             var dict = new CommonDictionaryStorage();
 
             dict.AddNoLock("notAfter", ToPythonDateFormat(cert.NotAfter));
             dict.AddNoLock("subject", IssuerToPython(context, cert.Subject));
-            if (complete) {
-                dict.AddNoLock("notBefore", ToPythonDateFormat(cert.NotBefore));
-                dict.AddNoLock("serialNumber", SerialNumberToPython(cert));
-                dict.AddNoLock("version", cert.GetCertHashString());
-                dict.AddNoLock("issuer", IssuerToPython(context, cert.Issuer));
-                AddSubjectAltNames(dict, cert);
-            }
+            dict.AddNoLock("notBefore", ToPythonDateFormat(cert.NotBefore));
+            dict.AddNoLock("serialNumber", SerialNumberToPython(cert));
+            dict.AddNoLock("version", cert.Version);
+            dict.AddNoLock("issuer", IssuerToPython(context, cert.Issuer));
+            AddSubjectAltNames(dict, cert);
 
             return new PythonDictionary(dict);
 
             string ToPythonDateFormat(DateTime date) {
-                return date.ToUniversalTime().ToString("MMM d HH:mm:ss yyyy", CultureInfo.InvariantCulture) + " GMT";
+                var dateStr = date.ToUniversalTime().ToString("MMM dd HH:mm:ss yyyy", CultureInfo.InvariantCulture) + " GMT";
+                if (dateStr[4] == '0') dateStr = dateStr.Substring(0, 4) + " " + dateStr.Substring(5); // CPython uses leading space
+                return dateStr;
             }
         }
 
@@ -392,8 +394,8 @@ namespace IronPython.Modules {
             }
         }
 
-        private static string SerialNumberToPython(X509Certificate cert) {
-            var res = cert.GetSerialNumberString();
+        private static string SerialNumberToPython(X509Certificate2 cert) {
+            var res = cert.SerialNumber;
             for (int i = 0; i < res.Length; i++) {
                 if (res[i] != '0') {
                     return res.Substring(i);
@@ -426,6 +428,8 @@ namespace IronPython.Modules {
                     }
                 }
             }
+            if (token.Length > 0)
+                yield return token.ToString().Trim();
         }
 
         private static PythonTuple IssuerToPython(CodeContext context, string issuer) {
@@ -436,7 +440,7 @@ namespace IronPython.Modules {
                     collector.Add(PythonTuple.MakeTuple(new object[] { field }));
                 }
             }
-            return PythonTuple.MakeTuple(collector.ToArray());
+            return PythonTuple.MakeTuple(collector.ToReverseArray()); // CPython reverses the fields
         }
 
         private static PythonTuple IssuerFieldToPython(CodeContext context, string p) {
