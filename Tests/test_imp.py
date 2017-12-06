@@ -64,6 +64,10 @@ class ImpTest(IronPythonTestCase):
                     "xxxx"
                     ]
 
+    def tearDown(self):
+        super(ImpTest, self).tearDown()
+        self.clean_directory(self._imptestdir, remove=True)
+
     def test_imp_new_module(self):
         x = imp.new_module('abc')
         sys.modules['abc'] = x
