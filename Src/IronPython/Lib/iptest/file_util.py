@@ -75,7 +75,7 @@ class FileUtil(object):
             try:    os.remove(f)
             except: pass
 
-    def clean_directory(self, path, remove=False):
+    def clean_directory(self, path, remove=True):
         import shutil
         if os.path.exists(path):
             if remove:
