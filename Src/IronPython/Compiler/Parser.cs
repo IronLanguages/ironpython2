@@ -953,7 +953,12 @@ namespace IronPython.Compiler {
             Expression code, locals = null, globals = null;
 
             code = ParseExpr();
-            if (code is TupleExpression t) {
+            if (MaybeEat(TokenKind.KeywordIn)) { // 'exec' expr 'in' expression [',' expression]
+                globals = ParseExpression();
+                if (MaybeEat(TokenKind.Comma)) {
+                    locals = ParseExpression();
+                }
+            } else if (code is TupleExpression t) {
                 if (t.Items.Count == 2 || t.Items.Count == 3) {
                     globals = t.Items[1];
                     if (t.Items.Count == 3) {
@@ -961,12 +966,7 @@ namespace IronPython.Compiler {
                     }
                     code = t.Items[0];
                 }
-            } else if (MaybeEat(TokenKind.KeywordIn)) { // 'exec' expr 'in' expression [',' expression]
-                globals = ParseExpression();
-                if (MaybeEat(TokenKind.Comma)) {
-                    locals = ParseExpression();
-                }
-            }            
+            }
 
             ExecStatement ret = new ExecStatement(code, locals, globals);
             ret.SetLoc(_globalParent, start, GetEnd());

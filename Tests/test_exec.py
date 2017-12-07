@@ -361,6 +361,11 @@ class ExecTestCase(IronPythonTestCase):
 
         self.assertRaises(TypeError, test1)
 
+        def test2():
+            exec('', {}) in {}
+        
+        self.assertRaises(TypeError, test2)
+
     def test_set_builtins(self):
         g = {}
         exec("", g, None)
