@@ -171,7 +171,7 @@ class StdConsoleTest(IronPythonTestCase):
     def test_c(self):
         """Test the -c (command as string) option."""
         self.TestCommandLine(("-c", "print 'foo'"), "foo\n")
-        self.TestCommandLine(("-c", "raise Exception('foo')"), ("lastline", "Exception: foo\n"), 1)
+        self.TestCommandLine(("-c", "raise Exception('foo')"), ("lastline", "Exception: foo"), 1)
         self.TestCommandLine(("-c", "import sys; sys.exit(123)"), "", 123)
         self.TestCommandLine(("-c", "import sys; print sys.argv", "foo", "bar", "baz"), "['-c', 'foo', 'bar', 'baz']\n")
         self.TestCommandLine(("-c",), "Argument expected for the -c option.\n", 1)
@@ -198,7 +198,7 @@ class StdConsoleTest(IronPythonTestCase):
             self.TestCommandLine(("-S", "-c", "import os ; import sys; print str(os.path.join(sys.exec_prefix, 'Lib')).lower() in [x.lower() for x in sys.path]"), "True\n")
             
             # Now check that we can suppress this with -S.
-            self.TestCommandLine(("-S", "-c", "import sys; print sys.foo"), ("lastline", "AttributeError: 'module' object has no attribute 'foo'\n"), 1)
+            self.TestCommandLine(("-S", "-c", "import sys; print sys.foo"), ("lastline", "AttributeError: 'module' object has no attribute 'foo'"), 1)
 
     def test_cp24720(self):
         from System import Environment
@@ -230,7 +230,7 @@ class StdConsoleTest(IronPythonTestCase):
         self.TestCommandLine((tmpscript, ), "OK\n")
         msg = "inconsistent use of tabs and spaces in indentation"
         self.TestCommandLine(("-t", tmpscript), ("firstline", "%s:3: SyntaxWarning: %s\n"  % (tmpscript, msg, )), 0)
-        self.TestCommandLine(("-tt", tmpscript), ("lastline", "TabError: " + msg + "\n"), 1)
+        self.TestCommandLine(("-tt", tmpscript), ("lastline", "TabError: " + msg), 1)
 
         tmpscript = os.path.join(self.tmpdir, "funcdef.py")
         with open(tmpscript, "w") as f:
@@ -246,7 +246,7 @@ class StdConsoleTest(IronPythonTestCase):
         
         # Re-use the generated site.py from above and verify that we can stop it being picked up from IRONPYTHONPATH
         # using -E.
-        self.TestCommandLine(("-E", "-c", "import sys; print sys.foo"), ("lastline", "AttributeError: 'module' object has no attribute 'foo'\n"), 1)
+        self.TestCommandLine(("-E", "-c", "import sys; print sys.foo"), ("lastline", "AttributeError: 'module' object has no attribute 'foo'"), 1)
         
         # Create an override startup script that exits right away
         tmpscript = os.path.join(self.tmpdir, "startupdie.py")
@@ -357,8 +357,7 @@ class StdConsoleTest(IronPythonTestCase):
     def test_cp11922(self):
         self.TestCommandLine(("-c", "assert False"), '''Traceback (most recent call last):
   File "<string>", line 1, in <module>
-AssertionError
-''', 1)
+AssertionError''', 1)
 
     def test_cp798(self):
         self.TestCommandLine(("", "-c", "dir();print '_' in dir()"), "False\n", 0)
@@ -418,8 +417,7 @@ t()
         expected = r"""Traceback (most recent call last):
   File "%s", line 7, in t
   File "%s", line 4, in f1
-Exception: test exception
-""" % (os.path.join(self.tmpdir, "script_cp34849.py"), os.path.join(self.tmpdir, "script_cp34849.py"))
+Exception: test exception""" % (os.path.join(self.tmpdir, "script_cp34849.py"), os.path.join(self.tmpdir, "script_cp34849.py"))
 
         scriptFileName = os.path.join(self.tmpdir, "script_cp34849.py")
         with open(scriptFileName, "w") as f:
