@@ -1461,6 +1461,9 @@ namespace IronPython.Runtime
 
         internal static string FormatPythonSyntaxError(SyntaxErrorException e) {
             string sourceLine = GetSourceLine(e);
+            if (sourceLine != null && sourceLine.EndsWith("\n")) {
+                sourceLine = sourceLine.Substring(0, sourceLine.Length - 1);
+            }
 
             if (e.GetData(_syntaxErrorNoCaret) == null) {
                 return String.Format(
@@ -1471,7 +1474,7 @@ namespace IronPython.Runtime
                     Environment.NewLine,
                     e.GetSymbolDocumentName(),
                     e.Line > 0 ? e.Line.ToString() : "?",
-                    (sourceLine != null) ? sourceLine.Replace('\t', ' ') : null,
+                    sourceLine?.Replace('\t', ' '),
                     new String(' ', e.Column != 0 ? e.Column - 1 : 0),
                     GetPythonExceptionClassName(PythonExceptions.ToPython(e)), e.Message);
             }
