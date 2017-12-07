@@ -787,6 +787,7 @@ namespace IronPython.Compiler {
             int iVal = 0;
             bool useBigInt = false;
             BigInteger bigInt = BigInteger.Zero;
+            bool first = true;
             while (true) {
                 int ch = NextChar();
                 switch (ch) {
@@ -817,13 +818,21 @@ namespace IronPython.Compiler {
                     default:
                         BufferBack();
                         MarkTokenEnd();
+                        if (first) {
+                            ReportSyntaxError(
+                                new SourceSpan(new SourceLocation(_tokenEndIndex, IndexToLocation(_tokenEndIndex).Line, IndexToLocation(_tokenEndIndex).Column - 1),
+                                BufferTokenEnd),
+                                Resources.InvalidToken, ErrorCodes.SyntaxError);
+                        }
 
                         return new ConstantValueToken(useBigInt ? (object)bigInt : (object)iVal);
                 }
+                first = false;
             }
         }
 
         private Token ReadOctalNumber() {
+            bool first = true;
             while (true) {
                 int ch = NextChar();
 
@@ -848,14 +857,22 @@ namespace IronPython.Compiler {
                     default:
                         BufferBack();
                         MarkTokenEnd();
+                        if (first) {
+                            ReportSyntaxError(
+                                new SourceSpan(new SourceLocation(_tokenEndIndex, IndexToLocation(_tokenEndIndex).Line, IndexToLocation(_tokenEndIndex).Column - 1),
+                                BufferTokenEnd),
+                                Resources.InvalidToken, ErrorCodes.SyntaxError);
+                        }
 
                         // TODO: parse in place
                         return new ConstantValueToken(ParseInteger(GetTokenSubstring(2), 8));
                 }
+                first = false;
             }
         }
 
         private Token ReadHexNumber() {
+            bool first = true;
             while (true) {
                 int ch = NextChar();
 
@@ -895,9 +912,17 @@ namespace IronPython.Compiler {
                         BufferBack();
                         MarkTokenEnd();
 
+                        if (first) {
+                            ReportSyntaxError(
+                                new SourceSpan(new SourceLocation(_tokenEndIndex, IndexToLocation(_tokenEndIndex).Line, IndexToLocation(_tokenEndIndex).Column - 1),
+                                BufferTokenEnd),
+                                Resources.InvalidToken, ErrorCodes.SyntaxError);
+                        }
+
                         // TODO: parse in place
                         return new ConstantValueToken(ParseInteger(GetTokenSubstring(2), 16));
                 }
+                first = false;
             }
         }
 

@@ -195,6 +195,15 @@ namespace IronPython {
                 return ResourceManager.GetString("InvalidParameters", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to invalid token
+        /// </summary>
+        internal static string InvalidToken {
+            get {
+                return ResourceManager.GetString("InvalidToken", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to invalid syntax.
