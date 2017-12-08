@@ -951,13 +951,23 @@ namespace IronPython.Compiler {
             Eat(TokenKind.KeywordExec);
             var start = GetStart();
             Expression code, locals = null, globals = null;
+
             code = ParseExpr();
-            if (MaybeEat(TokenKind.KeywordIn)) {
+            if (MaybeEat(TokenKind.KeywordIn)) { // 'exec' expr 'in' expression [',' expression]
                 globals = ParseExpression();
                 if (MaybeEat(TokenKind.Comma)) {
                     locals = ParseExpression();
                 }
+            } else if (code is TupleExpression t) {
+                if (t.Items.Count == 2 || t.Items.Count == 3) {
+                    globals = t.Items[1];
+                    if (t.Items.Count == 3) {
+                        locals = t.Items[2];
+                    }
+                    code = t.Items[0];
+                }
             }
+
             ExecStatement ret = new ExecStatement(code, locals, globals);
             ret.SetLoc(_globalParent, start, GetEnd());
             return ret;

@@ -2043,7 +2043,7 @@ namespace IronPython.Runtime.Operations {
 
             FunctionCode fc = code as FunctionCode;
             if (fc == null) {
-                throw PythonOps.TypeError("arg 1 must be a string, file, Stream, or code object, not {0}", PythonTypeOps.GetName(code));
+                throw PythonOps.TypeError("exec: arg 1 must be a string, file, Stream, or code object");
             }
 
             if (locals == null) locals = globals;
