@@ -744,7 +744,14 @@ namespace IronPython.Compiler {
 
                     case 'e':
                     case 'E':
-                        return ReadExponent();
+                        var exp = ReadExponent();
+                        if (exp != null) return exp;
+
+                        BufferBack();
+                        MarkTokenEnd();
+
+                        // TODO: parse in place
+                        return new ConstantValueToken(ParseInteger(GetTokenString(), b));
 
                     case 'j':
                     case 'J':
@@ -945,7 +952,14 @@ namespace IronPython.Compiler {
 
                     case 'e':
                     case 'E':
-                        return ReadExponent();
+                        var exp = ReadExponent();
+                        if (exp != null) return exp;
+
+                        BufferBack();
+                        MarkTokenEnd();
+
+                        // TODO: parse in place
+                        return new ConstantValueToken(ParseFloat(GetTokenString()));
 
                     case 'j':
                     case 'J':
@@ -965,6 +979,7 @@ namespace IronPython.Compiler {
         }
 
         private Token ReadExponent() {
+            var idx = CurrentIndex;
             int ch = NextChar();
 
             if (ch == '-' || ch == '+') {
@@ -995,6 +1010,9 @@ namespace IronPython.Compiler {
 
                     default:
                         BufferBack();
+                        if (idx == CurrentIndex) {
+                            return null;
+                        }
                         MarkTokenEnd();
 
                         // TODO: parse in place

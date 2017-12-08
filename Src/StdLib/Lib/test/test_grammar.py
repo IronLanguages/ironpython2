@@ -75,12 +75,11 @@ class TokenTests(unittest.TestCase):
         x = .3e14
         x = 3.1e4
 
-    # TODO: https://github.com/IronLanguages/ironpython2/issues/292
-    # def test_float_exponent_tokenization(self):
-    #     # See issue 21642.
-    #     self.assertEqual(1 if 1else 0, 1)
-    #     self.assertEqual(1 if 0else 0, 0)
-    #     self.assertRaises(SyntaxError, eval, "0 if 1Else 0")
+    def test_float_exponent_tokenization(self):
+        # See issue 21642.
+        self.assertEqual(1 if 1else 0, 1)
+        self.assertEqual(1 if 0else 0, 0)
+        self.assertRaises(SyntaxError, eval, "0 if 1Else 0")
 
     def testStringLiterals(self):
         x = ''; y = ""; self.assertTrue(len(x) == 0 and x == y)
