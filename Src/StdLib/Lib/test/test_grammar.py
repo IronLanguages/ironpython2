@@ -571,7 +571,6 @@ hello world
 
     # these tests fail if python is run with -O, so check __debug__
     @unittest.skipUnless(__debug__, "Won't work if __debug__ is False")
-    @unittest.skipIf(sys.platform == 'cli', 'https://github.com/IronLanguages/ironpython2/issues/292')
     def testAssert2(self):
         try:
             assert 0, "msg"

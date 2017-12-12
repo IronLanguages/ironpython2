@@ -1513,27 +1513,35 @@ namespace IronPython.Runtime.Operations {
         /// <summary>
         /// Python runtime helper for raising assertions. Used by AssertStatement.
         /// </summary>
+        public static void RaiseAssertionError(CodeContext context) {
+            PythonDictionary builtins = context.GetBuiltinsDict() ?? context.LanguageContext.BuiltinModuleDict;
+
+            if (builtins._storage.TryGetValue("AssertionError", out object obj)) {
+                if (obj is PythonType type) {
+                    throw PythonOps.CreateThrowable(type);
+                }
+                throw PythonOps.CreateThrowable(DynamicHelpers.GetPythonType(obj));
+            }
+
+            throw PythonOps.AssertionError("");
+        }
+
+
+        /// <summary>
+        /// Python runtime helper for raising assertions. Used by AssertStatement.
+        /// </summary>
         /// <param name="msg">Object representing the assertion message</param>
         public static void RaiseAssertionError(CodeContext context, object msg) {
             PythonDictionary builtins = context.GetBuiltinsDict() ?? context.LanguageContext.BuiltinModuleDict;
 
-            object obj;
-            var message = String.Empty;
-
-            if (msg != null) {
-                message = PythonOps.ToString(msg);
-            }
-
-            if (builtins._storage.TryGetValue("AssertionError", out obj)) {
-                PythonType type = obj as PythonType;
-                if (type != null) {
-                    throw PythonOps.CreateThrowable(type, message);
-                } else {
-                    throw PythonOps.CreateThrowable(DynamicHelpers.GetPythonType(obj), message);
+            if (builtins._storage.TryGetValue("AssertionError", out object obj)) {
+                if (obj is PythonType type) {
+                    throw PythonOps.CreateThrowable(type, msg);
                 }
+                throw PythonOps.CreateThrowable(DynamicHelpers.GetPythonType(obj), msg);
             }
 
-            throw PythonOps.AssertionError("{0}", message);
+            throw PythonOps.AssertionError("{0}", msg);
         }
 
         /// <summary>
