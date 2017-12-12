@@ -1523,7 +1523,7 @@ namespace IronPython.Runtime.Operations {
                 throw PythonOps.CreateThrowable(DynamicHelpers.GetPythonType(obj));
             }
 
-            throw PythonOps.AssertionError("{0}");
+            throw PythonOps.AssertionError();
         }
 
 
