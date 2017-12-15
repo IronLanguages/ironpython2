@@ -89,25 +89,13 @@ namespace IronPython.Compiler.Ast {
             }
         }
 
-        internal override string CheckAssign() {
-            if (_value == null) {
-                return "cannot assign to None";
-            }
-
-            return "can't assign to literal";
-        }
-
         public override void Walk(PythonWalker walker) {
             if (walker.Walk(this)) {
             }
             walker.PostWalk(this);
         }
 
-        public override string NodeName {
-            get {
-                return "literal";
-            }
-        }
+        public override string NodeName => _value == null ? "None" : "literal";
 
         internal override bool CanThrow {
             get {

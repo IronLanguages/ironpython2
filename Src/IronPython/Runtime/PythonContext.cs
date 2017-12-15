@@ -1481,7 +1481,7 @@ namespace IronPython.Runtime
                     "{3}: {4}",
                     Environment.NewLine,
                     e.GetSymbolDocumentName(),
-                    new String(' ', e.Column != 0 ? e.Column - 1 : 0),
+                    e.Line > 0 ? e.Line.ToString() : "?",
                     GetPythonExceptionClassName(PythonExceptions.ToPython(e)), e.Message);
         }
 

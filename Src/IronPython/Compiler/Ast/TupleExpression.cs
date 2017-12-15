@@ -53,6 +53,12 @@ namespace IronPython.Compiler.Ast {
             return null;
         }
 
+        internal override string CheckDelete() {
+            if (Items.Count == 0)
+                return "can't delete ()";
+            return base.CheckDelete();
+        }
+
         public override MSAst.Expression Reduce() {
             if (_expandable) {
                 return Ast.NewArrayInit(
