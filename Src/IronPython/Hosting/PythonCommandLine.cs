@@ -491,7 +491,7 @@ namespace IronPython.Hosting {
                 try {
                     return RunCommandWorker(command);
                 } catch (Exception e) {
-                    Console.Write(Language.FormatException(e), Style.Error);
+                    Console.WriteLine(Language.FormatException(e), Style.Error);
                     return 1;
                 }
             } 
