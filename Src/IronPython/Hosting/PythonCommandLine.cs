@@ -491,7 +491,7 @@ namespace IronPython.Hosting {
                 try {
                     return RunCommandWorker(command);
                 } catch (Exception e) {
-                    Console.Write(Language.FormatException(e), Style.Error);
+                    Console.WriteLine(Language.FormatException(e), Style.Error);
                     return 1;
                 }
             } 
@@ -536,7 +536,7 @@ namespace IronPython.Hosting {
                 try {
                     result = RunFileWorker(fileName);
                 } catch (Exception e) {
-                    Console.Write(Language.FormatException(e), Style.Error);
+                    Console.WriteLine(Language.FormatException(e), Style.Error);
                 }
             } else {
                 result = RunFileWorker(fileName);

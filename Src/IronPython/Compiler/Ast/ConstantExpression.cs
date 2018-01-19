@@ -94,7 +94,7 @@ namespace IronPython.Compiler.Ast {
                 return "cannot assign to None";
             }
 
-            return "can't assign to literal";
+            return base.CheckAssign();
         }
 
         public override void Walk(PythonWalker walker) {
@@ -103,11 +103,7 @@ namespace IronPython.Compiler.Ast {
             walker.PostWalk(this);
         }
 
-        public override string NodeName {
-            get {
-                return "literal";
-            }
-        }
+        public override string NodeName => _value == null ? "None" : "literal";
 
         internal override bool CanThrow {
             get {
