@@ -1210,6 +1210,10 @@ def uname():
             if not version:
                 version = vendor
 
+        elif system == 'cli':
+            # we know this is Windows, because uname exists on Linux and macOS
+            system = 'Windows'
+
     # System specific extensions
     if system == 'OpenVMS':
         # OpenVMS seems to have release and version mixed up
