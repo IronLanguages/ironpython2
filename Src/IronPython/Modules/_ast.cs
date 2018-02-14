@@ -86,12 +86,13 @@ namespace IronPython.Modules
         }
 
         internal static AST BuildAst(CodeContext context, SourceUnit sourceUnit, PythonCompilerOptions opts, string mode) {
-            Parser parser = Parser.CreateParser(
+            using (Parser parser = Parser.CreateParser(
                 new CompilerContext(sourceUnit, opts, ThrowingErrorSink.Default),
-                (PythonOptions)context.LanguageContext.Options);
+                (PythonOptions)context.LanguageContext.Options)) {
 
-            PythonAst ast = parser.ParseFile(true);
-            return ConvertToAST(ast, mode);
+                PythonAst ast = parser.ParseFile(true);
+                return ConvertToAST(ast, mode);
+            }
         }
 
         private static mod ConvertToAST(PythonAst pythonAst, string kind) {
