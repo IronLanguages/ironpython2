@@ -44,15 +44,7 @@ namespace IronPython.Modules {
             LongName = longName;
             NID = nid;
             OID = oid;
-#if !CLR2
             OIDString = string.Join(".", OID);
-#else
-            StringBuilder buf = new StringBuilder();
-            foreach(byte b in oid) {
-                buf.AppendFormat("{0}.");
-            }
-            OIDString = buf.ToString().Trim('.');
-#endif
         }
 
         public string ShortName {

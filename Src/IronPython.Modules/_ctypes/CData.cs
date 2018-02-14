@@ -15,15 +15,9 @@
 
 #if FEATURE_NATIVE
 
-#if CLR2
-using Microsoft.Scripting.Math;
-#else
-using System.Numerics;
-#endif
-
-
 using System;
 using System.Diagnostics;
+using System.Numerics;
 using System.Threading;
 
 using IronPython.Runtime;

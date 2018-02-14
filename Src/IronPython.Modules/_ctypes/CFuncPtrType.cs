@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -30,12 +31,6 @@ using Microsoft.Scripting.Utils;
 using IronPython.Runtime;
 using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
-
-#if CLR2
-using Microsoft.Scripting.Math;
-#else
-using System.Numerics;
-#endif
 
 namespace IronPython.Modules {
     /// <summary>
