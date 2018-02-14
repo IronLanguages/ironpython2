@@ -2281,12 +2281,9 @@ instOC = TestOC()
 #pragma warning disable 612, 618 // obsolete API
             evidence.AddHost(new Zone(SecurityZone.Internet));
 #pragma warning restore 612, 618
-#if !CLR2
+
             System.Security.PermissionSet permSet = SecurityManager.GetStandardSandbox(evidence);
             AppDomain newDomain = AppDomain.CreateDomain("test", evidence, info, permSet, null);
-#else
-            AppDomain newDomain = AppDomain.CreateDomain("test", evidence, info);
-#endif
 
             // create runtime in partial trust...
             ScriptRuntime runtime = Python.CreateRuntime(newDomain);

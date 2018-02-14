@@ -40,9 +40,6 @@ namespace IronPython.Runtime.Types {
     [DebuggerTypeProxy(typeof(OldInstance.OldInstanceDebugView)), DebuggerDisplay("old-style instance of {ClassName}")]
     public sealed partial class OldInstance :
         ICodeFormattable,
-#if CLR2
-        IValueEquality,
-#endif
 #if FEATURE_CUSTOM_TYPE_DESCRIPTOR
         ICustomTypeDescriptor,
 #endif
@@ -943,18 +940,6 @@ namespace IronPython.Runtime.Types {
             return false;
         }
 
-        #endregion
-
-        #region IValueEquality Members
-#if CLR2
-        int IValueEquality.GetValueHashCode() {
-            return GetHashCode();
-        }
-
-        bool IValueEquality.ValueEquals(object other) {
-            return Equals(other);
-        }
-#endif
         #endregion
 
         #region IDynamicMetaObjectProvider Members

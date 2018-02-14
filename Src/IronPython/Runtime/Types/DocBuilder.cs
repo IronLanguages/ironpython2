@@ -581,7 +581,7 @@ namespace IronPython.Runtime.Types {
                 if (!System.IO.File.Exists(xml)) {
                     xml = Path.Combine(baseDir, baseFile);
                     if (!System.IO.File.Exists(xml)) {
-#if !CLR2 && !NETCOREAPP2_0
+#if !NETCOREAPP2_0
                         // On .NET 4.0 documentation is in the reference assembly location
                         // for 64-bit processes, we need to look in Program Files (x86)
                         xml = Path.Combine(

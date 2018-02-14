@@ -265,9 +265,7 @@ namespace IronPython.Runtime.Types {
         }
 
         /// <summary>
-        /// Resolves methods mapped to __eq__ and __ne__ from:
-        ///     1. IStructuralEquatable.Equals
-        ///     2. IValueEquality.Equals (CLR2 only)
+        /// Resolves methods mapped to __eq__ and __ne__ from IStructuralEquatable.Equals
         /// </summary>
         class EqualityResolver : MemberResolver {
             public static readonly EqualityResolver Instance = new EqualityResolver();
@@ -287,14 +285,8 @@ namespace IronPython.Runtime.Types {
 
                 if (typeof(IStructuralEquatable).IsAssignableFrom(type)) {
                     return new MemberGroup(
-                        GetEqualityMethods(type, equality ? "StructuralEqualityMethod" : "StructuralInequalityMethod")
+                        GetEqualityMethods(type, equality ? nameof(InstanceOps.StructuralEqualityMethod) : nameof(InstanceOps.StructuralInequalityMethod))
                     );
-#if CLR2
-                } else if (typeof(IValueEquality).IsAssignableFrom(type)) {
-                    return new MemberGroup(
-                        GetEqualityMethods(type, equality ? "ValueEqualsMethod" : "ValueNotEqualsMethod")
-                    );
-#endif
                 }
 
                 return MemberGroup.EmptyGroup;
@@ -381,15 +373,12 @@ namespace IronPython.Runtime.Types {
 
                         if (opInfo != null) {
                             foreach (Type curType in binder.GetContributingTypes(type)) {
-#if !CLR2
                                 if (curType == typeof(double)) {
                                     if ((opInfo.Operator & PythonOperationKind.Comparison) != 0) {
                                         // we override these with our own comparisons in DoubleOps
                                         continue;
                                     }
-                                } else
-#endif
-                                if (curType == typeof(BigInteger)) {
+                                } else if (curType == typeof(BigInteger)) {
                                     if (opInfo.Operator == PythonOperationKind.Mod ||
                                         opInfo.Operator == PythonOperationKind.RightShift ||
                                         opInfo.Operator == PythonOperationKind.LeftShift ||
@@ -398,11 +387,9 @@ namespace IronPython.Runtime.Types {
                                         // we override these with our own modulus/power PythonOperationKind which are different from BigInteger.
                                         continue;
                                     }
-#if !CLR2
                                 } else if (curType == typeof(Complex) && opInfo.Operator == PythonOperationKind.Divide) {
                                     // we override this with our own division PythonOperationKind which is different from .NET Complex.
                                     continue;
-#endif
                                 }
 
                                 Debug.Assert(opInfo.Name != "Equals");
@@ -644,8 +631,8 @@ namespace IronPython.Runtime.Types {
                 // Runs after StandardResolver so custom __eq__ methods can be added
                 // that support things like returning NotImplemented vs. IValueEquality
                 // which only supports true/false.  Runs before OperatorResolver so that
-                // IStructuralEquatable and IValueEquality take precedence over Equals,
-                // which can be provided for nice .NET interop.
+                // IStructuralEquatable take precedence over Equals, which can be provided
+                // for nice .NET interop.
                 
                 EqualityResolver.Instance,
                 new ComparisonResolver(typeof(IStructuralComparable), "StructuralComparable"),
@@ -872,8 +859,7 @@ namespace IronPython.Runtime.Types {
         }
 
         /// <summary>
-        /// Provides a resolution for __hash__, first looking for IStructuralEquatable.GetHashCode,
-        /// then IValueEquality.GetValueHashCode.
+        /// Provides a resolution for __hash__ looking for IStructuralEquatable.GetHashCode.
         /// </summary>
         private static MemberGroup/*!*/ HashResolver(MemberBinder/*!*/ binder, Type/*!*/ type) {
             if (typeof(IStructuralEquatable).IsAssignableFrom(type) && !type.IsInterface()) {
@@ -890,7 +876,7 @@ namespace IronPython.Runtime.Types {
                     }
                 }
 
-                return GetInstanceOpsMethod(type, "StructuralHashMethod");
+                return GetInstanceOpsMethod(type, nameof(InstanceOps.StructuralHashMethod));
             }
 
             // otherwise we'll pick up __hash__ from ObjectOps which will call .NET's .GetHashCode therefore
@@ -1058,15 +1044,7 @@ namespace IronPython.Runtime.Types {
                         ParameterInfo[] pis = method.Method.GetParameters();
                         if (pis.Length == 1) {
                             if (pis[0].ParameterType == typeof(object)) {
-#if CLR2
-                                if (curType == typeof(Type)) {
-                                    return new MemberGroup(MethodTracker.FromMemberInfo(typeof(InstanceOps).GetMethod("TypeNotEqualsMethod"), curType));
-                                } else {
-                                    return new MemberGroup(MethodTracker.FromMemberInfo(typeof(InstanceOps).GetMethod("NotEqualsMethod"), curType));
-                                }
-#else
-                                return new MemberGroup(MethodTracker.FromMemberInfo(typeof(InstanceOps).GetMethod("NotEqualsMethod"), curType));
-#endif
+                                return new MemberGroup(MethodTracker.FromMemberInfo(typeof(InstanceOps).GetMethod(nameof(InstanceOps.NotEqualsMethod)), curType));
                             }
                         }
                     }

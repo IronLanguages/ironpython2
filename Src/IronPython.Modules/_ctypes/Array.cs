@@ -15,14 +15,9 @@
 
 #if FEATURE_NATIVE
 
-#if CLR2
-using Microsoft.Scripting.Math;
-#else
-using System.Numerics;
-#endif
-
 using System;
 using System.Collections;
+using System.Numerics;
 using System.Text;
 
 using Microsoft.Scripting.Runtime;
