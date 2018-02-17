@@ -106,8 +106,8 @@ namespace IronPythonTest {
         public int Method(int arg) {
             if (Event != null)
                 return Event(arg);
-            else
-                return -1;
+            
+            return -1;
         }
 
         public object Content {
@@ -144,6 +144,7 @@ namespace IronPythonTest {
         }
     }
 #endif
+
     public class ClsPart {
         public int Field;
         int m_property;
@@ -195,7 +196,6 @@ namespace IronPythonTest {
         : MarshalByRefObject
 #endif
     {
-
         private readonly ScriptEngine _pe;
         private readonly ScriptRuntime _env;
 
@@ -2058,7 +2058,7 @@ ocinst = oc()
             ncinstnames.Sort();
             ocnames.Sort();
             ocinstnames.Sort();
-            fnames.Sort();            
+            fnames.Sort();
 
             Assert.AreEqual(ncnames.ToArray(), new[] { "__class__", "__delattr__", "__dict__", "__doc__", "__format__", "__getattribute__", "__hash__", "__init__", "__module__", "__new__", "__reduce__", "__reduce_ex__", "__repr__", "__setattr__", "__sizeof__", "__str__", "__subclasshook__", "__weakref__", "abc", "classmethod", "foo", "staticfunc" });
             Assert.AreEqual(ncinstnames.ToArray(), new[] { "__class__", "__delattr__", "__dict__", "__doc__", "__format__", "__getattribute__", "__hash__", "__init__", "__module__", "__new__", "__reduce__", "__reduce_ex__", "__repr__", "__setattr__", "__sizeof__", "__str__", "__subclasshook__", "__weakref__", "abc", "baz", "classmethod", "foo", "staticfunc" });
@@ -2089,19 +2089,6 @@ ocinst = oc()
             token = categorizer.ReadToken();
             Assert.AreEqual(token.Category, TokenCategory.EndOfStream);
         }
-
-        //private void Assert.AreEqualLists<T>(IList<T> left, IList<T> right) {
-        //    if (left.Count != right.Count) {
-        //        string res = "lists differ by length: " + left.Count + " vs " + right.Count + Environment.NewLine + ListsToString(left, right);
-        //        Assert(false, res);
-        //    }
-
-        //    for (int i = 0; i < left.Count; i++) {
-        //        if (!left[i].Equals(right[i])) {
-        //            Assert(false, String.Format("lists differ by value: {0} {1}{2}{3}", left[i], right[i], Environment.NewLine, ListsToString(left, right)));
-        //        }
-        //    }
-        //}
 
         private static string ListsToString<T>(IList<T> left, IList<T> right) {
             string res = "    ";
@@ -2237,6 +2224,7 @@ instOC = TestOC()
             Assert.AreEqual(1, _pe.CreateScriptSourceFromString("a").Execute<int>(scope));
             Assert.AreEqual(-1, _pe.CreateScriptSourceFromString("b").Execute<int>(scope));
         }
+
         // AddToPath
 
         public void ScenarioAddToPath() { // runs first to avoid path-order issues
@@ -2758,14 +2746,6 @@ if r.sum != 110:
 
         public static int Negate(int arg) { return -1 * arg; }
 
-        //static void Assert.AreEqual<T>(T expected, T actual) {
-        //    if (expected == null && actual == null) return;
-
-        //    if (!expected.Equals(actual)) {
-        //        Console.WriteLine("Expected: {0} Got: {1} from {2}", expected, actual, new StackTrace((Exception)null, true));
-        //        throw new Exception();
-        //    }
-        //}
     }
 
 

@@ -14,7 +14,6 @@
  * ***************************************************************************/
 
 using System.Numerics;
-
 using Microsoft.Scripting.Utils;
 
 namespace IronPythonTest {

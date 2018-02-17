@@ -20,7 +20,7 @@ dotnet: 2.1.4
 script:
   - dotnet restore IronPython.sln --packages ./packages
   - make
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then make test-all ; fi
+  - make test-all 
 
 notifications:
   email:
