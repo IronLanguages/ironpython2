@@ -40,10 +40,7 @@ from System.Windows.Forms import *
 
 # Documentation
 
-Documentation can be found here:
-
-1. http://stackoverflow.com/documentation/ironpython/topics
-2. http://ironpython.net/documentation/dotnet/
+Documentation can be found here: http://ironpython.net/documentation/dotnet/
 
 
 ## Additional information
