@@ -42,9 +42,11 @@ class HelpTest(IronPythonTestCase):
         x = self.run_help(System.String.Format)
         self.assertTrue(x.find('Format(format: str, arg0: object) -> str') != -1)
         
-        x = self.run_help('u.u'.Split('u'))
-        # requires std lib
-        self.assertTrue('Help on Array[str] object' in x, x)
+        # https://github.com/mono/mono/issues/7095
+        if not is_mono:
+            x = self.run_help('u.u'.Split('u'))
+            # requires std lib
+            self.assertTrue('Help on Array[str] object' in x, x)
 
         #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=4190
         from System.IO import MemoryStream
