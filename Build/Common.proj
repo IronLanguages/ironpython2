@@ -15,7 +15,6 @@
          additional assembly references. -->
     <NoConfig>true</NoConfig>
     <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
-
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   
@@ -99,5 +98,4 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <DefineConstants>$(Features);$(SignedSym);$(PlatformSymbols);DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
- 
 </Project>

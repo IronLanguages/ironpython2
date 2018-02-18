@@ -11,6 +11,7 @@
     <AssemblyName>ipyw32</AssemblyName>
     <ApplicationIcon>ipyw.ico</ApplicationIcon>
     <CodeAnalysisRuleSet>IronPythonWindow.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\IronPython\IronPython.csproj" />

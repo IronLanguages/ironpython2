@@ -319,8 +319,6 @@ class FileGenerator:
                 return False
             else:
                 print "updated"
-                if sys.argv.count('checkout') > 0:
-                    os.spawnl(0, "tf.exe", "tf.exe", "edit", self.filename)
                 save_file(self.filename, new_text)
         else:
             print "ok"

@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_mono, run_test, skipUnlessIronPython
 from iptest.type_util import *
 
 def add(x, y): return x + y
@@ -1148,8 +1148,10 @@ class InheritanceTest(IronPythonTestCase):
         DReturnTypes.M_IEnumerable = lambda self: { 1 : "one", 10: "two", 100: "three"}
         self.assertEqual(reduce(add, used.Use_IEnumerable()), 111)
         
-        DReturnTypes.M_IEnumerator = lambda self: iter(System.Array[int](range(10)))
-        self.assertEqual(list(used.Use_IEnumerator()), range(10))
+        # https://github.com/mono/mono/issues/7095
+        if not is_mono:
+            DReturnTypes.M_IEnumerator = lambda self: iter(System.Array[int](range(10)))
+            self.assertEqual(list(used.Use_IEnumerator()), range(10))
         
         DReturnTypes.M_IEnumerable = lambda self: System.Array[int](range(10))
         self.assertEqual(reduce(add, used.Use_IEnumerable()), 45)
