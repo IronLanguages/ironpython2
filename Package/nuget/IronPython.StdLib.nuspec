@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+<package>
+  <metadata minClientVersion="3.3">
     <id>IronPython.StdLib</id>
     <title>IronPython Standard Library</title>
     <version>2.7.8</version>
@@ -16,8 +16,8 @@
     <dependencies>
       <dependency id="IronPython" version="[2.7.8,3.0)" />
     </dependencies>
-  </metadata>
-  <files>
-    <file src="Lib\**" target="content\Lib" />
-  </files>
+    <contentFiles>
+      <files include="Lib\**" buildAction="None" copyToOutput="true" />
+    </contentFiles>
+  </metadata>  
 </package>
