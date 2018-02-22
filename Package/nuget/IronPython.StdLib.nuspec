@@ -18,6 +18,6 @@
     </dependencies>
   </metadata>
   <contentFiles>
-    <file src="Lib\**" buildAction="None" copyToOutput="true" />
+    <files src="Lib\**" buildAction="None" copyToOutput="true" />
   </contentFiles>
 </package>
