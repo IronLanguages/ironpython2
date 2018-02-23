@@ -30,18 +30,6 @@ if(!$global:isUnix) {
 
 # Details for running tests on the various frameworks
 $_FRAMEWORKS = @{
-    "net40" = @{
-        "runner" = [System.IO.Path]::Combine($_BASEDIR, 'packages/nunit.consolerunner/3.7.0/tools/nunit3-console.exe');
-        "args" = @("--params", '"FRAMEWORK=__FRAMEWORK__"', '--labels=All', '--result:__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.xml', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__/IronPythonTest.dll' );        
-        "filterArg" = '--where:"__FILTER__"';
-        "filters" = @{
-            "all" = "";
-            "smoke" = "Category==StandardCPython";
-            "cpython" = "Category==StandardCPython || Category==AllCPython";
-            "ironpython" = "Category==IronPython";
-            "single" = "name==__TESTNAME__";
-        }
-    };
     "net45" = @{
         "runner" = "dotnet";
         "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');

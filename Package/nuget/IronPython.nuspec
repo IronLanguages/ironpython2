@@ -14,9 +14,6 @@
     <language>en-US</language>
     <tags>ironpython python dynamic dlr</tags>
     <dependencies>
-      <group targetFramework="net40">
-        <dependency id="DynamicLanguageRuntime" version="[1.2.1]" />
-      </group>
       <group targetFramework="net45">
         <dependency id="DynamicLanguageRuntime" version="[1.2.1]" />
       </group>
