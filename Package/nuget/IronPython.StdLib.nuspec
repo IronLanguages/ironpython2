@@ -16,8 +16,11 @@
     <dependencies>
       <dependency id="IronPython" version="[2.7.8,3.0)" />
     </dependencies>
+    <contentFiles>
+      <files include="**\*" buildAction="None" copyToOutput="true" />
+    </contentFiles>
   </metadata>
   <files>
-    <file src="Lib\**" target="content\Lib" />
+    <file src="Lib\**" target="contentFiles\any\any\Lib" />
   </files>
 </package>
