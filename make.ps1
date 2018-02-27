@@ -73,7 +73,7 @@ function Main([String] $target, [String] $configuration) {
         if($global:isUnix) {
             & git submodule update --init
         } else {
-            Write-Error "Please initialize the DLR submodule"
+            Write-Error "Please initialize the DLR submodule (the equivalent of `git submodule update --init` for your Git toolset"
             $global:Result = -1
             return
         }
