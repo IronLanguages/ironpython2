@@ -38,8 +38,7 @@ namespace IronPython.Runtime {
 
     [PythonType("list"), Serializable, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
     [DebuggerTypeProxy(typeof(ObjectCollectionDebugProxy)), DebuggerDisplay("list, {Count} items")]
-    public class List : IList, ICodeFormattable, IList<object>, IReversible, IStructuralEquatable, IStructuralComparable
-    {
+    public class List : IList, ICodeFormattable, IList<object>, IReversible, IStructuralEquatable, IStructuralComparable, IReadOnlyList<object> {
         private const int INITIAL_SIZE = 20;
 
         internal int _size;
