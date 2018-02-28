@@ -41,9 +41,7 @@ namespace IronPython.Runtime {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
     [PythonType("tuple"), Serializable, DebuggerTypeProxy(typeof(CollectionDebugProxy)), DebuggerDisplay("tuple, {Count} items")]
-    public class PythonTuple : ICollection, IEnumerable, IEnumerable<object>, IList, IList<object>, ICodeFormattable, IExpressionSerializable,
-        IStructuralEquatable, IStructuralComparable
-    {
+    public class PythonTuple : IList, IList<object>, ICodeFormattable, IExpressionSerializable, IStructuralEquatable, IStructuralComparable, IReadOnlyList<object> {
         internal readonly object[] _data;
         
         internal static readonly PythonTuple EMPTY = new PythonTuple();
