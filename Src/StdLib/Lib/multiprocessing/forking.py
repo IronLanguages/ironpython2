@@ -37,6 +37,8 @@ import sys
 import signal
 import errno
 
+is_win32 = sys.platform == "win32" or sys.platform == "cli" and os.name == "nt"
+
 from multiprocessing import util, process
 
 __all__ = ['Popen', 'assert_spawning', 'exit', 'duplicate', 'close', 'ForkingPickler']
@@ -56,16 +58,7 @@ def assert_spawning(self):
 # Try making some callable types picklable
 #
 
-from pickle import Pickler
-class ForkingPickler(Pickler):
-    dispatch = Pickler.dispatch.copy()
-
-    @classmethod
-    def register(cls, type, reduce):
-        def dispatcher(self, obj):
-            rv = reduce(obj)
-            self.save_reduce(obj=obj, *rv)
-        cls.dispatch[type] = dispatcher
+from _multiprocessing import ForkingPickler
 
 def _reduce_method(m):
     if m.im_self is None:
@@ -99,7 +92,7 @@ else:
 # Unix
 #
 
-if sys.platform != 'win32':
+if not is_win32:
     import time
 
     exit = os._exit
@@ -203,7 +196,7 @@ else:
     #
 
     TERMINATE = 0x10000
-    WINEXE = (sys.platform == 'win32' and getattr(sys, 'frozen', False))
+    WINEXE = (is_win32 and getattr(sys, 'frozen', False))
     WINSERVICE = sys.executable.lower().endswith("pythonservice.exe")
 
     exit = win32.ExitProcess

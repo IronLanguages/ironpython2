@@ -42,6 +42,8 @@ import time
 import tempfile
 import itertools
 
+is_win32 = sys.platform == "win32" or sys.platform == "cli" and os.name == "nt"
+
 import _multiprocessing
 from multiprocessing import current_process, AuthenticationError
 from multiprocessing.util import get_temp_dir, Finalize, sub_debug, debug
@@ -65,7 +67,7 @@ if hasattr(socket, 'AF_UNIX'):
     default_family = 'AF_UNIX'
     families += ['AF_UNIX']
 
-if sys.platform == 'win32':
+if is_win32:
     default_family = 'AF_PIPE'
     families += ['AF_PIPE']
 
@@ -178,7 +180,7 @@ def Client(address, family=None, authkey=None):
     return c
 
 
-if sys.platform != 'win32':
+if not is_win32:
 
     def Pipe(duplex=True):
         '''
@@ -326,7 +328,7 @@ def SocketClient(address):
 # Definitions for connections based on named pipes
 #
 
-if sys.platform == 'win32':
+if is_win32:
 
     class PipeListener(object):
         '''
