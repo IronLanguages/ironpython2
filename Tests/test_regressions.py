@@ -1098,4 +1098,27 @@ class C:
         gc.collect()
         self.assertEqual(A.cnt, 0)
 
+    def test_ipy2_gh357(self):
+        """https://github.com/IronLanguages/ironpython2/issues/357"""
+
+        import unicodedata
+
+        if is_cli:
+            self.assertEqual(unicodedata.name(u'\u4e2d'), '<CJK IDEOGRAPH, FIRST>..<CJK IDEOGRAPH, LAST>')
+        else:
+            self.assertEqual(unicodedata.name(u'\u4e2d'), 'CJK UNIFIED IDEOGRAPH-4E2D')
+
+        self.assertRaises(ValueError, unicodedata.decimal, u'\u4e2d')
+        self.assertEqual(unicodedata.decimal(u'\u4e2d', 0), 0)
+        self.assertRaises(ValueError, unicodedata.digit, u'\u4e2d')
+        self.assertEqual(unicodedata.digit(u'\u4e2d', 0), 0)
+        self.assertRaises(ValueError, unicodedata.numeric, u'\u4e2d')
+        self.assertEqual(unicodedata.numeric(u'\u4e2d', 0), 0)
+        self.assertEqual(unicodedata.category(u'\u4e2d'), 'Lo')
+        self.assertEqual(unicodedata.bidirectional(u'\u4e2d'), 'L')
+        self.assertEqual(unicodedata.combining(u'\u4e2d'), 0)
+        self.assertEqual(unicodedata.east_asian_width(u'\u4e2d'), 'W')
+        self.assertEqual(unicodedata.mirrored(u'\u4e2d'), 0)
+        self.assertEqual(unicodedata.decomposition(u'\u4e2d'), '')
+
 run_test(__name__)
