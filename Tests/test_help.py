@@ -48,13 +48,14 @@ class HelpTest(IronPythonTestCase):
             # requires std lib
             self.assertTrue('Help on Array[str] object' in x, x)
 
-        #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=4190
-        from System.IO import MemoryStream
-        x_class = self.run_help(MemoryStream.Write)
+        # https://github.com/IronLanguages/ironpython2/issues/359
+        if not is_mono:
+            from System.IO import MemoryStream
+            x_class = self.run_help(MemoryStream.Write)
 
-        x_instance = self.run_help(MemoryStream().Write)
+            x_instance = self.run_help(MemoryStream().Write)
 
-        self.assertEqual(x_class, x_instance.replace("built-in function Write", "method_descriptor"))
+            self.assertEqual(x_class, x_instance.replace("built-in function Write", "method_descriptor"))
 
         #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=11883
         self.assertEqual(dir(System).count('Action'), 1)
