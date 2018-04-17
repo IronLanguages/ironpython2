@@ -280,6 +280,9 @@ namespace IronPython.Compiler.Ast {
         }
 
         private void Verify(PythonNameBinder binder) {
+            if (ContainsImportStar) {
+                binder.ReportSyntaxWarning("import * only allowed at module level", this);
+            }
             if (ContainsImportStar && IsClosure) {
                 binder.ReportSyntaxError(
                     String.Format(
