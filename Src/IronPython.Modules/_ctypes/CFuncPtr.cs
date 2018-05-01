@@ -12,7 +12,8 @@
  *
  *
  * ***************************************************************************/
-#if FEATURE_NATIVE
+
+#if FEATURE_NATIVE || NETCOREAPP2_0
 
 using System.Linq.Expressions;
 using System.Numerics;
@@ -669,8 +670,17 @@ namespace IronPython.Modules {
 #endif
                 }
 
+                private static SignatureHelper GetMethodSigHelper(CallingConvention convention, Type calliRetType) {
+#if NETCOREAPP2_0
+                    var helper = typeof(SignatureHelper).GetMethod("GetMethodSigHelper", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(CallingConvention), typeof(Type) }, null);
+                    return (SignatureHelper)helper.Invoke(null, new object[] { convention, calliRetType });
+#else
+                    return SignatureHelper.GetMethodSigHelper(convention, calliRetType);
+#endif
+                }
+
                 private static SignatureHelper GetCalliSignature(CallingConvention convention, ArgumentMarshaller/*!*/[] sig, Type calliRetType) {
-                    SignatureHelper signature = SignatureHelper.GetMethodSigHelper(convention, calliRetType);
+                    SignatureHelper signature = GetMethodSigHelper(convention, calliRetType);
                     
                     foreach (ArgumentMarshaller argMarshaller in sig) {
                         signature.AddArgument(argMarshaller.NativeType);

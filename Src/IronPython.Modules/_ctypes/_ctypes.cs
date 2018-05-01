@@ -13,7 +13,7 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_NATIVE
+#if FEATURE_NATIVE || NETCOREAPP2_0
 
 using System;
 using System.Collections;
@@ -495,17 +495,23 @@ namespace IronPython.Modules {
                         if (_dynamicModule == null) {
                             var attributes = new[] { 
                                 new CustomAttributeBuilder(typeof(UnverifiableCodeAttribute).GetConstructor(ReflectionUtils.EmptyTypes), new object[0]),
+#if !NETCOREAPP2_0
                                 //PermissionSet(SecurityAction.Demand, Unrestricted = true)
                                 new CustomAttributeBuilder(typeof(PermissionSetAttribute).GetConstructor(new Type[] { typeof(SecurityAction) }), 
                                     new object[]{ SecurityAction.Demand },
-                                    new PropertyInfo[] { typeof(PermissionSetAttribute).GetProperty("Unrestricted") }, 
+                                    new PropertyInfo[] { typeof(PermissionSetAttribute).GetProperty(nameof(PermissionSetAttribute.Unrestricted)) },
                                     new object[] { true }
                                 )
+#endif
                             };
 
                             string name = typeof(CTypes).Namespace + ".DynamicAssembly";
+#if NETCOREAPP2_0
+                            var assembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(name), AssemblyBuilderAccess.Run, attributes);
+#else
                             var assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName(name), AssemblyBuilderAccess.Run, attributes);
                             assembly.DefineVersionInfoResource();
+#endif
                             _dynamicModule = assembly.DefineDynamicModule(name);
                         }
                     }
