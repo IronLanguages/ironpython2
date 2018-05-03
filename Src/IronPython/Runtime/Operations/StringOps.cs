@@ -29,7 +29,7 @@ using Microsoft.Scripting.Utils;
 
 using System.Numerics;
 
-using SpecialNameAttribute = System.Runtime.CompilerServices.SpecialNameAttribute; 
+using SpecialNameAttribute = System.Runtime.CompilerServices.SpecialNameAttribute;
 
 namespace IronPython.Runtime.Operations {
     /// <summary>
@@ -37,8 +37,7 @@ namespace IronPython.Runtime.Operations {
     /// that derive from string.  It carries along with it the string's value and
     /// our converter recognizes it as a string.
     /// </summary>
-    public class ExtensibleString : Extensible<string>, ICodeFormattable, IStructuralEquatable
-    {
+    public class ExtensibleString : Extensible<string>, ICodeFormattable, IStructuralEquatable {
         public ExtensibleString() : base(String.Empty) { }
         public ExtensibleString(string self) : base(self) { }
 
@@ -214,14 +213,14 @@ namespace IronPython.Runtime.Operations {
                 }
 
                 Bytes bytes = value as Bytes;
-                if (bytes != null) {                    
+                if (bytes != null) {
                     return StringOps.RawDecode(context, bytes.ToString(), encoding, strErrors);
                 }
 
                 PythonBuffer buffer = value as PythonBuffer;
                 if (buffer != null) {
                     return StringOps.RawDecode(context, buffer.ToString(), encoding, strErrors);
-                }                
+                }
             }
 
             throw PythonOps.TypeError("coercing to Unicode: need string or buffer, {0} found", PythonTypeOps.GetName(value));
@@ -386,7 +385,7 @@ namespace IronPython.Runtime.Operations {
                 return cls.CreateInstance(context, __new__(context, TypeCache.String, str, encoding, errors));
             }
         }
-      
+
         #endregion
 
         #region Python __ methods
@@ -455,7 +454,7 @@ namespace IronPython.Runtime.Operations {
             return self.Substring(x, y - x);
         }
 
-        
+
         #endregion
 
         #region Public Python methods
@@ -611,7 +610,7 @@ namespace IronPython.Runtime.Operations {
         public static int find(this string self, [BytesConversion]string sub) {
             if (sub == null) throw PythonOps.TypeError("expected string, got NoneType");
             if (sub.Length == 1) return self.IndexOf(sub[0]);
-            
+
             CompareInfo c = CultureInfo.InvariantCulture.CompareInfo;
             return c.IndexOf(self, sub, CompareOptions.Ordinal);
         }
@@ -1076,7 +1075,7 @@ namespace IronPython.Runtime.Operations {
                     List result = PythonOps.MakeEmptyList(1);
                     result.AddNoLock(self.TrimStart());
                     return result;
-                        
+
                 } else {
                     return SplitInternal(self, (char[])null, maxsplit);
                 }
@@ -1206,7 +1205,7 @@ namespace IronPython.Runtime.Operations {
                         continue;
                     }
                     if (mapped is int) {
-                        var mappedInt = (int) mapped;
+                        var mappedInt = (int)mapped;
                         if (mappedInt > 0xFFFF) {
                             throw PythonOps.TypeError("character mapping must be in range(0x%lx)");
                         }
@@ -1441,7 +1440,7 @@ namespace IronPython.Runtime.Operations {
         public static string ConvertFromChar(char c) {
             return ScriptingRuntimeHelpers.CharToString(c);
         }
-        
+
         [SpecialName, ExplicitConversionMethod]
         public static char ConvertToChar(string s) {
             if (s.Length == 1) return s[0];
@@ -1572,7 +1571,7 @@ namespace IronPython.Runtime.Operations {
             if (count == 0) return v;
             else if (count < 0) count = v.Length + 1;
             else if (count > v.Length + 1) count = checked(v.Length + 1);
-            
+
             int newLength = checked(v.Length + @new.Length * count);
             int max = Math.Min(v.Length, count);
             StringBuilder ret = new StringBuilder(newLength);
@@ -1710,7 +1709,7 @@ namespace IronPython.Runtime.Operations {
                     return LiteralParser.ParseString(s, false, false);
                 }
             }
-            
+
             if (e != null || TryGetEncoding(encoding, out e)) {
                 return DoDecode(context, s, errors, encoding, e);
             }
@@ -1739,7 +1738,7 @@ namespace IronPython.Runtime.Operations {
                 case "xmlcharrefreplace":
                 case "strict": e.DecoderFallback = DecoderFallback.ExceptionFallback; break;
                 case "replace": e.DecoderFallback = ReplacementFallback; break;
-                case "ignore":  e.DecoderFallback = new PythonDecoderFallback(encoding, s, null); break;
+                case "ignore": e.DecoderFallback = new PythonDecoderFallback(encoding, s, null); break;
                 default:
                     e.DecoderFallback = new PythonDecoderFallback(encoding, s, LightExceptions.CheckAndThrow(PythonOps.LookupEncodingError(context, errors)));
                     break;
@@ -1890,7 +1889,7 @@ namespace IronPython.Runtime.Operations {
                         case "utf_16be":
                             d["cp" + enc.CodePage.ToString()] = d["utf_16be"] = d["utf_16_be"] = new EncodingInfoWrapper(enc, new byte[0]);
                             continue;
-                       case "utf_32":
+                        case "utf_32":
                             d["utf_32le"] = d["utf_32_le"] = new EncodingInfoWrapper(enc, new byte[0]);
                             d["cp" + enc.CodePage.ToString()] = d["utf_32"] = d["utf32"] = d["u32"] = enc;
                             continue;
@@ -2015,7 +2014,7 @@ namespace IronPython.Runtime.Operations {
             public override byte[] GetPreamble() {
                 return _preamble;
             }
-            
+
             public override Encoder GetEncoder() {
                 SetEncoderFallback();
                 return _encoding.GetEncoder();
@@ -2032,7 +2031,7 @@ namespace IronPython.Runtime.Operations {
                 EncodingWrapper res = (EncodingWrapper)base.Clone();
                 res._encoding = (Encoding)_encoding.Clone();
                 return res;
-            }          
+            }
 #endif
         }
 
@@ -2051,8 +2050,8 @@ namespace IronPython.Runtime.Operations {
                 string[] r;
                 //  If the optional second argument sep is absent or None, the words are separated 
                 //  by arbitrary strings of whitespace characters (space, tab, newline, return, formfeed);
-                
-                r = StringUtils.Split(self, seps, (maxsplit < 0) ? Int32.MaxValue : maxsplit + 1, 
+
+                r = StringUtils.Split(self, seps, (maxsplit < 0) ? Int32.MaxValue : maxsplit + 1,
                     (seps == null) ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None);
 
                 List ret = PythonOps.MakeEmptyList(r.Length);
@@ -2091,7 +2090,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static bool endswith(string self, [BytesConversion]string suffix) {
-            return self.EndsWith(suffix);
+            return self.EndsWith(suffix, StringComparison.Ordinal);
         }
 
         //  Indexing is 0-based. Need to deal with negative indices
@@ -2110,7 +2109,7 @@ namespace IronPython.Runtime.Operations {
                 start += len;
                 if (start < 0) start = 0;
             }
-            return self.Substring(start).EndsWith(suffix);
+            return self.Substring(start).EndsWith(suffix, StringComparison.Ordinal);
         }
 
         //  With optional start, test beginning at that position (the char at that index is
@@ -2124,18 +2123,18 @@ namespace IronPython.Runtime.Operations {
                 start += len;
                 if (start < 0) start = 0;
             }
-            if (end >= len) return self.Substring(start).EndsWith(suffix);
+            if (end >= len) return self.Substring(start).EndsWith(suffix, StringComparison.Ordinal);
             else if (end < 0) {
                 end += len;
                 if (end < 0) return false;
             }
             if (end < start) return false;
-            return self.Substring(start, end - start).EndsWith(suffix);
+            return self.Substring(start, end - start).EndsWith(suffix, StringComparison.Ordinal);
         }
 
         private static bool endswith(string self, PythonTuple suffix) {
             foreach (object obj in suffix) {
-                if (self.EndsWith(GetString(obj))) {
+                if (self.EndsWith(GetString(obj), StringComparison.Ordinal)) {
                     return true;
                 }
             }
@@ -2161,7 +2160,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static bool startswith(string self, [BytesConversion]string prefix) {
-            return self.StartsWith(prefix);
+            return self.StartsWith(prefix, StringComparison.Ordinal);
         }
 
         public static bool startswith(string self, [BytesConversion]string prefix, int start) {
@@ -2171,7 +2170,7 @@ namespace IronPython.Runtime.Operations {
                 start += len;
                 if (start < 0) start = 0;
             }
-            return self.Substring(start).StartsWith(prefix);
+            return self.Substring(start).StartsWith(prefix, StringComparison.Ordinal);
         }
 
         public static bool startswith(string self, [BytesConversion]string prefix, int start, int end) {
@@ -2182,18 +2181,18 @@ namespace IronPython.Runtime.Operations {
                 start += len;
                 if (start < 0) start = 0;
             }
-            if (end >= len) return self.Substring(start).StartsWith(prefix);
+            if (end >= len) return self.Substring(start).StartsWith(prefix, StringComparison.Ordinal);
             else if (end < 0) {
                 end += len;
                 if (end < 0) return false;
             }
             if (end < start) return false;
-            return self.Substring(start, end - start).StartsWith(prefix);
+            return self.Substring(start, end - start).StartsWith(prefix, StringComparison.Ordinal);
         }
 
         private static bool startswith(string self, PythonTuple prefix) {
             foreach (object obj in prefix) {
-                if (self.StartsWith(GetString(obj))) {
+                if (self.StartsWith(GetString(obj), StringComparison.Ordinal)) {
                     return true;
                 }
             }
@@ -2379,7 +2378,7 @@ namespace IronPython.Runtime.Operations {
                     return true;
                 }
 
-                return false;                
+                return false;
             }
 
         }
@@ -2422,7 +2421,7 @@ namespace IronPython.Runtime.Operations {
                     return _buffer.Length - _bufferIndex;
                 }
             }
-            
+
             public override char GetNextChar() {
                 if (_buffer == null || _bufferIndex >= _buffer.Length) return Char.MinValue;
 
@@ -2623,7 +2622,7 @@ namespace IronPython.Runtime.Operations {
             public UnicodeEscapeEncoding(bool raw) {
                 _raw = raw;
             }
-            
+
             public override int GetByteCount(char[] chars, int index, int count) {
                 return EscapeEncode(chars, index, count).Length;
             }
@@ -2644,7 +2643,7 @@ namespace IronPython.Runtime.Operations {
                         bytes[i + byteIndex] = _raw ? (byte)res[i] : (byte)chars[i];
                     }
                     return res.Length;
-                } else {                    
+                } else {
                     for (int i = 0; i < charCount; i++) {
                         bytes[i + byteIndex] = (byte)chars[i + charIndex];
                     }

@@ -1121,4 +1121,14 @@ class C:
         self.assertEqual(unicodedata.mirrored(u'\u4e2d'), 0)
         self.assertEqual(unicodedata.decomposition(u'\u4e2d'), '')
 
+    def test_ipy2_gh362(self):
+        """https://github.com/IronLanguages/ironpython2/issues/362"""
+
+        self.assertFalse(u"".startswith(u"\ufeff"))
+
+        self.assertFalse(u"\xdf".startswith(u"ss"))
+        self.assertFalse(u"ss".startswith(u"\xdf"))
+        self.assertFalse(u"\xdf".endswith(u"ss"))
+        self.assertFalse(u"ss".endswith(u"\xdf"))
+
 run_test(__name__)
