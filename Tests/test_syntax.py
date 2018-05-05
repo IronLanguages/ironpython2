@@ -22,7 +22,7 @@ def run_compile_test(self, code, msg, lineno):
     filename = "the file name"
     try:
         compile(code, filename, "exec")
-    except SyntaxError, e:
+    except SyntaxError as e:
         self.assertEqual(e.msg, msg)
         self.assertEqual(e.lineno, lineno)
         self.assertEqual(e.filename, filename)
@@ -31,10 +31,10 @@ def run_compile_test(self, code, msg, lineno):
 
 def test_compile(self):
 
-    c = compile("071 + 1", "Error", "eval")
+    c = compile("0o71 + 1", "Error", "eval")
 
-    self.assertRaises(SyntaxError, compile, "088 + 1", "Error", "eval")
-    self.assertRaises(SyntaxError, compile, "099 + 1", "Error", "eval")
+    self.assertRaises(SyntaxError, compile, "0o88 + 1", "Error", "eval")
+    self.assertRaises(SyntaxError, compile, "0o99 + 1", "Error", "eval")
     self.assertRaises(SyntaxError, compile, """
     try:
         pass
@@ -77,8 +77,8 @@ def test_compile(self):
         ('((yield a), 2,3) = (2,3,4)', "can't assign to yield expression", 1),
         ('(2,3) = (3,4)', "can't assign to literal", 1),
         ("def e():\n    break", "'break' outside loop", 2),
-        ("def g():\n    for x in range(10):\n        print x\n    break\n", "'break' outside loop", 4),
-        ("def g():\n    for x in range(10):\n        print x\n    if True:\n        break\n", "'break' outside loop", 5),
+        ("def g():\n    for x in range(10):\n        print(x)\n    break\n", "'break' outside loop", 4),
+        ("def g():\n    for x in range(10):\n        print(x)\n    if True:\n        break\n", "'break' outside loop", 5),
         ("def z():\n    if True:\n        break\n", "'break' outside loop", 3),
         ('from import abc', "invalid syntax", 1),
         ('() = 1', "can't assign to ()", 1),
@@ -95,7 +95,7 @@ def test_compile(self):
 
     if is_cli:
         # CPython does no have a filename and line number
-        compile_tests.append(("def a(x):\n    def b():\n        print x\n    del x", "can not delete variable 'x' referenced in nested scope", 2))
+        compile_tests.append(("def a(x):\n    def b():\n        print(x)\n    del x", "can not delete variable 'x' referenced in nested scope", 2))
 
     # different error messages, ok
     for test in compile_tests:
@@ -109,9 +109,9 @@ def test_compile(self):
     self.assertRaises(SyntaxError, compile, "1+2 1", "Error", "eval")
 
     # empty test list in for expression
-    self.assertRaises(SyntaxError, compile, "for x in : print x", "Error", "exec")
-    self.assertRaises(SyntaxError, compile, "for x in : print x", "Error", "eval")
-    self.assertRaises(SyntaxError, compile, "for x in : print x", "Error", "single")
+    self.assertRaises(SyntaxError, compile, "for x in : print(x)", "Error", "exec")
+    self.assertRaises(SyntaxError, compile, "for x in : print(x)", "Error", "eval")
+    self.assertRaises(SyntaxError, compile, "for x in : print(x)", "Error", "single")
 
     # empty backquote
     self.assertRaises(SyntaxError, compile, "``", "Error", "exec")
@@ -140,9 +140,9 @@ def test_compile(self):
 
     #allow \f
     compile('\f\f\f\f\fclass C:\f\f\f pass', 'ok', 'exec')
-    compile('\f\f\f\f\fclass C:\n\f\f\f    print "hello"\n\f\f\f\f\f\f\f\f\f\f    print "goodbye"', 'ok', 'exec')
-    compile('class C:\n\f\f\f    print "hello"\n\f\f\f\f\f\f\f\f\f\f    print "goodbye"', 'ok', 'exec')
-    compile('class \f\f\f\fC:\n\f    print "hello"\n\f\f\f\f\f\f\f\f\f\f    print "goodbye"', 'ok', 'exec')
+    compile('\f\f\f\f\fclass C:\n\f\f\f    print("hello")\n\f\f\f\f\f\f\f\f\f\f    print("goodbye")', 'ok', 'exec')
+    compile('class C:\n\f\f\f    print("hello")\n\f\f\f\f\f\f\f\f\f\f    print("goodbye")', 'ok', 'exec')
+    compile('class \f\f\f\fC:\n\f    print("hello")\n\f\f\f\f\f\f\f\f\f\f    print("goodbye")', 'ok', 'exec')
 
     # multiline expression passed to exec (positive test)
     s = """
@@ -151,7 +151,7 @@ self.assertTrue(title.istitle())
 x = 2 + 5
 self.assertEqual(x, 7)
     """
-    exec s
+    exec(s)
 
     if is_cpython:
         # this seems to be a CPython bug, Guido says:
@@ -172,24 +172,24 @@ self.assertEqual(x, 7)
     # Assignment to None and constant
 
     def NoneAssign():
-        exec 'None = 2'
+        exec('None = 2')
     def LiteralAssign():
-        exec "'2' = '3'"
+        exec("'2' = '3'")
 
     self.assertRaises(SyntaxError, NoneAssign)
     self.assertRaises(SyntaxError, LiteralAssign)
 
     # beginning of the file handling
 
-    c = compile("     # some comment here   \nprint 10", "", "exec")
-    c = compile("    \n# some comment\n     \nprint 10", "", "exec")
+    c = compile("     # some comment here   \nprint(10)", "", "exec")
+    c = compile("    \n# some comment\n     \nprint(10)", "", "exec")
 
     self.assertRaises(SyntaxError, compile, "    x = 10\n\n", "", "exec")
     self.assertRaises(SyntaxError, compile, "    \n   #comment\n   x = 10\n\n", "", "exec")
 
     if is_cli:
         c = compile(u"\u0391 = 10\nif \u0391 != 10: 1/0", "", "exec")
-        exec c
+        exec(c)
 
     # from __future__ tests
     self.assertRaises(SyntaxError, compile, "def f():\n    from __future__ import division", "", "exec")
@@ -198,7 +198,7 @@ self.assertEqual(x, 7)
     # del x
     self.assertRaises(SyntaxError, compile, "def f():\n    del x\n    def g():\n        return x\n", "", "exec")
     self.assertRaises(SyntaxError, compile, "def f():\n    def g():\n        return x\n    del x\n", "", "exec")
-    self.assertRaises(SyntaxError, compile, "def f():\n    class g:\n        def h(self):\n            print x\n        pass\n    del x\n", "", "exec")
+    self.assertRaises(SyntaxError, compile, "def f():\n    class g:\n        def h(self):\n            print(x)\n        pass\n    del x\n", "", "exec")
     # add global to the picture
     c = compile("def f():\n    x=10\n    del x\n    def g():\n        global x\n        return x\n    return g\nf()()\n", "", "exec")
     self.assertRaises(NameError, eval, c)
@@ -212,9 +212,9 @@ self.assertEqual(x, 7)
     c = compile("def f():\n    global a\n    global a\n    a = 1\n", "", "exec")
 
     # unqualified exec in nested function
-    self.assertRaises(SyntaxError, compile, "def f():\n    x = 1\n    def g():\n        exec 'pass'\n        print x", "", "exec")
+    self.assertRaises(SyntaxError, compile, "def f():\n    x = 1\n    def g():\n        exec('pass')\n        print(x)", "", "exec")
     # correct case - qualified exec in nested function
-    c = compile("def f():\n    x = 10\n    def g():\n        exec 'pass' in {}\n        print x\n", "", "exec")
+    c = compile("def f():\n    x = 10\n    def g():\n        exec('pass') in {}\n        print(x)\n", "", "exec")
 
 def test_expr_support_impl(self):
     x = 10
@@ -318,7 +318,7 @@ og\
     self.assertEqual(x, y)
 
     self.assertEqual("\101", "A")
-    x='\a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\y\z'
+    x=b'\a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\y\z'
     y=u'\u0007\u0008\\\u0063\\\u0064\\\u0065\u000C\\\u0067\\\u0068\\\u0069\\\u006a\\\u006b\\\u006c\\\u006d\u000A\\\u006f\\\u0070\\\u0071\u000D\\\u0073\u0009\\\u0075\u000B\\\u0077\\\u0079\\\u007a'
 
     self.assertTrue(x == y)
@@ -391,7 +391,7 @@ f()
         for op in ["+=", "-=", "**=", "*=", "//=", "/=", "%=", "<<=", ">>=", "&=", "|=", "^="]:
             code = augassign_code % op
             try:
-                exec code in {}, {}
+                exec(code, {}, {})
             except:
                 pass
             else:
@@ -427,16 +427,16 @@ class SyntaxTest(IronPythonTestCase):
     def test_multiline_compound_stmts(self):
         class MyException(Exception): pass
         tests = [
-                    "if False: print 'In IF'\nelse: x = 2; raise MyException('expected')",
-                    "if False: print 'In IF'\nelif True: x = 2;raise MyException('expected')\nelse: print 'In ELSE'",
+                    "if False: print('In IF')\nelse: x = 2; raise MyException('expected')",
+                    "if False: print('In IF')\nelif True: x = 2;raise MyException('expected')\nelse: print('In ELSE')",
                     "for i in (1,2): x = i\nelse: x = 5; raise MyException('expected')",
-                    "while 5 in (1,2): print i\nelse:x = 2;raise MyException('expected')",
-                    "try: x = 2\nexcept: print 'In EXCEPT'\nelse: x=20;raise MyException('expected')",
+                    "while 5 in (1,2): print(i)\nelse:x = 2;raise MyException('expected')",
+                    "try: x = 2\nexcept: print('In EXCEPT')\nelse: x=20;raise MyException('expected')",
                 ]
         for test in tests:
             try:
                 c = compile(test,"","exec")
-                exec c
+                exec(c)
             except MyException:
                 pass
             else:
@@ -501,7 +501,7 @@ class SyntaxTest(IronPythonTestCase):
 
         try:
             ret_from_finally_x2()
-        except AssertionError, e:
+        except AssertionError as e:
             self.assertEqual(e.args[0], "This one")
         else:
             Fail("Expected AssertionError, got none")
@@ -547,7 +547,7 @@ class SyntaxTest(IronPythonTestCase):
 
     def test_break_in_else_clause(self):
         def f():
-            exec ('''
+            exec('''
             while i >= 0:
                 pass
             else:
@@ -557,21 +557,21 @@ class SyntaxTest(IronPythonTestCase):
 
     def test_no_throw(self):
         #Just make sure these don't throw
-        print "^L"
+        print("^L")
         temp = 7
-        print temp
+        print(temp)
 
-        print "No ^L's..."
+        print("No ^L's...")
 
     def test_syntaxerror_text(self):
         method_missing_colon = ("    def MethodTwo(self)\n", """
 class HasASyntaxException:
     def MethodOne(self):
-        print 'hello'
-        print 'world'
-        print 'again'
+        print('hello')
+        print('world')
+        print('again')
     def MethodTwo(self)
-        print 'world'""")
+        print('world')""")
 
         if is_cpython: #http://ironpython.codeplex.com/workitem/28380
             function_missing_colon1 = ("def f()\n", "def f()")
@@ -586,13 +586,13 @@ class HasASyntaxException:
             function_missing_colon4 = ("def f()\r", "def f()\r")
 
 
-        function_missing_colon2a = ("def f()\n", "print 1\ndef f()\nprint 3")
+        function_missing_colon2a = ("def f()\n", "print(1)\ndef f()\nprint(3)")
         if is_cpython: #http://ironpython.codeplex.com/workitem/28380
-            function_missing_colon3a = ("def f()\n", "print 1\ndef f()\r\nprint 3")
-            function_missing_colon4a = ("def f()\n", "print 1\ndef f()\rprint 3")
+            function_missing_colon3a = ("def f()\n", "print(1)\ndef f()\r\nprint(3)")
+            function_missing_colon4a = ("def f()\n", "print(1)\ndef f()\rprint(3)")
         else:
-            function_missing_colon3a = ("def f()\r\n", "print 1\ndef f()\r\nprint 3")
-            function_missing_colon4a = ("def f()\rprint 3", "print 1\ndef f()\rprint 3")
+            function_missing_colon3a = ("def f()\r\n", "print(1)\ndef f()\r\nprint(3)")
+            function_missing_colon4a = ("def f()\rprint(3)", "print(1)\ndef f()\rprint(3)")
 
         tests = (
             method_missing_colon,
@@ -609,8 +609,8 @@ class HasASyntaxException:
 
         for expectedText, testCase in tests:
             try:
-                exec testCase
-            except SyntaxError, e:
+                exec(testCase)
+            except SyntaxError as e:
                 self.assertEqual(e.text, expectedText)
 
     def test_error_parameters(self):
@@ -639,7 +639,7 @@ class HasASyntaxException:
             try:
                 code3 = compile(input, "dummy", "single", flags, 1)
                 AssertUnreachable()
-            except SyntaxError, err:
+            except SyntaxError as err:
                 self.assertEqual(err.args, res)
 
 
@@ -649,7 +649,7 @@ class HasASyntaxException:
                 x = 3
                     y = 5""")
             AssertUnreachable()
-        except IndentationError, e:
+        except IndentationError as e:
             self.assertEqual(e.lineno, 2)
 
     @skipUnlessIronPython()
@@ -734,7 +734,7 @@ class HasASyntaxException:
             errors = parse_text(text)
             print
             for err in errors.Errors:
-                print err
+                print(err)
 
         TestErrors("""class
 
@@ -811,7 +811,7 @@ def x(self):
         self.assertEqual(trapper.messages, [":4: SyntaxWarning: name 'a' is assigned to before global declaration"])
 
         with stderr_trapper() as trapper:
-            compile("def f():\n    print a\n    global a\n", "", "exec")
+            compile("def f():\n    print(a)\n    global a\n", "", "exec")
         self.assertEqual(trapper.messages, [":3: SyntaxWarning: name 'a' is used prior to global declaration"])
 
         with stderr_trapper() as trapper:
