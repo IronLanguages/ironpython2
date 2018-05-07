@@ -161,10 +161,7 @@ class StdConsoleTest(IronPythonTestCase):
         # Test exit code with sys.exit(non-int)
         self.TestCommandLine(("-c", "import sys; sys.exit(None)"),       "",         0)
         self.TestCommandLine(("-c", "import sys; sys.exit('goodbye')"),  "goodbye\n",1)
-        if is_cli: # https://github.com/IronLanguages/ironpython2/issues/310
-            self.TestCommandLine(("-c", "import sys; sys.exit(200L)"), "200\n", 1)
-        else:
-            self.TestCommandLine(("-c", "import sys; sys.exit(200L)"), "", 200)
+        self.TestCommandLine(("-c", "import sys; sys.exit(200L)"), "", 200)
     
     def test_os__exit(self):
         self.TestCommandLine(("-c", "import os; os._exit(0)"),          "",         0)
