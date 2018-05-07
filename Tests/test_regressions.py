@@ -1131,4 +1131,12 @@ class C:
         self.assertFalse(u"\xdf".endswith(u"ss"))
         self.assertFalse(u"ss".endswith(u"\xdf"))
 
+    def test_ipy2_gh371(self):
+        """https://github.com/IronLanguages/ironpython2/issues/371"""
+
+        prefix = "c:\\f"
+        for p in ('oo', 'o*', '?o'):
+            self.assertEqual(os.path.abspath(prefix + p), os.path.abspath(prefix) + p)
+
+
 run_test(__name__)

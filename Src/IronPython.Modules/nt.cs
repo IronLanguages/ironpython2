@@ -334,7 +334,9 @@ namespace IronPython.Modules {
                 }
 #endif
 
-                foreach(char c in Path.GetInvalidFileNameChars()) {
+                foreach (char c in Path.GetInvalidFileNameChars()) {
+                    // don't replace the volume or directory separators
+                    if (c == Path.VolumeSeparatorChar || c == Path.DirectorySeparatorChar) continue;
                     newdir = newdir.Replace(c, Char.MaxValue);
                 }
                 
