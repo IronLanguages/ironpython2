@@ -14,6 +14,7 @@
  * ***************************************************************************/
 
 using System;
+using System.Numerics;
 using System.Runtime.Serialization;
 using IronPython.Modules;
 using IronPython.Runtime.Operations;
@@ -62,6 +63,12 @@ namespace IronPython.Runtime.Exceptions {
                 return 0;
             } else if (Builtin.isinstance(t[0], TypeCache.Int32)) {
                 return Converter.ConvertToInt32(t[0]);
+            } else if (Builtin.isinstance(t[0], TypeCache.BigInteger)) {
+                BigInteger b = Converter.ConvertToBigInteger(t[0]);
+                if(b > int.MaxValue) {
+                    return -1;
+                }
+                return (int)b;
             }
 
             otherCode = t[0];
