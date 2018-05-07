@@ -1134,8 +1134,9 @@ class C:
     def test_ipy2_gh371(self):
         """https://github.com/IronLanguages/ironpython2/issues/371"""
 
-        for p in ('c:\\foo', 'c:\\foo*', 'c:\\f?o'):
-            self.assertEqual(os.path.abspath(p), p)
+        prefix = "c:\\f"
+        for p in ('oo', 'o*', '?o'):
+            self.assertEqual(os.path.abspath(prefix + p), os.path.abspath(prefix) + p)
 
 
 run_test(__name__)
