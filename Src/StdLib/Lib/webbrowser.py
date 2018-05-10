@@ -101,7 +101,7 @@ def _synthesize(browser, update_tryorder=1):
     return [None, None]
 
 
-if sys.platform[:3] == "win" or (sys.platform == 'cli' and os.name == 'nt'):
+if sys.platform[:3] == "win":
     def _isexecutable(cmd):
         cmd = cmd.lower()
         if os.path.isfile(cmd) and cmd.endswith((".exe", ".bat")):
@@ -172,7 +172,7 @@ class GenericBrowser(BaseBrowser):
         cmdline = [self.name] + [arg.replace("%s", url)
                                  for arg in self.args]
         try:
-            if sys.platform[:3] == "win" or (sys.platform == 'cli' and os.name == 'nt'):
+            if sys.platform[:3] == 'win':
                 p = subprocess.Popen(cmdline)
             else:
                 p = subprocess.Popen(cmdline, close_fds=True)
@@ -189,7 +189,7 @@ class BackgroundBrowser(GenericBrowser):
         cmdline = [self.name] + [arg.replace("%s", url)
                                  for arg in self.args]
         try:
-            if sys.platform[:3] == "win" or (sys.platform == 'cli' and os.name == 'nt'):
+            if sys.platform[:3] == 'win':
                 p = subprocess.Popen(cmdline)
             else:
                 setsid = getattr(os, 'setsid', None)
@@ -536,7 +536,7 @@ if os.environ.get("TERM"):
 # Platform support for Windows
 #
 
-if sys.platform[:3] == "win" or (sys.platform == 'cli' and os.name == 'nt'):
+if sys.platform[:3] == "win":
     class WindowsDefault(BaseBrowser):
         def open(self, url, new=0, autoraise=True):
             try:

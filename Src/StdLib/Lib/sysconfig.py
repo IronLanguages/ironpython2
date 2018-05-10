@@ -56,11 +56,11 @@ _INSTALL_SCHEMES = {
         'data'   : '{userbase}',
         },
     'nt_user': {
-        'stdlib': '{userbase}/IronPython{py_version_nodot}',
-        'platstdlib': '{userbase}/IronPython{py_version_nodot}',
-        'purelib': '{userbase}/IronPython{py_version_nodot}/site-packages',
-        'platlib': '{userbase}/IronPython{py_version_nodot}/site-packages',
-        'include': '{userbase}/IronPython{py_version_nodot}/Include',
+        'stdlib': '{userbase}/Python{py_version_nodot}',
+        'platstdlib': '{userbase}/Python{py_version_nodot}',
+        'purelib': '{userbase}/Python{py_version_nodot}/site-packages',
+        'platlib': '{userbase}/Python{py_version_nodot}/site-packages',
+        'include': '{userbase}/Python{py_version_nodot}/Include',
         'scripts': '{userbase}/Scripts',
         'data'   : '{userbase}',
         },
@@ -167,15 +167,13 @@ def _expand_vars(scheme, vars):
     return res
 
 def _get_default_scheme():
-    if sys.platform == 'cli':
-        return 'nt'
     if os.name == 'posix':
         # the default scheme for posix is posix_prefix
         return 'posix_prefix'
     return os.name
 
 def _getuserbase():
-    env_base = os.environ.get("IRONPYTHONUSERBASE", None)
+    env_base = os.environ.get("PYTHONUSERBASE", None)
     def joinuser(*args):
         return os.path.expanduser(os.path.join(*args))
 
@@ -473,9 +471,9 @@ def get_config_vars(*args):
         _CONFIG_VARS['platbase'] = _EXEC_PREFIX
         _CONFIG_VARS['projectbase'] = _PROJECT_BASE
 
-        if os.name in ('nt', 'os2') or sys.platform == 'cli':
+        if os.name in ('nt', 'os2'):
             _init_non_posix(_CONFIG_VARS)
-        if os.name == 'posix' and sys.platform != 'cli':
+        if os.name == 'posix':
             _init_posix(_CONFIG_VARS)
 
         # Setting 'userbase' is done below the call to the

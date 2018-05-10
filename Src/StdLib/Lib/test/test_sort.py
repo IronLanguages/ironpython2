@@ -218,7 +218,6 @@ class TestDecorateSortUndecorate(unittest.TestCase):
             return x
         self.assertRaises(ValueError, data.sort, key=k)
 
-    @unittest.skipIf(sys.platform == 'cli', "Doesn't work with GC")
     def test_key_with_mutating_del(self):
         data = range(10)
         class SortKiller(object):

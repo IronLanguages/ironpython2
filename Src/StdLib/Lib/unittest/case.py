@@ -114,16 +114,10 @@ class _AssertRaisesContext(object):
                 exc_name = str(self.expected)
             raise self.failureException(
                 "{0} not raised".format(exc_name))
-        # Save an expected exception in self.exception.
-        # Let any other exception propagate through.
-        if issubclass(exc_type, self.expected):
-            self.exception = exc_value
-        elif (hasattr(exc_value, 'clsException') and
-             isinstance(exc_value.clsException, self.expected)):
-            self.exception = exc_value.clsException
-        else:
+        if not issubclass(exc_type, self.expected):
+            # let unexpected exceptions pass through
             return False
-
+        self.exception = exc_value # store for later retrieval
         if self.expected_regexp is None:
             return True
 
@@ -532,7 +526,8 @@ class TestCase(object):
         """Fail if the two objects are unequal as determined by their
            difference rounded to the given number of decimal places
            (default 7) and comparing to zero, or by comparing that the
-           between the two objects is more than the given delta.
+           difference between the two objects is more than the given
+           delta.
 
            Note that decimal places (from zero) are usually not the same
            as significant digits (measured from the most significant digit).
@@ -570,7 +565,7 @@ class TestCase(object):
         """Fail if the two objects are equal as determined by their
            difference rounded to the given number of decimal places
            (default 7) and comparing to zero, or by comparing that the
-           between the two objects is less than the given delta.
+           difference between the two objects is less than the given delta.
 
            Note that decimal places (from zero) are usually not the same
            as significant digits (measured from the most significant digit).

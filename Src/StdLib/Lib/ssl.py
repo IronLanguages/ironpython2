@@ -123,7 +123,7 @@ _import_symbols('SSL_ERROR_')
 _import_symbols('PROTOCOL_')
 _import_symbols('VERIFY_')
 
-from _ssl import HAS_SNI, HAS_ECDH, HAS_NPN, HAS_ALPN
+from _ssl import HAS_SNI, HAS_ECDH, HAS_NPN, HAS_ALPN, HAS_TLSv1_3
 
 from _ssl import _OPENSSL_API_VERSION
 
@@ -138,7 +138,7 @@ except NameError:
     _SSLv2_IF_EXISTS = None
 
 from socket import socket, _fileobject, _delegate_methods, error as socket_error
-if sys.platform == "win32" or os.name == "nt":
+if sys.platform == "win32":
     from _ssl import enum_certificates, enum_crls
 
 from socket import socket, AF_INET, SOCK_STREAM, create_connection
@@ -157,6 +157,7 @@ else:
 # (OpenSSL's default setting is 'DEFAULT:!aNULL:!eNULL')
 # Enable a better set of ciphers by default
 # This list has been explicitly chosen to:
+#   * TLS 1.3 ChaCha20 and AES-GCM cipher suites
 #   * Prefer cipher suites that offer perfect forward secrecy (DHE/ECDHE)
 #   * Prefer ECDHE over DHE for better performance
 #   * Prefer AEAD over CBC for better performance and security
@@ -168,6 +169,8 @@ else:
 #   * Disable NULL authentication, NULL encryption, 3DES and MD5 MACs
 #     for security reasons
 _DEFAULT_CIPHERS = (
+    'TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256:'
+    'TLS13-AES-128-GCM-SHA256:'
     'ECDH+AESGCM:ECDH+CHACHA20:DH+AESGCM:DH+CHACHA20:ECDH+AES256:DH+AES256:'
     'ECDH+AES128:DH+AES:ECDH+HIGH:DH+HIGH:RSA+AESGCM:RSA+AES:RSA+HIGH:'
     '!aNULL:!eNULL:!MD5:!3DES'
@@ -175,6 +178,7 @@ _DEFAULT_CIPHERS = (
 
 # Restricted and more secure ciphers for the server side
 # This list has been explicitly chosen to:
+#   * TLS 1.3 ChaCha20 and AES-GCM cipher suites
 #   * Prefer cipher suites that offer perfect forward secrecy (DHE/ECDHE)
 #   * Prefer ECDHE over DHE for better performance
 #   * Prefer AEAD over CBC for better performance and security
@@ -185,6 +189,8 @@ _DEFAULT_CIPHERS = (
 #   * Disable NULL authentication, NULL encryption, MD5 MACs, DSS, RC4, and
 #     3DES for security reasons
 _RESTRICTED_SERVER_CIPHERS = (
+    'TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256:'
+    'TLS13-AES-128-GCM-SHA256:'
     'ECDH+AESGCM:ECDH+CHACHA20:DH+AESGCM:DH+CHACHA20:ECDH+AES256:DH+AES256:'
     'ECDH+AES128:DH+AES:ECDH+HIGH:DH+HIGH:RSA+AESGCM:RSA+AES:RSA+HIGH:'
     '!aNULL:!eNULL:!MD5:!DSS:!RC4:!3DES'
@@ -401,7 +407,7 @@ class SSLContext(_SSLContext):
     def load_default_certs(self, purpose=Purpose.SERVER_AUTH):
         if not isinstance(purpose, _ASN1Object):
             raise TypeError(purpose)
-        if sys.platform == "win32" or os.name == "nt":
+        if sys.platform == "win32":
             for storename in self._windows_cert_stores:
                 self._load_windows_store_certs(storename, purpose)
         self.set_default_verify_paths()

@@ -58,7 +58,7 @@ class ReTests(unittest.TestCase):
 
         s = r"\1\1"
         self.assertEqual(re.sub('(.)', s, 'x'), 'xx')
-        self.assertEqual(re.sub('(.)', re.escape(s), 'x'), s)
+        self.assertEqual(re.sub('(.)', s.replace('\\', r'\\'), 'x'), s)
         self.assertEqual(re.sub('(.)', lambda m: s, 'x'), s)
 
         self.assertEqual(re.sub('(?P<a>x)', '\g<a>\g<a>', 'xx'), 'xxxx')
@@ -818,7 +818,6 @@ class ReTests(unittest.TestCase):
         self.assertIsNone(re.match(r'(?:a?)+?y', 'z'))
         self.assertIsNone(re.match(r'(?:a?){2,}?y', 'z'))
 
-    @unittest.skipIf(sys.platform == 'cli', 'CPython impl detail')
     def test_scanner(self):
         def s_ident(scanner, token): return token
         def s_operator(scanner, token): return "op%s" % token
@@ -887,7 +886,6 @@ class ReTests(unittest.TestCase):
                          [":", "::", ":::"])
 
     @requires_unicode
-    @unittest.skipIf(sys.platform == 'cli', 'Strings are unicode in IronPython')
     def test_bug_926075(self):
         self.assertIsNot(re.compile('bug_926075'),
                          re.compile(u'bug_926075'))

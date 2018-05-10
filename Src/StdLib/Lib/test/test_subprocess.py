@@ -33,7 +33,7 @@ try:
 except ImportError:
     _testcapi = None
 
-mswindows = (sys.platform == "win32" or (sys.platform == "cli" and os.name == "nt"))
+mswindows = (sys.platform == "win32")
 
 #
 # Depends on the following external programs: Python
@@ -395,7 +395,6 @@ class ProcessTestCase(BaseTestCase):
         self.addCleanup(p.stdout.close)
         self.assertEqual(p.stdout.read(), "orange")
 
-    @unittest.skipIf(sys.platform == "cli", "TODO: figure out")
     def test_invalid_cmd(self):
         # null character in the command name
         cmd = sys.executable + '\0'
@@ -406,7 +405,6 @@ class ProcessTestCase(BaseTestCase):
         with self.assertRaises(TypeError):
             subprocess.Popen([sys.executable, "-c", "pass#\0"])
 
-    @unittest.skipIf(sys.platform == "cli", "TODO: figure out")
     def test_invalid_env(self):
         # null character in the enviroment variable name
         newenv = os.environ.copy()
@@ -699,7 +697,7 @@ class ProcessTestCase(BaseTestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
             # ignore errors that indicate the command was not found
-            if c.exception.errno not in (errno.ENOENT, errno.EACCES):
+            if c.exception.errno not in (errno.ENOENT, errno.ENOTDIR, errno.EACCES):
                 raise c.exception
 
     @unittest.skipIf(threading is None, "threading required")

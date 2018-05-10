@@ -15,7 +15,7 @@ except ImportError:
 bz2 = import_module('bz2')
 from bz2 import BZ2File, BZ2Compressor, BZ2Decompressor
 
-has_cmdline_bunzip2 = sys.platform not in ("win32", "os2emx", "riscos", "cli")
+has_cmdline_bunzip2 = sys.platform not in ("win32", "os2emx", "riscos")
 
 class BaseTest(unittest.TestCase):
     "Base for other testcases."
@@ -51,14 +51,6 @@ class BZ2FileTest(BaseTest):
         self.filename = TESTFN
 
     def tearDown(self):
-        if sys.platform == "cli":
-            import clr
-            from System import GC
-
-            for i in range(3):
-                GC.Collect()
-                GC.WaitForPendingFinalizers()
-
         if os.path.isfile(self.filename):
             os.unlink(self.filename)
 
@@ -201,7 +193,6 @@ class BZ2FileTest(BaseTest):
             self.assertRaises(IOError, bz2f.write, "a")
             self.assertRaises(IOError, bz2f.writelines, ["a"])
 
-    @unittest.skipIf(sys.platform == 'cli', 'https://github.com/IronLanguages/main/issues/1015')
     def testSeekForward(self):
         # "Test BZ2File.seek(150, 0)"
         self.createTempFile()
@@ -210,7 +201,6 @@ class BZ2FileTest(BaseTest):
             bz2f.seek(150)
             self.assertEqual(bz2f.read(), self.TEXT[150:])
 
-    @unittest.skipIf(sys.platform == 'cli', 'https://github.com/IronLanguages/main/issues/1015')
     def testSeekBackwards(self):
         # "Test BZ2File.seek(-150, 1)"
         self.createTempFile()
@@ -219,7 +209,6 @@ class BZ2FileTest(BaseTest):
             bz2f.seek(-150, 1)
             self.assertEqual(bz2f.read(), self.TEXT[500-150:])
 
-    @unittest.skipIf(sys.platform == 'cli', 'https://github.com/IronLanguages/main/issues/1015')
     def testSeekBackwardsFromEnd(self):
         # "Test BZ2File.seek(-150, 2)"
         self.createTempFile()
@@ -227,7 +216,6 @@ class BZ2FileTest(BaseTest):
             bz2f.seek(-150, 2)
             self.assertEqual(bz2f.read(), self.TEXT[len(self.TEXT)-150:])
 
-    @unittest.skipIf(sys.platform == 'cli', 'https://github.com/IronLanguages/main/issues/1015')
     def testSeekPostEnd(self):
         # "Test BZ2File.seek(150000)"
         self.createTempFile()
@@ -236,7 +224,6 @@ class BZ2FileTest(BaseTest):
             self.assertEqual(bz2f.tell(), len(self.TEXT))
             self.assertEqual(bz2f.read(), "")
 
-    @unittest.skipIf(sys.platform == 'cli', 'https://github.com/IronLanguages/main/issues/1015')
     def testSeekPostEndTwice(self):
         # "Test BZ2File.seek(150000) twice"
         self.createTempFile()
@@ -246,7 +233,6 @@ class BZ2FileTest(BaseTest):
             self.assertEqual(bz2f.tell(), len(self.TEXT))
             self.assertEqual(bz2f.read(), "")
 
-    @unittest.skipIf(sys.platform == 'cli', 'https://github.com/IronLanguages/main/issues/1015')
     def testSeekPreStart(self):
         # "Test BZ2File.seek(-150, 0)"
         self.createTempFile()
@@ -336,7 +322,7 @@ class BZ2FileTest(BaseTest):
             self.assertRaises(ValueError, f.readline)
             self.assertRaises(ValueError, f.readlines)
 
-    @unittest.skipIf(sys.platform == 'win32' or sys.platform == 'cli',
+    @unittest.skipIf(sys.platform == 'win32',
                      'test depends on being able to delete a still-open file,'
                      ' which is not possible on Windows')
     def testInitNonExistentFile(self):

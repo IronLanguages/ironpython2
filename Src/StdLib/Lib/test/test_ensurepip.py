@@ -21,6 +21,7 @@ class EnsurepipMixin:
     def setUp(self):
         run_pip_patch = mock.patch("ensurepip._run_pip")
         self.run_pip = run_pip_patch.start()
+        self.run_pip.return_value = 0
         self.addCleanup(run_pip_patch.stop)
 
         # Avoid side effects on the actual os module
@@ -38,19 +39,11 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
     def test_basic_bootstrapping(self):
         ensurepip.bootstrap()
 
-        if sys.platform == 'cli':
-            args = [
-                    "install", "--no-index", "--find-links",
-                    mock.ANY, "--no-compile", "setuptools", "pip",
-                ]
-        else:
-            args = [
-                    "install", "--no-index", "--find-links",
-                    mock.ANY, "setuptools", "pip",
-                ]
-
         self.run_pip.assert_called_once_with(
-            args,
+            [
+                "install", "--no-index", "--find-links",
+                mock.ANY, "setuptools", "pip",
+            ],
             mock.ANY,
         )
 
@@ -60,120 +53,74 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
     def test_bootstrapping_with_root(self):
         ensurepip.bootstrap(root="/foo/bar/")
 
-        if sys.platform == 'cli':
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "--no-compile", "--root", "/foo/bar/",
-                "setuptools", "pip",
-            ]
-        else:
-            args = [
+        self.run_pip.assert_called_once_with(
+            [
                 "install", "--no-index", "--find-links",
                 mock.ANY, "--root", "/foo/bar/",
                 "setuptools", "pip",
-            ]
-
-        self.run_pip.assert_called_once_with(
-            args,
+            ],
             mock.ANY,
         )
 
     def test_bootstrapping_with_user(self):
         ensurepip.bootstrap(user=True)
-        if sys.platform == 'cli':
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "--no-compile", "--user", "setuptools", "pip",
-            ]
-        else:
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "--user", "setuptools", "pip",
-            ]
 
         self.run_pip.assert_called_once_with(
-            args,
+            [
+                "install", "--no-index", "--find-links",
+                mock.ANY, "--user", "setuptools", "pip",
+            ],
             mock.ANY,
         )
 
     def test_bootstrapping_with_upgrade(self):
         ensurepip.bootstrap(upgrade=True)
-        if sys.platform == 'cli':
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "--no-compile", "--upgrade", "setuptools", "pip",
-            ]
-        else:
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "--upgrade", "setuptools", "pip",
-            ]
 
         self.run_pip.assert_called_once_with(
-            args,
+            [
+                "install", "--no-index", "--find-links",
+                mock.ANY, "--upgrade", "setuptools", "pip",
+            ],
             mock.ANY,
         )
 
     def test_bootstrapping_with_verbosity_1(self):
         ensurepip.bootstrap(verbosity=1)
-        if sys.platform == 'cli':
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "--no-compile", "-v", "setuptools", "pip",
-            ]
-        else:
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "-v", "setuptools", "pip",
-            ]
 
         self.run_pip.assert_called_once_with(
-            args,
+            [
+                "install", "--no-index", "--find-links",
+                mock.ANY, "-v", "setuptools", "pip",
+            ],
             mock.ANY,
         )
 
     def test_bootstrapping_with_verbosity_2(self):
         ensurepip.bootstrap(verbosity=2)
-        if sys.platform == 'cli':
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "--no-compile", "-vv", "setuptools", "pip",
-            ]
-        else:
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "-vv", "setuptools", "pip",
-            ]
 
         self.run_pip.assert_called_once_with(
-            args,
+            [
+                "install", "--no-index", "--find-links",
+                mock.ANY, "-vv", "setuptools", "pip",
+            ],
             mock.ANY,
         )
 
     def test_bootstrapping_with_verbosity_3(self):
         ensurepip.bootstrap(verbosity=3)
-        if sys.platform == 'cli':
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "--no-compile", "-vvv", "setuptools", "pip",
-            ]
-        else:
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "-vvv", "setuptools", "pip",
-            ]
 
         self.run_pip.assert_called_once_with(
-            args,
+            [
+                "install", "--no-index", "--find-links",
+                mock.ANY, "-vvv", "setuptools", "pip",
+            ],
             mock.ANY,
         )
 
-    @unittest.expectedFailure
     def test_bootstrapping_with_regular_install(self):
         ensurepip.bootstrap()
         self.assertEqual(self.os_environ["ENSUREPIP_OPTIONS"], "install")
 
-    @unittest.expectedFailure
     def test_bootstrapping_with_alt_install(self):
         ensurepip.bootstrap(altinstall=True)
         self.assertEqual(self.os_environ["ENSUREPIP_OPTIONS"], "altinstall")
@@ -312,25 +259,25 @@ class TestBootstrappingMainFunction(EnsurepipMixin, unittest.TestCase):
         self.assertFalse(self.run_pip.called)
 
     def test_basic_bootstrapping(self):
-        ensurepip._main([])
-        if sys.platform == 'cli':
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "--no-compile", "setuptools", "pip",
-            ]
-        else:
-            args = [
-                "install", "--no-index", "--find-links",
-                mock.ANY, "setuptools", "pip",
-            ]
+        exit_code = ensurepip._main([])
 
         self.run_pip.assert_called_once_with(
-            args,
+            [
+                "install", "--no-index", "--find-links",
+                mock.ANY, "setuptools", "pip",
+            ],
             mock.ANY,
         )
 
         additional_paths = self.run_pip.call_args[0][1]
         self.assertEqual(len(additional_paths), 2)
+        self.assertEqual(exit_code, 0)
+
+    def test_bootstrapping_error_code(self):
+        self.run_pip.return_value = 2
+        exit_code = ensurepip._main([])
+        self.assertEqual(exit_code, 2)
+
 
 
 class TestUninstallationMainFunction(EnsurepipMixin, unittest.TestCase):
@@ -345,7 +292,7 @@ class TestUninstallationMainFunction(EnsurepipMixin, unittest.TestCase):
 
     def test_basic_uninstall(self):
         with fake_pip():
-            ensurepip._uninstall._main([])
+            exit_code = ensurepip._uninstall._main([])
 
         self.run_pip.assert_called_once_with(
             [
@@ -354,6 +301,13 @@ class TestUninstallationMainFunction(EnsurepipMixin, unittest.TestCase):
             ]
         )
 
+        self.assertEqual(exit_code, 0)
+
+    def test_uninstall_error_code(self):
+        with fake_pip():
+            self.run_pip.return_value = 2
+            exit_code = ensurepip._uninstall._main([])
+        self.assertEqual(exit_code, 2)
 
 if __name__ == "__main__":
     test.test_support.run_unittest(__name__)

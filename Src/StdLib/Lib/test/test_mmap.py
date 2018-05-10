@@ -119,8 +119,7 @@ class MmapTests(unittest.TestCase):
     def test_access_parameter(self):
         # Test for "access" keyword parameter
         mapsize = 10
-        with open(TESTFN, "wb") as f:
-            f.write("a"*mapsize)
+        open(TESTFN, "wb").write("a"*mapsize)
         f = open(TESTFN, "rb")
         m = mmap.mmap(f.fileno(), mapsize, access=mmap.ACCESS_READ)
         self.assertEqual(m[:], 'a'*mapsize, "Readonly memory map data incorrect.")
@@ -168,12 +167,10 @@ class MmapTests(unittest.TestCase):
             pass
         else:
             self.fail("Able to resize readonly memory map")
-        m.close()
         f.close()
         del m, f
-        with open(TESTFN, "rb") as g:
-            self.assertEqual(g.read(), 'a'*mapsize,
-                   "Readonly memory map data file was modified")
+        self.assertEqual(open(TESTFN, "rb").read(), 'a'*mapsize,
+               "Readonly memory map data file was modified")
 
         # Opening mmap with size too big
         import sys
@@ -185,15 +182,15 @@ class MmapTests(unittest.TestCase):
             # CAUTION:  This also changes the size of the file on disk, and
             # later tests assume that the length hasn't changed.  We need to
             # repair that.
-            if sys.platform.startswith('win') or sys.platform == "cli":
+            if sys.platform.startswith('win'):
                 self.fail("Opening mmap with size+1 should work on Windows.")
         else:
             # we expect a ValueError on Unix, but not on Windows
-            if not sys.platform.startswith('win') and not sys.platform == "cli":
+            if not sys.platform.startswith('win'):
                 self.fail("Opening mmap with size+1 should raise ValueError.")
             m.close()
         f.close()
-        if sys.platform.startswith('win') or sys.platform == "cli":
+        if sys.platform.startswith('win'):
             # Repair damage from the resizing test.
             f = open(TESTFN, 'r+b')
             f.truncate(mapsize)
@@ -223,12 +220,10 @@ class MmapTests(unittest.TestCase):
         self.assertEqual(m[:], 'd' * mapsize,
                "Copy-on-write memory map data not written correctly.")
         m.flush()
-        with open(TESTFN, "rb") as g:
-            self.assertEqual(g.read(), 'c'*mapsize,
-                   "Copy-on-write test data file should not be modified.")
+        self.assertEqual(open(TESTFN, "rb").read(), 'c'*mapsize,
+               "Copy-on-write test data file should not be modified.")
         # Ensuring copy-on-write maps cannot be resized
         self.assertRaises(TypeError, m.resize, 2*mapsize)
-        m.close()
         f.close()
         del m, f
 
@@ -237,7 +232,7 @@ class MmapTests(unittest.TestCase):
         self.assertRaises(ValueError, mmap.mmap, f.fileno(), mapsize, access=4)
         f.close()
 
-        if os.name == "posix" and sys.platform != "cli":
+        if os.name == "posix":
             # Try incompatible flags, prot and access parameters.
             f = open(TESTFN, "r+b")
             self.assertRaises(ValueError, mmap.mmap, f.fileno(), mapsize,
@@ -293,7 +288,6 @@ class MmapTests(unittest.TestCase):
         self.assertEqual(m.find('one', 1, -1), 8)
         self.assertEqual(m.find('one', 1, -2), -1)
 
-        m.close()
 
     def test_rfind(self):
         # test the new 'end' parameter works as expected
@@ -312,7 +306,6 @@ class MmapTests(unittest.TestCase):
         self.assertEqual(m.rfind('one', 1, -1), 8)
         self.assertEqual(m.rfind('one', 1, -2), -1)
 
-        m.close()
 
     def test_double_close(self):
         # make sure a double close doesn't crash on Solaris (Bug# 665913)
@@ -410,16 +403,12 @@ class MmapTests(unittest.TestCase):
 
         m.close()
 
-        # TODO: mono has an issue with passing 1 for the second parameter
-        # need to investigate more
-        # https://github.com/IronLanguages/main/issues/1604
-        if not (sys.platform == "cli" and os.name == "posix"):
-            m = mmap.mmap(-1, 1) # single byte
-            self.assertRaises(ValueError, m.move, 0, 0, 2)
-            self.assertRaises(ValueError, m.move, 1, 0, 1)
-            self.assertRaises(ValueError, m.move, 0, 1, 1)
-            m.move(0, 0, 1)
-            m.move(0, 0, 0)
+        m = mmap.mmap(-1, 1) # single byte
+        self.assertRaises(ValueError, m.move, 0, 0, 2)
+        self.assertRaises(ValueError, m.move, 1, 0, 1)
+        self.assertRaises(ValueError, m.move, 0, 1, 1)
+        m.move(0, 0, 1)
+        m.move(0, 0, 0)
 
 
     def test_anonymous(self):
@@ -547,8 +536,6 @@ class MmapTests(unittest.TestCase):
         anon_mmap(PAGESIZE)
 
     @unittest.skipUnless(hasattr(mmap, 'PROT_READ'), "needs mmap.PROT_READ")
-    @unittest.skipIf(sys.platform == 'cli' and os.name == 'posix',
-                     'IronPython does not support this yet https://github.com/IronLanguages/main/issues/1605')
     def test_prot_readonly(self):
         mapsize = 10
         open(TESTFN, "wb").write("a"*mapsize)
@@ -563,8 +550,7 @@ class MmapTests(unittest.TestCase):
 
     def test_io_methods(self):
         data = "0123456789"
-        with open(TESTFN, "wb") as f:
-            f.write("x"*len(data))
+        open(TESTFN, "wb").write("x"*len(data))
         f = open(TESTFN, "r+b")
         m = mmap.mmap(f.fileno(), len(data))
         f.close()
@@ -593,7 +579,6 @@ class MmapTests(unittest.TestCase):
         self.assertEqual(m[:], "012bar6789")
         m.seek(8)
         self.assertRaises(ValueError, m.write, "bar")
-        m.close()
 
     @unittest.skipUnless(os.name == 'nt', 'requires Windows')
     def test_tagname(self):
@@ -641,8 +626,7 @@ class MmapTests(unittest.TestCase):
         m.close()
 
         # Should not crash (Issue 5385)
-        with open(TESTFN, "wb") as f:
-            f.write("x"*10)
+        open(TESTFN, "wb").write("x"*10)
         f = open(TESTFN, "r+b")
         m = mmap.mmap(f.fileno(), 0)
         f.close()
@@ -692,7 +676,7 @@ class LargeMmapTests(unittest.TestCase):
         unlink(TESTFN)
 
     def _make_test_file(self, num_zeroes, tail):
-        if sys.platform[:3] == 'win' or sys.platform == 'darwin' or sys.platform == 'cli':
+        if sys.platform[:3] == 'win' or sys.platform == 'darwin':
             requires('largefile',
                 'test requires %s bytes and a long time to run' % str(0x180000000))
         f = open(TESTFN, 'w+b')

@@ -1157,7 +1157,7 @@ def uname():
         use_syscmd_ver = 1
 
         # Try win32_ver() on win32 platforms
-        if system == 'win32' or (system == 'cli' and os.name == 'nt'):
+        if system == 'win32':
             release,version,csd,ptype = win32_ver()
             if release and version:
                 use_syscmd_ver = 0
@@ -1209,10 +1209,6 @@ def uname():
             version = string.join(vminfo,', ')
             if not version:
                 version = vendor
-
-        elif system == 'cli':
-            # we know this is Windows, because uname exists on Linux and macOS
-            system = 'Windows'
 
     # System specific extensions
     if system == 'OpenVMS':
@@ -1327,11 +1323,18 @@ _sys_version_parser = re.compile(
     r'\[([^\]]+)\]?')  # "[compiler]"
 
 _ironpython_sys_version_parser = re.compile(
-    r'([\w\.]+)\s*\('
-    'IronPython\s*[\w\.]+'
-    '(?: (?:Alpha|Beta|RC) ?[\d\.]+)?(?: DEBUG)?'
+    r'IronPython\s*'
+    '([\d\.]+)'
     '(?: \(([\d\.]+)\))?'
-    ' on ((?:.NET|Mono) [\d\.]+ \((?:32|64)-bit\))\)')
+    ' on (.NET [\d\.]+)')
+
+# IronPython covering 2.6 and 2.7
+_ironpython26_sys_version_parser = re.compile(
+    r'([\d.]+)\s*'
+    '\(IronPython\s*'
+    '[\d.]+\s*'
+    '\(([\d.]+)\) on ([\w.]+ [\d.]+(?: \(\d+-bit\))?)\)'
+)
 
 _pypy_sys_version_parser = re.compile(
     r'([\w.+]+)\s*'
@@ -1373,7 +1376,11 @@ def _sys_version(sys_version=None):
     if 'IronPython' in sys_version:
         # IronPython
         name = 'IronPython'
-        match = _ironpython_sys_version_parser.match(sys_version)
+        if sys_version.startswith('IronPython'):
+            match = _ironpython_sys_version_parser.match(sys_version)
+        else:
+            match = _ironpython26_sys_version_parser.match(sys_version)
+
         if match is None:
             raise ValueError(
                 'failed to parse IronPython sys.version: %s' %

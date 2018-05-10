@@ -1,9 +1,9 @@
 from json.tests import CTest
-import unittest, sys
+
 
 class BadBool:
     def __nonzero__(self):
-        1/0
+        1/0.0
 
 
 class TestSpeedups(CTest):
@@ -17,7 +17,6 @@ class TestSpeedups(CTest):
         self.assertIs(self.json.encoder.encode_basestring_ascii,
                       self.json.encoder.c_encode_basestring_ascii)
 
-@unittest.skipIf(sys.platform == 'cli', 'No json speedups for IronPython.')
 class TestDecode(CTest):
     def test_make_scanner(self):
         self.assertRaises(AttributeError, self.json.scanner.c_make_scanner, 1)

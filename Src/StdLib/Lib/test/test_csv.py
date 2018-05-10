@@ -940,12 +940,11 @@ class TestDialectValidity(unittest.TestCase):
         self.assertEqual(str(cm.exception),
                          '"delimiter" must be an 1-character string')
 
-        if sys.platform != 'cli':
-            mydialect.delimiter = u","
-            with self.assertRaises(csv.Error) as cm:
-                mydialect()
-            self.assertEqual(str(cm.exception),
-                            '"delimiter" must be string, not unicode')
+        mydialect.delimiter = u","
+        with self.assertRaises(csv.Error) as cm:
+            mydialect()
+        self.assertEqual(str(cm.exception),
+                         '"delimiter" must be string, not unicode')
 
         mydialect.delimiter = 4
         with self.assertRaises(csv.Error) as cm:
@@ -1036,6 +1035,15 @@ Stonecutters Seafood and Chop House+ Lemont+ IL+ 12/19/02+ Week Back
         self.assertEqual(sniffer.has_header(self.sample8), False)
         self.assertEqual(sniffer.has_header(self.header2 + self.sample8),
                          True)
+
+    def test_guess_quote_and_delimiter(self):
+        sniffer = csv.Sniffer()
+        for header in (";'123;4';", "'123;4';", ";'123;4'", "'123;4'"):
+            dialect = sniffer.sniff(header, ",;")
+            self.assertEqual(dialect.delimiter, ';')
+            self.assertEqual(dialect.quotechar, "'")
+            self.assertIs(dialect.doublequote, False)
+            self.assertIs(dialect.skipinitialspace, False)
 
     def test_sniff(self):
         sniffer = csv.Sniffer()

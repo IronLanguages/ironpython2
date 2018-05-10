@@ -1,5 +1,6 @@
 import unittest
-from test.test_support import verbose, run_unittest, start_threads
+from test.support import (verbose, run_unittest, start_threads,
+                          requires_type_collecting)
 import sys
 import time
 import gc
@@ -41,7 +42,6 @@ class GC_Detector(object):
 ### Tests
 ###############################################################################
 
-@unittest.skipIf(sys.platform == 'cli', 'IronPython does not fully support the gc module.')
 class GCTests(unittest.TestCase):
     def test_list(self):
         l = []
@@ -91,6 +91,7 @@ class GCTests(unittest.TestCase):
         del a
         self.assertNotEqual(gc.collect(), 0)
 
+    @requires_type_collecting
     def test_newinstance(self):
         class A(object):
             pass
@@ -536,7 +537,6 @@ class GCTests(unittest.TestCase):
             # would be damaged, with an empty __dict__.
             self.assertEqual(x, None)
 
-@unittest.skipIf(sys.platform == 'cli', 'IronPython does not fully support the gc module.')
 class GCTogglingTests(unittest.TestCase):
     def setUp(self):
         gc.enable()

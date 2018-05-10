@@ -9,7 +9,6 @@ from test import test_support
 import abc
 from inspect import isabstract
 
-import sys
 
 class TestABC(unittest.TestCase):
 
@@ -209,7 +208,7 @@ class TestABC(unittest.TestCase):
         C()
         self.assertEqual(B.counter, 1)
 
-    @unittest.skipIf(sys.platform == 'cli', 'GC implementation detail')
+    @test_support.requires_type_collecting
     def test_cache_leak(self):
         # See issue #2521.
         class A(object):

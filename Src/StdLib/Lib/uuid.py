@@ -339,8 +339,9 @@ def _find_mac(command, args, hw_identifiers, get_index):
 def _ifconfig_getnode():
     """Get the hardware address on Unix by running ifconfig."""
     # This works on Linux ('' or '-a'), Tru64 ('-av'), but not all Unixes.
+    keywords = ('hwaddr', 'ether', 'address:', 'lladdr')
     for args in ('', '-a', '-av'):
-        mac = _find_mac('ifconfig', args, ['hwaddr', 'ether'], lambda i: i+1)
+        mac = _find_mac('ifconfig', args, keywords, lambda i: i+1)
         if mac:
             return mac
 
@@ -353,7 +354,20 @@ def _arp_getnode():
         return None
 
     # Try getting the MAC addr from arp based on our IP address (Solaris).
-    return _find_mac('arp', '-an', [ip_addr], lambda i: -1)
+    mac = _find_mac('arp', '-an', [ip_addr], lambda i: -1)
+    if mac:
+        return mac
+
+    # This works on OpenBSD
+    mac = _find_mac('arp', '-an', [ip_addr], lambda i: i+1)
+    if mac:
+        return mac
+
+    # This works on Linux, FreeBSD and NetBSD
+    mac = _find_mac('arp', '-an', ['(%s)' % ip_addr],
+                    lambda i: i+2)
+    if mac:
+        return mac
 
 def _lanscan_getnode():
     """Get the hardware address on Unix by running lanscan."""
@@ -443,12 +457,12 @@ def _netbios_getnode():
 _uuid_generate_time = _UuidCreate = None
 try:
     import ctypes, ctypes.util
-    import sys, os
+    import sys
 
     # The uuid_generate_* routines are provided by libuuid on at least
     # Linux and FreeBSD, and provided by libc on Mac OS X.
     _libnames = ['uuid']
-    if not sys.platform.startswith('win') and os.name != 'nt':
+    if not sys.platform.startswith('win'):
         _libnames.append('c')
     for libname in _libnames:
         try:

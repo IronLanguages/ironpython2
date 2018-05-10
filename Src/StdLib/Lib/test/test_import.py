@@ -191,7 +191,6 @@ class ImportTests(unittest.TestCase):
             self.assertIs(orig_path, new_os.path)
             self.assertIsNot(orig_getenv, new_os.getenv)
 
-    @unittest.skipIf(sys.platform == 'cli', 'IronPython does not support .pyc or .pyo')
     def test_module_with_large_stack(self, module='longlist'):
         # Regression test for http://bugs.python.org/issue561858.
         filename = module + os.extsep + 'py'
@@ -334,7 +333,6 @@ class ImportTests(unittest.TestCase):
         finally:
             os.rmdir(source)
 
-    @unittest.skipIf(sys.platform == 'cli', 'IronPython does not support .pyc or .pyo')
     def test_timestamp_overflow(self):
         # A modification timestamp larger than 2**32 should not be a problem
         # when importing a module (issue #11235).
@@ -416,7 +414,6 @@ class ImportTests(unittest.TestCase):
         # a segfault means the test failed!
         import sa
 
-    @unittest.skipIf(sys.platform == "cli", "TODO: figure out")
     def test_fromlist_type(self):
         with self.assertRaises(TypeError) as cm:
             __import__('encodings', fromlist=[u'aliases'])
@@ -480,7 +477,6 @@ func_filename = func.func_code.co_filename
         self.assertEqual(mod.code_filename, self.file_name)
         self.assertEqual(mod.func_filename, self.file_name)
 
-    @unittest.skipIf(sys.platform == 'cli', 'IronPython does not support .pyc or .pyo')
     def test_incorrect_code_name(self):
         py_compile.compile(self.file_name, dfile="another_module.py")
         mod = self.import_module()
@@ -488,7 +484,6 @@ func_filename = func.func_code.co_filename
         self.assertEqual(mod.code_filename, self.file_name)
         self.assertEqual(mod.func_filename, self.file_name)
 
-    @unittest.skipIf(sys.platform == 'cli', 'IronPython does not support .pyc or .pyo')
     def test_module_without_source(self):
         target = "another_module.py"
         py_compile.compile(self.file_name, dfile=target)
@@ -498,7 +493,6 @@ func_filename = func.func_code.co_filename
         self.assertEqual(mod.code_filename, target)
         self.assertEqual(mod.func_filename, target)
 
-    @unittest.skipIf(sys.platform == 'cli', 'IronPython does not support .pyc or .pyo')
     def test_foreign_code(self):
         py_compile.compile(self.file_name)
         with open(self.compiled_name, "rb") as f:

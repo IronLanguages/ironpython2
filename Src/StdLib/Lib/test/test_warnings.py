@@ -15,10 +15,6 @@ import warnings as original_warnings
 py_warnings = test_support.import_fresh_module('warnings', blocked=['_warnings'])
 c_warnings = test_support.import_fresh_module('warnings', fresh=['_warnings'])
 
-warnings_env_var = "PYTHONWARNINGS"
-if sys.platform == 'cli':
-    warnings_env_var = "IRONPYTHONWARNINGS"
-
 @contextmanager
 def warnings_state(module):
     """Use a specific warnings implementation in warning_tests."""
@@ -387,7 +383,6 @@ class CWarnTests(BaseTest, WarnTests):
 
     # As an early adopter, we sanity check the
     # test_support.import_fresh_module utility function
-    @unittest.skipIf(sys.platform == 'cli', 'IronPython has an implementation of warn')
     def test_accelerated(self):
         self.assertFalse(original_warnings is self.module)
         self.assertFalse(hasattr(self.module.warn, 'func_code'))
@@ -588,6 +583,38 @@ class _WarningsTests(BaseTest):
         self.assertEqual(stdout, b'')
         self.assertNotIn(b'Warning!', stderr)
         self.assertNotIn(b'Error', stderr)
+
+    def test_issue31285(self):
+        # warn_explicit() shouldn't raise a SystemError in case the return
+        # value of get_source() has a bad splitlines() method.
+        class BadLoader:
+            def get_source(self, fullname):
+                class BadSource(str):
+                    def splitlines(self):
+                        return 42
+                return BadSource('spam')
+
+        wmod = self.module
+        with original_warnings.catch_warnings(module=wmod):
+            wmod.filterwarnings('default', category=UserWarning)
+
+            with test_support.captured_stderr() as stderr:
+                wmod.warn_explicit(
+                    'foo', UserWarning, 'bar', 1,
+                    module_globals={'__loader__': BadLoader(),
+                                    '__name__': 'foobar'})
+            self.assertIn('UserWarning: foo', stderr.getvalue())
+
+    @test_support.cpython_only
+    def test_issue31411(self):
+        # warn_explicit() shouldn't raise a SystemError in case
+        # warnings.onceregistry isn't a dictionary.
+        wmod = self.module
+        with original_warnings.catch_warnings(module=wmod):
+            wmod.filterwarnings('once')
+            with test_support.swap_attr(wmod, 'onceregistry', None):
+                with self.assertRaises(TypeError):
+                    wmod.warn_explicit('foo', Warning, 'bar', 1, registry=None)
 
 
 class WarningsDisplayTests(unittest.TestCase):
@@ -812,7 +839,7 @@ class EnvironmentVariableTests(BaseTest):
 
     def test_single_warning(self):
         newenv = os.environ.copy()
-        newenv[warnings_env_var] = "ignore::DeprecationWarning"
+        newenv["PYTHONWARNINGS"] = "ignore::DeprecationWarning"
         p = subprocess.Popen([sys.executable,
                 "-c", "import sys; sys.stdout.write(str(sys.warnoptions))"],
                 stdout=subprocess.PIPE, env=newenv)
@@ -821,7 +848,7 @@ class EnvironmentVariableTests(BaseTest):
 
     def test_comma_separated_warnings(self):
         newenv = os.environ.copy()
-        newenv[warnings_env_var] = ("ignore::DeprecationWarning,"
+        newenv["PYTHONWARNINGS"] = ("ignore::DeprecationWarning,"
                                     "ignore::UnicodeWarning")
         p = subprocess.Popen([sys.executable,
                 "-c", "import sys; sys.stdout.write(str(sys.warnoptions))"],
@@ -832,7 +859,7 @@ class EnvironmentVariableTests(BaseTest):
 
     def test_envvar_and_command_line(self):
         newenv = os.environ.copy()
-        newenv[warnings_env_var] = "ignore::DeprecationWarning"
+        newenv["PYTHONWARNINGS"] = "ignore::DeprecationWarning"
         p = subprocess.Popen([sys.executable, "-W" "ignore::UnicodeWarning",
                 "-c", "import sys; sys.stdout.write(str(sys.warnoptions))"],
                 stdout=subprocess.PIPE, env=newenv)
