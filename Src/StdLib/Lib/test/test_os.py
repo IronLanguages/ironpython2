@@ -842,10 +842,12 @@ class Win32KillTests(unittest.TestCase):
         os.kill(proc.pid, sig)
         self.assertEqual(proc.wait(), sig)
 
+    @unittest.skipIf(sys.platform == 'cli', 'ipy.exe does not support getting killed by signals.')
     def test_kill_sigterm(self):
         # SIGTERM doesn't mean anything special, but make sure it works
         self._kill(signal.SIGTERM)
 
+    @unittest.skipIf(sys.platform == 'cli', 'ipy.exe does not support getting killed by signals.')
     def test_kill_int(self):
         # os.kill on Windows can take an int which gets set as the exit code
         self._kill(100)

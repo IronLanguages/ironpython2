@@ -940,11 +940,12 @@ class TestDialectValidity(unittest.TestCase):
         self.assertEqual(str(cm.exception),
                          '"delimiter" must be an 1-character string')
 
-        mydialect.delimiter = u","
-        with self.assertRaises(csv.Error) as cm:
-            mydialect()
-        self.assertEqual(str(cm.exception),
-                         '"delimiter" must be string, not unicode')
+        if sys.platform != 'cli':
+            mydialect.delimiter = u","
+            with self.assertRaises(csv.Error) as cm:
+                mydialect()
+            self.assertEqual(str(cm.exception),
+                            '"delimiter" must be string, not unicode')
 
         mydialect.delimiter = 4
         with self.assertRaises(csv.Error) as cm:

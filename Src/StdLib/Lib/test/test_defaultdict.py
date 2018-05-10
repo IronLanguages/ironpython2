@@ -1,5 +1,6 @@
 """Unit tests for collections.defaultdict."""
 
+import sys
 import os
 import copy
 import tempfile
@@ -47,7 +48,8 @@ class TestDefaultDict(unittest.TestCase):
             self.assertEqual(err.args, (15,))
         else:
             self.fail("d2[15] didn't raise KeyError")
-        self.assertRaises(TypeError, defaultdict, 1)
+        if sys.platform != 'cli':
+            self.assertRaises(TypeError, defaultdict, 1)
 
     def test_missing(self):
         d1 = defaultdict()

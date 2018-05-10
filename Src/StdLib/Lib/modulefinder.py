@@ -356,6 +356,41 @@ class ModuleFinder:
                         fullname = name + "." + sub
                         self._add_badmodule(fullname, caller)
 
+    def scan_opcodes_cli(self, co):
+        import ast
+        with open(co.co_filename, 'rU') as f:
+            nodes = ast.parse(f.read(), co.co_filename)
+
+        items = []
+
+        class ModuleFinderVisitor(ast.NodeVisitor):
+            def visit_Assign(self, node):
+                for x in node.targets:
+                    if isinstance(x, ast.Subscript):
+                        if isinstance(x.value, ast.Name):
+                            items.append(("store", (x.value.id, )))
+                        elif isinstance(x.value, ast.Attribute):
+                            items.append(("store", (x.value.attr, )))
+                        else:
+                            print 'Unknown in store: %s' % type(x.value).__name__
+                    elif isinstance(x, ast.Name):
+                        items.append(("store", (x.id, )))
+
+            def visit_Import(self, node):
+                items.extend([("import", (None, x.name)) for x in node.names])
+
+            def visit_ImportFrom(self, node):
+                if node.level == 1:
+                    items.append(("relative_import", (node.level, [x.name for x in node.names], node.module)))
+                else:
+                    items.extend([("import", ([x.name for x in node.names], node.module))])
+
+        v = ModuleFinderVisitor()
+        v.visit(nodes)
+
+        for what, args in items:
+            yield what, args
+
     def scan_opcodes(self, co,
                      unpack = struct.unpack):
         # Scan the code, and yield 'interesting' opcode combinations
@@ -400,7 +435,9 @@ class ModuleFinder:
 
     def scan_code(self, co, m):
         code = co.co_code
-        if sys.version_info >= (2, 5):
+        if sys.platform == 'cli':
+            scanner = self.scan_opcodes_cli
+        elif sys.version_info >= (2, 5):
             scanner = self.scan_opcodes_25
         else:
             scanner = self.scan_opcodes

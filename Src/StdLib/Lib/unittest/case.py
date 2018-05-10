@@ -114,10 +114,16 @@ class _AssertRaisesContext(object):
                 exc_name = str(self.expected)
             raise self.failureException(
                 "{0} not raised".format(exc_name))
-        if not issubclass(exc_type, self.expected):
-            # let unexpected exceptions pass through
+        # Save an expected exception in self.exception.
+        # Let any other exception propagate through.
+        if issubclass(exc_type, self.expected):
+            self.exception = exc_value
+        elif (hasattr(exc_value, 'clsException') and
+             isinstance(exc_value.clsException, self.expected)):
+            self.exception = exc_value.clsException
+        else:
             return False
-        self.exception = exc_value # store for later retrieval
+
         if self.expected_regexp is None:
             return True
 

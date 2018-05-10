@@ -22,6 +22,7 @@ class UnicodeMethodsTest(unittest.TestCase):
     # update this, if the database changes
     expectedchecksum = '4504dffd035baea02c5b9de82bebc3d65e0e0baf'
 
+    @unittest.skipIf(sys.platform == 'cli', 'Too slow')
     def test_method_checksum(self):
         h = hashlib.sha1()
         for i in range(0x10000):
@@ -81,6 +82,7 @@ class UnicodeFunctionsTest(UnicodeDatabaseTest):
     # update this, if the database changes
     expectedchecksum = '6ccf1b1a36460d2694f9b0b0f0324942fe70ede6'
 
+    @unittest.skipIf(sys.platform == 'cli', 'Too slow')
     def test_function_checksum(self):
         data = []
         h = hashlib.sha1()
@@ -219,6 +221,7 @@ class UnicodeFunctionsTest(UnicodeDatabaseTest):
 
 class UnicodeMiscTest(UnicodeDatabaseTest):
 
+    @unittest.skipIf(sys.platform == 'cli', 'CPython impl detail')
     def test_failed_import_during_compiling(self):
         # Issue 4367
         # Decoding \N escapes requires the unicodedata module. If it can't be

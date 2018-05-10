@@ -33,7 +33,7 @@ try:
 except ImportError:
     _testcapi = None
 
-mswindows = (sys.platform == "win32")
+mswindows = (sys.platform == "win32" or (sys.platform == "cli" and os.name == "nt"))
 
 #
 # Depends on the following external programs: Python
@@ -395,6 +395,7 @@ class ProcessTestCase(BaseTestCase):
         self.addCleanup(p.stdout.close)
         self.assertEqual(p.stdout.read(), "orange")
 
+    @unittest.skipIf(sys.platform == "cli", "TODO: figure out")
     def test_invalid_cmd(self):
         # null character in the command name
         cmd = sys.executable + '\0'
@@ -405,6 +406,7 @@ class ProcessTestCase(BaseTestCase):
         with self.assertRaises(TypeError):
             subprocess.Popen([sys.executable, "-c", "pass#\0"])
 
+    @unittest.skipIf(sys.platform == "cli", "TODO: figure out")
     def test_invalid_env(self):
         # null character in the enviroment variable name
         newenv = os.environ.copy()

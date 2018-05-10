@@ -81,7 +81,11 @@ class AuthenticationError(ProcessError):
     pass
 
 # This is down here because _multiprocessing uses BufferTooShort
-import _multiprocessing
+try:
+    # IronPython does not provide _multiprocessing
+    import _multiprocessing
+except ImportError:
+    pass
 
 #
 # Definitions not depending on native semaphores
@@ -110,7 +114,7 @@ def cpu_count():
     '''
     Returns the number of CPUs in the system
     '''
-    if sys.platform == 'win32':
+    if sys.platform == 'win32' or (sys.platform == 'cli' and os.name == 'nt'):
         try:
             num = int(os.environ['NUMBER_OF_PROCESSORS'])
         except (ValueError, KeyError):

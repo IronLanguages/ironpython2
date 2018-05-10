@@ -3,6 +3,7 @@ import random
 import time
 import pickle
 import warnings
+import sys
 from math import log, exp, pi, fsum, sin
 from functools import reduce
 from test import test_support
@@ -147,6 +148,7 @@ class TestBasicOps(unittest.TestCase):
             restoredseq = [newgen.random() for i in xrange(10)]
             self.assertEqual(origseq, restoredseq)
 
+    @unittest.skipIf(sys.platform == 'cli', 'CPython implementation pickles')
     def test_bug_1727780(self):
         # verify that version-2-pickles can be loaded
         # fine, whether they are created on 32-bit or 64-bit
@@ -323,9 +325,11 @@ class MersenneTwister_TestBasicOps(TestBasicOps):
             self.gen.seed(seed_arg)
             self.assertEqual(self.gen.random(), expected_value)
 
+    @unittest.skipIf(sys.platform == 'cli', 'CPython implementation detail')
     def test_setstate_first_arg(self):
         self.assertRaises(ValueError, self.gen.setstate, (1, None, None))
 
+    @unittest.skipIf(sys.platform == 'cli', 'CPython implementation detail')
     def test_setstate_middle_arg(self):
         start_state = self.gen.getstate()
         # Wrong type, s/b tuple

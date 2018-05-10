@@ -46,10 +46,12 @@ class CommonTest(seq_tests.CommonTest):
         self.assertEqual(repr(a2), "[0, 1, 2, [...], 3]")
 
     def test_repr_deep(self):
-        a = self.type2test([])
-        for i in range(sys.getrecursionlimit() + 100):
-            a = self.type2test([a])
-        self.assertRaises(RuntimeError, repr, a)
+        # IronPython does not implement a recursion limit
+        if sys.platform != 'cli':
+            a = self.type2test([])
+            for i in range(sys.getrecursionlimit() + 100):
+                a = self.type2test([a])
+            self.assertRaises(RuntimeError, repr, a)
 
     def test_print(self):
         d = self.type2test(xrange(200))
