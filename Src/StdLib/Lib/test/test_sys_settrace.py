@@ -633,6 +633,7 @@ class JumpTestCase(unittest.TestCase):
                 output.append(8)
             output.append(9)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(6, 7, [2, 7], (ZeroDivisionError, ''))
     def test_jump_in_nested_finally_2(output):
         try:
@@ -644,6 +645,7 @@ class JumpTestCase(unittest.TestCase):
             output.append(7)
         output.append(8)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(6, 11, [2, 11], (ZeroDivisionError, ''))
     def test_jump_in_nested_finally_3(output):
         try:
@@ -784,6 +786,7 @@ class JumpTestCase(unittest.TestCase):
             output.append(11)
         output.append(12)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(3, 5, [1, 2, 5])
     def test_jump_out_of_with_assignment(output):
         output.append(1)
@@ -904,18 +907,21 @@ class JumpTestCase(unittest.TestCase):
             i += 1
         output.append(5)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(1, 3, [], (ValueError, 'into'))
     def test_no_jump_forwards_into_with_block(output):
         output.append(1)
         with tracecontext(output, 2):
             output.append(3)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(3, 2, [1, 2, -1], (ValueError, 'into'))
     def test_no_jump_backwards_into_with_block(output):
         with tracecontext(output, 1):
             output.append(2)
         output.append(3)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(1, 3, [], (ValueError, 'into'))
     def test_no_jump_forwards_into_try_finally_block(output):
         output.append(1)
@@ -924,6 +930,7 @@ class JumpTestCase(unittest.TestCase):
         finally:
             output.append(5)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(5, 2, [2, 4], (ValueError, 'into'))
     def test_no_jump_backwards_into_try_finally_block(output):
         try:
@@ -932,6 +939,7 @@ class JumpTestCase(unittest.TestCase):
             output.append(4)
         output.append(5)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(1, 3, [], (ValueError, 'into'))
     def test_no_jump_forwards_into_try_except_block(output):
         output.append(1)
@@ -941,6 +949,7 @@ class JumpTestCase(unittest.TestCase):
             output.append(5)
             raise
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(6, 2, [2], (ValueError, 'into'))
     def test_no_jump_backwards_into_try_except_block(output):
         try:
@@ -976,6 +985,7 @@ class JumpTestCase(unittest.TestCase):
         finally:
             output.append(5)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(3, 5, [1, 2, -2], (ValueError, 'into'))
     def test_no_jump_between_with_blocks(output):
         output.append(1)
@@ -1037,6 +1047,7 @@ output.append(4)
         sys.settrace(None)
         self.compare_jump_output([2, 3, 2, 3, 4], namespace["output"])
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(2, 3, [1], event='call', error=(ValueError, "can't jump from"
                " the 'call' trace event of a new frame"))
     def test_no_jump_from_call(output):
@@ -1046,18 +1057,21 @@ output.append(4)
         nested()
         output.append(5)
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(2, 1, [1], event='return', error=(ValueError,
                "can only jump from a 'line' trace event"))
     def test_no_jump_from_return_event(output):
         output.append(1)
         return
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(2, 1, [1], event='exception', error=(ValueError,
                "can only jump from a 'line' trace event"))
     def test_no_jump_from_exception_event(output):
         output.append(1)
         1 / 0
 
+    @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(3, 2, [2], event='return', error=(ValueError,
                "can't jump from a yield statement"))
     def test_no_jump_from_yield(output):
