@@ -2668,6 +2668,22 @@ class TextIOWrapperTest(unittest.TestCase):
         t = self.TextIOWrapper(NonbytesStream('a'))
         self.assertEqual(t.read(), u'a')
 
+    def test_illegal_encoder(self):
+        # bpo-31271: A TypeError should be raised in case the return value of
+        # encoder's encode() is invalid.
+        class BadEncoder:
+            def encode(self, dummy):
+                return u'spam'
+        def get_bad_encoder(dummy):
+            return BadEncoder()
+        rot13 = codecs.lookup("rot13")
+        with support.swap_attr(rot13, '_is_text_encoding', True), \
+             support.swap_attr(rot13, 'incrementalencoder', get_bad_encoder):
+            t = io.TextIOWrapper(io.BytesIO(b'foo'), encoding="rot13")
+        with self.assertRaises(TypeError):
+            t.write('bar')
+            t.flush()
+
     def test_illegal_decoder(self):
         # Issue #17106
         # Bypass the early encoding check added in issue 20404
@@ -2703,6 +2719,26 @@ class TextIOWrapperTest(unittest.TestCase):
             #self.assertRaises(TypeError, t.readline)
             #t = _make_illegal_wrapper()
             #self.assertRaises(TypeError, t.read)
+
+        # Issue 31243: calling read() while the return value of decoder's
+        # getstate() is invalid should neither crash the interpreter nor
+        # raise a SystemError.
+        def _make_very_illegal_wrapper(getstate_ret_val):
+            class BadDecoder:
+                def getstate(self):
+                    return getstate_ret_val
+            def _get_bad_decoder(dummy):
+                return BadDecoder()
+            quopri = codecs.lookup("quopri_codec")
+            with support.swap_attr(quopri, 'incrementaldecoder',
+                                   _get_bad_decoder):
+                return _make_illegal_wrapper()
+        t = _make_very_illegal_wrapper(42)
+        with self.maybeRaises(TypeError):
+            t.read(42)
+        t = _make_very_illegal_wrapper(())
+        with self.maybeRaises(TypeError):
+            t.read(42)
 
 
 class CTextIOWrapperTest(TextIOWrapperTest):

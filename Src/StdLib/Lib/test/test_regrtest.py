@@ -493,6 +493,7 @@ class ArgsTestCase(BaseTestCase):
             self.assertIn(line2, reflog)
 
     @unittest.skipUnless(Py_DEBUG, 'need a debug build')
+    @support.requires_type_collecting
     def test_huntrleaks(self):
         # test --huntrleaks
         code = textwrap.dedent("""
@@ -543,6 +544,8 @@ class ArgsTestCase(BaseTestCase):
                                 testname)
         self.assertEqual(output.splitlines(), all_methods)
 
+    @unittest.skipIf(sys.platform.startswith('aix'),
+                     "support._crash_python() doesn't work on AIX")
     def test_crashed(self):
         # Any code which causes a crash
         code = 'import test.support; test.support._crash_python()'
