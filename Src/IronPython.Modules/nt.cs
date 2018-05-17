@@ -402,17 +402,21 @@ namespace IronPython.Modules {
         }
 
 #if FEATURE_UNIX && FEATURE_NATIVE
-        public static void symlink(CodeContext context, string source, string link_name) {
+        public static void symlink(string source, string link_name) {
             int result = Mono.Unix.Native.Syscall.symlink(source, link_name);
             if(result != 0) {
                 throw PythonExceptions.CreateThrowable(PythonExceptions.OSError, 0, source, link_name);
             }
         }
 
-        public static PythonTuple uname(CodeContext context) {
+        public static PythonTuple uname() {
             Mono.Unix.Native.Utsname info;
             Mono.Unix.Native.Syscall.uname(out info);
             return PythonTuple.MakeTuple(info.sysname, info.nodename, info.release, info.version, info.machine);
+        }
+
+        public static uint geteuid() {
+            return Mono.Unix.Native.Syscall.geteuid();
         }
 #endif
 
