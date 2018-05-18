@@ -29,8 +29,6 @@ using IronPython.Runtime.Operations;
 
 using System.Numerics;
 
-using Mono.Unix.Native;
-
 [assembly: PythonModule("spwd", typeof(IronPython.Modules.PythonSpwd), PythonModuleAttribute.PlatformFamily.Unix)]
 namespace IronPython.Modules {
     
