@@ -73,32 +73,16 @@ or via the object attributes as named in the above tuple.
             }
 
             [Documentation("group name")]
-            public string gr_name { 
-                get {
-                    return (string)_data[0];
-                }
-            }
+            public string gr_name => (string)_data[0];
 
             [Documentation("password")]
-            public string gr_passwd { 
-                get {
-                    return (string)_data[1];
-                }
-            }
+            public string gr_passwd => (string)_data[1];
 
             [Documentation("group id")]
-            public int gr_gid { 
-                get {
-                    return (int)_data[2];
-                }
-            }
+            public int gr_gid => (int)_data[2];
 
             [Documentation("group members")]
-            public List gr_mem { 
-                get {
-                    return (List)_data[3];
-                }
-            }
+            public List gr_mem => (List)_data[3];
 
             public override string/*!*/ __repr__(CodeContext/*!*/ context) {
                 return $"grp.struct_group(gr_name='{gr_name}', gr_passwd='{gr_passwd}', gr_gid={gr_gid}, gr_mem={gr_mem.__repr__(context)})";

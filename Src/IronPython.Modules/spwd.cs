@@ -73,67 +73,31 @@ or via the object attributes as named in the above tuple.")]
             }
 
             [Documentation("login name")]
-            public string sp_nam { 
-                get {
-                    return (string)_data[0];
-                }
-            }
+            public string sp_nam => (string)_data[0];
 
             [Documentation("encrypted password")]
-            public string sp_pwd { 
-                get {
-                    return (string)_data[1];
-                }
-            }
+            public string sp_pwd => (string)_data[1];
 
             [Documentation("date of last change")]
-            public int sp_lstchg { 
-                get {
-                    return (int)_data[2];
-                }
-            }
+            public int sp_lstchg => (int)_data[2];
 
             [Documentation("min #days between changes")]
-            public int sp_min { 
-                get {
-                    return (int)_data[3];
-                }
-            }
+            public int sp_min => (int)_data[3];
 
             [Documentation("max #days between changes")]
-            public int sp_max { 
-                get {
-                    return (int)_data[4];
-                }
-            }
+            public int sp_max => (int)_data[4];
 
             [Documentation("#days before pw expires to warn user about it")]
-            public int sp_warn { 
-                get {
-                    return (int)_data[5];
-                }
-            }
+            public int sp_warn => (int)_data[5];
 
             [Documentation("#days after pw expires until account is disabled")]
-            public int sp_inact { 
-                get {
-                    return (int)_data[6];
-                }
-            }
+            public int sp_inact => (int)_data[6];
 
             [Documentation("#days since 1970-01-01 when account expires")]
-            public int sp_expire { 
-                get {
-                    return (int)_data[7];
-                }
-            }
+            public int sp_expire => (int)_data[7];
 
             [Documentation("reserved")]
-            public int sp_flag { 
-                get {
-                    return (int)_data[8];
-                }
-            }
+            public int sp_flag => (int)_data[8];
 
             public override string/*!*/ __repr__(CodeContext/*!*/ context) {
                 return $"spwd.struct_spwd(sp_name='{sp_nam}', sp_pwd='{sp_pwd}', sp_lstchg={sp_lstchg}, sp_min={sp_min}, sp_max={sp_max}, sp_warn={sp_warn}, sp_inact={sp_inact}, sp_expire={sp_expire}, sp_flag={sp_flag})";

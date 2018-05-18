@@ -92,53 +92,25 @@ or via the object attributes as named in the above tuple.")]
             }
 
             [Documentation("user name")]
-            public string pw_name { 
-                get {
-                    return (string)_data[0];
-                } 
-            }
+            public string pw_name => (string)_data[0];
 
             [Documentation("password")]
-            public string pw_passwd {
-                get {
-                    return (string)_data[1];
-                }
-            }
+            public string pw_passwd => (string)_data[1];
 
             [Documentation("user id")]
-            public int pw_uid { 
-                get {
-                    return (int)_data[2];
-                }
-            }
+            public int pw_uid => (int)_data[2];
 
             [Documentation("group id")]
-            public int pw_gid { 
-                get {
-                    return (int)_data[3];
-                }
-            }
+            public int pw_gid => (int)_data[3];
 
             [Documentation("real name")]
-            public string pw_gecos { 
-                get {
-                    return (string)_data[4];
-                }
-            }
+            public string pw_gecos => (string)_data[4];
 
             [Documentation("home directory")]
-            public string pw_dir { 
-                get {
-                    return (string)_data[5];
-                }
-            }
+            public string pw_dir => (string)_data[5];
 
             [Documentation("shell program")]
-            public string pw_shell { 
-                get {
-                    return (string)_data[6];
-                }
-            }
+            public string pw_shell => (string)_data[6];
 
             public override string/*!*/ __repr__(CodeContext/*!*/ context) {
                 return $"pwd.struct_passwd(pw_name='{pw_name}', pw_passwd='{pw_passwd}', pw_uid={pw_uid}, pw_gid={pw_gid}, pw_gecos='{pw_gecos}', pw_dir='{pw_dir}', pw_shell='{pw_shell}')";
