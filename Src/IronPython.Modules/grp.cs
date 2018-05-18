@@ -68,70 +68,40 @@ or via the object attributes as named in the above tuple.
 ")]
         public class struct_group : PythonTuple {
 
-            private const int LENGTH = 4;
-
-            internal struct_group(string gr_name, string gr_passwd, int gr_gid, List gr_mem) {
-                this.gr_name = gr_name;
-                this.gr_passwd = gr_passwd;
-                this.gr_gid = gr_gid;
-                this.gr_mem = gr_mem;
+            internal struct_group(string gr_name, string gr_passwd, int gr_gid, List gr_mem) :
+                base(new object[] { gr_name, gr_passwd, gr_gid, gr_mem }) {
             }
 
             [Documentation("group name")]
-            public string gr_name { get; }
-
-            [Documentation("password")]
-            public string gr_passwd { get; }
-
-            [Documentation("group id")]
-            public int gr_gid { get; }
-
-            [Documentation("group members")]
-            public List gr_mem { get; }
-
-            public override int __len__() {
-                return LENGTH;
-            }
-
-            private object[] AsArray() {
-                return new object[] { gr_name, gr_passwd, gr_gid, gr_mem };
-            }
-
-            public override object __getslice__(int start, int stop) {
-                Slice.FixSliceArguments(LENGTH, ref start, ref stop);
-
-                return MakeTuple(ArrayOps.GetSlice(AsArray(), start, stop));
-            }
-
-            public override object this[Slice slice] {
+            public string gr_name { 
                 get {
-                    int start, stop, step;
-                    slice.indices(LENGTH, out start, out stop, out step);
-
-                    return MakeTuple(ArrayOps.GetSlice(AsArray(), start, stop, step));
+                    return (string)_data[0];
                 }
             }
 
-            public override object this[int index] {
+            [Documentation("password")]
+            public string gr_passwd { 
                 get {
-                    if(index > LENGTH || index < 0) {
-                        throw PythonOps.IndexError("tuple index out of range");
-                    }
+                    return (string)_data[1];
+                }
+            }
 
-                    return AsArray()[index];                    
+            [Documentation("group id")]
+            public int gr_gid { 
+                get {
+                    return (int)_data[2];
+                }
+            }
+
+            [Documentation("group members")]
+            public List gr_mem { 
+                get {
+                    return (List)_data[3];
                 }
             }
 
             public override string/*!*/ __repr__(CodeContext/*!*/ context) {
                 return $"grp.struct_group(gr_name='{gr_name}', gr_passwd='{gr_passwd}', gr_gid={gr_gid}, gr_mem={gr_mem.__repr__(context)})";
-            }
-
-            public override string ToString() {
-                return __repr__(DefaultContext.Default);
-            }
-
-            public override IEnumerator __iter__() {
-                return AsArray().GetEnumerator();
             }
         }
 

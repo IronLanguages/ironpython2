@@ -86,82 +86,62 @@ This object may be accessed either as a tuple of
 or via the object attributes as named in the above tuple.")]
         public class struct_passwd : PythonTuple {
 
-            private const int LENGTH = 7;
+            internal struct_passwd(string pw_name, string pw_passwd, int pw_uid, int pw_gid, string pw_gecos, string pw_dir, string pw_shell) :
+                base(new object[] { pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell }) {
 
-            internal struct_passwd(string pw_name, string pw_passwd, int pw_uid, int pw_gid, string pw_gecos, string pw_dir, string pw_shell) {
-                this.pw_name = pw_name;
-                this.pw_passwd = pw_passwd;
-                this.pw_uid = pw_uid;
-                this.pw_gid = pw_gid;
-                this.pw_gecos = pw_gecos;
-                this.pw_dir = pw_dir;
-                this.pw_shell = pw_shell;
             }
 
             [Documentation("user name")]
-            public string pw_name { get; }
+            public string pw_name { 
+                get {
+                    return (string)_data[0];
+                } 
+            }
 
             [Documentation("password")]
-            public string pw_passwd { get; }
-
-            [Documentation("user id")]
-            public int pw_uid { get; }
-
-            [Documentation("group id")]
-            public int pw_gid { get; }
-
-            [Documentation("real name")]
-            public string pw_gecos { get; }
-
-            [Documentation("home directory")]
-            public string pw_dir { get; }
-
-            [Documentation("shell program")]
-            public string pw_shell { get; }
-
-            public override int __len__() {
-                return LENGTH;
-            }
-
-            private object[] AsArray() {
-                return new object[] { pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell };
-            }
-
-            public override object __getslice__(int start, int stop) {
-                Slice.FixSliceArguments(LENGTH, ref start, ref stop);
-
-                return MakeTuple(ArrayOps.GetSlice(AsArray(), start, stop));
-            }
-
-            public override object this[Slice slice] {
+            public string pw_passwd {
                 get {
-                    int start, stop, step;
-                    slice.indices(LENGTH, out start, out stop, out step);
-
-                    return MakeTuple(ArrayOps.GetSlice(AsArray(), start, stop, step));
+                    return (string)_data[1];
                 }
             }
 
-            public override object this[int index] {
+            [Documentation("user id")]
+            public int pw_uid { 
                 get {
-                    if(index > LENGTH || index < 0) {
-                        throw PythonOps.IndexError("tuple index out of range");
-                    }
+                    return (int)_data[2];
+                }
+            }
 
-                    return AsArray()[index];                    
+            [Documentation("group id")]
+            public int pw_gid { 
+                get {
+                    return (int)_data[3];
+                }
+            }
+
+            [Documentation("real name")]
+            public string pw_gecos { 
+                get {
+                    return (string)_data[4];
+                }
+            }
+
+            [Documentation("home directory")]
+            public string pw_dir { 
+                get {
+                    return (string)_data[5];
+                }
+            }
+
+            [Documentation("shell program")]
+            public string pw_shell { 
+                get {
+                    return (string)_data[6];
                 }
             }
 
             public override string/*!*/ __repr__(CodeContext/*!*/ context) {
                 return $"pwd.struct_passwd(pw_name='{pw_name}', pw_passwd='{pw_passwd}', pw_uid={pw_uid}, pw_gid={pw_gid}, pw_gecos='{pw_gecos}', pw_dir='{pw_dir}', pw_shell='{pw_shell}')";
-            }
-
-            public override string ToString() {
-                return __repr__(DefaultContext.Default);
-            }
-
-            public override IEnumerator __iter__() {
-                return AsArray().GetEnumerator();
             }
         }
 

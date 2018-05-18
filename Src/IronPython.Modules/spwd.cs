@@ -70,88 +70,75 @@ or via the object attributes as named in the above tuple.")]
 
             private const int LENGTH = 9;
 
-            internal struct_spwd(string sp_nam, string sp_pwd, int sp_lstchg, int sp_min, int sp_max, int sp_warn, int sp_inact, int sp_expire, int sp_flag) {
-                this.sp_nam = sp_nam;
-                this.sp_pwd = sp_pwd;
-                this.sp_lstchg = sp_lstchg;
-                this.sp_min = sp_min;
-                this.sp_max = sp_max;
-                this.sp_warn = sp_warn;
-                this.sp_inact = sp_inact;
-                this.sp_expire = sp_expire;
-                this.sp_flag = sp_flag;
+            internal struct_spwd(string sp_nam, string sp_pwd, int sp_lstchg, int sp_min, int sp_max, int sp_warn, int sp_inact, int sp_expire, int sp_flag) :
+                base(new object[] { sp_nam ,sp_pwd, sp_lstchg, sp_min, sp_max, sp_warn, sp_inact, sp_expire, sp_flag }) {
             }
 
             [Documentation("login name")]
-            public string sp_nam { get; }
-
-            [Documentation("encrypted password")]
-            public string sp_pwd { get; }
-
-            [Documentation("date of last change")]
-            public int sp_lstchg { get; }
-
-            [Documentation("min #days between changes")]
-            public int sp_min { get; }
-
-            [Documentation("max #days between changes")]
-            public int sp_max { get; }
-
-            [Documentation("#days before pw expires to warn user about it")]
-            public int sp_warn { get; }
-
-            [Documentation("#days after pw expires until account is disabled")]
-            public int sp_inact { get; }
-
-            [Documentation("#days since 1970-01-01 when account expires")]
-            public int sp_expire { get; }
-
-            [Documentation("reserved")]
-            public int sp_flag { get; }
-
-            public override int __len__() {
-                return LENGTH;
-            }
-
-            private object[] AsArray() {
-                return new object[] { sp_nam, sp_pwd, sp_lstchg, sp_min, sp_max, sp_warn, sp_inact, sp_expire, sp_flag };
-            }
-
-            public override object __getslice__(int start, int stop) {
-                Slice.FixSliceArguments(LENGTH, ref start, ref stop);
-
-                return MakeTuple(ArrayOps.GetSlice(AsArray(), start, stop));
-            }
-
-            public override object this[Slice slice] {
+            public string sp_nam { 
                 get {
-                    int start, stop, step;
-                    slice.indices(LENGTH, out start, out stop, out step);
-
-                    return MakeTuple(ArrayOps.GetSlice(AsArray(), start, stop, step));
+                    return (string)_data[0];
                 }
             }
 
-            public override object this[int index] {
+            [Documentation("encrypted password")]
+            public string sp_pwd { 
                 get {
-                    if(index > LENGTH || index < 0) {
-                        throw PythonOps.IndexError("tuple index out of range");
-                    }
+                    return (string)_data[1];
+                }
+            }
 
-                    return AsArray()[index];                    
+            [Documentation("date of last change")]
+            public int sp_lstchg { 
+                get {
+                    return (int)_data[2];
+                }
+            }
+
+            [Documentation("min #days between changes")]
+            public int sp_min { 
+                get {
+                    return (int)_data[3];
+                }
+            }
+
+            [Documentation("max #days between changes")]
+            public int sp_max { 
+                get {
+                    return (int)_data[4];
+                }
+            }
+
+            [Documentation("#days before pw expires to warn user about it")]
+            public int sp_warn { 
+                get {
+                    return (int)_data[5];
+                }
+            }
+
+            [Documentation("#days after pw expires until account is disabled")]
+            public int sp_inact { 
+                get {
+                    return (int)_data[6];
+                }
+            }
+
+            [Documentation("#days since 1970-01-01 when account expires")]
+            public int sp_expire { 
+                get {
+                    return (int)_data[7];
+                }
+            }
+
+            [Documentation("reserved")]
+            public int sp_flag { 
+                get {
+                    return (int)_data[8];
                 }
             }
 
             public override string/*!*/ __repr__(CodeContext/*!*/ context) {
                 return $"spwd.struct_spwd(sp_name='{sp_nam}', sp_pwd='{sp_pwd}', sp_lstchg={sp_lstchg}, sp_min={sp_min}, sp_max={sp_max}, sp_warn={sp_warn}, sp_inact={sp_inact}, sp_expire={sp_expire}, sp_flag={sp_flag})";
-            }
-
-            public override string ToString() {
-                return __repr__(DefaultContext.Default);
-            }
-
-            public override IEnumerator __iter__() {
-                return AsArray().GetEnumerator();
             }
         }
 
