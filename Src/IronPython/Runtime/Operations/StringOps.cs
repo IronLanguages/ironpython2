@@ -2747,7 +2747,7 @@ namespace IronPython.Runtime.Operations {
 
             public override bool Fallback(byte[] bytesUnknown, int index) {
                 if (index > 0 && index + bytesUnknown.Length != length) {
-                    throw new Exception();
+                    throw PythonOps.UnicodeDecodeError($"failed to decode bytes at index: {index}", bytesUnknown, index);
                 }
                 // just some bad bytes at the end
                 badBytes = bytesUnknown;
