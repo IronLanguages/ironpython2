@@ -589,6 +589,38 @@ class _WarningsTests(BaseTest):
         self.assertNotIn(b'Warning!', stderr)
         self.assertNotIn(b'Error', stderr)
 
+    def test_issue31285(self):
+        # warn_explicit() shouldn't raise a SystemError in case the return
+        # value of get_source() has a bad splitlines() method.
+        class BadLoader:
+            def get_source(self, fullname):
+                class BadSource(str):
+                    def splitlines(self):
+                        return 42
+                return BadSource('spam')
+
+        wmod = self.module
+        with original_warnings.catch_warnings(module=wmod):
+            wmod.filterwarnings('default', category=UserWarning)
+
+            with test_support.captured_stderr() as stderr:
+                wmod.warn_explicit(
+                    'foo', UserWarning, 'bar', 1,
+                    module_globals={'__loader__': BadLoader(),
+                                    '__name__': 'foobar'})
+            self.assertIn('UserWarning: foo', stderr.getvalue())
+
+    @test_support.cpython_only
+    def test_issue31411(self):
+        # warn_explicit() shouldn't raise a SystemError in case
+        # warnings.onceregistry isn't a dictionary.
+        wmod = self.module
+        with original_warnings.catch_warnings(module=wmod):
+            wmod.filterwarnings('once')
+            with test_support.swap_attr(wmod, 'onceregistry', None):
+                with self.assertRaises(TypeError):
+                    wmod.warn_explicit('foo', Warning, 'bar', 1, registry=None)
+
 
 class WarningsDisplayTests(unittest.TestCase):
 
