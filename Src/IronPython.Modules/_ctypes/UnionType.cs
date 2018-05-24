@@ -86,7 +86,7 @@ namespace IronPython.Modules {
                 return MakeArrayType(type, count);
             }
 
-#region INativeType Members
+            #region INativeType Members
 
             int INativeType.Size {
                 get {

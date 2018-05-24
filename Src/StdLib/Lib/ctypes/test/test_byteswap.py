@@ -185,6 +185,7 @@ class Test(unittest.TestCase):
                 pass
             self.assertRaises(TypeError, setattr, T, "_fields_", [("x", typ)])
 
+    @unittest.skipIf(sys.platform=='cli', 'IronPython currently does not support different endian structures')
     def test_struct_struct(self):
         # nested structures with different byteorders
 
@@ -213,6 +214,7 @@ class Test(unittest.TestCase):
                 self.assertEqual(s.point.x, 1)
                 self.assertEqual(s.point.y, 2)
 
+    @unittest.skipIf(sys.platform=='cli', 'IronPython currently does not support different endian structures')
     def test_struct_fields_2(self):
         # standard packing in struct uses no alignment.
         # So, we have to align using pad bytes.
@@ -236,6 +238,7 @@ class Test(unittest.TestCase):
         s2 = struct.pack(fmt, 0x12, 0x1234, 0x12345678, 3.14)
         self.assertEqual(bin(s1), bin(s2))
 
+    @unittest.skipIf(sys.platform=='cli', 'IronPython currently does not support different endian structures')
     def test_unaligned_nonnative_struct_fields(self):
         if sys.byteorder == "little":
             base = BigEndianStructure

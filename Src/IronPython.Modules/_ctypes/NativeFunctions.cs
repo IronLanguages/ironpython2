@@ -37,10 +37,10 @@ namespace IronPython.Modules {
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool FreeLibrary(IntPtr hModule);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError=true)]
         private static extern IntPtr LoadLibrary(string lpFileName);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", SetLastError=true)]
         public static extern void SetLastError(int errorCode);
 
         [DllImport("kernel32.dll")]

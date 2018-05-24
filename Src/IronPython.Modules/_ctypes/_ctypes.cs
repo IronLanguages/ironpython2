@@ -16,7 +16,6 @@
 #if FEATURE_NATIVE || NETCOREAPP2_0
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
@@ -188,7 +187,7 @@ namespace IronPython.Modules {
         public static object LoadLibrary(string library, [DefaultParameterValue(0)]int mode) {
             IntPtr res = NativeFunctions.LoadDLL(library, mode);
             if (res == IntPtr.Zero) {
-                throw PythonOps.OSError("cannot load library {0}", library);
+                throw PythonOps.OSError($"cannot load library {library}");
             }
 
             return res.ToPython();

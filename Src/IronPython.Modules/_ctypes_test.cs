@@ -14,6 +14,7 @@
  * ***************************************************************************/
 
 using System;
+using System.IO;
 
 using IronPython.Runtime;
 
@@ -21,8 +22,24 @@ using IronPython.Runtime;
 [assembly: PythonModule("_ctypes_test", typeof(IronPython.Modules.CTypesTest))]
 namespace IronPython.Modules {
     public static class CTypesTest {
+
+        private static string FindRoot() {
+            // we start at the current directory and look up until we find the "Src" directory
+            var current = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var found = false;
+            while (!found && !string.IsNullOrEmpty(current)) {
+                var test = Path.Combine(current, "Src", "StdLib", "Lib");
+                if (Directory.Exists(test)) {
+                    return current;
+                }
+
+                current = Path.GetDirectoryName(current);
+            }
+            return string.Empty;
+        }
+
         // TODO: This isn't right
-        public static string __file__ = Environment.GetEnvironmentVariable("DLR_ROOT") + "\\External.LCA_RESTRICTED\\Languages\\IronPython\\27\\DLLs\\_ctypes_test.pyd";
+        public static string __file__ = Path.Combine(FindRoot(), "Tests", "_ctypes_test.pyd");
 
         public static void func() {
         }

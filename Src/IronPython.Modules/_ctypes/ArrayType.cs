@@ -49,9 +49,8 @@ namespace IronPython.Modules {
 
             public ArrayType(CodeContext/*!*/ context, string name, PythonTuple bases, PythonDictionary dict)
                 : base(context, name, bases, dict) {
-                object len;
                 int iLen;
-                if (!dict.TryGetValue("_length_", out len) || !(len is int) || (iLen = (int)len) < 0) {
+                if (!dict.TryGetValue("_length_", out object len) || !(len is int) || (iLen = (int)len) < 0) {
                     throw PythonOps.AttributeError("arrays must have _length_ attribute and it must be a positive integer");
                 }
 
@@ -63,8 +62,7 @@ namespace IronPython.Modules {
                 _length = iLen;
                 _type = (INativeType)type;
 
-                if (_type is SimpleType) {
-                    SimpleType st = (SimpleType)_type;
+                if (_type is SimpleType st) {
                     if (st._type == SimpleTypeKind.Char) {
                         // TODO: (c_int * 2).value isn't working
                         SetCustomMember(context,
@@ -381,13 +379,11 @@ namespace IronPython.Modules {
             }
 
             lock (_arrayTypes) {
-                ArrayType res;
-                Dictionary<int, ArrayType> countDict;
-                if (!_arrayTypes.TryGetValue(type, out countDict)) {
+                if (!_arrayTypes.TryGetValue(type, out Dictionary<int, ArrayType> countDict)) {
                     _arrayTypes[type] = countDict = new Dictionary<int, ArrayType>();
                 }
 
-                if (!countDict.TryGetValue(count, out res)) {
+                if (!countDict.TryGetValue(count, out ArrayType res)) {
                     res = countDict[count] = new ArrayType(type.Context.SharedContext,
                         type.Name + "_Array_" + count,
                         PythonTuple.MakeTuple(Array),

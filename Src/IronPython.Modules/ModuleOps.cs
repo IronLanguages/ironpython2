@@ -97,12 +97,17 @@ namespace IronPython.Modules {
 
         public static CTypes.CData/*!*/ CheckCDataType(object o, object type) {
             CTypes.CData res = o as CTypes.CData;
-            object asParam;
-            if (res == null && PythonOps.TryGetBoundAttr(o, "_as_parameter_", out asParam)) {
+            if (res == null && PythonOps.TryGetBoundAttr(o, "_as_parameter_", out object asParam)) {
                 res = asParam as CTypes.CData;
             }
 
-            if (res == null || res.NativeType != type) {
+            bool valid = true;
+            if(res.NativeType is CTypes.ArrayType at) {
+                valid = ((type is CTypes.ArrayType t) && (t.ElementType == at.ElementType)) ||
+                    ((type is CTypes.PointerType p) && (p._type == at.ElementType));
+            }
+
+            if (res == null || !valid) {
                 throw ArgumentError(type, ((PythonType)type).Name, o);
             }
 
@@ -125,15 +130,18 @@ namespace IronPython.Modules {
 
         public static CTypes.CData TryCheckCDataPointerType(object o, object type) {
             CTypes.CData res = o as CTypes.CData;
-            object asParam;
-            if (res == null && PythonOps.TryGetBoundAttr(o, "_as_parameter_", out asParam)) {
+            if (res == null && PythonOps.TryGetBoundAttr(o, "_as_parameter_", out object asParam)) {
                 res = asParam as CTypes.CData;
             }
-            if (res != null && res.NativeType != ((CTypes.PointerType)type)._type) {
-                if (!(res is CTypes.Pointer)) {
-                    throw ArgumentError(type, ((PythonType)((CTypes.PointerType)type)._type).Name, o);
-                }
-                return null;
+
+            bool valid = true;
+            if (res.NativeType is CTypes.ArrayType at) {
+                valid = ((type is CTypes.ArrayType t) && (t.ElementType == at.ElementType)) ||
+                    ((type is CTypes.PointerType p) && (p._type == at.ElementType));
+            }
+
+            if (res != null && !valid) {
+                throw ArgumentError(type, ((PythonType)((CTypes.PointerType)type)._type).Name, o);
             }
 
             return res;

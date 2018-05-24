@@ -55,22 +55,19 @@ namespace IronPython.Modules {
                         st.EnsureFinal();
                     }
 
-                    UnionType ut = pt as UnionType;
-                    if (ut != null) {
+                    if (pt is UnionType ut) {
                         ut.EnsureFinal();
                     }
                 }
 
-                object pack;
-                if (members.TryGetValue("_pack_", out pack)) {
+                if (members.TryGetValue("_pack_", out object pack)) {
                     if (!(pack is int) || ((int)pack < 0)) {
                         throw PythonOps.ValueError("pack must be a non-negative integer");
                     }
                     _pack = (int)pack;
                 }
 
-                object fields;
-                if (members.TryGetValue("_fields_", out fields)) {
+                if (members.TryGetValue("_fields_", out object fields)) {
                     // When we support alternate endianness this should change to:
                     //__setattr__(context, "_fields_", fields);
                     SetFields(fields);
@@ -156,7 +153,7 @@ namespace IronPython.Modules {
                 base.__setattr__(context, name, value);
             }
 
-#region INativeType Members
+            #region INativeType Members
 
             int INativeType.Size {
                 get {
@@ -265,7 +262,7 @@ namespace IronPython.Modules {
                 }
             }
 
-#endregion
+            #endregion
 
             internal static PythonType MakeSystemType(Type underlyingSystemType) {
                 return PythonType.SetPythonType(underlyingSystemType, new StructType(underlyingSystemType));

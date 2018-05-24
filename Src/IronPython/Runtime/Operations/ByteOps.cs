@@ -128,13 +128,13 @@ namespace IronPython.Runtime.Operations {
         internal static byte GetByteStringOk(object o) {
             string s;
             Extensible<string> es;
-            if (!Object.ReferenceEquals(s = o as string, null)) {
+            if (!(s = o as string is null)) {
                 if (s.Length == 1) {
                     return ((int)s[0]).ToByteChecked();
                 } else {
                     throw PythonOps.TypeError("an integer or string of size 1 is required");
                 }
-            } else if (!Object.ReferenceEquals(es = o as Extensible<string>, null)) {
+            } else if (!(es = o as Extensible<string> is null)) {
                 if (es.Value.Length == 1) {
                     return ((int)es.Value[0]).ToByteChecked();
                 } else {
@@ -170,9 +170,9 @@ namespace IronPython.Runtime.Operations {
                 return ((double)o).ToByteChecked();
             } else if ((ei = o as Extensible<int>) != null) {
                 return ei.Value.ToByteChecked();
-            } else if (!Object.ReferenceEquals(ebi = o as Extensible<BigInteger>, null)) {
+            } else if (!(ebi = o as Extensible<BigInteger> is null)) {
                 return ebi.Value.ToByteChecked();
-            } else if (!Object.ReferenceEquals(ed = o as Extensible<double>, null)) {
+            } else if (!(ed = o as Extensible<double> is null)) {
                 return ed.Value.ToByteChecked();
             } else if (o is byte) {
                 return (byte)o;
@@ -190,6 +190,8 @@ namespace IronPython.Runtime.Operations {
                 return ((double)(float)o).ToByteChecked();
             } else if (Converter.TryConvertToIndex(o, out i)) {
                 return i.ToByteChecked();
+            } else if(o is string str && str.Length == 1) {
+                return (byte)(str[0]);
             } else {
                 throw PythonOps.TypeError("an integer or string of size 1 is required");
             }

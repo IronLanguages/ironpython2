@@ -67,7 +67,7 @@ namespace IronPython.Modules {
                 if (args == null) {
                     throw PythonOps.TypeError("expected sequence, got None");
                 } else if (args.Count != 2) {
-                    throw PythonOps.TypeError("argument 1 must be a sequence of length 2, not {0}", args.Count);
+                    throw PythonOps.TypeError($"argument 1 must be a sequence of length 2, not {args.Count}");
                 }
 
                 object nameOrOrdinal = args[0];
@@ -94,7 +94,7 @@ namespace IronPython.Modules {
                     }
 
                     if (tmpAddr == IntPtr.Zero) {
-                        throw PythonOps.AttributeError("function {0} is not defined", args[0]);
+                        throw PythonOps.AttributeError($"function {args[0]} is not defined");
                     }
                 }
 
@@ -124,8 +124,6 @@ namespace IronPython.Modules {
                         if (!(resType is INativeType) || resType is PointerType) {
                             throw PythonOps.TypeError("invalid result type {0} for callback function", ((PythonType)resType).Name);
                         }
-
-                        
                     }
                 }
                 _id = Interlocked.Increment(ref _curId);
@@ -253,6 +251,12 @@ namespace IronPython.Modules {
             internal CallingConvention CallingConvention {
                 get {
                     return ((CFuncPtrType)DynamicHelpers.GetPythonType(this)).CallingConvention;
+                }
+            }
+
+            internal int Flags {
+                get {
+                    return ((CFuncPtrType)DynamicHelpers.GetPythonType(this))._flags;
                 }
             }
 
