@@ -1138,5 +1138,18 @@ class C:
         for p in ('oo', 'o*', '?o'):
             self.assertEqual(os.path.abspath(prefix + p), os.path.abspath(prefix) + p)
 
+    def test_ipy2_gh112(self):
+        """https://github.com/IronLanguages/ironpython2/issues/112"""
+
+        import io
+
+        path = 'test.tmp'
+        with open(path, 'wb') as f:
+            f.write(u'hyv\xe4'.encode('UTF-8'))
+        try:
+            with io.open(path, encoding='ASCII', errors='ignore') as f:
+                self.assertEqual(f.read(), "hyv")
+        finally:
+            os.remove(path)
 
 run_test(__name__)
