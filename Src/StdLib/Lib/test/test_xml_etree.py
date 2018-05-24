@@ -30,6 +30,7 @@ ET = None
 
 SIMPLE_XMLFILE = findfile("simple.xml", subdir="xmltestdata")
 SIMPLE_NS_XMLFILE = findfile("simple-ns.xml", subdir="xmltestdata")
+UTF8_BUG_XMLFILE = findfile("expat224_utf8_bug.xml", subdir="xmltestdata")
 
 SAMPLE_XML = """\
 <body>
@@ -132,6 +133,13 @@ def python_only(test):
     def wrapper(*args):
         if ET is not pyET:
             raise unittest.SkipTest('only for the Python version')
+        return test(*args)
+    return wrapper
+
+def cet_only(test):
+    def wrapper(*args):
+        if ET is pyET:
+            raise unittest.SkipTest('only for the C version')
         return test(*args)
     return wrapper
 
@@ -1338,6 +1346,7 @@ class BugsTest(unittest.TestCase):
         self.assertEqual(t.find('.//paragraph').text,
             u'A new cultivar of Begonia plant named \u2018BCT9801BEG\u2019.')
 
+    @unittest.skipIf(sys.gettrace(), "Skips under coverage.")
     def test_bug_xmltoolkit63(self):
         # Check reference leak.
         def xmltoolkit63():
@@ -1492,6 +1501,36 @@ class BugsTest(unittest.TestCase):
 
         ET.register_namespace('test10777', 'http://myuri/')
         ET.register_namespace('test10777', 'http://myuri/')
+
+    def check_expat224_utf8_bug(self, text):
+        xml = b'<a b="%s"/>' % text
+        root = ET.XML(xml)
+        self.assertEqual(root.get('b'), text.decode('utf-8'))
+
+    def test_expat224_utf8_bug(self):
+        # bpo-31170: Expat 2.2.3 had a bug in its UTF-8 decoder.
+        # Check that Expat 2.2.4 fixed the bug.
+        #
+        # Test buffer bounds at odd and even positions.
+
+        text = b'\xc3\xa0' * 1024
+        self.check_expat224_utf8_bug(text)
+
+        text = b'x' + b'\xc3\xa0' * 1024
+        self.check_expat224_utf8_bug(text)
+
+    def test_expat224_utf8_bug_file(self):
+        with open(UTF8_BUG_XMLFILE, 'rb') as fp:
+            raw = fp.read()
+        root = ET.fromstring(raw)
+        xmlattr = root.get('b')
+
+        # "Parse" manually the XML file to extract the value of the 'b'
+        # attribute of the <a b='xxx' /> XML element
+        text = raw.decode('utf-8').strip()
+        text = text.replace('\r\n', ' ')
+        text = text[6:-4]
+        self.assertEqual(root.get('b'), text)
 
 
 # --------------------------------------------------------------------
@@ -2196,6 +2235,32 @@ class TreeBuilderTest(unittest.TestCase):
         self.assertEqual(parser.close(),
             ('html', '-//W3C//DTD XHTML 1.0 Transitional//EN',
              'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'))
+
+    @cet_only  # PyET does not look up the attributes in XMLParser().__init__()
+    def test_builder_lookup_errors(self):
+        class RaisingBuilder(object):
+            def __init__(self, raise_in=None, what=ValueError):
+                self.raise_in = raise_in
+                self.what = what
+
+            def __getattr__(self, name):
+                if name == self.raise_in:
+                    raise self.what(self.raise_in)
+                def handle(*args):
+                    pass
+                return handle
+
+        ET.XMLParser(target=RaisingBuilder())
+        # cET also checks for 'close' and 'doctype', PyET does it only at need
+        for event in ('start', 'data', 'end', 'comment', 'pi'):
+            with self.assertRaises(ValueError):
+                ET.XMLParser(target=RaisingBuilder(event))
+
+        ET.XMLParser(target=RaisingBuilder(what=AttributeError))
+        for event in ('start', 'data', 'end', 'comment', 'pi'):
+            parser = ET.XMLParser(target=RaisingBuilder(event, what=AttributeError))
+            parser.feed(self.sample1)
+            self.assertIsNone(parser.close())
 
 
 class XMLParserTest(unittest.TestCase):

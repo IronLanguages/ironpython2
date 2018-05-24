@@ -24,6 +24,8 @@
 import datetime
 import unittest
 import sqlite3 as sqlite
+import weakref
+from test import support
 
 class RegressionTests(unittest.TestCase):
     def setUp(self):
@@ -175,6 +177,9 @@ class RegressionTests(unittest.TestCase):
             pass
         except:
             self.fail("should have raised ProgrammingError")
+        with self.assertRaisesRegexp(sqlite.ProgrammingError,
+                                     r'^Base Cursor\.__init__ not called\.$'):
+            cur.close()
 
     def CheckConnectionConstructorCallCheck(self):
         """
@@ -357,6 +362,22 @@ class RegressionTests(unittest.TestCase):
                 self.assertEqual(row[0], 2)
             counter += 1
         self.assertEqual(counter, 3, "should have returned exactly three rows")
+
+    def CheckBpo31770(self):
+        """
+        The interpreter shouldn't crash in case Cursor.__init__() is called
+        more than once.
+        """
+        def callback(*args):
+            pass
+        con = sqlite.connect(":memory:")
+        cur = sqlite.Cursor(con)
+        ref = weakref.ref(cur, callback)
+        cur.__init__(con)
+        del cur
+        # The interpreter shouldn't crash when ref is collected.
+        del ref
+        support.gc_collect()
 
 
 def suite():
