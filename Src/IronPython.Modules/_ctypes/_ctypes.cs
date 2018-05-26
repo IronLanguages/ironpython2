@@ -681,14 +681,23 @@ namespace IronPython.Modules {
             ValidateArraySizes(bytes.Count, offset, size);
         }
 
+        private static void ValidateArraySizes(string data, int offset, int size) {
+            ValidateArraySizes(data.Length, offset, size);
+        }
+
         private static void ValidateArraySizes(int arraySize, int offset, int size) {
             if (offset < 0) {
                 throw PythonOps.ValueError("offset cannot be negative");
             } else if (arraySize < size + offset) {
-                throw PythonOps.ValueError("Buffer size too small ({0} instead of at least {1} bytes)",
-                    arraySize,
-                    size
-                );
+                throw PythonOps.ValueError($"Buffer size too small ({arraySize} instead of at least {size} bytes)");
+            }
+        }
+
+        private static void ValidateArraySizes(BigInteger arraySize, int offset, int size) {
+            if (offset < 0) {
+                throw PythonOps.ValueError("offset cannot be negative");
+            } else if (arraySize < size + offset) {
+                throw PythonOps.ValueError($"Buffer size too small ({arraySize} instead of at least {size} bytes)");
             }
         }
 
