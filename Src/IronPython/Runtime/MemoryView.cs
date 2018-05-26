@@ -30,6 +30,8 @@ namespace IronPython.Runtime {
             _buffer = @object;
         }
 
+        public MemoryView(string @object) : this(Bytes.Make(@object.MakeByteArray())) { }
+
         private MemoryView(IBufferProtocol @object, int start, int? end) {
             _buffer = @object;
             _start = start;
