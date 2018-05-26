@@ -122,7 +122,7 @@ namespace IronPython.Modules {
                     PythonType resType = myType._restype;
                     if (resType != null) {
                         if (!(resType is INativeType) || resType is PointerType) {
-                            throw PythonOps.TypeError("invalid result type {0} for callback function", ((PythonType)resType).Name);
+                            throw PythonOps.TypeError($"invalid result type {resType.Name} for callback function");
                         }
                     }
                 }
@@ -527,26 +527,22 @@ namespace IronPython.Modules {
 
                 private ArgumentMarshaller/*!*/ GetMarshaller(Expression/*!*/ expr, object value, int index, object nativeType) {
                     if (nativeType != null) {
-                        INativeType nt = nativeType as INativeType;
-                        if (nt != null) {
+                        if (nativeType is INativeType nt) {
                             return new CDataMarshaller(expr, CompilerHelpers.GetType(value), nt);
                         }
 
                         return new FromParamMarshaller(expr);
                     }
 
-                    CData data = value as CData;
-                    if (data != null) {
+                    if (value is CData data) {
                         return new CDataMarshaller(expr, CompilerHelpers.GetType(value), data.NativeType);
                     }
 
-                    NativeArgument arg = value as NativeArgument;
-                    if (arg != null) {
+                    if (value is NativeArgument arg) {
                         return new NativeArgumentMarshaller(expr);
                     }
 
-                    object val;
-                    if (PythonOps.TryGetBoundAttr(value, "_as_parameter_", out val)) {
+                    if (PythonOps.TryGetBoundAttr(value, "_as_parameter_", out object val)) {
                         throw new NotImplementedException("_as_parameter");
                         //return new UserDefinedMarshaller(GetMarshaller(..., value, index));                    
                     }

@@ -53,7 +53,7 @@ namespace IronPython.Modules {
                 _index = index;
                 _fieldName = fieldName;
 
-                if (bits != null) {
+                if (bits != null && bits.Value != (_fieldType.Size * 8)) {
                     _bits = bits.Value;
                     _bitsOffset = bitOffset.Value;
                 }

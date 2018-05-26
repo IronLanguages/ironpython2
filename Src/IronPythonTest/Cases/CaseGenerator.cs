@@ -18,10 +18,10 @@ namespace IronPythonTest.Cases {
             this.Options = testManifest[this.Name];
         }
 
-        public string Path { get; private set; }
-        public string Text { get; private set; }
-        public string Name { get; private set; }
-        public TestOptions Options { get; private set; }
+        public string Path { get; }
+        public string Text { get; }
+        public string Name { get; }
+        public TestOptions Options { get; }
 
         private static string LoadTest(string path) {
             return File.ReadAllText(path);

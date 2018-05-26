@@ -138,17 +138,19 @@ namespace IronPythonTest.Cases {
             var source = engine.CreateScriptSourceFromString(
                 testcase.Text, testcase.Path, SourceCodeKind.File);
 
-            return GetResult(engine, source, testcase.Options.WorkingDirectory);
+            return GetResult(engine, source, testcase.Path, testcase.Options.WorkingDirectory);
         }
 
         private int GetProcessTest(TestInfo testcase) {
             int exitCode = -1;
             var argReplacements = new Dictionary<string, string>() {
-                { "TEST_FILE", testcase.Path }
+                { "TEST_FILE", testcase.Path },
+                { "TEST_FILE_DIR", Path.GetDirectoryName(testcase.Path) }
             };
 
             var wdReplacements = new Dictionary<string, string>() {
-                { "ROOT", FindRoot() }
+                { "ROOT", FindRoot() },
+                { "TEST_FILE_DIR", Path.GetDirectoryName(testcase.Path) }
             };
 
             using (Process proc = new Process()) {
@@ -166,6 +168,7 @@ namespace IronPythonTest.Cases {
                 if (!string.IsNullOrEmpty(testcase.Options.WorkingDirectory)) {
                     proc.StartInfo.WorkingDirectory = ReplaceVariables(testcase.Options.WorkingDirectory, wdReplacements);
                 }
+
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.RedirectStandardError = proc.StartInfo.RedirectStandardOutput = testcase.Options.Redirect;
                 proc.Start();
@@ -207,10 +210,10 @@ namespace IronPythonTest.Cases {
             var source = this.defaultEngine.CreateScriptSourceFromString(
                 testcase.Text, testcase.Path, SourceCodeKind.File);
 
-            return GetResult(this.defaultEngine, source, testcase.Options.WorkingDirectory);
+            return GetResult(this.defaultEngine, source, testcase.Path, testcase.Options.WorkingDirectory);
         }
 
-        private int GetResult(ScriptEngine engine, ScriptSource source, string workingDir) {
+        private int GetResult(ScriptEngine engine, ScriptSource source, string testPath, string workingDir) {
             int res = 0;
             var path = Environment.GetEnvironmentVariable("IRONPYTHONPATH");
             if(string.IsNullOrEmpty(path)) {
@@ -220,7 +223,8 @@ namespace IronPythonTest.Cases {
             var cwd = Environment.CurrentDirectory;
             if(!string.IsNullOrWhiteSpace(workingDir)) {
                 var replacements = new Dictionary<string, string>() {
-                    { "ROOT", FindRoot() }
+                    { "ROOT", FindRoot() },
+                    { "TEST_FILE_DIR", Path.GetDirectoryName(testPath) }
                 };
                 Environment.CurrentDirectory = ReplaceVariables(workingDir, replacements);
             }

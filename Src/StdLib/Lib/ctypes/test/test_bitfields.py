@@ -2,6 +2,7 @@ from ctypes import *
 from ctypes.test import need_symbol
 import unittest
 import os
+import sys
 
 import ctypes
 import _ctypes_test
@@ -260,6 +261,7 @@ class BitFieldTest(unittest.TestCase):
         self.assertEqual(x.a, 0xFEDCBA9876543211)
 
     @need_symbol('c_uint32')
+    @unittest.skipIf(sys.platform=='cli', 'TODO: Implement from_buffer for IBufferProtocol - https://github.com/IronLanguages/ironpython2/issues/388')
     def test_uint32_swap_little_endian(self):
         # Issue #23319
         class Little(LittleEndianStructure):
@@ -274,6 +276,7 @@ class BitFieldTest(unittest.TestCase):
         self.assertEqual(b, b'\xef\xcd\xab\x21')
 
     @need_symbol('c_uint32')
+    @unittest.skipIf(sys.platform=='cli', 'TODO: Implement from_buffer for IBufferProtocol - https://github.com/IronLanguages/ironpython2/issues/388')
     def test_uint32_swap_big_endian(self):
         # Issue #23319
         class Big(BigEndianStructure):

@@ -38,14 +38,7 @@ namespace IronPython.Modules {
             return string.Empty;
         }
 
-        // TODO: This isn't right
-        public static string __file__ = Path.Combine(FindRoot(), "Tests", "_ctypes_test.pyd");
-
-        public static void func() {
-        }
-
-        public static void func_si(string s, int i) {
-        }
+        public static string __file__ = Path.Combine(FindRoot(), "Tests", string.Format("_ctypes_test_{0}{1}.pyd", Environment.OSVersion.Platform == PlatformID.Win32NT ? "win" : Environment.OSVersion.Platform == PlatformID.MacOSX ? "macOS" : "linux", Environment.Is64BitProcess ? 64 : 32));
     }
 }
 #endif

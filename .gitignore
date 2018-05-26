@@ -95,3 +95,6 @@ Package/Release/
 build-*.ProjectImports.zip
 *.trx
 *.un~
+/Src/ctypes_test/Win32/
+/Src/ctypes_test/x64/
+*.user

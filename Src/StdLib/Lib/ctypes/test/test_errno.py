@@ -1,4 +1,4 @@
-import unittest, os, errno
+import unittest, os, errno, sys
 from ctypes import *
 from ctypes.util import find_library
 from test import test_support
@@ -8,6 +8,7 @@ except ImportError:
     threading = None
 
 class Test(unittest.TestCase):
+    @unittest.skipIf(sys.platform=='cli', "IronPython doen't support marshaling last error right now - https://github.com/IronLanguages/ironpython2/issues/392")
     def test_open(self):
         libc_name = find_library("c")
         if libc_name is None:
@@ -47,6 +48,7 @@ class Test(unittest.TestCase):
             set_errno(0)
 
     @unittest.skipUnless(os.name == "nt", 'Test specific to Windows')
+    @unittest.skipIf(sys.platform == "cli", 'Marshalling the last error is not implemented - https://github.com/IronLanguages/ironpython2/issues/392')
     def test_GetLastError(self):
         dll = WinDLL("kernel32", use_last_error=True)
         GetModuleHandle = dll.GetModuleHandleA

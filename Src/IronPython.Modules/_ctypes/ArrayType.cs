@@ -116,33 +116,44 @@ namespace IronPython.Modules {
                 return res;
             }
 
-            public _Array from_buffer(ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
+            public _Array from_buffer(CodeContext/*!*/ context, ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
                 ValidateArraySizes(array, offset, ((INativeType)this).Size);
 
-                _Array res = (_Array)CreateInstance(Context.SharedContext);
+                _Array res = (_Array)CreateInstance(context);
                 IntPtr addr = array.GetArrayAddress();
                 res._memHolder = new MemoryHolder(addr.Add(offset), ((INativeType)this).Size);
                 res._memHolder.AddObject("ffffffff", array);
                 return res;
             }
 
-            public _Array from_buffer_copy(ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
+            public _Array from_buffer_copy(CodeContext/*!*/ context, ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
                 ValidateArraySizes(array, offset, ((INativeType)this).Size);
 
-                _Array res = (_Array)CreateInstance(Context.SharedContext);
+                _Array res = (_Array)CreateInstance(context);
                 res._memHolder = new MemoryHolder(((INativeType)this).Size);
                 res._memHolder.CopyFrom(array.GetArrayAddress().Add(offset), new IntPtr(((INativeType)this).Size));
                 GC.KeepAlive(array);
                 return res;
             }
 
-            public _Array from_buffer_copy(Bytes array, [DefaultParameterValue(0)]int offset) {
+            public _Array from_buffer_copy(CodeContext/*!*/ context, Bytes array, [DefaultParameterValue(0)]int offset) {
                 ValidateArraySizes(array, offset, ((INativeType)this).Size);
 
-                _Array res = (_Array)CreateInstance(Context.SharedContext);
+                _Array res = (_Array)CreateInstance(context);
                 res._memHolder = new MemoryHolder(((INativeType)this).Size);
                 for (int i = 0; i < ((INativeType)this).Size; i++) {
                     res._memHolder.WriteByte(i, array._bytes[i]);
+                }
+                return res;
+            }
+
+            public _Array from_buffer_copy(CodeContext/*!*/ context, string data, int offset=0) {
+                ValidateArraySizes(data, offset, ((INativeType)this).Size);
+
+                _Array res = (_Array)CreateInstance(context);
+                res._memHolder = new MemoryHolder(((INativeType)this).Size);
+                for (int i = 0; i < ((INativeType)this).Size; i++) {
+                    res._memHolder.WriteByte(i, (byte)data[i]);
                 }
                 return res;
             }

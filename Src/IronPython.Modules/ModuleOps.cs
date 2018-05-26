@@ -102,7 +102,7 @@ namespace IronPython.Modules {
             }
 
             bool valid = true;
-            if(res.NativeType is CTypes.ArrayType at) {
+            if(res != null && res.NativeType is CTypes.ArrayType at) {
                 valid = ((type is CTypes.ArrayType t) && (t.ElementType == at.ElementType)) ||
                     ((type is CTypes.PointerType p) && (p._type == at.ElementType));
             }
