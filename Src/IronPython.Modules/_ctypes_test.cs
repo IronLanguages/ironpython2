@@ -13,12 +13,13 @@
  *
  * ***************************************************************************/
 
+#if FEATURE_NATIVE || NETCOREAPP2_0
+
 using System;
 using System.IO;
 
 using IronPython.Runtime;
 
-#if FEATURE_NATIVE
 [assembly: PythonModule("_ctypes_test", typeof(IronPython.Modules.CTypesTest))]
 namespace IronPython.Modules {
     public static class CTypesTest {
