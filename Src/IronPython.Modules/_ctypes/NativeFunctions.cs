@@ -40,8 +40,11 @@ namespace IronPython.Modules {
         [DllImport("kernel32.dll", SetLastError=true)]
         private static extern IntPtr LoadLibrary(string lpFileName);
 
-        [DllImport("kernel32.dll", SetLastError=true)]
+        [DllImport("kernel32.dll")]
         public static extern void SetLastError(int errorCode);
+
+        [DllImport("kernel32.dll")]
+        public static extern int GetLastError();
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr GetProcAddress(IntPtr module, string lpFileName);

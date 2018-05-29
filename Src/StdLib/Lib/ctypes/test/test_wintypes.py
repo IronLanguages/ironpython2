@@ -1,9 +1,12 @@
+import os
 import sys
 import unittest
 
 from ctypes import *
 
-@unittest.skipUnless(sys.platform.startswith('win'), 'Windows-only test')
+_isWindows = sys.platform.startswith('win') or (sys.platform == 'cli' and os.name == 'nt')
+
+@unittest.skipUnless(_isWindows, 'Windows-only test')
 class WinTypesTest(unittest.TestCase):
     def test_variant_bool(self):
         from ctypes import wintypes
