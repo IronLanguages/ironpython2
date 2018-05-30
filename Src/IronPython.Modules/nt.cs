@@ -824,19 +824,10 @@ namespace IronPython.Modules {
 #if FEATURE_PROCESS
         public static void startfile(string filename, [DefaultParameterValue("open")]string operation) {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
-#if NETCOREAPP2_0
-            process.StartInfo.FileName = "cmd";
-            process.StartInfo.Arguments = "/c " + filename;
-            process.StartInfo.UseShellExecute = false; // this must always be set to false with .NET Core
-#else
             process.StartInfo.FileName = filename;
             process.StartInfo.UseShellExecute = true;
             process.StartInfo.Verb = operation;
-#endif
             try {
-#if NETCOREAPP2_0
-                if (!File.Exists(filename)) throw new Win32Exception("The system cannot find the file specified");
-#endif
                 process.Start();
             } catch (Exception e) {
                 throw ToPythonException(e, filename);
