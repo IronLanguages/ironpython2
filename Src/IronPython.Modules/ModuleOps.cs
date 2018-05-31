@@ -101,6 +101,8 @@ namespace IronPython.Modules {
             }
 
             bool valid = true;
+            // if we have an array, we can also send a pointer as long as the element types
+            // for the pointer and array are the same
             if(res != null && res.NativeType is CTypes.ArrayType at) {
                 valid = ((type is CTypes.ArrayType t) && (t.ElementType == at.ElementType)) ||
                     ((type is CTypes.PointerType p) && (p._type == at.ElementType));
@@ -133,7 +135,10 @@ namespace IronPython.Modules {
             }
 
             bool valid = true;
-            if (res.NativeType is CTypes.ArrayType at) {
+
+            // if we have an array, we can also send a pointer as long as the element types
+            // for the pointer and array are the same
+            if (res != null && res.NativeType is CTypes.ArrayType at) {
                 valid = ((type is CTypes.ArrayType t) && (t.ElementType == at.ElementType)) ||
                     ((type is CTypes.PointerType p) && (p._type == at.ElementType));
             }

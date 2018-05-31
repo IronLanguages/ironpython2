@@ -53,6 +53,9 @@ namespace IronPython.Modules {
                 _index = index;
                 _fieldName = fieldName;
 
+                // if the number of bits is the full type width, we don't
+                // need to do any masking anywhere, we may want to revisit this
+                // if the __repr__ is an issue
                 if (bits != null && bits.Value != (_fieldType.Size * 8)) {
                     _bits = bits.Value;
                     _bitsOffset = bitOffset.Value;
