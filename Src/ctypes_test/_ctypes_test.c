@@ -14,13 +14,14 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <math.h>
+#include <inttypes.h>
 
 
 /* some functions handy for testing */
 
-EXPORT(int)
-    _testfunc_cbk_reg_int(int a, int b, int c, int d, int e,
-        int(*func)(int, int, int, int, int))
+EXPORT(int32_t)
+    _testfunc_cbk_reg_int(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e,
+        int32_t(*func)(int32_t, int32_t, int32_t, int32_t, int32_t))
 {
     return func(a*a, b*b, c*c, d*d, e*e);
 }
@@ -35,13 +36,13 @@ EXPORT(double)
 /*
 * This structure should be the same as in test_callbacks.py and the
 * method test_callback_large_struct. See issues 17310 and 20160: the
-* structure must be larger than 8 bytes long.
+* structure must be larger than 8 bytes int32_t.
 */
 
 typedef struct {
-    unsigned long first;
-    unsigned long second;
-    unsigned long third;
+    uint32_t first;
+    uint32_t second;
+    uint32_t third;
 } Test;
 
 EXPORT(void)
@@ -64,8 +65,8 @@ EXPORT(void)
 }
 
 typedef struct {
-    unsigned int first;
-    unsigned int second;
+    uint32_t first;
+    uint32_t second;
 } TestReg;
 
 
@@ -81,7 +82,7 @@ EXPORT(void)
 }
 
 
-EXPORT(void)testfunc_array(int values[4])
+EXPORT(void)testfunc_array(int32_t values[4])
 {
     printf("testfunc_array %d %d %d %d\n",
         values[0],
@@ -106,16 +107,16 @@ EXPORT(long double)testfunc_DDD(long double a, long double b)
     return result;
 }
 
-EXPORT(int)testfunc_iii(int a, int b)
+EXPORT(int32_t)testfunc_iii(int32_t a, int32_t b)
 {
-    int result = a * b;
+    int32_t result = a * b;
     printf("testfunc_iii(%p, %p)\n", &a, &b);
     return result;
 }
 
-EXPORT(int)myprintf(char *fmt, ...)
+EXPORT(int32_t)myprintf(char *fmt, ...)
 {
-    int result;
+    int32_t result;
     va_list argptr;
     va_start(argptr, fmt);
     result = vprintf(fmt, argptr);
@@ -128,7 +129,7 @@ EXPORT(char *)my_strtok(char *token, const char *delim)
     return strtok(token, delim);
 }
 
-EXPORT(char *)my_strchr(const char *s, int c)
+EXPORT(char *)my_strchr(const char *s, int32_t c)
 {
     return strchr(s, c);
 }
@@ -139,30 +140,30 @@ EXPORT(double) my_sqrt(double a)
     return sqrt(a);
 }
 
-EXPORT(void) my_qsort(void *base, size_t num, size_t width, int(*compare)(const void*, const void*))
+EXPORT(void) my_qsort(void *base, size_t num, size_t width, int32_t(*compare)(const void*, const void*))
 {
     qsort(base, num, width, compare);
 }
 
-EXPORT(int *) _testfunc_ai8(int a[8])
+EXPORT(int32_t *) _testfunc_ai8(int32_t a[8])
 {
     return a;
 }
 
-EXPORT(void) _testfunc_v(int a, int b, int *presult)
+EXPORT(void) _testfunc_v(int32_t a, int32_t b, int32_t *presult)
 {
     *presult = a + b;
 }
 
-EXPORT(int) _testfunc_i_bhilfd(signed char b, short h, int i, long l, float f, double d)
+EXPORT(int32_t) _testfunc_i_bhilfd(int8_t b, short h, int32_t i, int32_t l, float f, double d)
 {
     /*      printf("_testfunc_i_bhilfd got %d %d %d %ld %f %f\n",
     b, h, i, l, f, d);
     */
-    return (int)(b + h + i + l + f + d);
+    return (int32_t)(b + h + i + l + f + d);
 }
 
-EXPORT(float) _testfunc_f_bhilfd(signed char b, short h, int i, long l, float f, double d)
+EXPORT(float) _testfunc_f_bhilfd(int8_t b, short h, int32_t i, int32_t l, float f, double d)
 {
     /*      printf("_testfunc_f_bhilfd got %d %d %d %ld %f %f\n",
     b, h, i, l, f, d);
@@ -170,7 +171,7 @@ EXPORT(float) _testfunc_f_bhilfd(signed char b, short h, int i, long l, float f,
     return (float)(b + h + i + l + f + d);
 }
 
-EXPORT(double) _testfunc_d_bhilfd(signed char b, short h, int i, long l, float f, double d)
+EXPORT(double) _testfunc_d_bhilfd(int8_t b, short h, int32_t i, int32_t l, float f, double d)
 {
     /*      printf("_testfunc_d_bhilfd got %d %d %d %ld %f %f\n",
     b, h, i, l, f, d);
@@ -178,7 +179,7 @@ EXPORT(double) _testfunc_d_bhilfd(signed char b, short h, int i, long l, float f
     return (double)(b + h + i + l + f + d);
 }
 
-EXPORT(long double) _testfunc_D_bhilfD(signed char b, short h, int i, long l, float f, long double d)
+EXPORT(long double) _testfunc_D_bhilfD(int8_t b, short h, int32_t i, int32_t l, float f, long double d)
 {
     /*      printf("_testfunc_d_bhilfd got %d %d %d %ld %f %f\n",
     b, h, i, l, f, d);
@@ -191,7 +192,7 @@ EXPORT(char *) _testfunc_p_p(void *s)
     return (char *)s;
 }
 
-EXPORT(void *) _testfunc_c_p_p(int *argcp, char **argv)
+EXPORT(void *) _testfunc_c_p_p(int32_t *argcp, char **argv)
 {
     return argv[(*argcp) - 1];
 }
@@ -239,51 +240,51 @@ EXPORT(size_t) my_wcslen(wchar_t *src)
 #endif
 
 typedef struct {
-    int(*c)(int, int);
-    int(__stdcall *s)(int, int);
+    int32_t(*c)(int32_t, int32_t);
+    int32_t(__stdcall *s)(int32_t, int32_t);
 } FUNCS;
 
-EXPORT(int) _testfunc_callfuncp(FUNCS *fp)
+EXPORT(int32_t) _testfunc_callfuncp(FUNCS *fp)
 {
     fp->c(1, 2);
     fp->s(3, 4);
     return 0;
 }
 
-EXPORT(int) _testfunc_deref_pointer(int *pi)
+EXPORT(int32_t) _testfunc_deref_pointer(int32_t *pi)
 {
     return *pi;
 }
 
 #ifdef MS_WIN32
-EXPORT(int) _testfunc_piunk(IUnknown FAR *piunk)
+EXPORT(int32_t) _testfunc_piunk(IUnknown FAR *piunk)
 {
     piunk->lpVtbl->AddRef(piunk);
     return piunk->lpVtbl->Release(piunk);
 }
 #endif
 
-EXPORT(int) _testfunc_callback_with_pointer(int(*func)(int *))
+EXPORT(int32_t) _testfunc_callback_with_pointer(int32_t(*func)(int32_t *))
 {
-    int table[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int32_t table[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
     return (*func)(table);
 }
 
-EXPORT(long long) _testfunc_q_bhilfdq(signed char b, short h, int i, long l, float f,
-    double d, long long q)
+EXPORT(int64_t) _testfunc_q_bhilfdq(int8_t b, short h, int32_t i, int32_t l, float f,
+    double d, int64_t q)
 {
-    return (long long)(b + h + i + l + f + d + q);
+    return (int64_t)(b + h + i + l + f + d + q);
 }
 
-EXPORT(long long) _testfunc_q_bhilfd(signed char b, short h, int i, long l, float f, double d)
+EXPORT(int64_t) _testfunc_q_bhilfd(int8_t b, short h, int32_t i, int32_t l, float f, double d)
 {
-    return (long long)(b + h + i + l + f + d);
+    return (int64_t)(b + h + i + l + f + d);
 }
 
-EXPORT(int) _testfunc_callback_i_if(int value, int(*func)(int))
+EXPORT(int32_t) _testfunc_callback_i_if(int32_t value, int32_t(*func)(int32_t))
 {
-    int sum = 0;
+    int32_t sum = 0;
     while (value != 0) {
         sum += func(value);
         value /= 2;
@@ -291,10 +292,10 @@ EXPORT(int) _testfunc_callback_i_if(int value, int(*func)(int))
     return sum;
 }
 
-EXPORT(long long) _testfunc_callback_q_qf(long long value,
-    long long(*func)(long long))
+EXPORT(int64_t) _testfunc_callback_q_qf(int64_t value,
+    int64_t(*func)(int64_t))
 {
-    long long sum = 0;
+    int64_t sum = 0;
 
     while (value != 0) {
         sum += func(value);
@@ -310,7 +311,7 @@ typedef struct {
 
 typedef struct {
     char *name;
-    int num_spams;
+    int32_t num_spams;
     SPAM *spams;
 } EGG;
 
@@ -323,18 +324,18 @@ EGG my_eggs[1] = {
     { "first egg", 1, my_spams }
 };
 
-EXPORT(int) getSPAMANDEGGS(EGG **eggs)
+EXPORT(int32_t) getSPAMANDEGGS(EGG **eggs)
 {
     *eggs = my_eggs;
     return 1;
 }
 
 typedef struct tagpoint {
-    int x;
-    int y;
+    int32_t x;
+    int32_t y;
 } point;
 
-EXPORT(int) _testfunc_byval(point in, point *pout)
+EXPORT(int32_t) _testfunc_byval(point in, point *pout)
 {
     if (pout) {
         pout->x = in.x;
@@ -343,15 +344,15 @@ EXPORT(int) _testfunc_byval(point in, point *pout)
     return in.x + in.y;
 }
 
-EXPORT(int) an_integer = 42;
+EXPORT(int32_t) an_integer = 42;
 
-EXPORT(int) get_an_integer(void)
+EXPORT(int32_t) get_an_integer(void)
 {
     return an_integer;
 }
 
 EXPORT(double)
-    integrate(double a, double b, double(*f)(double), long nstep)
+    integrate(double a, double b, double(*f)(double), int32_t nstep)
 {
     double x, sum = 0.0, dx = (b - a) / (double)nstep;
     for (x = a + 0.5*dx; (b - x)*(x - a) > 0.0; x += dx)
@@ -360,10 +361,10 @@ EXPORT(double)
 }
 
 typedef struct {
-    void(*initialize)(void *(*)(int), void(*)(void *));
+    void(*initialize)(void *(*)(int32_t), void(*)(void *));
 } xxx_library;
 
-static void _xxx_init(void *(*Xalloc)(int), void(*Xfree)(void *))
+static void _xxx_init(void *(*Xalloc)(int32_t), void(*Xfree)(void *))
 {
     void *ptr;
 
@@ -391,7 +392,7 @@ EXPORT(void) GetString(BSTR *pbstr)
 }
 #endif
 
-EXPORT(void) _py_func_si(char *s, int i)
+EXPORT(void) _py_func_si(char *s, int32_t i)
 {
 }
 
@@ -399,15 +400,15 @@ EXPORT(void) _py_func(void)
 {
 }
 
-EXPORT(long long) last_tf_arg_s = 0;
-EXPORT(unsigned long long) last_tf_arg_u = 0;
+EXPORT(int64_t) last_tf_arg_s = 0;
+EXPORT(uint64_t) last_tf_arg_u = 0;
 
 struct BITS {
-    int A : 1, B : 2, C : 3, D : 4, E : 5, F : 6, G : 7, H : 8, I : 9;
+    int32_t A : 1, B : 2, C : 3, D : 4, E : 5, F : 6, G : 7, H : 8, I : 9;
     short M : 1, N : 2, O : 3, P : 4, Q : 5, R : 6, S : 7;
 };
 
-EXPORT(void) set_bitfields(struct BITS *bits, char name, int value)
+EXPORT(void) set_bitfields(struct BITS *bits, char name, int32_t value)
 {
     switch (name) {
     case 'A': bits->A = value; break;
@@ -430,7 +431,7 @@ EXPORT(void) set_bitfields(struct BITS *bits, char name, int value)
     }
 }
 
-EXPORT(int) unpack_bitfields(struct BITS *bits, char name)
+EXPORT(int32_t) unpack_bitfields(struct BITS *bits, char name)
 {
     switch (name) {
     case 'A': return bits->A;
@@ -454,70 +455,70 @@ EXPORT(int) unpack_bitfields(struct BITS *bits, char name)
     return 0;
 }
 
-#define S last_tf_arg_s = (long long)c
-#define U last_tf_arg_u = (unsigned long long)c
+#define S last_tf_arg_s = (int64_t)c
+#define U last_tf_arg_u = (uint64_t)c
 
-EXPORT(signed char) tf_b(signed char c) { S; return c / 3; }
-EXPORT(unsigned char) tf_B(unsigned char c) { U; return c / 3; }
+EXPORT(int8_t) tf_b(int8_t c) { S; return c / 3; }
+EXPORT(uint8_t) tf_B(uint8_t c) { U; return c / 3; }
 EXPORT(short) tf_h(short c) { S; return c / 3; }
-EXPORT(unsigned short) tf_H(unsigned short c) { U; return c / 3; }
-EXPORT(int) tf_i(int c) { S; return c / 3; }
-EXPORT(unsigned int) tf_I(unsigned int c) { U; return c / 3; }
-EXPORT(long) tf_l(long c) { S; return c / 3; }
-EXPORT(unsigned long) tf_L(unsigned long c) { U; return c / 3; }
-EXPORT(long long) tf_q(long long c) { S; return c / 3; }
-EXPORT(unsigned long long) tf_Q(unsigned long long c) { U; return c / 3; }
+EXPORT(uint16_t) tf_H(uint16_t c) { U; return c / 3; }
+EXPORT(int32_t) tf_i(int32_t c) { S; return c / 3; }
+EXPORT(uint32_t) tf_I(uint32_t c) { U; return c / 3; }
+EXPORT(int32_t) tf_l(int32_t c) { S; return c / 3; }
+EXPORT(uint32_t) tf_L(uint32_t c) { U; return c / 3; }
+EXPORT(int64_t) tf_q(int64_t c) { S; return c / 3; }
+EXPORT(uint64_t) tf_Q(uint64_t c) { U; return c / 3; }
 EXPORT(float) tf_f(float c) { S; return c / 3; }
 EXPORT(double) tf_d(double c) { S; return c / 3; }
 EXPORT(long double) tf_D(long double c) { S; return c / 3; }
 
 #ifdef MS_WIN32
-EXPORT(signed char) __stdcall s_tf_b(signed char c) { S; return c / 3; }
-EXPORT(unsigned char) __stdcall s_tf_B(unsigned char c) { U; return c / 3; }
+EXPORT(int8_t) __stdcall s_tf_b(int8_t c) { S; return c / 3; }
+EXPORT(uint8_t) __stdcall s_tf_B(uint8_t c) { U; return c / 3; }
 EXPORT(short) __stdcall s_tf_h(short c) { S; return c / 3; }
-EXPORT(unsigned short) __stdcall s_tf_H(unsigned short c) { U; return c / 3; }
-EXPORT(int) __stdcall s_tf_i(int c) { S; return c / 3; }
-EXPORT(unsigned int) __stdcall s_tf_I(unsigned int c) { U; return c / 3; }
-EXPORT(long) __stdcall s_tf_l(long c) { S; return c / 3; }
-EXPORT(unsigned long) __stdcall s_tf_L(unsigned long c) { U; return c / 3; }
-EXPORT(long long) __stdcall s_tf_q(long long c) { S; return c / 3; }
-EXPORT(unsigned long long) __stdcall s_tf_Q(unsigned long long c) { U; return c / 3; }
+EXPORT(uint16_t) __stdcall s_tf_H(uint16_t c) { U; return c / 3; }
+EXPORT(int32_t) __stdcall s_tf_i(int32_t c) { S; return c / 3; }
+EXPORT(uint32_t) __stdcall s_tf_I(uint32_t c) { U; return c / 3; }
+EXPORT(int32_t) __stdcall s_tf_l(int32_t c) { S; return c / 3; }
+EXPORT(uint32_t) __stdcall s_tf_L(uint32_t c) { U; return c / 3; }
+EXPORT(int64_t) __stdcall s_tf_q(int64_t c) { S; return c / 3; }
+EXPORT(uint64_t) __stdcall s_tf_Q(uint64_t c) { U; return c / 3; }
 EXPORT(float) __stdcall s_tf_f(float c) { S; return c / 3; }
 EXPORT(double) __stdcall s_tf_d(double c) { S; return c / 3; }
 EXPORT(long double) __stdcall s_tf_D(long double c) { S; return c / 3; }
 #endif
 /*******/
 
-EXPORT(signed char) tf_bb(signed char x, signed char c) { S; return c / 3; }
-EXPORT(unsigned char) tf_bB(signed char x, unsigned char c) { U; return c / 3; }
-EXPORT(short) tf_bh(signed char x, short c) { S; return c / 3; }
-EXPORT(unsigned short) tf_bH(signed char x, unsigned short c) { U; return c / 3; }
-EXPORT(int) tf_bi(signed char x, int c) { S; return c / 3; }
-EXPORT(unsigned int) tf_bI(signed char x, unsigned int c) { U; return c / 3; }
-EXPORT(long) tf_bl(signed char x, long c) { S; return c / 3; }
-EXPORT(unsigned long) tf_bL(signed char x, unsigned long c) { U; return c / 3; }
-EXPORT(long long) tf_bq(signed char x, long long c) { S; return c / 3; }
-EXPORT(unsigned long long) tf_bQ(signed char x, unsigned long long c) { U; return c / 3; }
-EXPORT(float) tf_bf(signed char x, float c) { S; return c / 3; }
-EXPORT(double) tf_bd(signed char x, double c) { S; return c / 3; }
-EXPORT(long double) tf_bD(signed char x, long double c) { S; return c / 3; }
-EXPORT(void) tv_i(int c) { S; return; }
+EXPORT(int8_t) tf_bb(int8_t x, int8_t c) { S; return c / 3; }
+EXPORT(uint8_t) tf_bB(int8_t x, uint8_t c) { U; return c / 3; }
+EXPORT(short) tf_bh(int8_t x, short c) { S; return c / 3; }
+EXPORT(uint16_t) tf_bH(int8_t x, uint16_t c) { U; return c / 3; }
+EXPORT(int32_t) tf_bi(int8_t x, int32_t c) { S; return c / 3; }
+EXPORT(uint32_t) tf_bI(int8_t x, uint32_t c) { U; return c / 3; }
+EXPORT(int32_t) tf_bl(int8_t x, int32_t c) { S; return c / 3; }
+EXPORT(uint32_t) tf_bL(int8_t x, uint32_t c) { U; return c / 3; }
+EXPORT(int64_t) tf_bq(int8_t x, int64_t c) { S; return c / 3; }
+EXPORT(uint64_t) tf_bQ(int8_t x, uint64_t c) { U; return c / 3; }
+EXPORT(float) tf_bf(int8_t x, float c) { S; return c / 3; }
+EXPORT(double) tf_bd(int8_t x, double c) { S; return c / 3; }
+EXPORT(long double) tf_bD(int8_t x, long double c) { S; return c / 3; }
+EXPORT(void) tv_i(int32_t c) { S; return; }
 
 #ifdef MS_WIN32
-EXPORT(signed char) __stdcall s_tf_bb(signed char x, signed char c) { S; return c / 3; }
-EXPORT(unsigned char) __stdcall s_tf_bB(signed char x, unsigned char c) { U; return c / 3; }
-EXPORT(short) __stdcall s_tf_bh(signed char x, short c) { S; return c / 3; }
-EXPORT(unsigned short) __stdcall s_tf_bH(signed char x, unsigned short c) { U; return c / 3; }
-EXPORT(int) __stdcall s_tf_bi(signed char x, int c) { S; return c / 3; }
-EXPORT(unsigned int) __stdcall s_tf_bI(signed char x, unsigned int c) { U; return c / 3; }
-EXPORT(long) __stdcall s_tf_bl(signed char x, long c) { S; return c / 3; }
-EXPORT(unsigned long) __stdcall s_tf_bL(signed char x, unsigned long c) { U; return c / 3; }
-EXPORT(long long) __stdcall s_tf_bq(signed char x, long long c) { S; return c / 3; }
-EXPORT(unsigned long long) __stdcall s_tf_bQ(signed char x, unsigned long long c) { U; return c / 3; }
-EXPORT(float) __stdcall s_tf_bf(signed char x, float c) { S; return c / 3; }
-EXPORT(double) __stdcall s_tf_bd(signed char x, double c) { S; return c / 3; }
-EXPORT(long double) __stdcall s_tf_bD(signed char x, long double c) { S; return c / 3; }
-EXPORT(void) __stdcall s_tv_i(int c) { S; return; }
+EXPORT(int8_t) __stdcall s_tf_bb(int8_t x, int8_t c) { S; return c / 3; }
+EXPORT(uint8_t) __stdcall s_tf_bB(int8_t x, uint8_t c) { U; return c / 3; }
+EXPORT(short) __stdcall s_tf_bh(int8_t x, short c) { S; return c / 3; }
+EXPORT(uint16_t) __stdcall s_tf_bH(int8_t x, uint16_t c) { U; return c / 3; }
+EXPORT(int32_t) __stdcall s_tf_bi(int8_t x, int32_t c) { S; return c / 3; }
+EXPORT(uint32_t) __stdcall s_tf_bI(int8_t x, uint32_t c) { U; return c / 3; }
+EXPORT(int32_t) __stdcall s_tf_bl(int8_t x, int32_t c) { S; return c / 3; }
+EXPORT(uint32_t) __stdcall s_tf_bL(int8_t x, uint32_t c) { U; return c / 3; }
+EXPORT(int64_t) __stdcall s_tf_bq(int8_t x, int64_t c) { S; return c / 3; }
+EXPORT(uint64_t) __stdcall s_tf_bQ(int8_t x, uint64_t c) { U; return c / 3; }
+EXPORT(float) __stdcall s_tf_bf(int8_t x, float c) { S; return c / 3; }
+EXPORT(double) __stdcall s_tf_bd(int8_t x, double c) { S; return c / 3; }
+EXPORT(long double) __stdcall s_tf_bD(int8_t x, long double c) { S; return c / 3; }
+EXPORT(void) __stdcall s_tv_i(int32_t c) { S; return; }
 #endif
 
 /********/
@@ -525,20 +526,20 @@ EXPORT(void) __stdcall s_tv_i(int c) { S; return; }
 #ifndef MS_WIN32
 
 typedef struct {
-    long x;
-    long y;
+    int32_t x;
+    int32_t y;
 } POINT;
 
 typedef struct {
-    long left;
-    long top;
-    long right;
-    long bottom;
+    int32_t left;
+    int32_t top;
+    int32_t right;
+    int32_t bottom;
 } RECT;
 
 #endif
 
-EXPORT(int) PointInRect(RECT *prc, POINT pt)
+EXPORT(int32_t) PointInRect(RECT *prc, POINT pt)
 {
     if (pt.x < prc->left)
         return 0;
@@ -551,12 +552,12 @@ EXPORT(int) PointInRect(RECT *prc, POINT pt)
     return 1;
 }
 
-EXPORT(long left = 10);
-EXPORT(long top = 20);
-EXPORT(long right = 30);
-EXPORT(long bottom = 40);
+EXPORT(int32_t left = 10);
+EXPORT(int32_t top = 20);
+EXPORT(int32_t right = 30);
+EXPORT(int32_t bottom = 40);
 
-EXPORT(RECT) ReturnRect(int i, RECT ar, RECT* br, POINT cp, RECT dr,
+EXPORT(RECT) ReturnRect(int32_t i, RECT ar, RECT* br, POINT cp, RECT dr,
     RECT *er, POINT fp, RECT gr)
 {
     /*Check input */
@@ -607,7 +608,7 @@ EXPORT(S2H) ret_2h_func(S2H inp)
 }
 
 typedef struct {
-    int a, b, c, d, e, f, g, h;
+    int32_t a, b, c, d, e, f, g, h;
 } S8I;
 
 EXPORT(S8I) ret_8i_func(S8I inp)
@@ -623,18 +624,18 @@ EXPORT(S8I) ret_8i_func(S8I inp)
     return inp;
 }
 
-EXPORT(int) GetRectangle(int flag, RECT *prect)
+EXPORT(int32_t) GetRectangle(int32_t flag, RECT *prect)
 {
     if (flag == 0)
         return 0;
-    prect->left = (int)flag;
-    prect->top = (int)flag + 1;
-    prect->right = (int)flag + 2;
-    prect->bottom = (int)flag + 3;
+    prect->left = (int32_t)flag;
+    prect->top = (int32_t)flag + 1;
+    prect->right = (int32_t)flag + 2;
+    prect->bottom = (int32_t)flag + 3;
     return 1;
 }
 
-EXPORT(void) TwoOutArgs(int a, int *pi, int b, int *pj)
+EXPORT(void) TwoOutArgs(int32_t a, int32_t *pi, int32_t b, int32_t *pj)
 {
     *pi += a;
     *pj += b;
