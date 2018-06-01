@@ -29,35 +29,23 @@ if(!$global:isUnix) {
     }
 }
 
-# Details for running tests on the various frameworks
-$_FRAMEWORKS = @{
-    "net45" = @{
-        "runner" = "dotnet";
-        "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', '__RUNSETTINGS__');
-        "filterArg" = '--filter="__FILTER__"';
-        "filters" = @{
-            "all" = "";
-            "smoke" = "TestCategory=StandardCPython";
-            "cpython" = "TestCategory=StandardCPython | TestCategory=AllCPython";
-            "ironpython" = "TestCategory=IronPython";
-            "ctypes" = "TestCategory=CTypesCPython";
-            "single" = "Name=__TESTNAME__";
-        }
-    };
-    "netcoreapp2.0" = @{
-        "runner" = "dotnet";
-        "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', '__RUNSETTINGS__');
-        "filterArg" = '--filter="__FILTER__"';
-        "filters" = @{
-            "all" = "";
-            "smoke" = "TestCategory=StandardCPython";
-            "cpython" = "TestCategory=StandardCPython | TestCategory=AllCPython";
-            "ironpython" = "TestCategory=IronPython";
-            "ctypes" = "TestCategory=CTypesCPython";
-            "single" = "Name=__TESTNAME__";
-        }
+$_defaultFrameworkSettings = @{
+    "runner" = "dotnet";
+    "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', '__RUNSETTINGS__');
+    "filterArg" = '--filter="__FILTER__"';
+    "filters" = @{
+        "all" = "";
+        "smoke" = "TestCategory=StandardCPython";
+        "cpython" = "TestCategory=StandardCPython | TestCategory=AllCPython";
+        "ironpython" = "TestCategory=IronPython";
+        "ctypes" = "TestCategory=CTypesCPython";
+        "single" = "Name=__TESTNAME__";
     }
 }
+
+# Overrides for the default framework settings
+$_FRAMEWORKS = @{}
+
 function Main([String] $target, [String] $configuration) {
     # verify that the DLR submodule has been initialized
     if(![System.Linq.Enumerable]::Any([System.IO.Directory]::EnumerateFileSystemEntries([System.IO.Path]::Combine($_BASEDIR, "Src/DLR")))) {
@@ -123,13 +111,16 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
         # generate the runsettings file for the settings
         $runSettings = GenerateRunSettings $framework $configuration $runIgnored
 
-        if(!$_FRAMEWORKS[$framework]["filters"].ContainsKey($target)) {
+        $frameworkSettings = $_FRAMEWORKS[$framework]
+        if ($frameworkSettings -eq $null) { $frameworkSettings = $_defaultFrameworkSettings }
+
+        if(!$frameworkSettings["filters"].ContainsKey($target)) {
             Write-Warning "No tests available for '$target' trying to run single test '$framework.$target'"
             $testname = "$framework.$target"
             $filtername = "single"
         }
 
-        $filter = $_FRAMEWORKS[$framework]["filters"][$filtername]
+        $filter = $frameworkSettings["filters"][$filtername]
 
         $replacements = @{
             "__FRAMEWORK__" = $framework;
@@ -141,10 +132,9 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
             "__RUNSETTINGS__" = $runSettings;
         };
 
-        $runner = $_FRAMEWORKS[$framework]["runner"]
+        $runner = $frameworkSettings["runner"]
         # make a copy of the args array
-        $_TempCliXMLString = [System.Management.Automation.PSSerializer]::Serialize($_FRAMEWORKS[$framework]["args"], [int32]::MaxValue)
-        [Object[]] $args = [System.Management.Automation.PSSerializer]::Deserialize($_TempCliXMLString)
+        [Object[]] $args = @() + $frameworkSettings["args"]
         # replace the placeholders with actual values
         for([int] $i = 0; $i -lt $args.Length; $i++) {
             foreach($r in $replacements.Keys) {
@@ -153,7 +143,7 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
         }
 
         if($filter.Length -gt 0) {
-            $tmp = $_FRAMEWORKS[$framework]["filterArg"].Replace('__FILTER__', $replacements['__FILTER__'])
+            $tmp = $frameworkSettings["filterArg"].Replace('__FILTER__', $replacements['__FILTER__'])
             foreach($r in $replacements.Keys) {
                 $tmp = $tmp.Replace($r, $replacements[$r])
             }
