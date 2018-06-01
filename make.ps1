@@ -4,7 +4,8 @@ Param(
     [Parameter(Position=1)]
     [String] $target = "release",
     [String] $configuration = "Release",
-    [String[]] $frameworks=@('net45','netcoreapp2.0')
+    [String[]] $frameworks=@('net45','netcoreapp2.0'),
+    [switch] $runIgnored
 )
 
 [int] $global:Result = 0
@@ -32,7 +33,7 @@ if(!$global:isUnix) {
 $_FRAMEWORKS = @{
     "net45" = @{
         "runner" = "dotnet";
-        "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
+        "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', '__RUNSETTINGS__');
         "filterArg" = '--filter="__FILTER__"';
         "filters" = @{
             "all" = "";
@@ -44,7 +45,7 @@ $_FRAMEWORKS = @{
     };
     "netcoreapp2.0" = @{
         "runner" = "dotnet";
-        "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', 'runsettings.__FRAMEWORK__');
+        "args" = @('test', '__BASEDIR__/Src/IronPythonTest/IronPythonTest.csproj', '-f', '__FRAMEWORK__', '-o', '__BASEDIR__/bin/__CONFIGURATION__/__FRAMEWORK__', '-c', '__CONFIGURATION__', '--no-build', '-l', "trx;LogFileName=__FILTERNAME__-__FRAMEWORK__-__CONFIGURATION__-result.trx", '-s', '__RUNSETTINGS__');
         "filterArg" = '--filter="__FILTER__"';
         "filters" = @{
             "all" = "";
@@ -72,10 +73,54 @@ function Main([String] $target, [String] $configuration) {
     $global:Result = $LastExitCode
 }
 
+function GenerateRunSettings([String] $framework, [String] $configuration, [bool] $runIgnored) {
+    [System.Xml.XmlDocument]$doc = New-Object System.Xml.XmlDocument
+
+#   <RunSettings>
+#     <TestRunParameters>
+#       <Parameter name="FRAMEWORK" value="net45" />
+#     </TestRunParameters>
+#   </RunSettings>
+
+    $dec = $doc.CreateXmlDeclaration("1.0","UTF-8",$null)
+    $doc.AppendChild($dec) | Out-Null
+
+    $runSettings = $doc.CreateElement("RunSettings")
+    $testRunParameters = $doc.CreateElement("TestRunParameters")
+    $runSettings.AppendChild($testRunParameters) | Out-Null
+
+    $parameter = $doc.CreateElement("Parameter")
+    $parameter.SetAttribute("name", "FRAMEWORK")
+    $parameter.SetAttribute("value", $framework)
+    $testRunParameters.AppendChild($parameter) | Out-Null
+
+    $parameter = $doc.CreateElement("Parameter")
+    $parameter.SetAttribute("name", "CONFIGURATION")
+    $parameter.SetAttribute("value", $configuration)
+    $testRunParameters.AppendChild($parameter) | Out-Null
+
+    if($runIgnored) {
+        $parameter = $doc.CreateElement("Parameter")
+        $parameter.SetAttribute("name", "RUN_IGNORED")
+        $parameter.SetAttribute("value", "true")
+        $testRunParameters.AppendChild($parameter) | Out-Null
+    }
+
+    $doc.AppendChild($runSettings) | Out-Null
+
+    $fileName = [System.IO.Path]::Combine($_BASEDIR, "Src", "IronPythonTest", "runsettings.xml")
+    $doc.Save($fileName)
+    return $fileName
+}
+
 function Test([String] $target, [String] $configuration, [String[]] $frameworks) {
     foreach ($framework in $frameworks) {
         $testname = "";
         $filtername = $target
+
+        # generate the runsettings file for the settings
+        $runSettings = GenerateRunSettings $framework $configuration $runIgnored
+
         if(!$_FRAMEWORKS[$framework]["filters"].ContainsKey($target)) {
             Write-Warning "No tests available for '$target' trying to run single test '$framework.$target'"
             $testname = "$framework.$target"
@@ -91,6 +136,7 @@ function Test([String] $target, [String] $configuration, [String[]] $frameworks)
             "__FILTER__" = $filter;
             "__BASEDIR__" = $_BASEDIR;
             "__TESTNAME__" = $testname;
+            "__RUNSETTINGS__" = $runSettings;
         };
 
         $runner = $_FRAMEWORKS[$framework]["runner"]
