@@ -2,6 +2,7 @@ from ctypes import *
 from ctypes.test import need_symbol
 import unittest
 import os
+import sys
 
 import ctypes
 import _ctypes_test
@@ -40,6 +41,7 @@ class C_Test(unittest.TestCase):
                 setattr(b, name, i)
                 self.assertEqual((name, i, getattr(b, name)), (name, i, func(byref(b), name)))
 
+    @unittest.skipIf(sys.platform=='cli' and os.name=='posix', 'Struct bitfield packing issue - https://github.com/IronLanguages/ironpython2/issues/409')
     def test_shorts(self):
         for i in range(256):
             for name in "MNOPQRS":
@@ -193,6 +195,7 @@ class BitFieldTest(unittest.TestCase):
         except Exception, detail:
             return detail.__class__, str(detail)
 
+    @unittest.skipIf(sys.platform=='cli' and os.name=='posix', 'Struct bitfield packing issue - https://github.com/IronLanguages/ironpython2/issues/409')
     def test_mixed_1(self):
         class X(Structure):
             _fields_ = [("a", c_byte, 4),
@@ -202,6 +205,7 @@ class BitFieldTest(unittest.TestCase):
         else:
             self.assertEqual(sizeof(X), sizeof(c_int))
 
+    @unittest.skipIf(sys.platform=='cli' and os.name=='posix', 'Struct bitfield packing issue - https://github.com/IronLanguages/ironpython2/issues/409')
     def test_mixed_2(self):
         class X(Structure):
             _fields_ = [("a", c_byte, 4),
@@ -214,6 +218,7 @@ class BitFieldTest(unittest.TestCase):
                         ("b", c_ubyte, 4)]
         self.assertEqual(sizeof(X), sizeof(c_byte))
 
+    @unittest.skipIf(sys.platform=='cli' and os.name=='posix', 'Struct bitfield packing issue - https://github.com/IronLanguages/ironpython2/issues/409')
     def test_mixed_4(self):
         class X(Structure):
             _fields_ = [("a", c_short, 4),
@@ -260,6 +265,7 @@ class BitFieldTest(unittest.TestCase):
         self.assertEqual(x.a, 0xFEDCBA9876543211)
 
     @need_symbol('c_uint32')
+    @unittest.skipIf(sys.platform=='cli', 'TODO: Implement from_buffer for IBufferProtocol - https://github.com/IronLanguages/ironpython2/issues/388')
     def test_uint32_swap_little_endian(self):
         # Issue #23319
         class Little(LittleEndianStructure):
@@ -274,6 +280,7 @@ class BitFieldTest(unittest.TestCase):
         self.assertEqual(b, b'\xef\xcd\xab\x21')
 
     @need_symbol('c_uint32')
+    @unittest.skipIf(sys.platform=='cli', 'TODO: Implement from_buffer for IBufferProtocol - https://github.com/IronLanguages/ironpython2/issues/388')
     def test_uint32_swap_big_endian(self):
         # Issue #23319
         class Big(BigEndianStructure):

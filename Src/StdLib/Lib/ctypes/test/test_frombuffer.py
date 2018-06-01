@@ -1,6 +1,7 @@
 from ctypes import *
 import array
 import gc
+import sys
 import unittest
 
 class X(Structure):
@@ -77,6 +78,7 @@ class Test(unittest.TestCase):
         self.assertRaises(ValueError,
                           (c_int * 1).from_buffer_copy, a, 16 * sizeof(c_int))
 
+    @unittest.skipIf(sys.platform=='cli', "TODO: implement this - https://github.com/IronLanguages/ironpython2/issues/393")
     def test_abstract(self):
         from ctypes import _Pointer, _SimpleCData, _CFuncPtr
 

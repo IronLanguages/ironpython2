@@ -1,6 +1,7 @@
 import unittest
 import ctypes
 import gc
+import sys
 
 MyCallback = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_int)
 OtherCallback = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_ulonglong)
@@ -8,6 +9,7 @@ OtherCallback = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_ulonglong)
 import _ctypes_test
 dll = ctypes.CDLL(_ctypes_test.__file__)
 
+@unittest.skipIf(sys.platform=='cli', "IronPython doesn't manage refcounts the same way as C Python")
 class RefcountTestCase(unittest.TestCase):
 
     def test_1(self):
@@ -81,6 +83,7 @@ class RefcountTestCase(unittest.TestCase):
         gc.collect()
         self.assertEqual(grc(func), 2)
 
+@unittest.skipIf(sys.platform=='cli', "IronPython doesn't manage refcounts the same way as C Python")
 class AnotherLeak(unittest.TestCase):
     def test_callback(self):
         import sys

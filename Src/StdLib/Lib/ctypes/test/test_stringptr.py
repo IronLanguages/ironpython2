@@ -1,4 +1,4 @@
-import unittest
+import sys, unittest
 from ctypes import *
 
 import _ctypes_test
@@ -7,6 +7,7 @@ lib = CDLL(_ctypes_test.__file__)
 
 class StringPtrTestCase(unittest.TestCase):
 
+    @unittest.skipIf(sys.platform=='cli', "IronPython doesn't manage refcounts the same way as C Python")
     def test__POINTER_c_char(self):
         class X(Structure):
             _fields_ = [("str", POINTER(c_char))]

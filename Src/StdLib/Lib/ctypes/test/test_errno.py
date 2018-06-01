@@ -1,4 +1,4 @@
-import unittest, os, errno
+import unittest, os, errno, sys
 from ctypes import *
 from ctypes.util import find_library
 from test import test_support
@@ -8,6 +8,7 @@ except ImportError:
     threading = None
 
 class Test(unittest.TestCase):
+    @unittest.skipIf(sys.platform=='cli', "IronPython doen't support marshaling errno right now - https://github.com/IronLanguages/ironpython2/issues/392")
     def test_open(self):
         libc_name = find_library("c")
         if libc_name is None:

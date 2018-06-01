@@ -15,6 +15,7 @@ class MemFunctionsTest(unittest.TestCase):
         self.assertRaises((OverflowError, MemoryError, SystemError),
                           lambda: string_at("foo", sys.maxint - 1))
 
+    @unittest.skipIf(sys.platform=='cli', 'TODO: debug this on IronPython - https://github.com/IronLanguages/ironpython2/issues/395')
     def test_memmove(self):
         # large buffers apparently increase the chance that the memory
         # is allocated in high address space.
@@ -51,6 +52,7 @@ class MemFunctionsTest(unittest.TestCase):
         self.assertEqual(cast(a, POINTER(c_byte))[:7:7],
                              [97])
 
+    @unittest.skipIf(sys.platform=='cli', "TODO: debug this on IronPython - https://github.com/IronLanguages/ironpython2/issues/395")
     def test_string_at(self):
         s = string_at("foo bar")
         # XXX The following may be wrong, depending on how Python

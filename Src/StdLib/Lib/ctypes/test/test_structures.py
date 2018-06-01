@@ -1,8 +1,8 @@
-import unittest
+import sys, unittest
 from ctypes import *
 from ctypes.test import need_symbol
 from struct import calcsize
-import _testcapi
+
 
 class SubclassesTest(unittest.TestCase):
     def test_subclass(self):
@@ -201,13 +201,15 @@ class StructureTestCase(unittest.TestCase):
              "_pack_": -1}
         self.assertRaises(ValueError, type(Structure), "X", (Structure,), d)
 
-        # Issue 15989
-        d = {"_fields_": [("a", c_byte)],
-             "_pack_": _testcapi.INT_MAX + 1}
-        self.assertRaises(ValueError, type(Structure), "X", (Structure,), d)
-        d = {"_fields_": [("a", c_byte)],
-             "_pack_": _testcapi.UINT_MAX + 2}
-        self.assertRaises(ValueError, type(Structure), "X", (Structure,), d)
+        if sys.platform != 'cli':
+            import _testcapi
+            # Issue 15989
+            d = {"_fields_": [("a", c_byte)],
+                "_pack_": _testcapi.INT_MAX + 1}
+            self.assertRaises(ValueError, type(Structure), "X", (Structure,), d)
+            d = {"_fields_": [("a", c_byte)],
+                "_pack_": _testcapi.UINT_MAX + 2}
+            self.assertRaises(ValueError, type(Structure), "X", (Structure,), d)
 
     def test_initializers(self):
         class Person(Structure):
@@ -249,6 +251,7 @@ class StructureTestCase(unittest.TestCase):
             pass
         self.assertRaises(TypeError, setattr, POINT, "_fields_", [("x", 1), ("y", 2)])
 
+    @unittest.skipIf(sys.platform=='cli', "All strings are unicode in IronPython")
     def test_invalid_name(self):
         # field name must be string
         def declare_with_name(name):

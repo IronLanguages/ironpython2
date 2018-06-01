@@ -40,6 +40,7 @@ $_FRAMEWORKS = @{
             "smoke" = "TestCategory=StandardCPython";
             "cpython" = "TestCategory=StandardCPython | TestCategory=AllCPython";
             "ironpython" = "TestCategory=IronPython";
+            "ctypes" = "TestCategory=CTypesCPython";
             "single" = "Name=__TESTNAME__";
         }
     };
@@ -52,14 +53,15 @@ $_FRAMEWORKS = @{
             "smoke" = "TestCategory=StandardCPython";
             "cpython" = "TestCategory=StandardCPython | TestCategory=AllCPython";
             "ironpython" = "TestCategory=IronPython";
+            "ctypes" = "TestCategory=CTypesCPython";
             "single" = "Name=__TESTNAME__";
         }
     }
 }
-
 function Main([String] $target, [String] $configuration) {
+    # verify that the DLR submodule has been initialized
     if(![System.Linq.Enumerable]::Any([System.IO.Directory]::EnumerateFileSystemEntries([System.IO.Path]::Combine($_BASEDIR, "Src/DLR")))) {
-        if($global:isUnix) {
+        if(Get-Command git -ErrorAction SilentlyContinue) {
             & git submodule update --init
         } else {
             Write-Error "Please initialize the DLR submodule (the equivalent of `git submodule update --init` for your Git toolset"

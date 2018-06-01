@@ -16,7 +16,6 @@
 #if FEATURE_NATIVE || NETCOREAPP2_0
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
@@ -32,9 +31,9 @@ using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
 using IronPython.Runtime;
+using IronPython.Runtime.Exceptions;
 using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
-
 
 [assembly: PythonModule("_ctypes", typeof(IronPython.Modules.CTypes))]
 namespace IronPython.Modules {
@@ -61,8 +60,7 @@ namespace IronPython.Modules {
         [SpecialName]
         public static void PerformModuleReload(PythonContext/*!*/ context, PythonDictionary/*!*/ dict) {
 
-            context.EnsureModuleException("ArgumentError", dict, "ArgumentError", "_ctypes");
-            context.EnsureModuleException("COMError", dict, "COMError", "_ctypes");
+            context.EnsureModuleException("ArgumentError", dict, "ArgumentError", "_ctypes");            
 
             // TODO: Provide an implementation which is coordinated with our _refCountTable
             context.SystemState.__dict__["getrefcount"] = null;
@@ -74,6 +72,17 @@ namespace IronPython.Modules {
                 Environment.OSVersion.Platform == PlatformID.Win32S ||
                 Environment.OSVersion.Platform == PlatformID.Win32Windows ||
                 Environment.OSVersion.Platform == PlatformID.WinCE) {
+                context.EnsureModuleException(
+                    "COMError",
+                    PythonExceptions.Exception,
+                    typeof(_COMError),
+                    dict,
+                    "COMError",
+                    "_ctypes",
+                    "Raised when a COM method call failed.",
+                    msg => new COMException(msg)
+                );
+
                 context.SetModuleState(_conversion_mode, PythonTuple.MakeTuple("mbcs", "ignore"));
             } else {
                 context.SetModuleState(_conversion_mode, PythonTuple.MakeTuple("ascii", "strict"));
@@ -188,7 +197,7 @@ namespace IronPython.Modules {
         public static object LoadLibrary(string library, [DefaultParameterValue(0)]int mode) {
             IntPtr res = NativeFunctions.LoadDLL(library, mode);
             if (res == IntPtr.Zero) {
-                throw PythonOps.OSError("cannot load library {0}", library);
+                throw PythonOps.OSError($"cannot load library {library}");
             }
 
             return res.ToPython();
@@ -207,8 +216,7 @@ namespace IronPython.Modules {
             PythonDictionary dict = (PythonDictionary)pc.GetModuleState(_pointerTypeCacheKey);
 
             lock (dict) {
-                object res;
-                if (!dict.TryGetValue(type, out res)) {
+                if (!dict.TryGetValue(type, out object res)) {
                     string name;
                     if (type == null) {
                         name = "c_void_p";
@@ -271,8 +279,7 @@ namespace IronPython.Modules {
             EnsureRefCountTable();
 
             lock (_refCountTable) {
-                RefCountInfo info;
-                if (!_refCountTable.TryGetValue(key, out info)) {
+                if (!_refCountTable.TryGetValue(key, out RefCountInfo info)) {
                     // dec without an inc
                     throw new InvalidOperationException();
                 }
@@ -292,8 +299,7 @@ namespace IronPython.Modules {
             EnsureRefCountTable();
 
             lock (_refCountTable) {
-                RefCountInfo info;
-                if (!_refCountTable.TryGetValue(key, out info)) {
+                if (!_refCountTable.TryGetValue(key, out RefCountInfo info)) {
                     _refCountTable[key] = info = new RefCountInfo();
                     // TODO: this only works w/ blittable types, what to do for others?
                     info.Handle = GCHandle.Alloc(key, GCHandleType.Pinned);
@@ -331,8 +337,7 @@ namespace IronPython.Modules {
         /// Gets the required alignment of the given type.
         /// </summary>
         public static int alignment(PythonType type) {
-            INativeType nativeType = type as INativeType;
-            if (nativeType == null) {
+            if (!(type is INativeType nativeType)) {
                 throw PythonOps.TypeError("this type has no size");
             }
 
@@ -346,7 +351,7 @@ namespace IronPython.Modules {
             return alignment(DynamicHelpers.GetPythonType(o));
         }
 
-        public static object byref(CData instance, [DefaultParameterValue(0)]int offset) {
+        public static object byref(CData instance, int offset=0) {
             if (offset != 0) {
                 // new in 2.6
                 throw new NotImplementedException("byref w/ arg");
@@ -410,7 +415,11 @@ namespace IronPython.Modules {
         }
 
         public static int get_last_error() {
-            return Marshal.GetLastWin32Error();
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+                return NativeFunctions.GetLastError();
+            }
+
+            throw PythonOps.NameError("get_last_error");
         }
 
         /// <summary>
@@ -443,15 +452,20 @@ namespace IronPython.Modules {
         }
 
         public static void set_errno() {
+            // we can't support this without a native library
         }
 
-        public static void set_last_error(int errorCode) {
-            NativeFunctions.SetLastError(errorCode);
+        public static int set_last_error(int errorCode) {
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+                int old_errno = NativeFunctions.GetLastError();
+                NativeFunctions.SetLastError(errorCode);
+                return old_errno;
+            }
+            throw PythonOps.NameError("set_last_error");
         }
 
         public static int @sizeof(PythonType/*!*/ type) {
-            INativeType simpleType = type as INativeType;
-            if (simpleType == null) {
+            if (!(type is INativeType simpleType)) {
                 throw PythonOps.TypeError("this type has no size");
             }
 
@@ -459,8 +473,7 @@ namespace IronPython.Modules {
         }
 
         public static int @sizeof(object/*!*/ instance) {
-            CData cdata = instance as CData;
-            if (cdata != null && cdata._memHolder != null) {
+            if (instance is CData cdata && cdata._memHolder != null) {
                 return cdata._memHolder.Size;
             }
             return @sizeof(DynamicHelpers.GetPythonType(instance));
@@ -527,8 +540,7 @@ namespace IronPython.Modules {
         /// </summary>
         private static Type/*!*/ GetMarshalTypeFromSize(int size) {
             lock (_nativeTypes) {
-                Type res;
-                if (!_nativeTypes.TryGetValue(size, out res)) {
+                if (!_nativeTypes.TryGetValue(size, out Type res)) {
                     int sizeRemaining = size;
                     TypeBuilder tb = DynamicModule.DefineType("interop_type_size_" + size,
                         TypeAttributes.Public | TypeAttributes.SequentialLayout | TypeAttributes.Sealed | TypeAttributes.Serializable,
@@ -578,8 +590,7 @@ namespace IronPython.Modules {
                 throw StructureCannotContainSelf();
             }
 
-            StructType st = cdata as StructType;
-            if (st != null) {
+            if (cdata is StructType st) {
                 st.EnsureFinal();
             }
 
@@ -596,8 +607,7 @@ namespace IronPython.Modules {
         private static int CheckBits(INativeType cdata, PythonTuple pt) {
             int bitCount = Converter.ConvertToInt32(pt[2]);
 
-            SimpleType simpType = cdata as SimpleType;
-            if (simpType == null) {
+            if (!(cdata is SimpleType simpType)) {
                 throw PythonOps.TypeError("bit fields not allowed for type {0}", ((PythonType)cdata).Name);
             }
 
@@ -623,8 +633,7 @@ namespace IronPython.Modules {
         /// Shared helper to get the _fields_ list for struct/union and validate it.
         /// </summary>
         private static IList<object>/*!*/ GetFieldsList(object fields) {
-            IList<object> list = fields as IList<object>;
-            if (list == null) {
+            if (!(fields is IList<object> list)) {
                 throw PythonOps.TypeError("class must be a sequence of pairs");
             }
             return list;
@@ -666,8 +675,7 @@ namespace IronPython.Modules {
             IntPtr intPtrHandle;
             object dllHandle = PythonOps.GetBoundAttr(DefaultContext.Default, dll, "_handle");
 
-            BigInteger intHandle;
-            if (!Converter.TryConvertToBigInteger(dllHandle, out intHandle)) {
+            if (!Converter.TryConvertToBigInteger(dllHandle, out BigInteger intHandle)) {
                 throw PythonOps.TypeError(errorMsg);
             }
             intPtrHandle = new IntPtr((long)intHandle);
@@ -682,14 +690,23 @@ namespace IronPython.Modules {
             ValidateArraySizes(bytes.Count, offset, size);
         }
 
+        private static void ValidateArraySizes(string data, int offset, int size) {
+            ValidateArraySizes(data.Length, offset, size);
+        }
+
         private static void ValidateArraySizes(int arraySize, int offset, int size) {
             if (offset < 0) {
                 throw PythonOps.ValueError("offset cannot be negative");
             } else if (arraySize < size + offset) {
-                throw PythonOps.ValueError("Buffer size too small ({0} instead of at least {1} bytes)",
-                    arraySize,
-                    size
-                );
+                throw PythonOps.ValueError($"Buffer size too small ({arraySize} instead of at least {size} bytes)");
+            }
+        }
+
+        private static void ValidateArraySizes(BigInteger arraySize, int offset, int size) {
+            if (offset < 0) {
+                throw PythonOps.ValueError("offset cannot be negative");
+            } else if (arraySize < size + offset) {
+                throw PythonOps.ValueError($"Buffer size too small ({arraySize} instead of at least {size} bytes)");
             }
         }
 
@@ -699,8 +716,7 @@ namespace IronPython.Modules {
         }
 
         public static void SetCharArrayValue(_Array arr, object value) {
-            PythonBuffer buf = value as PythonBuffer;
-            if (buf != null && buf._object is string) {
+            if (value is PythonBuffer buf && buf._object is string) {
                 value = buf.ToString();
             }
 
@@ -777,6 +793,29 @@ namespace IronPython.Modules {
         }
 
         #endregion
+
+        [PythonHidden, PythonType("COMError"), DynamicBaseType]
+        public class _COMError : PythonExceptions.BaseException {
+
+            public _COMError(PythonType cls) : base(cls) { }
+
+            public override void __init__(params object[] args) {
+                base.__init__(args);
+                if(args.Length < 3) {
+                    throw PythonOps.TypeError($"COMError() takes exactly 4 arguments({args.Length} given)");
+                }
+
+                hresult = args[0];
+                text = args[1];
+                details = args[2];
+            }
+
+            public object hresult { get; set; }
+
+            public object text { get; set; }
+
+            public object details { get; set; }
+        }
 
     }
 }

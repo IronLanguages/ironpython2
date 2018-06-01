@@ -67,7 +67,7 @@ namespace IronPython.Modules {
                 if (args == null) {
                     throw PythonOps.TypeError("expected sequence, got None");
                 } else if (args.Count != 2) {
-                    throw PythonOps.TypeError("argument 1 must be a sequence of length 2, not {0}", args.Count);
+                    throw PythonOps.TypeError($"argument 1 must be a sequence of length 2, not {args.Count}");
                 }
 
                 object nameOrOrdinal = args[0];
@@ -94,7 +94,7 @@ namespace IronPython.Modules {
                     }
 
                     if (tmpAddr == IntPtr.Zero) {
-                        throw PythonOps.AttributeError("function {0} is not defined", args[0]);
+                        throw PythonOps.AttributeError($"function {args[0]} is not defined");
                     }
                 }
 
@@ -122,10 +122,8 @@ namespace IronPython.Modules {
                     PythonType resType = myType._restype;
                     if (resType != null) {
                         if (!(resType is INativeType) || resType is PointerType) {
-                            throw PythonOps.TypeError("invalid result type {0} for callback function", ((PythonType)resType).Name);
+                            throw PythonOps.TypeError($"invalid result type {resType.Name} for callback function");
                         }
-
-                        
                     }
                 }
                 _id = Interlocked.Increment(ref _curId);
@@ -253,6 +251,12 @@ namespace IronPython.Modules {
             internal CallingConvention CallingConvention {
                 get {
                     return ((CFuncPtrType)DynamicHelpers.GetPythonType(this)).CallingConvention;
+                }
+            }
+
+            internal int Flags {
+                get {
+                    return ((CFuncPtrType)DynamicHelpers.GetPythonType(this))._flags;
                 }
             }
 
@@ -523,26 +527,22 @@ namespace IronPython.Modules {
 
                 private ArgumentMarshaller/*!*/ GetMarshaller(Expression/*!*/ expr, object value, int index, object nativeType) {
                     if (nativeType != null) {
-                        INativeType nt = nativeType as INativeType;
-                        if (nt != null) {
+                        if (nativeType is INativeType nt) {
                             return new CDataMarshaller(expr, CompilerHelpers.GetType(value), nt);
                         }
 
                         return new FromParamMarshaller(expr);
                     }
 
-                    CData data = value as CData;
-                    if (data != null) {
+                    if (value is CData data) {
                         return new CDataMarshaller(expr, CompilerHelpers.GetType(value), data.NativeType);
                     }
 
-                    NativeArgument arg = value as NativeArgument;
-                    if (arg != null) {
+                    if (value is NativeArgument arg) {
                         return new NativeArgumentMarshaller(expr);
                     }
 
-                    object val;
-                    if (PythonOps.TryGetBoundAttr(value, "_as_parameter_", out val)) {
+                    if (PythonOps.TryGetBoundAttr(value, "_as_parameter_", out object val)) {
                         throw new NotImplementedException("_as_parameter");
                         //return new UserDefinedMarshaller(GetMarshaller(..., value, index));                    
                     }

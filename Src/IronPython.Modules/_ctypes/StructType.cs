@@ -55,25 +55,20 @@ namespace IronPython.Modules {
                         st.EnsureFinal();
                     }
 
-                    UnionType ut = pt as UnionType;
-                    if (ut != null) {
+                    if (pt is UnionType ut) {
                         ut.EnsureFinal();
                     }
                 }
 
-                object pack;
-                if (members.TryGetValue("_pack_", out pack)) {
+                if (members.TryGetValue("_pack_", out object pack)) {
                     if (!(pack is int) || ((int)pack < 0)) {
                         throw PythonOps.ValueError("pack must be a non-negative integer");
                     }
                     _pack = (int)pack;
                 }
 
-                object fields;
-                if (members.TryGetValue("_fields_", out fields)) {
-                    // When we support alternate endianness this should change to:
-                    //__setattr__(context, "_fields_", fields);
-                    SetFields(fields);
+                if (members.TryGetValue("_fields_", out object fields)) {
+                    __setattr__(context, "_fields_", fields);
                 }
 
                 // TODO: _anonymous_
@@ -105,17 +100,17 @@ namespace IronPython.Modules {
                 return res;
             }
 
-            public _Structure from_buffer(ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
+            public _Structure from_buffer(CodeContext/*!*/ context, ArrayModule.array array, int offset=0) {
                 ValidateArraySizes(array, offset, ((INativeType)this).Size);
 
-                _Structure res = (_Structure)CreateInstance(Context.SharedContext);
+                _Structure res = (_Structure)CreateInstance(context);
                 IntPtr addr = array.GetArrayAddress();
                 res._memHolder = new MemoryHolder(addr.Add(offset), ((INativeType)this).Size);
                 res._memHolder.AddObject("ffffffff", array);
                 return res;
             }
 
-            public _Structure from_buffer_copy(ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
+            public _Structure from_buffer_copy(CodeContext/*!*/ context, ArrayModule.array array, int offset=0) {
                 ValidateArraySizes(array, offset, ((INativeType)this).Size);
 
                 _Structure res = (_Structure)CreateInstance(Context.SharedContext);
@@ -156,7 +151,7 @@ namespace IronPython.Modules {
                 base.__setattr__(context, name, value);
             }
 
-#region INativeType Members
+            #region INativeType Members
 
             int INativeType.Size {
                 get {
@@ -265,7 +260,7 @@ namespace IronPython.Modules {
                 }
             }
 
-#endregion
+            #endregion
 
             internal static PythonType MakeSystemType(Type underlyingSystemType) {
                 return PythonType.SetPythonType(underlyingSystemType, new StructType(underlyingSystemType));
@@ -275,20 +270,16 @@ namespace IronPython.Modules {
                 lock (this) {
                     IList<object> list = GetFieldsList(fields);
 
-                    int size;
-                    int alignment;
                     int? bitCount = null;
                     int? curBitCount = null;
                     INativeType lastType = null;
-                    List<Field> allFields = GetBaseSizeAlignmentAndFields(out size, out alignment);
+                    List<Field> allFields = GetBaseSizeAlignmentAndFields(out int size, out int alignment);
 
                     IList<object> anonFields = GetAnonymousFields(this);
 
                     for (int fieldIndex = 0; fieldIndex < list.Count; fieldIndex++) {
                         object o = list[fieldIndex];
-                        string fieldName;
-                        INativeType cdata;
-                        GetFieldInfo(this, o, out fieldName, out cdata, out bitCount);
+                        GetFieldInfo(this, o, out string fieldName, out INativeType cdata, out bitCount);
 
                         int prevSize = UpdateSizeAndAlignment(cdata, bitCount, lastType, ref size, ref alignment, ref curBitCount);
 

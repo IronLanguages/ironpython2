@@ -3,6 +3,9 @@ from ctypes import *
 from ctypes.test import need_symbol
 import _ctypes_test
 
+import sys
+from test import test_support
+
 dll = CDLL(_ctypes_test.__file__)
 
 try:
@@ -26,6 +29,7 @@ class BasicWrapTestCase(unittest.TestCase):
         self.assertEqual(result, 139)
         self.assertTrue(type(result), int)
 
+    @unittest.skipIf(sys.platform=='cli', 'TODO: debug this test on IronPython - https://github.com/IronLanguages/ironpython2/issues/389')
     def test_pointers(self):
         f = dll._testfunc_p_p
         f.restype = POINTER(c_int)
@@ -69,6 +73,7 @@ class BasicWrapTestCase(unittest.TestCase):
 
     ################################################################
 
+    @unittest.skipIf(sys.platform=='cli', 'Not currently implemented on IronPython - https://github.com/IronLanguages/ironpython2/issues/390')
     def test_callbacks(self):
         f = dll._testfunc_callback_i_if
         f.restype = c_int
@@ -186,6 +191,7 @@ class BasicWrapTestCase(unittest.TestCase):
         self.assertEqual((s8i.a, s8i.b, s8i.c, s8i.d, s8i.e, s8i.f, s8i.g, s8i.h),
                              (9*2, 8*3, 7*4, 6*5, 5*6, 4*7, 3*8, 2*9))
 
+    @test_support.cpython_only
     def test_recursive_as_param(self):
         from ctypes import c_int
 

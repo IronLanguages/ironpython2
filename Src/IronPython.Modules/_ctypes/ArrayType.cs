@@ -49,9 +49,8 @@ namespace IronPython.Modules {
 
             public ArrayType(CodeContext/*!*/ context, string name, PythonTuple bases, PythonDictionary dict)
                 : base(context, name, bases, dict) {
-                object len;
                 int iLen;
-                if (!dict.TryGetValue("_length_", out len) || !(len is int) || (iLen = (int)len) < 0) {
+                if (!dict.TryGetValue("_length_", out object len) || !(len is int) || (iLen = (int)len) < 0) {
                     throw PythonOps.AttributeError("arrays must have _length_ attribute and it must be a positive integer");
                 }
 
@@ -63,8 +62,7 @@ namespace IronPython.Modules {
                 _length = iLen;
                 _type = (INativeType)type;
 
-                if (_type is SimpleType) {
-                    SimpleType st = (SimpleType)_type;
+                if (_type is SimpleType st) {
                     if (st._type == SimpleTypeKind.Char) {
                         // TODO: (c_int * 2).value isn't working
                         SetCustomMember(context,
@@ -118,33 +116,44 @@ namespace IronPython.Modules {
                 return res;
             }
 
-            public _Array from_buffer(ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
+            public _Array from_buffer(CodeContext/*!*/ context, ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
                 ValidateArraySizes(array, offset, ((INativeType)this).Size);
 
-                _Array res = (_Array)CreateInstance(Context.SharedContext);
+                _Array res = (_Array)CreateInstance(context);
                 IntPtr addr = array.GetArrayAddress();
                 res._memHolder = new MemoryHolder(addr.Add(offset), ((INativeType)this).Size);
                 res._memHolder.AddObject("ffffffff", array);
                 return res;
             }
 
-            public _Array from_buffer_copy(ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
+            public _Array from_buffer_copy(CodeContext/*!*/ context, ArrayModule.array array, [DefaultParameterValue(0)]int offset) {
                 ValidateArraySizes(array, offset, ((INativeType)this).Size);
 
-                _Array res = (_Array)CreateInstance(Context.SharedContext);
+                _Array res = (_Array)CreateInstance(context);
                 res._memHolder = new MemoryHolder(((INativeType)this).Size);
                 res._memHolder.CopyFrom(array.GetArrayAddress().Add(offset), new IntPtr(((INativeType)this).Size));
                 GC.KeepAlive(array);
                 return res;
             }
 
-            public _Array from_buffer_copy(Bytes array, [DefaultParameterValue(0)]int offset) {
+            public _Array from_buffer_copy(CodeContext/*!*/ context, Bytes array, [DefaultParameterValue(0)]int offset) {
                 ValidateArraySizes(array, offset, ((INativeType)this).Size);
 
-                _Array res = (_Array)CreateInstance(Context.SharedContext);
+                _Array res = (_Array)CreateInstance(context);
                 res._memHolder = new MemoryHolder(((INativeType)this).Size);
                 for (int i = 0; i < ((INativeType)this).Size; i++) {
                     res._memHolder.WriteByte(i, array._bytes[i]);
+                }
+                return res;
+            }
+
+            public _Array from_buffer_copy(CodeContext/*!*/ context, string data, int offset=0) {
+                ValidateArraySizes(data, offset, ((INativeType)this).Size);
+
+                _Array res = (_Array)CreateInstance(context);
+                res._memHolder = new MemoryHolder(((INativeType)this).Size);
+                for (int i = 0; i < ((INativeType)this).Size; i++) {
+                    res._memHolder.WriteByte(i, (byte)data[i]);
                 }
                 return res;
             }
@@ -381,13 +390,11 @@ namespace IronPython.Modules {
             }
 
             lock (_arrayTypes) {
-                ArrayType res;
-                Dictionary<int, ArrayType> countDict;
-                if (!_arrayTypes.TryGetValue(type, out countDict)) {
+                if (!_arrayTypes.TryGetValue(type, out Dictionary<int, ArrayType> countDict)) {
                     _arrayTypes[type] = countDict = new Dictionary<int, ArrayType>();
                 }
 
-                if (!countDict.TryGetValue(count, out res)) {
+                if (!countDict.TryGetValue(count, out ArrayType res)) {
                     res = countDict[count] = new ArrayType(type.Context.SharedContext,
                         type.Name + "_Array_" + count,
                         PythonTuple.MakeTuple(Array),

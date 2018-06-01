@@ -1,5 +1,5 @@
 # This tests the internal _objects attribute
-import unittest
+import sys, unittest
 from ctypes import *
 from sys import getrefcount as grc
 
@@ -21,6 +21,7 @@ class ObjectsTestCase(unittest.TestCase):
     def assertSame(self, a, b):
         self.assertEqual(id(a), id(b))
 
+    @unittest.skipIf(sys.platform=='cli', 'IronPython does not implement refcount like C Python')
     def test_ints(self):
         i = 42000123
         refcnt = grc(i)
@@ -28,6 +29,7 @@ class ObjectsTestCase(unittest.TestCase):
         self.assertEqual(refcnt, grc(i))
         self.assertEqual(ci._objects, None)
 
+    @unittest.skipIf(sys.platform=='cli', 'IronPython does not implement refcount like C Python')
     def test_c_char_p(self):
         s = "Hello, World"
         refcnt = grc(s)
