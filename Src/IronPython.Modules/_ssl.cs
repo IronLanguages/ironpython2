@@ -708,6 +708,7 @@ namespace IronPython.Modules {
         public const bool HAS_NPN = false;
         public const bool HAS_ALPN = false;
         public const bool HAS_TLS_UNIQUE = false;
+        public const bool HAS_TLSv1_3 = false;
 
         private const int SSL_VERIFY_NONE = 0x00;
         private const int SSL_VERIFY_PEER = 0x01;
