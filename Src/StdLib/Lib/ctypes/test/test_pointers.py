@@ -19,6 +19,7 @@ class PointersTestCase(unittest.TestCase):
         # Pointer can't set contents: has no _type_
         self.assertRaises(TypeError, A, c_ulong(33))
 
+    @unittest.skipIf(sys.platform=='cli', 'Need to debug on IronPython - https://github.com/IronLanguages/ironpython2/issues/397')
     def test_pass_pointers(self):
         dll = CDLL(_ctypes_test.__file__)
         func = dll._testfunc_p_p
@@ -189,7 +190,7 @@ class PointersTestCase(unittest.TestCase):
         self.assertEqual(bool(CFUNCTYPE(None)(42)), True)
 
         # COM methods are boolean True:
-        if sys.platform == "win32":
+        if sys.platform == "win32" or (sys.platform == "cli" and os.name == "nt"):
             mth = WINFUNCTYPE(None)(42, "name", (), None)
             self.assertEqual(bool(mth), True)
 

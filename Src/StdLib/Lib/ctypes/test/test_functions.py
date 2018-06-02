@@ -7,7 +7,7 @@ Later...
 
 from ctypes import *
 from ctypes.test import need_symbol
-import sys, unittest
+import os, sys, unittest
 
 try:
     WINFUNCTYPE
@@ -17,7 +17,7 @@ except NameError:
 
 import _ctypes_test
 dll = CDLL(_ctypes_test.__file__)
-if sys.platform == "win32":
+if sys.platform == "win32" or (sys.platform == "cli" and os.name == "nt"):
     windll = WinDLL(_ctypes_test.__file__)
 
 class POINT(Structure):
@@ -138,6 +138,7 @@ class FunctionTestCase(unittest.TestCase):
         self.assertEqual(result, -21)
         self.assertEqual(type(result), float)
 
+    @unittest.skipIf(sys.platform=='cli' and os.name=='posix', 'long double on Linux - https://github.com/IronLanguages/ironpython2/issues/408')
     def test_longdoubleresult(self):
         f = dll._testfunc_D_bhilfD
         f.argtypes = [c_byte, c_short, c_int, c_long, c_float, c_longdouble]
@@ -164,6 +165,7 @@ class FunctionTestCase(unittest.TestCase):
         result = f(1, 2, 3, 4, 5.0, 6.0, 21)
         self.assertEqual(result, 42)
 
+    @unittest.skipIf(sys.platform=='cli', 'TODO: debug this test on IronPython - https://github.com/IronLanguages/ironpython2/issues/394')
     def test_stringresult(self):
         f = dll._testfunc_p_p
         f.argtypes = None
@@ -174,6 +176,7 @@ class FunctionTestCase(unittest.TestCase):
         result = f(None)
         self.assertEqual(result, None)
 
+    @unittest.skipIf(sys.platform=='cli', 'TODO: debug this test on IronPython - https://github.com/IronLanguages/ironpython2/issues/389')
     def test_pointers(self):
         f = dll._testfunc_p_p
         f.restype = POINTER(c_int)

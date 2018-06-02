@@ -95,3 +95,10 @@ Package/Release/
 build-*.ProjectImports.zip
 *.trx
 *.un~
+/Src/ctypes_test/Win32/
+/Src/ctypes_test/x64/
+*.user
+*.o
+/Src/ctypes_test/*.pyd
+/Src/ctypes_test/*.pyd
+/Src/IronPythonTest/runsettings.xml

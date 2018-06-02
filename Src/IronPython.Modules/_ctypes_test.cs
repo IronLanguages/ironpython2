@@ -13,22 +13,33 @@
  *
  * ***************************************************************************/
 
+#if FEATURE_NATIVE || NETCOREAPP2_0
+
 using System;
+using System.IO;
 
 using IronPython.Runtime;
 
-#if FEATURE_NATIVE
 [assembly: PythonModule("_ctypes_test", typeof(IronPython.Modules.CTypesTest))]
 namespace IronPython.Modules {
     public static class CTypesTest {
-        // TODO: This isn't right
-        public static string __file__ = Environment.GetEnvironmentVariable("DLR_ROOT") + "\\External.LCA_RESTRICTED\\Languages\\IronPython\\27\\DLLs\\_ctypes_test.pyd";
 
-        public static void func() {
+        private static string FindRoot() {
+            // we start at the current directory and look up until we find the "Src" directory
+            var current = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var found = false;
+            while (!found && !string.IsNullOrEmpty(current)) {
+                var test = Path.Combine(current, "Src", "StdLib", "Lib");
+                if (Directory.Exists(test)) {
+                    return current;
+                }
+
+                current = Path.GetDirectoryName(current);
+            }
+            return string.Empty;
         }
 
-        public static void func_si(string s, int i) {
-        }
+        public static string __file__ = Path.Combine(FindRoot(), "Tests", string.Format("_ctypes_test_{0}{1}.pyd", Environment.OSVersion.Platform == PlatformID.Win32NT ? "win" : Environment.OSVersion.Platform == PlatformID.MacOSX ? "macOS" : "linux", Environment.Is64BitProcess ? 64 : 32));
     }
 }
 #endif

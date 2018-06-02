@@ -34,7 +34,7 @@ namespace IronPython.Modules {
     /// Provides support for interop with native code from Python code.
     /// </summary>
     public static partial class CTypes {
-       
+
         /// <summary>
         /// The meta class for ctypes simple data types.  These include primitives like ints,
         /// floats, etc... char/wchar pointers, and untyped pointers.
@@ -43,14 +43,15 @@ namespace IronPython.Modules {
         public class SimpleType : PythonType, INativeType {
             internal readonly SimpleTypeKind _type;
             private readonly char _charType;
+            private readonly string _format;
+            private readonly bool _swap;
 
-            public SimpleType(CodeContext/*!*/ context, string name, PythonTuple bases, PythonDictionary dict)
-                : base(context, name, bases, dict) {
-                object val;
+            public SimpleType(CodeContext/*!*/ context, string name, PythonTuple bases, PythonDictionary dict) : base(context, name, bases, dict) {
                 string sVal;
 
                 const string allowedTypes = "?cbBghHiIlLdfuzZqQPXOv";
-                if (!TryGetBoundCustomMember(context, "_type_", out val) ||
+                const string swappedTypes = "fdhHiIlLqQ";
+                if (!TryGetBoundCustomMember(context, "_type_", out object val) ||
                     (sVal = StringOps.AsString(val)) == null ||
                     sVal.Length != 1 ||
                     allowedTypes.IndexOf(sVal[0]) == -1) {
@@ -58,7 +59,7 @@ namespace IronPython.Modules {
                 }
 
                 _charType = sVal[0];
-                switch (sVal[0]) {
+                switch (_charType) {
                     case '?': _type = SimpleTypeKind.Boolean; break;
                     case 'c': _type = SimpleTypeKind.Char; break;
                     case 'b': _type = SimpleTypeKind.SignedByte; break;
@@ -84,10 +85,35 @@ namespace IronPython.Modules {
                     default:
                         throw new NotImplementedException("simple type " + sVal);
                 }
+
+                if (!name.EndsWith("_be") && !name.EndsWith("_le") && swappedTypes.IndexOf(_charType) != -1) {
+                    CreateSwappedType(context, name, bases, dict);
+                }
+                _format = (BitConverter.IsLittleEndian ? '<' : '>') + _charType.ToString();
             }
 
             private SimpleType(Type underlyingSystemType)
                 : base(underlyingSystemType) {
+            }
+
+            private SimpleType(CodeContext/*!*/ context, string name, PythonTuple bases, PythonDictionary dict, bool isLittleEndian) : this(context, name, bases, dict) {
+                _format = (isLittleEndian ? '<' : '>') + _charType.ToString();
+                _swap = isLittleEndian != BitConverter.IsLittleEndian;
+            }
+
+            private void CreateSwappedType(CodeContext/*!*/ context, string name, PythonTuple bases, PythonDictionary dict) {
+                SimpleType swapped = new SimpleType(context, name + (BitConverter.IsLittleEndian ? "_be" : "_le"), bases, dict, !BitConverter.IsLittleEndian);
+                if (BitConverter.IsLittleEndian) {
+                    AddSlot("__ctype_be__", new PythonTypeUserDescriptorSlot(swapped));
+                    AddSlot("__ctype_le__", new PythonTypeUserDescriptorSlot(this));
+                    swapped.AddSlot("__ctype_le__", new PythonTypeUserDescriptorSlot(this));
+                    swapped.AddSlot("__ctype_be__", new PythonTypeUserDescriptorSlot(swapped));
+                } else {
+                    AddSlot("__ctype_le__", new PythonTypeUserDescriptorSlot(swapped));
+                    AddSlot("__ctype_be__", new PythonTypeUserDescriptorSlot(this));
+                    swapped.AddSlot("__ctype_le__", new PythonTypeUserDescriptorSlot(swapped));
+                    swapped.AddSlot("__ctype_be__", new PythonTypeUserDescriptorSlot(this));
+                }
             }
 
             public static ArrayType/*!*/ operator *(SimpleType type, int count) {
@@ -197,7 +223,7 @@ namespace IronPython.Modules {
                 get {
                     return ((INativeType)this).Size;
                 }
-            }
+            }            
 
             object INativeType.GetValue(MemoryHolder/*!*/ owner, object readingFrom, int offset, bool raw) {
                 object res;
@@ -206,18 +232,18 @@ namespace IronPython.Modules {
                     case SimpleTypeKind.Char: res = new string((char)owner.ReadByte(offset), 1); break;
                     case SimpleTypeKind.SignedByte: res = GetIntReturn((int)(sbyte)owner.ReadByte(offset)); break;
                     case SimpleTypeKind.UnsignedByte: res = GetIntReturn((int)owner.ReadByte(offset)); break;
-                    case SimpleTypeKind.SignedShort: res = GetIntReturn((int)owner.ReadInt16(offset)); break;
+                    case SimpleTypeKind.SignedShort: res = GetIntReturn(owner.ReadInt16(offset, _swap)); break;
                     case SimpleTypeKind.WChar: res = new string((char)owner.ReadInt16(offset), 1); break;
-                    case SimpleTypeKind.UnsignedShort: res = GetIntReturn((int)(ushort)owner.ReadInt16(offset)); break;
-                    case SimpleTypeKind.VariantBool: res = owner.ReadInt16(offset) != 0 ? ScriptingRuntimeHelpers.True : ScriptingRuntimeHelpers.False; break;
-                    case SimpleTypeKind.SignedInt: res = GetIntReturn((int)owner.ReadInt32(offset)); break;
-                    case SimpleTypeKind.UnsignedInt: res = GetIntReturn((uint)owner.ReadInt32(offset)); break;
-                    case SimpleTypeKind.UnsignedLong: res = GetIntReturn((uint)owner.ReadInt32(offset)); break;
-                    case SimpleTypeKind.SignedLong: res = GetIntReturn(owner.ReadInt32(offset)); break;
-                    case SimpleTypeKind.Single: res = GetSingleReturn(owner.ReadInt32(offset)); break;
-                    case SimpleTypeKind.Double: res = GetDoubleReturn(owner.ReadInt64(offset)); break;
-                    case SimpleTypeKind.UnsignedLongLong: res = GetIntReturn((ulong)owner.ReadInt64(offset)); break;
-                    case SimpleTypeKind.SignedLongLong: res = GetIntReturn(owner.ReadInt64(offset)); break;
+                    case SimpleTypeKind.UnsignedShort: res = GetIntReturn((ushort)owner.ReadInt16(offset, _swap)); break;
+                    case SimpleTypeKind.VariantBool: res = owner.ReadInt16(offset, _swap) != 0 ? ScriptingRuntimeHelpers.True : ScriptingRuntimeHelpers.False; break;
+                    case SimpleTypeKind.SignedInt: res = GetIntReturn(owner.ReadInt32(offset, _swap)); break;
+                    case SimpleTypeKind.UnsignedInt: res = GetIntReturn((uint)owner.ReadInt32(offset, _swap)); break;
+                    case SimpleTypeKind.UnsignedLong: res = GetIntReturn((uint)owner.ReadInt32(offset, _swap)); break;
+                    case SimpleTypeKind.SignedLong: res = GetIntReturn(owner.ReadInt32(offset, _swap)); break;
+                    case SimpleTypeKind.Single: res = GetSingleReturn(owner.ReadInt32(offset, _swap)); break;
+                    case SimpleTypeKind.Double: res = GetDoubleReturn(owner.ReadInt64(offset, _swap)); break;
+                    case SimpleTypeKind.UnsignedLongLong: res = GetIntReturn((ulong)owner.ReadInt64(offset, _swap)); break;
+                    case SimpleTypeKind.SignedLongLong: res = GetIntReturn(owner.ReadInt64(offset, _swap)); break;
                     case SimpleTypeKind.Object: res = GetObjectReturn(owner.ReadIntPtr(offset)); break;
                     case SimpleTypeKind.Pointer: res = owner.ReadIntPtr(offset).ToPython(); break;
                     case SimpleTypeKind.CharPointer: res = owner.ReadMemoryHolder(offset).ReadAnsiString(0); break;
@@ -247,8 +273,7 @@ namespace IronPython.Modules {
             }
 
             object INativeType.SetValue(MemoryHolder/*!*/ owner, int offset, object value) {
-                SimpleCData data = value as SimpleCData;
-                if (data != null && data.NativeType == this) {
+                if (value is SimpleCData data && data.NativeType == this) {
                     data._memHolder.CopyTo(owner, offset, ((INativeType)this).Size);
                     return null;
                 }
@@ -259,23 +284,23 @@ namespace IronPython.Modules {
                     case SimpleTypeKind.SignedByte: owner.WriteByte(offset, ModuleOps.GetSignedByte(value, this)); break;
                     case SimpleTypeKind.UnsignedByte: owner.WriteByte(offset, ModuleOps.GetUnsignedByte(value, this)); break;
                     case SimpleTypeKind.WChar: owner.WriteInt16(offset, (short)ModuleOps.GetWChar(value, this)); break;
-                    case SimpleTypeKind.SignedShort: owner.WriteInt16(offset, ModuleOps.GetSignedShort(value, this)); break;
-                    case SimpleTypeKind.UnsignedShort: owner.WriteInt16(offset, ModuleOps.GetUnsignedShort(value, this)); break;
-                    case SimpleTypeKind.VariantBool: owner.WriteInt16(offset, (short)ModuleOps.GetVariantBool(value, this)); break;
-                    case SimpleTypeKind.SignedInt: owner.WriteInt32(offset, ModuleOps.GetSignedInt(value, this)); break;
-                    case SimpleTypeKind.UnsignedInt: owner.WriteInt32(offset, ModuleOps.GetUnsignedInt(value, this)); break;
-                    case SimpleTypeKind.UnsignedLong: owner.WriteInt32(offset, ModuleOps.GetUnsignedLong(value, this)); break;
-                    case SimpleTypeKind.SignedLong: owner.WriteInt32(offset, ModuleOps.GetSignedLong(value, this)); break;
-                    case SimpleTypeKind.Single: owner.WriteInt32(offset, ModuleOps.GetSingleBits(value)); break;
-                    case SimpleTypeKind.Double: owner.WriteInt64(offset, ModuleOps.GetDoubleBits(value)); break;
-                    case SimpleTypeKind.UnsignedLongLong: owner.WriteInt64(offset, ModuleOps.GetUnsignedLongLong(value, this)); break;
-                    case SimpleTypeKind.SignedLongLong: owner.WriteInt64(offset, ModuleOps.GetSignedLongLong(value, this)); break;
+                    case SimpleTypeKind.SignedShort: owner.WriteInt16(offset, ModuleOps.GetSignedShort(value, this), _swap);  break;
+                    case SimpleTypeKind.UnsignedShort: owner.WriteInt16(offset, ModuleOps.GetUnsignedShort(value, this), _swap); break;
+                    case SimpleTypeKind.VariantBool: owner.WriteInt16(offset, (short)ModuleOps.GetVariantBool(value, this), _swap); break;
+                    case SimpleTypeKind.SignedInt: owner.WriteInt32(offset, ModuleOps.GetSignedInt(value, this), _swap); break;
+                    case SimpleTypeKind.UnsignedInt: owner.WriteInt32(offset, ModuleOps.GetUnsignedInt(value, this), _swap); break;
+                    case SimpleTypeKind.UnsignedLong: owner.WriteInt32(offset, ModuleOps.GetUnsignedLong(value, this), _swap); break;
+                    case SimpleTypeKind.SignedLong: owner.WriteInt32(offset, ModuleOps.GetSignedLong(value, this), _swap); break;
+                    case SimpleTypeKind.Single: owner.WriteInt32(offset, ModuleOps.GetSingleBits(value), _swap); break;
+                    case SimpleTypeKind.Double: owner.WriteInt64(offset, ModuleOps.GetDoubleBits(value), _swap); break;
+                    case SimpleTypeKind.UnsignedLongLong: owner.WriteInt64(offset, ModuleOps.GetUnsignedLongLong(value, this), _swap); break;
+                    case SimpleTypeKind.SignedLongLong: owner.WriteInt64(offset, ModuleOps.GetSignedLongLong(value, this), _swap); break;
                     case SimpleTypeKind.Object: owner.WriteIntPtr(offset, ModuleOps.GetObject(value)); break;
                     case SimpleTypeKind.Pointer: owner.WriteIntPtr(offset, ModuleOps.GetPointer(value)); break;
-                    case SimpleTypeKind.CharPointer: 
+                    case SimpleTypeKind.CharPointer:
                         owner.WriteIntPtr(offset, ModuleOps.GetCharPointer(value));
                         return value;
-                    case SimpleTypeKind.WCharPointer: 
+                    case SimpleTypeKind.WCharPointer:
                         owner.WriteIntPtr(offset, ModuleOps.GetWCharPointer(value));
                         return value;
                     case SimpleTypeKind.BStr:
@@ -390,7 +415,7 @@ namespace IronPython.Modules {
                         Label done = method.DefineLabel();
                         TryBytesConversion(method, done);
 
-                        
+
                         Label nextTry = method.DefineLabel();
                         argIndex.Emit(method);
                         if (argumentType.IsValueType) {
@@ -418,7 +443,7 @@ namespace IronPython.Modules {
                         }
 
                         method.Emit(OpCodes.Call, typeof(ModuleOps).GetMethod("GetPointer"));
-                        
+
                         method.MarkLabel(done);
                         break;
                     case SimpleTypeKind.Object:
@@ -428,7 +453,7 @@ namespace IronPython.Modules {
                     case SimpleTypeKind.CharPointer:
                         done = method.DefineLabel();
                         TryToCharPtrConversion(method, argIndex, argumentType, done);
-                        
+
                         cleanup = MarshalCharPointer(method, argIndex);
 
                         method.MarkLabel(done);
@@ -436,9 +461,9 @@ namespace IronPython.Modules {
                     case SimpleTypeKind.WCharPointer:
                         done = method.DefineLabel();
                         TryArrayToWCharPtrConversion(method, argIndex, argumentType, done);
-                        
+
                         MarshalWCharPointer(method, argIndex);
-                        
+
                         method.MarkLabel(done);
                         break;
                     case SimpleTypeKind.BStr:
@@ -800,10 +825,7 @@ namespace IronPython.Modules {
 
             string INativeType.TypeFormat {
                 get {
-                    return (BitConverter.IsLittleEndian ? 
-                        '<' :
-                        '>') + 
-                    _charType.ToString();
+                    return _format;
                 }
             }
 

@@ -1,4 +1,4 @@
-import unittest
+import sys, unittest
 from ctypes import *
 from ctypes.test import need_symbol
 from test import test_support
@@ -44,6 +44,7 @@ class StringArrayTestCase(unittest.TestCase):
         self.assertRaises(TypeError, setattr, buf, "value", memoryview("abc"))
         self.assertRaises(ValueError, setattr, buf, "raw", memoryview("x" * 100))
 
+    @unittest.skipIf(sys.platform=='cli', "Some issue with context manager? - https://github.com/IronLanguages/ironpython2/issues/398")
     def test_c_buffer_deprecated(self):
         # Compatibility with 2.x
         with test_support.check_py3k_warnings():

@@ -1,4 +1,4 @@
-import unittest
+import sys, unittest
 from ctypes import *
 from ctypes.test import need_symbol
 
@@ -63,6 +63,7 @@ class SlicesTestCase(unittest.TestCase):
         self.assertRaises(ValueError, setslice, a, 0, 5, range(32))
         self.assertRaises(ValueError, setitem, a, slice(0, 5), range(32))
 
+    @unittest.skipIf(sys.platform=='cli', "https://github.com/IronLanguages/ironpython2/issues/394")
     def test_char_ptr(self):
         s = "abcdefghijklmnopqrstuvwxyz"
 
@@ -99,6 +100,7 @@ class SlicesTestCase(unittest.TestCase):
         self.assertEqual(res[:len(s):], range(ord("a"), ord("z")+1))
         dll.my_free(res)
 
+    @unittest.skipIf(sys.platform=='cli', "https://github.com/IronLanguages/ironpython2/issues/394")
     def test_char_ptr_with_free(self):
         dll = CDLL(_ctypes_test.__file__)
         s = "abcdefghijklmnopqrstuvwxyz"
@@ -133,6 +135,7 @@ class SlicesTestCase(unittest.TestCase):
 
 
     @need_symbol('c_wchar')
+    @unittest.skipIf(sys.platform=='cli', "https://github.com/IronLanguages/ironpython2/issues/394")
     def test_wchar_ptr(self):
         s = u"abcdefghijklmnopqrstuvwxyz\0"
 

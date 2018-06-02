@@ -2,13 +2,15 @@
 
 from ctypes import *
 from ctypes.test import requires
-import unittest, sys
+import os, unittest, sys
 from test import test_support as support
 
 import _ctypes_test
 
+isWindows = sys.platform == "win32" or (sys.platform == "cli" and os.name == "nt")
+
 # Only windows 32-bit has different calling conventions.
-@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
+@unittest.skipUnless(isWindows, 'Windows-specific test')
 @unittest.skipUnless(sizeof(c_void_p) == sizeof(c_int),
                      "sizeof c_void_p and c_int differ")
 class WindowsTestCase(unittest.TestCase):
@@ -36,7 +38,7 @@ class WindowsTestCase(unittest.TestCase):
         # (4 bytes missing) or wrong calling convention
         self.assertRaises(ValueError, IsWindow, None)
 
-@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
+@unittest.skipUnless(isWindows, 'Windows-specific test')
 class FunctionCallTestCase(unittest.TestCase):
     @unittest.skipUnless('MSC' in sys.version, "SEH only supported by MSC")
     @unittest.skipIf(sys.executable.endswith('_d.exe'),
@@ -52,7 +54,7 @@ class FunctionCallTestCase(unittest.TestCase):
         # This is a special case on win32 x64
         windll.user32.GetDesktopWindow()
 
-@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
+@unittest.skipUnless(isWindows, 'Windows-specific test')
 class TestWintypes(unittest.TestCase):
     def test_HWND(self):
         from ctypes import wintypes
@@ -77,6 +79,7 @@ class TestWintypes(unittest.TestCase):
         self.assertEqual(ex.details, ("details",))
 
 class Structures(unittest.TestCase):
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/399')
     def test_struct_by_value(self):
         class POINT(Structure):
             _fields_ = [("x", c_long),
