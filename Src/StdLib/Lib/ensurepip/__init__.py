@@ -16,8 +16,6 @@ _SETUPTOOLS_VERSION = "20.10.1"
 
 _PIP_VERSION = "8.1.1"
 
-IRONPYTHON = sys.platform == 'cli'
-
 _PROJECTS = [
     ("setuptools", _SETUPTOOLS_VERSION),
     ("pip", _PIP_VERSION),
@@ -113,8 +111,8 @@ def _bootstrap(root=None, upgrade=False, user=False,
 
         # Construct the arguments to be passed to the pip command
         args = ["install", "--no-index", "--find-links", tmpdir]
-        if IRONPYTHON:
-            args.append("--no-compile")
+        if sys.platform == 'cli': # IronPython doesn't do bytecode compilation
+            args += ["--no-compile"]
         if root:
             args += ["--root", root]
         if upgrade:
@@ -157,13 +155,6 @@ def _uninstall_helper(verbosity=0):
 
 
 def _main(argv=None):
-    if IRONPYTHON:
-        try:
-            sys._getframe()
-        except AttributeError:
-            print("ensurepip under IronPython requires -X:Frames parameter")
-            return
-
     import argparse
     parser = argparse.ArgumentParser(prog="python -m ensurepip")
     parser.add_argument(
