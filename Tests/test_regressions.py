@@ -1158,11 +1158,13 @@ class C:
 
         from System.Collections.Generic import List
 
-        lst = List[object](range(500))
+        rng = range(10000)
+        lst = List[object](rng)
         it = iter(lst)
 
-        with self.assertRaises(StopIteration):
-            for _ in range(len(lst) + 1):
-                next(it)
+        # Loop compilation occurs after 100 iterations, however it occurs in parallel.
+        # Use a number >> 100 so that we actually hit the compiled code.
+        for i in rng:
+            self.assertEqual(i, next(it))
 
 run_test(__name__)
