@@ -1152,4 +1152,17 @@ class C:
         finally:
             os.remove(path)
 
+    @skipUnlessIronPython()
+    def test_ipy2_gh39(self):
+        """https://github.com/IronLanguages/ironpython2/issues/39"""
+
+        from System.Collections.Generic import List
+
+        lst = List[object](range(500))
+        it = iter(lst)
+
+        with self.assertRaises(StopIteration):
+            for _ in range(len(lst) + 1):
+                next(it)
+
 run_test(__name__)
