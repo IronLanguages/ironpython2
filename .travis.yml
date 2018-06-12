@@ -10,17 +10,25 @@ env:
 mono:
   - latest
 
+solution: IronPython.sln
+
 sudo: required
 dist: trusty
 
 osx_image: xcode9.1
 
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then wget --retry-connrefused --waitretry=1 -O powershell.deb https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/powershell_6.0.2-1.ubuntu.14.04_amd64.deb; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo dpkg -i powershell.deb; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget --retry-connrefused --waitretry=1 -O powershell.pkg https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/powershell-6.0.2-osx.10.12-x64.pkg; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo installer -pkg powershell.pkg -target /; fi
+
 dotnet: 2.1.4
 
 script:
   - dotnet restore IronPython.sln --packages ./packages
-  - make
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then make test-all ; fi
+  - pwsh make.ps1 release
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]] ; then pwsh make.ps1 test-all ; fi
 
 notifications:
   email:
@@ -28,6 +36,7 @@ notifications:
       - developers+int+211+854770831703316759@ironpython.groups.io
     on_success: always # default: change
     #on_failure: [always|never|change] # default: always
+
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/9fdb5c75f38c850816f8
