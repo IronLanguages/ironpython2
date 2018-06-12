@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Target Name="DebPackage" Condition="'$(OS)' == 'Unix' " AfterTargets="Package">
+    <ItemGroup>
+      <StdLibFiles Include="$(StageDir)/Lib/**/*.*" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ApplicationFiles Include="$(StageDir)/net45/*.exe" />
+      <ApplicationFiles Include="$(StageDir)/net45/**/*.dll" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <TempFolder>temp</TempFolder>
+      <PackageDebFolder>Package/deb</PackageDebFolder>
+      <PackageTempFolder>$(PackageDebFolder)/$(TempFolder)</PackageTempFolder>
+    </PropertyGroup>
+
+    <!-- Build the application deb -->
+    <Exec Command="chmod 777 $(StageDir)/net45/*.exe" />
+    <Exec Command="rsync -r --delete $(PackageDebFolder)/* $(PackageTempFolder)"/>
+
+    <FileUpdate Files="$(PackageTempFolder)/DEBIAN/control"
+          Regex="{xxx}"
+          ReplacementText="$(PackageVersion)" />
+
+    <ItemGroup>
+      <StdLibOutputFiles Include="$(StageDir)/Lib/**/*.py" />
+    </ItemGroup>
+    <Exec Command="dos2unix %(StdLibOutputFiles.Identity)" />
+    <Exec Command="dos2unix $(PackageTempFolder)/DEBIAN/control"/>
+
+    <MakeDir Directories="$(PackageTempFolder)/usr/bin" />
+
+    <Copy SourceFiles="@(ApplicationFiles)" DestinationFolder="$(PackageTempFolder)/opt/ironpython2.7/%(ApplicationFiles.RecursiveDir)"/>
+    <Copy SourceFiles="@(StdLibFiles)" DestinationFolder="$(PackageTempFolder)/opt/ironpython/2.7/Lib/%(StdLibFiles.RecursiveDir)"/>
+
+    <Exec Command="fakeroot dpkg-deb -v --build $(PackageTempFolder)"/>
+    <Copy 
+      SourceFiles="$(PackageDebFolder)/$(TempFolder).deb" 
+      DestinationFiles="$(PackageDir)/ironpython_$(PackageVersion).deb"/>
+    <Delete Files="$(PackageDebFolder)/$(TempFolder).deb"/>
+
+    <RemoveDir Directories="$(PackageTempFolder)" />
+  </Target>
+</Project>
