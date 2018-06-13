@@ -154,13 +154,9 @@ namespace IronPythonTest.Cases {
             };
 
             using (Process proc = new Process()) {
-#if NETCOREAPP2_0
-                proc.StartInfo.FileName = "cmd";
-                proc.StartInfo.Arguments = $"/c {Executable} {ReplaceVariables(testcase.Options.Arguments, argReplacements)}";
-#else
                 proc.StartInfo.FileName = Executable;
                 proc.StartInfo.Arguments = ReplaceVariables(testcase.Options.Arguments, argReplacements);
-#endif
+
                 if (!string.IsNullOrEmpty(IRONPYTHONPATH)) {
                     proc.StartInfo.EnvironmentVariables["IRONPYTHONPATH"] = IRONPYTHONPATH;
                 }
