@@ -15,7 +15,7 @@
 
 import unittest
 
-from iptest import IronPythonTestCase, run_test, skipUnlessIronPython, is_cli, is_netcoreapp
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp, is_posix, run_test, skipUnlessIronPython
 
 myfuncCalled = False
 passedarg = None
@@ -329,6 +329,7 @@ class DelegateTest(IronPythonTestCase):
 
 # SuperDelegate Tests
 
+    @unittest.skipIf(is_netcoreapp and is_posix, "TODO: .NET Core bug - remove for netcoreapp2.1")
     def test_basic(self):
         import IronPythonTest
         class TestCounter:
