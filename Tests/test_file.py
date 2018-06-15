@@ -20,7 +20,7 @@ import thread
 
 CP16623_LOCK = thread.allocate_lock()
 
-from iptest import IronPythonTestCase, is_cli, is_cpython, is_posix, run_test
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp21, is_cpython, is_posix, run_test
 
 class FileTest(IronPythonTestCase):
 
@@ -765,6 +765,7 @@ class FileTest(IronPythonTestCase):
         finally:
             self.delete_files("foo")
 
+    @unittest.skipIf(is_netcoreapp21, "https://github.com/IronLanguages/ironpython2/issues/348")
     def test_errors(self):
         try:
             file('some_file_that_really_does_not_exist')
