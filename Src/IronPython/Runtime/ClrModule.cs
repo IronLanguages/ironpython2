@@ -52,7 +52,7 @@ namespace IronPython.Runtime {
     /// .NET/CLS interop with Python.  
     /// </summary>
     public static class ClrModule {
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0 || NETCOREAPP2_1
         public static readonly bool IsNetCoreApp = true;
 #else
         public static readonly bool IsNetCoreApp = false;

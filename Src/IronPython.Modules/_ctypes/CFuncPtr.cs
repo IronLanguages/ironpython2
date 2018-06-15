@@ -13,7 +13,7 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_NATIVE || NETCOREAPP2_0
+#if FEATURE_CTYPES
 
 using System.Linq.Expressions;
 using System.Numerics;
@@ -671,7 +671,7 @@ namespace IronPython.Modules {
                 }
 
                 private static SignatureHelper GetMethodSigHelper(CallingConvention convention, Type calliRetType) {
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0 || NETCOREAPP2_1
                     var helper = typeof(SignatureHelper).GetMethod("GetMethodSigHelper", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(CallingConvention), typeof(Type) }, null);
                     return (SignatureHelper)helper.Invoke(null, new object[] { convention, calliRetType });
 #else
