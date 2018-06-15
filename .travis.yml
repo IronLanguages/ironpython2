@@ -18,12 +18,13 @@ dist: trusty
 osx_image: xcode9.1
 
 before_install:
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libc6 libcurl3 libgcc1 libgssapi-krb5-2 liblttng-ust0 libstdc++6 libunwind8 libuuid1 zlib1g libssl1.0.0 libicu52; fi
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then wget --retry-connrefused --waitretry=1 -O powershell.deb https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/powershell_6.0.2-1.ubuntu.14.04_amd64.deb; fi
   - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo dpkg -i powershell.deb; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then wget --retry-connrefused --waitretry=1 -O powershell.pkg https://github.com/PowerShell/PowerShell/releases/download/v6.0.2/powershell-6.0.2-osx.10.12-x64.pkg; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo installer -pkg powershell.pkg -target /; fi
 
-dotnet: 2.1.4
+dotnet: 2.1.300
 
 script:
   - dotnet restore IronPython.sln --packages ./packages

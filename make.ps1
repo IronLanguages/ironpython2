@@ -4,7 +4,7 @@ Param(
     [Parameter(Position=1)]
     [String] $target = "release",
     [String] $configuration = "Release",
-    [String[]] $frameworks=@('net45','netcoreapp2.0'),
+    [String[]] $frameworks=@('net45','netcoreapp2.1'),
     [switch] $runIgnored
 )
 
