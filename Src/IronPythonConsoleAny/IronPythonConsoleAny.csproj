@@ -11,7 +11,7 @@
     <AssemblyName>ipy</AssemblyName>
     <ApplicationIcon>..\IronPythonConsole\ipy.ico</ApplicationIcon>
     <CodeAnalysisRuleSet>IronPythonConsoleAny.ruleset</CodeAnalysisRuleSet>
-    <CopyLocalLockFileAssemblies Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">true</CopyLocalLockFileAssemblies>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\IronPython\IronPython.csproj" />

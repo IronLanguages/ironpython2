@@ -98,7 +98,7 @@ function GenerateRunSettings([String] $framework, [String] $configuration, [bool
 
     $doc.AppendChild($runSettings) | Out-Null
 
-    $fileName = [System.IO.Path]::Combine($_BASEDIR, "Src", "IronPythonTest", "runsettings.xml")
+    $fileName = [System.IO.Path]::Combine($_BASEDIR, "Src", "IronPythonTest", "runsettings.$framework.xml")
     $doc.Save($fileName)
     return $fileName
 }

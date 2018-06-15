@@ -32,6 +32,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 
 using Microsoft.Scripting;
@@ -57,6 +58,8 @@ namespace IronPython.Runtime {
 #else
         public static readonly bool IsNetCoreApp = false;
 #endif
+
+        public static string TargetFramework => typeof(ClrModule).Assembly.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
 
 #if DEBUG
         public static readonly bool IsDebug = true;
