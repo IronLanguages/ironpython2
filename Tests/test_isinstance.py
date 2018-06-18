@@ -17,7 +17,7 @@ import os
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, path_modifier, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp21, path_modifier, run_test, skipUnlessIronPython
 
 class IsInstanceTest(IronPythonTestCase):
 
@@ -996,7 +996,7 @@ class IsInstanceTest(IronPythonTestCase):
         self.assertRaises(TypeError, isinstance, 3, None)
         self.assertRaises(TypeError, issubclass, int, None)
 
-
+    @unittest.skipIf(is_netcoreapp21, "https://github.com/IronLanguages/ironpython2/issues/347")
     def test_tuple_new(self):
         # TypeError: tuple.__new__(str): str is not a subtype of tuple
         self.assertRaises(TypeError, tuple.__new__, str)

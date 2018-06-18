@@ -33,7 +33,7 @@ from iptest import IronPythonTestCase, is_netcoreapp, is_cli, is_posix, run_test
 
 class RegressionTest(IronPythonTestCase):
 
-    @unittest.skipIf(is_netcoreapp, 'no System.AppDomain')
+    @unittest.skipIf(is_netcoreapp, 'no System.AppDomain.DoCallBack')
     @skipUnlessIronPython()
     def test_cp18345(self):
         import System
@@ -443,6 +443,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         self.assertEqual(errno.errorcode[2],
                 "ENOENT")
 
+    @unittest.skipIf(is_netcoreapp, 'https://github.com/IronLanguages/ironpython2/issues/349')
     @unittest.skipIf(is_posix, 'Test does not work on Mono')
     def test_cp24692(self):
         import errno, os, stat
@@ -452,7 +453,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
             os.chmod(dir_name, stat.S_IREAD)
             try:
                 os.rmdir(dir_name)
-            except WindowsError, e:
+            except WindowsError as e:
                 pass
             self.assertEqual(e.errno, errno.EACCES)
         finally:
@@ -531,7 +532,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         self.assertRaisesRegexp(TypeError, "f\(\) got multiple values for keyword argument 'a'",
                             lambda: f(1, a=3))
 
-    @unittest.skipIf(is_netcoreapp, 'no System.Drawing.Pen')
+    @unittest.skipIf(is_netcoreapp, 'requires System.Drawing.Common dependency')
     @skipUnlessIronPython()
     def test_cp24802(self):
         import clr
@@ -918,7 +919,7 @@ class C:
             help(gh1435.someMethod4)
         self.assertTrue('\n'.join(trapper.messages), expected)
 
-    @unittest.skipIf(is_netcoreapp, 'TODO: figure out')
+    @unittest.skipIf(is_netcoreapp, 'https://github.com/IronLanguages/ironpython2/issues/373')
     def test_gh278(self):
         import _random
         r = _random.Random()
