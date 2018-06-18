@@ -307,8 +307,8 @@ namespace IronPython.Runtime.Operations {
                     return new PythonTypeUserDescriptorSlot(DynamicHelpers.GetPythonTypeFromType(type.Type), true);
                 
                 case TrackerTypes.Constructor:
-                    return GetConstructor(group[0].DeclaringType, privateBinding);
-                
+                    return GetConstructorFunction(group[0].DeclaringType, privateBinding);
+
                 case TrackerTypes.Custom:
                     return ((PythonCustomTracker)group[0]).GetSlot();
                 
@@ -345,11 +345,30 @@ namespace IronPython.Runtime.Operations {
             return group;
         }
 
-        private static BuiltinFunction GetConstructor(Type t, bool privateBinding) {
+        private static BuiltinFunction GetConstructorFunction(Type t, bool privateBinding) {
             BuiltinFunction ctorFunc = InstanceOps.NonDefaultNewInst;
-            MethodBase[] ctors = CompilerHelpers.GetConstructors(t, privateBinding, true);
+            MethodBase[] ctors = PythonTypeOps.GetConstructors(t, privateBinding, true);
 
             return GetConstructor(t, ctorFunc, ctors);
+        }
+
+        internal static MethodBase[] GetConstructors(Type t, bool privateBinding) {
+
+            return GetConstructors(t, privateBinding, false);
+        }
+
+        public static MethodBase[] GetConstructors(Type t, bool privateBinding, bool includeProtected) {
+            MethodBase[] ctors = CompilerHelpers.GetConstructors(t, privateBinding, includeProtected);
+            if (t.IsEnum()) {
+                var enumCtor = typeof(PythonTypeOps).GetDeclaredMethods(nameof(CreateEnum)).Single().MakeGenericMethod(t);
+                ctors = ctors.Concat(new[] { enumCtor }).ToArray();
+            }
+            return ctors;
+        }
+
+        // support for EnumType(number)
+        public static T CreateEnum<T>(object value) {
+            return (T)Enum.ToObject(typeof(T), value);
         }
 
         internal static bool IsDefaultNew(MethodBase[] targets) {
