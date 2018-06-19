@@ -297,7 +297,7 @@ namespace IronPython.Runtime
                         path.append(devStdLib);
                     }
 #else
-                    if(Environment.OSVersion.Platform == PlatformID.Unix) {
+                    if(!IronPython.Runtime.ClrModule.IsNetCoreApp && Environment.OSVersion.Platform == PlatformID.Unix) {
                         if(Directory.Exists("/usr/lib/ironpython2.7")) {
                             path.append("/usr/lib/ironpython2.7");
                         }
