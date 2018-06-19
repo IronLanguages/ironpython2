@@ -367,9 +367,7 @@ namespace IronPython.Runtime.Operations {
                 return (T)Enum.ToObject(typeof(T), value);
             } catch (ArgumentException) {
                 throw PythonOps.ValueError(
-                    "{0} is not a valid {1}",
-                    PythonOps.ToString(value),
-                    PythonOps.ToString(typeof(T))
+                    $"{PythonOps.ToString(value)} is not a valid {PythonOps.ToString(typeof(T))}"
                 );
             }
         }
