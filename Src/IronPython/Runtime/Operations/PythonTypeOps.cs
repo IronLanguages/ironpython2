@@ -363,6 +363,11 @@ namespace IronPython.Runtime.Operations {
 
         // support for EnumType(number)
         private static T CreateEnum<T>(object value) {
+            if (value == null) {
+                throw PythonOps.ValueError(
+                    $"None is not a valid {PythonOps.ToString(typeof(T))}"
+                );
+            }
             try {
                 return (T)Enum.ToObject(typeof(T), value);
             } catch (ArgumentException) {
