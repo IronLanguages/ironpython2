@@ -352,12 +352,7 @@ namespace IronPython.Runtime.Operations {
             return GetConstructor(t, ctorFunc, ctors);
         }
 
-        internal static MethodBase[] GetConstructors(Type t, bool privateBinding) {
-
-            return GetConstructors(t, privateBinding, false);
-        }
-
-        public static MethodBase[] GetConstructors(Type t, bool privateBinding, bool includeProtected) {
+        internal static MethodBase[] GetConstructors(Type t, bool privateBinding, bool includeProtected = false) {
             MethodBase[] ctors = CompilerHelpers.GetConstructors(t, privateBinding, includeProtected);
             if (t.IsEnum()) {
                 var enumCtor = typeof(PythonTypeOps).GetDeclaredMethods(nameof(CreateEnum)).Single().MakeGenericMethod(t);
@@ -367,8 +362,16 @@ namespace IronPython.Runtime.Operations {
         }
 
         // support for EnumType(number)
-        public static T CreateEnum<T>(object value) {
-            return (T)Enum.ToObject(typeof(T), value);
+        private static T CreateEnum<T>(object value) {
+            try {
+                return (T)Enum.ToObject(typeof(T), value);
+            } catch (ArgumentException) {
+                throw PythonOps.ValueError(
+                    "{0} is not a valid {1}",
+                    PythonOps.ToString(value),
+                    PythonOps.ToString(typeof(T))
+                );
+            }
         }
 
         internal static bool IsDefaultNew(MethodBase[] targets) {
