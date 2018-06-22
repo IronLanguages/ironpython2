@@ -280,16 +280,32 @@ namespace IronPython.Runtime
                 if (entryAssembly != null) {
                     string entry = Path.GetDirectoryName(entryAssembly.Location);
                     string lib = Path.Combine(entry, "Lib");
-                    path.append(lib);
+                    if(Directory.Exists(lib)) {
+                        path.append(lib);
+                    }
 
-                    // add DLLs directory for user-defined extention modules
-                    path.append(Path.Combine(entry, "DLLs"));
+                    string dlls = Path.Combine(entry, "DLLs");
+                    if(Directory.Exists(dlls)) {
+                        // add DLLs directory for user-defined extention modules
+                        path.append(dlls);
+                    }
 
 #if DEBUG
                     // For developer use, add Src/StdLib/Lib
                     string devStdLib = Path.Combine(entry, @"../../../Src/StdLib/Lib");
-                    if (Directory.Exists(devStdLib))
+                    if (Directory.Exists(devStdLib)) {
                         path.append(devStdLib);
+                    }
+#else
+                    if(!IronPython.Runtime.ClrModule.IsNetCoreApp && Environment.OSVersion.Platform == PlatformID.Unix) {
+                        if(Directory.Exists("/usr/lib/ironpython2.7")) {
+                            path.append("/usr/lib/ironpython2.7");
+                        }
+
+                        if(Directory.Exists("/usr/share/ironpython2.7/DLLs")) {
+                            path.append("/usr/share/ironpython2.7/DLLs");
+                        }
+                    }
 #endif
                 }
             } catch (SecurityException) {
