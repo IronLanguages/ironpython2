@@ -2,10 +2,10 @@
 #
 #  Copyright (c) Microsoft Corporation. All rights reserved.
 #
-# This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
-# copy of the license can be found in the License.html file at the root of this distribution. If 
-# you cannot locate the  Apache License, Version 2.0, please send an email to 
-# ironpy@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+# This source code is subject to terms and conditions of the Apache License, Version 2.0. A
+# copy of the license can be found in the License.html file at the root of this distribution. If
+# you cannot locate the  Apache License, Version 2.0, please send an email to
+# ironpy@microsoft.com. By using this source code in any fashion, you are agreeing to be bound
 # by the terms of the Apache License, Version 2.0.
 #
 # You must not remove this notice, or any other, from this software.
@@ -23,14 +23,13 @@ def test_main(level='full'):
     # !!! Instead of a whitelist, we should have a blacklist so that any newly added
     # generators automatically get included in this tests
     generators = [
-        'generate_AssemblyTypeNames',
         'generate_alltypes',
-        'generate_calls', 
+        'generate_calls',
         'generate_casts',
         'generate_dict_views',
         'generate_dynsites',
-        'generate_exceptions', 
-        'generate_math', 
+        'generate_exceptions',
+        'generate_math',
         'generate_ops',
         'generate_reflected_calls',
         'generate_set',
@@ -38,13 +37,14 @@ def test_main(level='full'):
         'generate_typecache',
         'generate_dynamic_instructions',
         'generate_comdispatch',
-		# TODO: uncomment when we have whole Core sources in Snap/test
-		# 'generate_exception_factory',        
-	]
-    #Merlin 277482
-    import System
-    if [System.IntPtr.Size==8]:
-        generators.remove('generate_ops')
+        # TODO: uncomment when we have whole Core sources in Snap/test
+        # 'generate_exception_factory',
+    ]
+    if sys.platform != "cli":
+        generators.remove('generate_alltypes')
+        generators.remove('generate_exceptions')
+        generators.remove('generate_walker')
+        generators.remove('generate_comdispatch')
 
     failures = 0
 
@@ -70,6 +70,6 @@ def test_main(level='full'):
         print "PASS"
 
     sys.argv = old_args
-    
+
 if __name__=="__main__":
-    test_main()    
+    test_main()
