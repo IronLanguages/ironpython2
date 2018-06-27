@@ -271,7 +271,7 @@ namespace IronPython.Modules {
                 + "     2  End of stream - pos usually negative.\n"
                 + "Returns the new absolute position."
                 )]
-            public BigInteger seek(int pos, [DefaultParameterValue(0)]int whence) {
+            public BigInteger seek(int pos, int whence = 0) {
                 _checkClosed();
 
                 switch (whence) {
@@ -292,24 +292,31 @@ namespace IronPython.Modules {
                 }
             }
 
-            public BigInteger seek(double pos, [DefaultParameterValue(0)]int whence) {
-                throw PythonOps.TypeError("'float' object cannot be interpreted as an index");
-            }
+            public BigInteger seek(int pos, BigInteger whence) => seek(pos, (int)whence);
+
+            public BigInteger seek(int pos, double whence) => throw PythonOps.TypeError("integer argument expected, got float");
+
+            public BigInteger seek(double pos, [DefaultParameterValue(0)]object whence) => throw PythonOps.TypeError("'float' object cannot be interpreted as an index");
 
             public override BigInteger seek(CodeContext/*!*/ context, BigInteger pos, [DefaultParameterValue(0)]object whence) {
                 _checkClosed();
 
                 int posInt = (int)pos;
-                if (whence is double || whence is Extensible<double>) {
-                    if (context.LanguageContext.PythonOptions.Python30) {
+                switch (whence) {
+                    case int v:
+                        return seek(posInt, v);
+                    case Extensible<int> v:
+                        return seek(posInt, v);
+                    case BigInteger v:
+                        return seek(posInt, v);
+                    case Extensible<BigInteger> v:
+                        return seek(posInt, v);
+                    case double _:
+                    case Extensible<double> _:
                         throw PythonOps.TypeError("integer argument expected, got float");
-                    } else {
-                        PythonOps.Warn(context, PythonExceptions.DeprecationWarning, "integer argument expected, got float");
-                        return seek(posInt, Converter.ConvertToInt32(whence));
-                    }
+                    default:
+                        return seek(posInt, GetInt(whence));
                 }
-                
-                return seek(posInt, GetInt(whence));
             }
 
             public override bool seekable(CodeContext/*!*/ context) {
