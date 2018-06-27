@@ -14,6 +14,8 @@
 #####################################################################################
 
 from generate import generate
+
+import collections
 import operator
 
 # Add new keywords to the end of the list to preserve existing Enum values
@@ -286,7 +288,7 @@ for info in simple:
 start_symbols = {}
 for op in ops:
     ss = op.symbol[0]
-    if not start_symbols.has_key(ss): start_symbols[ss] = []
+    if ss not in start_symbols: start_symbols[ss] = []
     start_symbols[ss].append(op)
 
 
@@ -294,13 +296,13 @@ def gen_tests(ops, pos, indent=1):
     ret = []
 
     default_match = []
-    future_matches = {}
+    future_matches = collections.OrderedDict()
     for sop in ops:
         if len(sop.symbol) == pos:
             default_match.append(sop)
         elif len(sop.symbol) > pos:
             ch = sop.symbol[pos]
-            if future_matches.has_key(ch):
+            if ch in future_matches:
                 future_matches[ch].append(sop)
             else:
                 future_matches[ch] = [sop]
@@ -328,7 +330,7 @@ def tokenize_generator(cw):
     done = {}
     for op in ops:
         ch = op.symbol[0]
-        if done.has_key(ch): continue
+        if ch in done: continue
         sops = start_symbols[ch]
         cw.write("case '%s':" % ch)
         for t in gen_tests(sops, 1):
@@ -338,7 +340,7 @@ def tokenize_generator(cw):
 
 friendlyOverload = {'elif':"ElseIf"}
 def keywordToFriendly(kw):
-    if friendlyOverload.has_key(kw):
+    if kw in friendlyOverload:
         return friendlyOverload[kw]
 
     return kw.title()
@@ -422,13 +424,13 @@ def keyword_lookup_generator(cw):
     keyword_list.append('None')
     keyword_list.sort()
 
-    tree = {}
+    tree = collections.OrderedDict()
     for kw in keyword_list:
         prev = cur = tree
         for letter in kw:
             val = cur.get(letter)
             if val is None:
-                val = cur[letter] = ({}, False)
+                val = cur[letter] = (collections.OrderedDict(), False)
 
             prev = cur
             cur = val[0]
