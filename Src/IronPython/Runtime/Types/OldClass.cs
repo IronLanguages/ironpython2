@@ -42,7 +42,7 @@ namespace IronPython.Runtime.Types {
     // from built-in types).
 
     [Flags]
-    enum OldClassAttributes {
+    internal enum OldClassAttributes {
         None = 0x00,
         HasFinalizer = 0x01,
         HasSetAttr = 0x02,

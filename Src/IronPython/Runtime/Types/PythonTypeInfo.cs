@@ -102,7 +102,7 @@ namespace IronPython.Runtime.Types {
         #region Cached type members
 
         public static class _Object {
-            public new static readonly MethodInfo/*!*/ GetType = typeof(object).GetMethod("GetType");
+            public static new readonly MethodInfo/*!*/ GetType = typeof(object).GetMethod("GetType");
         }
 
         public static class _IPythonObject {
@@ -143,7 +143,7 @@ namespace IronPython.Runtime.Types {
         /// names of members that don't exist.  The base MemberResolver will then verify their existance as well as 
         /// filter duplicates.
         /// </summary>
-        abstract class MemberResolver {
+        private abstract class MemberResolver {
             /// <summary>
             /// Looks up an individual member and returns a MemberGroup with the given members.
             /// </summary>
@@ -183,7 +183,7 @@ namespace IronPython.Runtime.Types {
         /// One off resolver for various special methods which are known by name.  A delegate is provided to provide the actual member which
         /// will be resolved.
         /// </summary>
-        class OneOffResolver : MemberResolver {
+        private class OneOffResolver : MemberResolver {
             private string/*!*/ _name;
             private Func<MemberBinder/*!*/, Type/*!*/, MemberGroup/*!*/>/*!*/ _resolver;
 
@@ -212,7 +212,7 @@ namespace IronPython.Runtime.Types {
         /// <summary>
         /// Standard resolver for looking up .NET members.  Uses reflection to get the members by name.
         /// </summary>
-        class StandardResolver : MemberResolver {
+        private class StandardResolver : MemberResolver {
             public override MemberGroup/*!*/ ResolveMember(MemberBinder/*!*/ binder, MemberRequestKind/*!*/ action, Type/*!*/ type, string/*!*/ name) {
                 if (name == ".ctor" || name == ".cctor") return MemberGroup.EmptyGroup;
 
@@ -267,7 +267,7 @@ namespace IronPython.Runtime.Types {
         /// <summary>
         /// Resolves methods mapped to __eq__ and __ne__ from IStructuralEquatable.Equals
         /// </summary>
-        class EqualityResolver : MemberResolver {
+        private class EqualityResolver : MemberResolver {
             public static readonly EqualityResolver Instance = new EqualityResolver();
 
             private EqualityResolver() { }
@@ -304,7 +304,7 @@ namespace IronPython.Runtime.Types {
         /// 
         /// This should be run after the EqualityResolver.
         /// </summary>
-        class ComparisonResolver : MemberResolver {
+        private class ComparisonResolver : MemberResolver {
             private readonly bool _excludePrimitiveTypes;
             private readonly Type/*!*/ _comparable;
             private readonly Dictionary<string/*!*/, string/*!*/>/*!*/ _helperMap;
@@ -351,7 +351,7 @@ namespace IronPython.Runtime.Types {
         /// <summary>
         /// Resolves methods mapped to __*__ methods automatically from the .NET operator.
         /// </summary>
-        class OperatorResolver : MemberResolver {
+        private class OperatorResolver : MemberResolver {
             public override MemberGroup/*!*/ ResolveMember(MemberBinder/*!*/ binder, MemberRequestKind/*!*/ action, Type/*!*/ type, string/*!*/ name) {
                 if (type.IsSealed() && type.IsAbstract()) {
                     // static types don't have PythonOperationKind
@@ -504,7 +504,7 @@ namespace IronPython.Runtime.Types {
         /// <summary>
         /// Provides bindings to private members when that global option is enabled.
         /// </summary>
-        class PrivateBindingResolver : MemberResolver {
+        private class PrivateBindingResolver : MemberResolver {
             private const BindingFlags _privateFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
             public override MemberGroup/*!*/ ResolveMember(MemberBinder/*!*/ binder, MemberRequestKind/*!*/ action, Type/*!*/ type, string/*!*/ name) {
@@ -544,7 +544,7 @@ namespace IronPython.Runtime.Types {
         /// Provides resolutions for protected members that haven't yet been
         /// subclassed by NewTypeMaker.
         /// </summary>
-        class ProtectedMemberResolver : MemberResolver {
+        private class ProtectedMemberResolver : MemberResolver {
             public override MemberGroup/*!*/ ResolveMember(MemberBinder/*!*/ binder, MemberRequestKind/*!*/ action, Type/*!*/ type, string/*!*/ name) {
                 foreach (Type t in binder.GetContributingTypes(type)) {
                     MemberGroup res = new MemberGroup(
@@ -1078,7 +1078,7 @@ namespace IronPython.Runtime.Types {
             return res;
         }
 
-        class DocumentationDescriptor : PythonTypeSlot {
+        private class DocumentationDescriptor : PythonTypeSlot {
             internal override bool TryGetValue(CodeContext context, object instance, PythonType owner, out object value) {
                 if (owner.IsSystemType) {
                     value = PythonTypeOps.GetDocumentation(owner.UnderlyingSystemType);
