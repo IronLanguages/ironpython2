@@ -16,7 +16,7 @@ namespace IronPythonTest.Cases {
     class CaseExecuter {
         private static string Executable {
             get {
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0 || NETCOREAPP2_1
                 if (Environment.OSVersion.Platform == PlatformID.Unix) {
                     return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "ipy.sh");
                 }
@@ -154,13 +154,9 @@ namespace IronPythonTest.Cases {
             };
 
             using (Process proc = new Process()) {
-#if NETCOREAPP2_0
-                proc.StartInfo.FileName = "cmd";
-                proc.StartInfo.Arguments = $"/c {Executable} {ReplaceVariables(testcase.Options.Arguments, argReplacements)}";
-#else
                 proc.StartInfo.FileName = Executable;
                 proc.StartInfo.Arguments = ReplaceVariables(testcase.Options.Arguments, argReplacements);
-#endif
+
                 if (!string.IsNullOrEmpty(IRONPYTHONPATH)) {
                     proc.StartInfo.EnvironmentVariables["IRONPYTHONPATH"] = IRONPYTHONPATH;
                 }

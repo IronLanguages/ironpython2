@@ -13,7 +13,7 @@
  *
  * ***************************************************************************/
 
-#if FEATURE_NATIVE || NETCOREAPP2_0
+#if FEATURE_CTYPES
 
 using System.Collections.Generic;
 

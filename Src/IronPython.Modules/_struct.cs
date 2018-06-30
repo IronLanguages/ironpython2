@@ -239,6 +239,20 @@ namespace IronPython.Modules {
                 buffer.FromStream(new MemoryStream(existing));
             }
 
+            public void pack_into(CodeContext/*!*/ context, [NotNull]ByteArray/*!*/ buffer, int offset, params object[] args) {
+                IList<byte> existing = buffer._bytes;
+
+                if (offset + size > existing.Count) {
+                    throw Error(context, String.Format("pack_into requires a buffer of at least {0} bytes", size));
+                }
+
+                string data = pack(context, args);
+
+                for (int i = 0; i < data.Length; i++) {
+                    existing[i + offset] = (byte)data[i];
+                }
+            }
+
             [Documentation("deserializes the string using the structs specified format")]
             public PythonTuple/*!*/ unpack(CodeContext/*!*/ context, [NotNull]string @string) {
                 if (@string.Length != size) {
@@ -349,17 +363,14 @@ namespace IronPython.Modules {
                 return PythonTuple.MakeTuple(res);
             }
 
-            public PythonTuple/*!*/ unpack(CodeContext/*!*/ context, [BytesConversion][NotNull]IList<byte> @string) {
-                return unpack_from(context, @string, 0);
-            }
+            public PythonTuple/*!*/ unpack(CodeContext/*!*/ context, [BytesConversion][NotNull]IList<byte> @string)
+                => unpack(context, @string.MakeString());
 
-            public PythonTuple/*!*/ unpack(CodeContext/*!*/ context, [NotNull]ArrayModule.array/*!*/ buffer) {
-                return unpack_from(context, buffer, 0);
-            }
+            public PythonTuple/*!*/ unpack(CodeContext/*!*/ context, [NotNull]ArrayModule.array/*!*/ buffer)
+                => unpack(context, buffer.ToByteArray().MakeString());
 
-            public PythonTuple/*!*/ unpack(CodeContext/*!*/ context, [NotNull]PythonBuffer/*!*/ buffer) {
-                return unpack_from(context, buffer, 0);
-            }
+            public PythonTuple/*!*/ unpack(CodeContext/*!*/ context, [NotNull]PythonBuffer/*!*/ buffer)
+                => unpack(context, buffer.ToString());
 
             [Documentation("reads the current format from the specified string")]
             public PythonTuple/*!*/ unpack_from(CodeContext/*!*/ context, [NotNull]string/*!*/ buffer, [DefaultParameterValue(0)] int offset) {
@@ -683,6 +694,10 @@ namespace IronPython.Modules {
 
         [Documentation("Pack the values v1, v2, ... according to fmt.\nWrite the packed bytes into the writable buffer buf starting at offset.")]
         public static void pack_into(CodeContext/*!*/ context, [BytesConversion][NotNull]string/*!*/ fmt, [NotNull]ArrayModule.array/*!*/ buffer, int offset, params object[] args) {
+            GetStructFromCache(context, fmt).pack_into(context, buffer, offset, args);
+        }
+
+        public static void pack_into(CodeContext/*!*/ context, [BytesConversion][NotNull]string/*!*/ fmt, [NotNull]ByteArray/*!*/ buffer, int offset, params object[] args) {
             GetStructFromCache(context, fmt).pack_into(context, buffer, offset, args);
         }
 

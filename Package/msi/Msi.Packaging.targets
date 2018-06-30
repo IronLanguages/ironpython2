@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Target Name="MsiPackage" Condition="'$(OS)' != 'Unix' " AfterTargets="Package">
+    <ItemGroup>
+      <CleanupFiles Include="$(StageDir)\net45\IronPythonTest.dll"/>
+    </ItemGroup>
+    <Delete Files="@(CleanupFiles)" />
+    <MSBuild
+        Projects="$(RootDir)\Package\msi\IronPython.Installer.wixproj"
+        Properties="BindInputPaths=$(StageDir);OutputPath=$(PackageDir);Configuration=$(BuildFlavour);Platform=x64"
+    />
+  </Target>
+</Project>

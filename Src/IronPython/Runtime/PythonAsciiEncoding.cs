@@ -113,8 +113,14 @@ namespace IronPython.Runtime {
 #if FEATURE_ENCODING
                 if (b > 0x7f) {
                     DecoderFallbackBuffer dfb = DecoderFallback.CreateFallbackBuffer();
-                    if (dfb.Fallback(new[] { b }, 0)) {
-                        outputChars += dfb.Remaining;
+                    try {
+                        if (dfb.Fallback(new[] { b }, 0)) {
+                            outputChars += dfb.Remaining;
+                        }
+                    } catch(DecoderFallbackException ex) {
+                        var dfe = new DecoderFallbackException("ordinal out of range(128)", ex.BytesUnknown, ex.Index);
+                        dfe.Data.Add("encoding", EncodingName);
+                        throw dfe;
                     }
                 } else {
                     outputChars++;
@@ -135,11 +141,17 @@ namespace IronPython.Runtime {
 #if FEATURE_ENCODING
                 if (b > 0x7f) {
                     DecoderFallbackBuffer dfb = DecoderFallback.CreateFallbackBuffer();
-                    if (dfb.Fallback(new[] { b }, 0)) {
-                        while (dfb.Remaining != 0) {
-                            chars[charIndex++] = dfb.GetNextChar();
-                            outputChars++;
+                    try {
+                        if (dfb.Fallback(new[] { b }, 0)) {
+                            while (dfb.Remaining != 0) {
+                                chars[charIndex++] = dfb.GetNextChar();
+                                outputChars++;
+                            }
                         }
+                    } catch(DecoderFallbackException ex) {
+                        var dfe = new DecoderFallbackException("ordinal out of range(128)", ex.BytesUnknown, ex.Index);
+                        dfe.Data.Add("encoding", EncodingName);
+                        throw dfe;
                     }
                 } else {
                     chars[charIndex++] = (char)b;
