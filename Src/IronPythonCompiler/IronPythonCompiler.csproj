@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <StageItem Include="$(TargetDir)\IKVM.Reflection.dll" />
-    <StageItem Include="$(RootDir)\Util\References\IKVM\IKVM.Reflection.License.txt" />
+    <StageItem Include="$(RootDir)Util\References\IKVM\IKVM.Reflection.License.txt" />
   </ItemGroup>
 
   <ItemGroup>

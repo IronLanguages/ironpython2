@@ -2,10 +2,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Package Include="IronPython">
-      <NuSpecDir>$(RootDir)\Package\nuget</NuSpecDir>
+      <NuSpecDir>$(RootDir)Package\nuget</NuSpecDir>
     </Package>
     <Package Include="IronPython.StdLib">
-      <NuSpecDir>$(RootDir)\Package\nuget</NuSpecDir>
+      <NuSpecDir>$(RootDir)Package\nuget</NuSpecDir>
     </Package>
   </ItemGroup>
 

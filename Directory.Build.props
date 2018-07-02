@@ -3,8 +3,8 @@
   <PropertyGroup>
     <!-- These are normally set by Build.proj, except when building from VS. -->
     <RootDir Condition=" '$(RootDir)' == '' ">$(MSBuildThisFileDirectory)</RootDir>
-    <BuildSysDir Condition=" '$(BuildSysDir)' == '' ">$(RootDir)\Build</BuildSysDir>
-    <ReferenceDir Condition=" '$(ReferenceDir)' == '' ">$(RootDir)\Util\References</ReferenceDir>
+    <BuildSysDir Condition=" '$(BuildSysDir)' == '' ">$(RootDir)Build</BuildSysDir>
+    <ReferenceDir Condition=" '$(ReferenceDir)' == '' ">$(RootDir)Util\References</ReferenceDir>
 
     <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
     
@@ -15,7 +15,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   
-  <Import Project="$(RootDir)\CurrentVersion.props" />
+  <Import Project="$(RootDir)CurrentVersion.props" />
 
   <!-- Signing -->
   <PropertyGroup>
@@ -58,14 +58,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <WpfReferences>$(RootDir)\Util\References\WPF\4.0</WpfReferences>
+    <WpfReferences>$(RootDir)Util\References\WPF\4.0</WpfReferences>
   </PropertyGroup>
 
   <!-- References -->
   <Import Project="$(BuildSysDir)\$(TargetFramework).props" Condition="'$(TargetFramework)' != ''" />
   
   <PropertyGroup>
-    <BaseOutputPath>$(RootDir)\bin\$(Configuration)</BaseOutputPath>
+    <BaseOutputPath>$(RootDir)bin\$(Configuration)</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>618;429;219;1717;162;414</WarningsNotAsErrors>
