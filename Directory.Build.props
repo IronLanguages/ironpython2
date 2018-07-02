@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
-  Settings imported by all *.csproj files. 
--->
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
   <PropertyGroup>
     <!-- These are normally set by Build.proj, except when building from VS. -->
-    <RootDir Condition=" '$(RootDir)' == '' ">$(MSBuildThisFileDirectory)..</RootDir>
+    <RootDir Condition=" '$(RootDir)' == '' ">$(MSBuildThisFileDirectory)</RootDir>
     <BuildSysDir Condition=" '$(BuildSysDir)' == '' ">$(RootDir)\Build</BuildSysDir>
     <ReferenceDir Condition=" '$(ReferenceDir)' == '' ">$(RootDir)\Util\References</ReferenceDir>
 
@@ -22,7 +19,7 @@
 
   <!-- Signing -->
   <PropertyGroup>
-    <PublicKey>$(MSBuildThisFileDirectory)\Key.snk</PublicKey>
+    <PublicKey>$(BuildSysDir)\Key.snk</PublicKey>
   </PropertyGroup>
 
   <PropertyGroup Condition="Exists('$(PublicKey)') and '$(AssemblyOriginatorKeyFile)'==''">
@@ -61,7 +58,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <CSharpTargets Condition="'$(CSharpTargets)' == ''">$(MSBuildBinPath)\Microsoft.CSharp.targets</CSharpTargets>
     <WpfReferences>$(RootDir)\Util\References\WPF\4.0</WpfReferences>
   </PropertyGroup>
 
@@ -77,6 +73,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
     <RunCodeAnalysis Condition="'$(Configuration)' == 'FxCop'">true</RunCodeAnalysis>
   </PropertyGroup>
 
