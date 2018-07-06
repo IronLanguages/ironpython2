@@ -1,17 +1,6 @@
-/* ****************************************************************************
- *
- * Copyright (c) Microsoft Corporation. 
- *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
- * by the terms of the Apache License, Version 2.0.
- *
- * You must not remove this notice, or any other, from this software.
- *
- *
- * ***************************************************************************/
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using System.Collections;
 using System.Collections.Generic;
@@ -26,7 +15,7 @@ using Microsoft.Scripting;
  * The only difference between the two is behavior on delete.
  * On delete, the name is not assigned to meaningful value (we need to check at runtime if it's initialized),
  * but it is not uninitialized either (because delete statement will set it to Uninitialized.instance).
- * This way, codegen doesn’t have to emit an explicit initialization for it.
+ * This way, codegen doesnï¿½t have to emit an explicit initialization for it.
  * 
  * Consider:
  * 
