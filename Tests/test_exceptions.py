@@ -29,7 +29,7 @@ class ExceptionTest(IronPythonTestCase):
             f()
         except Exception, e:
             tb = sys.exc_info()[2]
-            expected = [34, 39]
+            expected = [24, 29]
             while tb:
                 self.assertEqual(tb.tb_lineno, expected.pop()) # adding lines will require an update here
                 tb = tb.tb_next

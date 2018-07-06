@@ -76,7 +76,7 @@ class FunctionTest(IronPythonTestCase):
         def foo(): pass
 
         self.assertEqual(foo.func_code.co_filename.lower().endswith('test_function.py'), True)
-        self.assertEqual(foo.func_code.co_firstlineno, 86)  # if you added lines to the top of this file you need to update this number.
+        self.assertEqual(foo.func_code.co_firstlineno, 76)  # if you added lines to the top of this file you need to update this number.
 
     def test_inherit_function(self):
         def foo(): pass
