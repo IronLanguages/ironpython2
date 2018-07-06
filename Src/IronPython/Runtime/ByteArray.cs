@@ -15,6 +15,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -901,6 +902,20 @@ namespace IronPython.Runtime {
 
             bytes.AddRange(other);
 
+            return new ByteArray(bytes);
+        }
+
+        public static ByteArray operator +(ByteArray self, string other) {
+            if(other.Any(x => x > 0xff)) {
+                throw PythonOps.TypeError("can't concat unicode to bytearray");
+            }
+
+            List<byte> bytes;
+            lock(self) {
+                bytes = new List<byte>(self._bytes);
+            }
+
+            bytes.AddRange(other.MakeByteArray());
             return new ByteArray(bytes);
         }
 
