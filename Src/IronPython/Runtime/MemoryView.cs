@@ -35,11 +35,11 @@ namespace IronPython.Runtime {
             _end = end;
         }
 
-        public MemoryView([BytesConversion] string @object) {
+        public MemoryView(string @object) {
             _buffer = new StringBufferProtocol(@object);
         }
 
-        public MemoryView([BytesConversion] string @object, int start, int? end) : this(@object) {
+        public MemoryView(string @object, int start, int? end) : this(@object) {
             _start = start;
             _end = end;
         }
