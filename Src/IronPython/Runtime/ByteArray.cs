@@ -1,4 +1,4 @@
-﻿/* ****************************************************************************
+/* ****************************************************************************
  *
  * Copyright (c) Microsoft Corporation. 
  *
@@ -905,17 +905,20 @@ namespace IronPython.Runtime {
             return new ByteArray(bytes);
         }
 
+        /// <summary>
+        /// This overload is specifically implemented because in IronPython strings are unicode
+        /// </summary>
         public static ByteArray operator +(ByteArray self, string other) {
-            if(other.Any(x => x > 0xff)) {
-                throw PythonOps.TypeError("can't concat unicode to bytearray");
-            }
-
             List<byte> bytes;
             lock(self) {
                 bytes = new List<byte>(self._bytes);
             }
+            
+            if(!other.TryMakeByteArray(out byte[] data)) {
+                throw PythonOps.TypeError("can't concat unicode to bytearray");
+            }
 
-            bytes.AddRange(other.MakeByteArray());
+            bytes.AddRange(data);
             return new ByteArray(bytes);
         }
 
