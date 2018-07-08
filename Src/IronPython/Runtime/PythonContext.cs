@@ -1,17 +1,7 @@
-/* ****************************************************************************
- *
- * Copyright (c) Microsoft Corporation. 
- *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
- * by the terms of the Apache License, Version 2.0.
- *
- * You must not remove this notice, or any other, from this software.
- *
- *
- * ***************************************************************************/
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
 
 using System.Linq.Expressions;
 
@@ -347,7 +337,7 @@ namespace IronPython.Runtime
             _mainThreadFunctionStack = PythonOps.GetFunctionStack();
         }
 
-        void ManagerAssemblyLoaded(object sender, AssemblyLoadedEventArgs e) {
+        private void ManagerAssemblyLoaded(object sender, AssemblyLoadedEventArgs e) {
             _topNamespace.LoadAssembly(e.Assembly);
         }
 
@@ -1371,7 +1361,7 @@ namespace IronPython.Runtime
             AppDomain.CurrentDomain.AssemblyResolve += _resolveHolder.AssemblyResolveEvent;
         }
 
-        class AssemblyResolveHolder {
+        private class AssemblyResolveHolder {
             private readonly WeakReference _context;
 
             public AssemblyResolveHolder(PythonContext context) {
@@ -2563,7 +2553,7 @@ namespace IronPython.Runtime
             }
         }
 
-        class AttrKey : IEquatable<AttrKey> {
+        private class AttrKey : IEquatable<AttrKey> {
             private Type _type;
             private string _name;
 
@@ -3960,7 +3950,7 @@ namespace IronPython.Runtime
             }
         }
 
-        class OperationRetTypeKey<T> : IEquatable<OperationRetTypeKey<T>> {
+        private class OperationRetTypeKey<T> : IEquatable<OperationRetTypeKey<T>> {
             public readonly Type ReturnType;
             public readonly T Operation;
 
@@ -4260,7 +4250,7 @@ namespace IronPython.Runtime
     /// List of unary operators which we have sites for to enable fast dispatch that
     /// doesn't collide with other operators.
     /// </summary>
-    enum UnaryOperators {
+    internal enum UnaryOperators {
         Repr,
         Length,
         Hash,
@@ -4269,7 +4259,7 @@ namespace IronPython.Runtime
         Maximum
     }
 
-    enum TernaryOperators {
+    internal enum TernaryOperators {
         SetDescriptor,
         GetDescriptor,
 

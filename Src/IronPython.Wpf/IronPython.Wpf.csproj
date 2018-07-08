@@ -1,20 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(ProjectDir)..\..\Build\Common.proj" />
+
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
-    <PlatformTarget>anycpu</PlatformTarget>
-    <ProjectGuid>{65E997B7-E99B-4C83-B29E-9951429BB293}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronPython.Wpf</RootNamespace>
-    <AssemblyName>IronPython.Wpf</AssemblyName>
     <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <BaseAddress>885063680</BaseAddress>
     <StoreInDLLs>true</StoreInDLLs>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\IronPython\IronPython.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <Reference Condition=" '$(Mono)' != 'true' " Include="WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, ProcessorArchitecture=MSIL">
       <SpecificVersion>True</SpecificVersion>
@@ -34,9 +30,11 @@
       <HintPath>$(WpfReferences)\System.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
+
   <ItemGroup>
     <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
   </ItemGroup>
+
   <Import Project="$(BeforeTargetFiles)" />
   <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
   <ItemGroup>
@@ -48,4 +46,5 @@
   </ItemGroup>
   <Import Project="$(AfterTargetFiles)" />
   <Target Name="AfterBuildEnds" AfterTargets="AfterBuild" DependsOnTargets="$(AfterTargets)" />
+
 </Project>

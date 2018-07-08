@@ -1,17 +1,7 @@
-﻿/* ****************************************************************************
- *
- * Copyright (c) Microsoft Corporation. 
- *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
- * by the terms of the Apache License, Version 2.0.
- *
- * You must not remove this notice, or any other, from this software.
- *
- *
- * ***************************************************************************/
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
 
 using System;
 using System.Collections.Generic;
@@ -72,7 +62,7 @@ namespace IronPythonTest {
     }
 
     public class BaseClassStaticConstructor {
-        static int value;
+        private static int value;
         static BaseClassStaticConstructor() {
             value = 10;
         }
@@ -327,7 +317,7 @@ namespace IronPythonTest {
 
 
     public abstract class Overriding {
-        string protVal = "Overriding.Protected";
+        private string protVal = "Overriding.Protected";
 
         public virtual object __cmp__(object other) {
             return "Overriding.__cmp__(object)";
@@ -670,7 +660,7 @@ namespace IronPythonTest {
     }
 
     public class UseCReturnTypes {
-        CReturnTypes type;
+        private CReturnTypes type;
         public UseCReturnTypes(CReturnTypes type) { this.type = type; }
 
         public void Use_void() { type.M_void(); }
@@ -724,7 +714,7 @@ namespace IronPythonTest {
     }
 
     public class UseIReturnTypes {
-        IReturnTypes type;
+        private IReturnTypes type;
         public UseIReturnTypes(IReturnTypes type) { this.type = type; }
 
         public void Use_void() { type.M_void(); }
@@ -775,7 +765,7 @@ namespace IronPythonTest {
     }
 
     public class UseAReturnTypes {
-        AReturnTypes type;
+        private AReturnTypes type;
         public UseAReturnTypes(AReturnTypes type) { this.type = type; }
 
         public void Use_void() { type.M_void(); }
