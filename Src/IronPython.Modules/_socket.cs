@@ -123,10 +123,10 @@ namespace IronPython.Modules {
             }
 
 
-            public void __init__(CodeContext/*!*/ context, [DefaultParameterValue(DefaultAddressFamily)] int addressFamily,
-                [DefaultParameterValue(DefaultSocketType)] int socketType,
-                [DefaultParameterValue(DefaultProtocolType)] int protocolType,
-                [DefaultParameterValue(null)]socket _sock) {
+            public void __init__(CodeContext/*!*/ context, int addressFamily=DefaultAddressFamily,
+                int socketType=DefaultSocketType,
+                int protocolType=DefaultProtocolType,
+                socket _sock=null) {
                 System.Net.Sockets.SocketType type = (System.Net.Sockets.SocketType)Enum.ToObject(typeof(System.Net.Sockets.SocketType), socketType);
                 if (!Enum.IsDefined(typeof(System.Net.Sockets.SocketType), type)) {
                     throw MakeException(context, new SocketException((int)SocketError.SocketNotSupported));
@@ -354,7 +354,7 @@ namespace IronPython.Modules {
                 + "whose maximum length is buflen bytes) is returned. The caller must the decode\n"
                 + "the resulting byte string."
                 )]
-            public object getsockopt(int optionLevel, int optionName, [DefaultParameterValue(0)] int optionLength) {
+            public object getsockopt(int optionLevel, int optionName, int optionLength=0) {
                 SocketOptionLevel level = (SocketOptionLevel)Enum.ToObject(typeof(SocketOptionLevel), optionLevel);
                 if (!Enum.IsDefined(typeof(SocketOptionLevel), level)) {
                     throw MakeException(_context, new SocketException((int)SocketError.InvalidArgument));
@@ -392,7 +392,7 @@ namespace IronPython.Modules {
             [Documentation("makefile([mode[, bufsize]]) -> file object\n\n"
                 + "Return a regular file object corresponding to the socket.  The mode\n"
                 + "and bufsize arguments are as for the built-in open() function.")]
-            public PythonFile makefile([DefaultParameterValue("r")]string mode, [DefaultParameterValue(8192)]int bufSize) {
+            public PythonFile makefile(string mode="r", int bufSize=8192) {
                 System.Threading.Interlocked.Increment(ref _referenceCount); // dup our handle
                 return new _fileobject(_context, this, mode, bufSize, false);
             }
@@ -406,7 +406,7 @@ namespace IronPython.Modules {
                 + "settimeout(). If the timeout was exceeded, socket.timeout is raised."
                 + "recv() returns immediately with zero bytes when the connection is closed."
                 )]
-            public string recv(int maxBytes, [DefaultParameterValue(0)] int flags) {
+            public string recv(int maxBytes, int flags=0) {
                 int bytesRead;
                 if (maxBytes < 0)
                     throw PythonOps.ValueError("negative buffersize in recv");
@@ -425,7 +425,7 @@ namespace IronPython.Modules {
                 + "is not specified (or 0), receive up to the size available in the given buffer.\n\n"
                 + "See recv() for documentation about the flags.\n"
                 )]
-            public int recv_into(PythonBuffer buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public int recv_into(PythonBuffer buffer, int nbytes=0, int flags=0) {
                 if (nbytes < 0) {
                     throw PythonOps.ValueError("negative buffersize in recv_into");
                 }
@@ -438,7 +438,7 @@ namespace IronPython.Modules {
                 + "is not specified (or 0), receive up to the size available in the given buffer.\n\n"
                 + "See recv() for documentation about the flags.\n"
                 )]
-            public int recv_into(string buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public int recv_into(string buffer, int nbytes=0, int flags=0) {
                 throw PythonOps.TypeError("Cannot use string as modifiable buffer");
             }
 
@@ -448,7 +448,7 @@ namespace IronPython.Modules {
                 + "is not specified (or 0), receive up to the size available in the given buffer.\n\n"
                 + "See recv() for documentation about the flags.\n"
                 )]
-            public int recv_into(PythonArray buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public int recv_into(PythonArray buffer, int nbytes=0, int flags=0) {
                 int bytesRead;
                 byte[] byteBuffer = new byte[byteBufferSize("recv_into", nbytes, buffer.__len__(), buffer.itemsize)];
 
@@ -469,7 +469,7 @@ namespace IronPython.Modules {
                 + "is not specified (or 0), receive up to the size available in the given buffer.\n\n"
                 + "See recv() for documentation about the flags.\n"
                 )]
-            public int recv_into(ByteArray buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public int recv_into(ByteArray buffer, int nbytes=0, int flags=0) {
                 int bytesRead;
                 byte[] byteBuffer = new byte[byteBufferSize("recv_into", nbytes, buffer.Count, 1)];
 
@@ -491,7 +491,7 @@ namespace IronPython.Modules {
                 + "is not specified (or 0), receive up to the size available in the given buffer.\n\n"
                 + "See recv() for documentation about the flags.\n"
                 )]
-            public int recv_into(MemoryView buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public int recv_into(MemoryView buffer, int nbytes=0, int flags=0) {
                 int bytesRead;
                 byte[] byteBuffer = buffer.tobytes().ToByteArray();
                 try {
@@ -513,7 +513,7 @@ namespace IronPython.Modules {
             }
 
 
-            public int recv_into(object buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags){
+            public int recv_into(object buffer, int nbytes=0, int flags=0){
                 throw PythonOps.TypeError(string.Format("recv_into() argument 1 must be read-write buffer, not {0}",PythonOps.GetPythonTypeName(buffer)));
             }
 
@@ -523,7 +523,7 @@ namespace IronPython.Modules {
                 + "received, and address (whose format is protocol-dependent) is the address of\n"
                 + "the socket from which the data was received."
                 )]
-            public PythonTuple recvfrom(int maxBytes, [DefaultParameterValue(0)] int flags) {
+            public PythonTuple recvfrom(int maxBytes, int flags=0) {
                 if (maxBytes < 0) {
                     throw PythonOps.ValueError("negative buffersize in recvfrom");
                 }
@@ -546,7 +546,7 @@ namespace IronPython.Modules {
             [Documentation("recvfrom_into(buffer[, nbytes[, flags]]) -> (nbytes, address info)\n\n"
                 + "Like recv_into(buffer[, nbytes[, flags]]) but also return the sender's address info.\n"
                 )]
-            public PythonTuple recvfrom_into(PythonBuffer buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public PythonTuple recvfrom_into(PythonBuffer buffer, int nbytes=0, int flags=0) {
                 if (nbytes < 0) {
                     throw PythonOps.ValueError("negative buffersize in recvfrom_into");
                 }
@@ -556,14 +556,14 @@ namespace IronPython.Modules {
             [Documentation("recvfrom_into(buffer[, nbytes[, flags]]) -> (nbytes, address info)\n\n"
                 + "Like recv_into(buffer[, nbytes[, flags]]) but also return the sender's address info.\n"
                 )]
-            public PythonTuple recvfrom_into(string buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public PythonTuple recvfrom_into(string buffer, int nbytes=0, int flags=0) {
                 throw PythonOps.TypeError("Cannot use string as modifiable buffer");
             }
 
             [Documentation("recvfrom_into(buffer[, nbytes[, flags]]) -> (nbytes, address info)\n\n"
                 + "Like recv_into(buffer[, nbytes[, flags]]) but also return the sender's address info.\n"
                 )]
-            public PythonTuple recvfrom_into(PythonArray buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public PythonTuple recvfrom_into(PythonArray buffer, int nbytes=0, int flags=0) {
                 int bytesRead;
                 byte[] byteBuffer = new byte[byteBufferSize("recvfrom_into", nbytes, buffer.__len__(), buffer.itemsize)];
                 IPEndPoint remoteIPEP = new IPEndPoint(IPAddress.Any, 0);
@@ -583,7 +583,7 @@ namespace IronPython.Modules {
             [Documentation("recvfrom_into(buffer[, nbytes[, flags]]) -> (nbytes, address info)\n\n"
                + "Like recv_into(buffer[, nbytes[, flags]]) but also return the sender's address info.\n"
                )]
-            public PythonTuple recvfrom_into(MemoryView buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags){
+            public PythonTuple recvfrom_into(MemoryView buffer, int nbytes=0, int flags=0){
                 
                 int bytesRead;
                 byte[] byteBuffer = buffer.tobytes().ToByteArray();
@@ -605,7 +605,7 @@ namespace IronPython.Modules {
             [Documentation("recvfrom_into(buffer[, nbytes[, flags]]) -> (nbytes, address info)\n\n"
                 + "Like recv_into(buffer[, nbytes[, flags]]) but also return the sender's address info.\n"
                 )]
-            public PythonTuple recvfrom_into(IList<byte> buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public PythonTuple recvfrom_into(IList<byte> buffer, int nbytes=0, int flags=0) {
                 int bytesRead;
                 byte[] byteBuffer = new byte[byteBufferSize("recvfrom_into", nbytes, buffer.Count, 1)];
                 IPEndPoint remoteIPEP = new IPEndPoint(IPAddress.Any, 0);
@@ -624,7 +624,7 @@ namespace IronPython.Modules {
                 return PythonTuple.MakeTuple(bytesRead, remoteAddress);
             }
 
-            public PythonTuple recvfrom_into(object buffer, [DefaultParameterValue(0)]int nbytes, [DefaultParameterValue(0)]int flags) {
+            public PythonTuple recvfrom_into(object buffer, int nbytes=0, int flags=0) {
                 throw PythonOps.TypeError(string.Format("recvfrom_into() argument 1 must be read-write buffer, not {0}", PythonOps.GetPythonTypeName(buffer)));
             }
 
@@ -664,7 +664,7 @@ namespace IronPython.Modules {
                 + "successful completion of the Send method means that the underlying system has\n"
                 + "had room to buffer your data for a network send"
                 )]
-            public int send(string data, [DefaultParameterValue(0)] int flags) {
+            public int send(string data, int flags=0) {
                 byte[] buffer = data.MakeByteArray();
                 try {
                     return _socket.Send(buffer, (SocketFlags)flags);
@@ -688,7 +688,7 @@ namespace IronPython.Modules {
                 + "successful completion of the Send method means that the underlying system has\n"
                 + "had room to buffer your data for a network send"
                 )]
-            public int send(Bytes data, [DefaultParameterValue(0)] int flags) {
+            public int send(Bytes data, int flags=0) {
                 byte[] buffer = data.GetUnsafeByteArray();
                 try {
                     return _socket.Send(buffer, (SocketFlags)flags);
@@ -713,13 +713,17 @@ namespace IronPython.Modules {
                 + "successful completion of the Send method means that the underlying system has\n"
                 + "had room to buffer your data for a network send"
                 )]
-            public int send(PythonBuffer data, [DefaultParameterValue(0)] int flags) {
+            public int send(PythonBuffer data, int flags=0) {
                 byte[] buffer = data.byteCache;
                 try {
                     return _socket.Send(buffer, (SocketFlags)flags);
                 } catch (Exception e) {
                     throw MakeException(_context, e);
                 }
+            }
+
+            public int send(MemoryView data, int flags=0) {
+                return send(data.tobytes(), flags);
             }
 
             [Documentation("sendall(string[, flags]) -> None\n\n"
@@ -742,7 +746,7 @@ namespace IronPython.Modules {
                 + "successful completion of the Send method means that the underlying system has\n"
                 + "had room to buffer your data for a network send"
                 )]
-            public void sendall(string data, [DefaultParameterValue(0)] int flags) {
+            public void sendall(string data, int flags=0) {
                 sendallWorker(data.MakeByteArray(), flags);
             }
 
@@ -766,7 +770,7 @@ namespace IronPython.Modules {
                 + "successful completion of the Send method means that the underlying system has\n"
                 + "had room to buffer your data for a network send"
                 )]
-            public void sendall(Bytes data, [DefaultParameterValue(0)] int flags) {
+            public void sendall(Bytes data, int flags=0) {
                 sendallWorker(data.GetUnsafeByteArray(), flags);
             }
 
@@ -790,8 +794,32 @@ namespace IronPython.Modules {
                 + "successful completion of the Send method means that the underlying system has\n"
                 + "had room to buffer your data for a network send"
                 )]
-            public void sendall(PythonBuffer data, [DefaultParameterValue(0)] int flags) {
+            public void sendall(PythonBuffer data, int flags=0) {
                 sendallWorker(data.byteCache, flags);
+            }
+
+            [Documentation("sendall(string[, flags]) -> None\n\n"
+                + "Send data to the remote socket. The socket must be connected to a remote\n"
+                + "socket (by calling either connect() or accept().\n"
+                + "\n"
+                + "Unlike send(), sendall() blocks until all of the data has been sent or until a\n"
+                + "timeout or an error occurs. None is returned on success. If an error occurs,\n"
+                + "there is no way to tell how much data, if any, was sent.\n"
+                + "\n"
+                + "Difference from CPython: timeouts do not function as you would expect. The\n"
+                + "function is implemented using multiple calls to send(), so the timeout timer\n"
+                + "is reset after each of those calls. That means that the upper bound on the\n"
+                + "time that it will take for sendall() to return is the number of bytes in\n"
+                + "string times the timeout interval.\n"
+                + "\n"
+                + "Also note that there is no guarantee that the data you send will appear on the\n"
+                + "network immediately. To increase network efficiency, the underlying system may\n"
+                + "delay transmission until a significant amount of outgoing data is collected. A\n"
+                + "successful completion of the Send method means that the underlying system has\n"
+                + "had room to buffer your data for a network send"
+                )]
+            public void sendall(MemoryView data, int flags=0) {
+                sendallWorker(data.tobytes().GetUnsafeByteArray(), flags);
             }
 
             private void sendallWorker(byte[] buffer, int flags) {
@@ -860,6 +888,10 @@ namespace IronPython.Modules {
                 }
             }
 
+            public int sendto(MemoryView data, int flags, PythonTuple address) {
+                return sendto(data.tobytes(), flags, address);
+            }
+
             [Documentation("")]
             public int sendto(string data, PythonTuple address) {
                 return sendto(data, 0, address);
@@ -867,6 +899,10 @@ namespace IronPython.Modules {
 
             [Documentation("")]
             public int sendto(Bytes data, PythonTuple address) {
+                return sendto(data, 0, address);
+            }
+
+            public int sendto(MemoryView data, PythonTuple address) {
                 return sendto(data, 0, address);
             }
 
@@ -1200,10 +1236,10 @@ namespace IronPython.Modules {
             CodeContext/*!*/ context,
             string host,
             object port,
-            [DefaultParameterValue((int)AddressFamily.Unspecified)] int family,
-            [DefaultParameterValue(0)] int socktype,
-            [DefaultParameterValue((int)ProtocolType.IP)] int proto,
-            [DefaultParameterValue((int)SocketFlags.None)] int flags
+            int family=(int)AddressFamily.Unspecified,
+            int socktype=0,
+            int proto=(int)ProtocolType.IP,
+            int flags=(int)SocketFlags.None
         ) {
             int numericPort;
 
@@ -1529,7 +1565,7 @@ namespace IronPython.Modules {
             + "The optional protocol name, if given, should be 'tcp' or 'udp',\n"
             + "otherwise any protocol will match."
             )]
-        public static int getservbyname(CodeContext/*!*/ context, string serviceName, [DefaultParameterValue(null)] string protocolName)
+        public static int getservbyname(CodeContext/*!*/ context, string serviceName, string protocolName=null)
         {
             if(protocolName != null){ 
                 protocolName = protocolName.ToLower();
@@ -1585,7 +1621,7 @@ namespace IronPython.Modules {
             + "The optional protocol name, if given, should be 'tcp' or 'udp',\n"
             + "otherwise any protocol will match."
             )]
-        public static string getservbyport(CodeContext/*!*/ context, int port, [DefaultParameterValue(null)] string protocolName) {
+        public static string getservbyport(CodeContext/*!*/ context, int port, string protocolName=null) {
 
             if (port < 0 || port > 65535)
                 throw PythonOps.OverflowError("getservbyport: port must be 0-65535.");
@@ -2298,7 +2334,7 @@ namespace IronPython.Modules {
 
             public object bufsize = DefaultBufferSize; // Only present for compatibility with CPython public API
 
-            public _fileobject(CodeContext/*!*/ context, object socket, [DefaultParameterValue("rb")]string mode, [DefaultParameterValue(-1)]int bufsize, [DefaultParameterValue(false)]bool close)
+            public _fileobject(CodeContext/*!*/ context, object socket, string mode="rb", int bufsize=-1, bool close=false)
                 : base(context.LanguageContext) {
 
                 Stream stream;
@@ -2403,7 +2439,7 @@ namespace IronPython.Modules {
             private readonly RemoteCertificateValidationCallback _callback;
             private Exception _validationFailure;
 
-            public ssl(CodeContext context, PythonSocket.socket sock, [DefaultParameterValue(null)] string keyfile, [DefaultParameterValue(null)] string certfile, [DefaultParameterValue(null)] X509Certificate2Collection certs) {
+            public ssl(CodeContext context, PythonSocket.socket sock, string keyfile=null, string certfile=null, X509Certificate2Collection certs=null) {
                 _context = context;
                 _sslStream = new SslStream(new NetworkStream(sock._socket, false), true, CertValidationCallback);
                 _socket = sock;
@@ -2415,12 +2451,12 @@ namespace IronPython.Modules {
             internal ssl(CodeContext context,
                PythonSocket.socket sock,
                bool server_side,
-               [DefaultParameterValue(null)] string keyfile,
-               [DefaultParameterValue(null)] string certfile,
-               [DefaultParameterValue(PythonSsl.CERT_NONE)]int certs_mode,
-               [DefaultParameterValue(PythonSsl.PROTOCOL_TLS | PythonSsl.OP_NO_SSLv2 | PythonSsl.OP_NO_SSLv3)]int protocol,
-               string cacertsfile,
-               [DefaultParameterValue(null)] X509Certificate2Collection certs) {
+               string keyfile=null,
+               string certfile=null,
+               int certs_mode=PythonSsl.CERT_NONE,
+               int protocol=(PythonSsl.PROTOCOL_TLS | PythonSsl.OP_NO_SSLv2 | PythonSsl.OP_NO_SSLv3),
+               string cacertsfile=null,
+               X509Certificate2Collection certs=null) {
                 if (sock == null) {
                     throw PythonOps.TypeError("expected socket object, got None");
                 }

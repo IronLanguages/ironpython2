@@ -1,9 +1,11 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -890,6 +892,23 @@ namespace IronPython.Runtime {
 
             bytes.AddRange(other);
 
+            return new ByteArray(bytes);
+        }
+
+        /// <summary>
+        /// This overload is specifically implemented because in IronPython strings are unicode
+        /// </summary>
+        public static ByteArray operator +(ByteArray self, string other) {
+            List<byte> bytes;
+            lock(self) {
+                bytes = new List<byte>(self._bytes);
+            }
+            
+            if(!other.TryMakeByteArray(out byte[] data)) {
+                throw PythonOps.TypeError("can't concat unicode to bytearray");
+            }
+
+            bytes.AddRange(data);
             return new ByteArray(bytes);
         }
 

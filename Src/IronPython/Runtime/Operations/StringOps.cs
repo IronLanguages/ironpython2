@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -152,6 +153,70 @@ namespace IronPython.Runtime.Operations {
 
         #endregion
 
+    }
+
+    [PythonHidden]
+    public class StringBufferProtocol : IBufferProtocol {
+        private string _wrapped;
+        
+        public StringBufferProtocol(string wrapped) {
+            if(wrapped.Any(x => x > 255)) {
+                throw PythonOps.TypeError("cannot make memory view because object does not have the buffer interface");
+            }
+            _wrapped = wrapped;
+        }
+
+        int IBufferProtocol.ItemCount => _wrapped.Length;
+
+        string IBufferProtocol.Format => "B";
+
+        BigInteger IBufferProtocol.ItemSize => 1;
+
+        BigInteger IBufferProtocol.NumberDimensions => 1;
+
+        bool IBufferProtocol.ReadOnly => true;
+
+        PythonTuple IBufferProtocol.Strides => PythonTuple.MakeTuple(1);
+
+        object IBufferProtocol.SubOffsets => null;
+
+        Bytes IBufferProtocol.GetItem(int index) {
+            lock (this) {
+                return Bytes.Make(new byte[] { (byte)_wrapped[PythonOps.FixIndex(index, _wrapped.Length)] });
+            }
+        }
+
+        IList<BigInteger> IBufferProtocol.GetShape(int start, int? end) {
+            if (end != null) {
+                return new[] { (BigInteger)end - start };
+            }
+            return new[] { (BigInteger)_wrapped.Length - start };
+        }
+
+        void IBufferProtocol.SetItem(int index, object value) {
+            throw PythonOps.TypeError("cannot modify read-only memory");
+        }
+
+        void IBufferProtocol.SetSlice(Slice index, object value) {
+            throw PythonOps.TypeError("cannot modify read-only memory");
+        }
+
+        Bytes IBufferProtocol.ToBytes(int start, int? end) {
+            if (start == 0 && end == null) {
+                return new Bytes(_wrapped.MakeByteArray());
+            }
+
+            return new Bytes(StringOps.GetItem(_wrapped, new Slice(start, end)).MakeByteArray());
+        }
+
+        List IBufferProtocol.ToList(int start, int? end) {
+            string s = StringOps.GetItem(_wrapped, new Slice(start, end));
+            if (String.IsNullOrEmpty(s)) {
+                return new List();
+            }
+
+            return new List(s.MakeByteArray());
+        }
     }
 
     /// <summary>
@@ -769,10 +834,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static bool isunicode(this string self) {
-            foreach (char c in self) {
-                if (c >= LowestUnicodeValue) return true;
-            }
-            return false;
+            return self.Any(c => c >= LowestUnicodeValue);
         }
 
         /// <summary>

@@ -19,10 +19,16 @@ namespace IronPython.Runtime {
             _buffer = @object;
         }
 
-        public MemoryView(string @object) : this(Bytes.Make(@object.MakeByteArray())) { }
+        public MemoryView(IBufferProtocol @object, int start, int? end) : this(@object) {
+            _start = start;
+            _end = end;
+        }
 
-        private MemoryView(IBufferProtocol @object, int start, int? end) {
-            _buffer = @object;
+        public MemoryView(string @object) {
+            _buffer = new StringBufferProtocol(@object);
+        }
+
+        public MemoryView(string @object, int start, int? end) : this(@object) {
             _start = start;
             _end = end;
         }
