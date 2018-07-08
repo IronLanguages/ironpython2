@@ -1,17 +1,6 @@
-/* ****************************************************************************
- *
- * Copyright (c) Microsoft Corporation. 
- *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
- * by the terms of the Apache License, Version 2.0.
- *
- * You must not remove this notice, or any other, from this software.
- *
- *
- * ***************************************************************************/
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using System;
 using System.Collections.Generic;
@@ -63,7 +52,7 @@ namespace IronPython.Compiler.Ast {
 
         internal const string GlobalContextName = "$globalContext";
         internal static MSAst.ParameterExpression _functionCode = Ast.Variable(typeof(FunctionCode), "$functionCode");
-        internal readonly static MSAst.ParameterExpression/*!*/ _globalArray = Ast.Parameter(typeof(PythonGlobal[]), "$globalArray");
+        internal static readonly MSAst.ParameterExpression/*!*/ _globalArray = Ast.Parameter(typeof(PythonGlobal[]), "$globalArray");
         internal static readonly MSAst.ParameterExpression/*!*/ _globalContext = Ast.Parameter(typeof(CodeContext), GlobalContextName);
         internal static readonly ReadOnlyCollection<MSAst.ParameterExpression> _arrayFuncParams = new ReadOnlyCollectionBuilder<MSAst.ParameterExpression>(new[] { _globalContext, _functionCode }).ToReadOnlyCollection();
 

@@ -1,15 +1,7 @@
 @ECHO OFF
-REM ---------------------------------------------------------------------------
-REM  Copyright (c) Microsoft Corporation. All rights reserved.
-REM
-REM This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
-REM copy of the license can be found in the License.html file at the root of this distribution. If 
-REM you cannot locate the  Apache License, Version 2.0, please send an email to 
-REM ironpy@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
-REM by the terms of the Apache License, Version 2.0.
-REM
-REM You must not remove this notice, or any other, from this software.
-REM ---------------------------------------------------------------------------
+REM Licensed to the .NET Foundation under one or more agreements.
+REM The .NET Foundation licenses this file to you under the Apache 2.0 License.
+REM See the LICENSE file in the project root for more information.
 REM
 REM This is a test runner for dynamic_sanity.cs.  To run this:
 REM  1.  Copy the entire contents of the dynamic_sanity directory into

@@ -1,17 +1,6 @@
-/* ****************************************************************************
- *
- * Copyright (c) Microsoft Corporation. 
- *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
- * by the terms of the Apache License, Version 2.0.
- *
- * You must not remove this notice, or any other, from this software.
- *
- *
- * ***************************************************************************/
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 //#define DUMP_TOKENS
 
 using System;
@@ -218,86 +207,87 @@ namespace IronPython.Compiler {
                 throw new InvalidOperationException("Uninitialized");
             }
 
-            TokenInfo result = new TokenInfo();
             Token token = GetNextToken();
-            result.SourceSpan = new SourceSpan(IndexToLocation(TokenSpan.Start), IndexToLocation(TokenSpan.End));
+            var sourceSpan = new SourceSpan(IndexToLocation(TokenSpan.Start), IndexToLocation(TokenSpan.End));
+            var category = default(TokenCategory);
+            var trigger = default(TokenTriggers);
 
             switch (token.Kind) {
                 case TokenKind.EndOfFile:
-                    result.Category = TokenCategory.EndOfStream;
+                    category = TokenCategory.EndOfStream;
                     break;
 
                 case TokenKind.Comment:
-                    result.Category = TokenCategory.Comment;
+                    category = TokenCategory.Comment;
                     break;
 
                 case TokenKind.Name:
-                    result.Category = TokenCategory.Identifier;
+                    category = TokenCategory.Identifier;
                     break;
 
                 case TokenKind.Error:
                     if (token is IncompleteStringErrorToken) {
-                        result.Category = TokenCategory.StringLiteral;
+                        category = TokenCategory.StringLiteral;
                     } else {
-                        result.Category = TokenCategory.Error;
+                        category = TokenCategory.Error;
                     }
                     break;
 
                 case TokenKind.Constant:
-                    result.Category = (token.Value is string) ? TokenCategory.StringLiteral : TokenCategory.NumericLiteral;
+                    category = (token.Value is string) ? TokenCategory.StringLiteral : TokenCategory.NumericLiteral;
                     break;
 
                 case TokenKind.LeftParenthesis:
-                    result.Category = TokenCategory.Grouping;
-                    result.Trigger = TokenTriggers.MatchBraces | TokenTriggers.ParameterStart;
+                    category = TokenCategory.Grouping;
+                    trigger = TokenTriggers.MatchBraces | TokenTriggers.ParameterStart;
                     break;
 
                 case TokenKind.RightParenthesis:
-                    result.Category = TokenCategory.Grouping;
-                    result.Trigger = TokenTriggers.MatchBraces | TokenTriggers.ParameterEnd;
+                    category = TokenCategory.Grouping;
+                    trigger = TokenTriggers.MatchBraces | TokenTriggers.ParameterEnd;
                     break;
 
                 case TokenKind.LeftBracket:
                 case TokenKind.LeftBrace:
                 case TokenKind.RightBracket:
                 case TokenKind.RightBrace:
-                    result.Category = TokenCategory.Grouping;
-                    result.Trigger = TokenTriggers.MatchBraces;
+                    category = TokenCategory.Grouping;
+                    trigger = TokenTriggers.MatchBraces;
                     break;
 
                 case TokenKind.Colon:
-                    result.Category = TokenCategory.Delimiter;
+                    category = TokenCategory.Delimiter;
                     break;
 
                 case TokenKind.Semicolon:
-                    result.Category = TokenCategory.Delimiter;
+                    category = TokenCategory.Delimiter;
                     break;
 
                 case TokenKind.Comma:
-                    result.Category = TokenCategory.Delimiter;
-                    result.Trigger = TokenTriggers.ParameterNext;
+                    category = TokenCategory.Delimiter;
+                    trigger = TokenTriggers.ParameterNext;
                     break;
 
                 case TokenKind.Dot:
-                    result.Category = TokenCategory.Operator;
-                    result.Trigger = TokenTriggers.MemberSelect;
+                    category = TokenCategory.Operator;
+                    trigger = TokenTriggers.MemberSelect;
                     break;
 
                 case TokenKind.NewLine:
-                    result.Category = TokenCategory.WhiteSpace;
+                    category = TokenCategory.WhiteSpace;
                     break;
 
                 default:
                     if (token.Kind >= TokenKind.FirstKeyword && token.Kind <= TokenKind.LastKeyword) {
-                        result.Category = TokenCategory.Keyword;
+                        category = TokenCategory.Keyword;
                         break;
                     }
 
-                    result.Category = TokenCategory.Operator;
+                    category = TokenCategory.Operator;
                     break;
             }
 
-            return result;
+            return new TokenInfo(sourceSpan, category, trigger);
         }
 
         internal bool TryGetTokenString(int len, out string tokenString) {
@@ -1255,7 +1245,7 @@ namespace IronPython.Compiler {
         /// <summary>
         /// Equality comparer that can compare strings to our current token w/o creating a new string first.
         /// </summary>
-        class TokenEqualityComparer : IEqualityComparer<object> {
+        private class TokenEqualityComparer : IEqualityComparer<object> {
             private readonly Tokenizer _tokenizer;
 
             public TokenEqualityComparer(Tokenizer tokenizer) {
@@ -1610,7 +1600,7 @@ namespace IronPython.Compiler {
         }
 
         [Serializable]
-        class IncompleteString : IEquatable<IncompleteString> {
+        private class IncompleteString : IEquatable<IncompleteString> {
             public readonly bool IsRaw, IsUnicode, IsTripleQuoted, IsSingleTickQuote;
 
             public IncompleteString(bool isSingleTickQuote, bool isRaw, bool isUnicode, bool isTriple) {
@@ -1662,7 +1652,7 @@ namespace IronPython.Compiler {
         }
 
         [Serializable]
-        struct State : IEquatable<State> {
+        private struct State : IEquatable<State> {
             // indentation state
             public int[] Indent;
             public int IndentLevel;
