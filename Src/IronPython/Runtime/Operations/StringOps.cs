@@ -204,7 +204,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         void IBufferProtocol.SetItem(int index, object value) {
-            throw PythonOps.TypeError("cannot modify read - only memory");
+            throw PythonOps.TypeError("cannot modify read-only memory");
         }
 
         void IBufferProtocol.SetSlice(Slice index, object value) {
