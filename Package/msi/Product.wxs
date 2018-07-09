@@ -20,7 +20,7 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
     <Package Id="*" Compressed="yes" Description="$(var.ProductShortName) $(var.ProductVersionText) ($(var.ProductVersion))" InstallerVersion="200" ShortNames="no" Manufacturer="$(var.Manufacturer)" InstallScope="perMachine" />
     <Media Id="1" Cabinet="IronPy.cab" EmbedCab="yes" CompressionLevel="high" />
     
-    <Icon Id="ipy.ico" SourceFile="..\..\Src\IronPythonConsole/ipy.ico" />
+    <Icon Id="ipy.ico" SourceFile="..\..\Src\IronPythonConsole\ipy.ico" />
     <Property Id="ARPPRODUCTICON" Value="ipy.ico" />
 
     <!-- Major upgrade -->
