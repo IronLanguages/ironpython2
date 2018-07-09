@@ -6,7 +6,7 @@
     </ItemGroup>
     <Delete Files="@(CleanupFiles)" />
     <MSBuild
-        Projects="$(RootDir)\Package\msi\IronPython.Installer.wixproj"
+        Projects="$(RootDir)Package\msi\IronPython.Installer.wixproj"
         Properties="BindInputPaths=$(StageDir);OutputPath=$(PackageDir);Configuration=$(BuildFlavour);Platform=x64"
     />
   </Target>

@@ -1,20 +1,11 @@
-﻿/* ****************************************************************************
- *
- * Copyright (c) Microsoft Corporation. 
- *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * dlr@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
- * by the terms of the Apache License, Version 2.0.
- *
- * You must not remove this notice, or any other, from this software.
- *
- *
- * ***************************************************************************/
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -901,6 +892,23 @@ namespace IronPython.Runtime {
 
             bytes.AddRange(other);
 
+            return new ByteArray(bytes);
+        }
+
+        /// <summary>
+        /// This overload is specifically implemented because in IronPython strings are unicode
+        /// </summary>
+        public static ByteArray operator +(ByteArray self, string other) {
+            List<byte> bytes;
+            lock(self) {
+                bytes = new List<byte>(self._bytes);
+            }
+            
+            if(!other.TryMakeByteArray(out byte[] data)) {
+                throw PythonOps.TypeError("can't concat unicode to bytearray");
+            }
+
+            bytes.AddRange(data);
             return new ByteArray(bytes);
         }
 
