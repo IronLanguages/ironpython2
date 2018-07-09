@@ -16,26 +16,17 @@ using Microsoft.Scripting.Runtime;
 
 using IronPython.Runtime.Binding;
 using IronPython.Runtime.Operations;
+using System.Numerics;
 
 namespace IronPython.Runtime {
     [PythonType("buffer"), DontMapGetMemberNamesToDir]
     public sealed class PythonBuffer : ICodeFormattable, IDynamicMetaObjectProvider, IList<byte> {
         internal object _object;
         private int _offset;
-        private int _size;
-
         private readonly CodeContext/*!*/ _context;
 
-        public PythonBuffer(CodeContext/*!*/ context, object @object)
-            : this(context, @object, 0) {
-        }
-
-        public PythonBuffer(CodeContext/*!*/ context, object @object, int offset)
-            : this(context, @object, offset, -1) {
-        }
-
         [Python3Warning("buffer() not supported in 3.x")]
-        public PythonBuffer(CodeContext/*!*/ context, object @object, int offset, int size) {
+        public PythonBuffer(CodeContext/*!*/ context, object @object, int offset=0, int size=-1) {
             PythonOps.Warn3k(context, "buffer() not supported in 3.x");
             if (!InitBufferObject(@object, offset, size)) {
                 throw PythonOps.TypeError("expected buffer object");
@@ -54,20 +45,17 @@ namespace IronPython.Runtime {
             //  we currently support only buffers, strings and arrays
             //  of primitives, strings, bytes, and bytearray objects.
             int length;
-            if (o is PythonBuffer) {
-                PythonBuffer py = (PythonBuffer)o;
+            if (o is PythonBuffer py) {
                 o = py._object; // grab the internal object
-                length = py._size;
-            } else if (o is string) {
-                string strobj = (string)o;
+                length = py.Size;
+            } else if (o is string strobj) {
                 length = strobj.Length;
             } else if (o is Bytes) {
                 length = ((Bytes)o).Count;
             } else if (o is ByteArray) {
                 length = ((ByteArray)o).Count;
             } else if (o is Array || o is IPythonArray) {
-                Array arr = o as Array;
-                if (arr != null) {
+                if (o is Array arr) {
                     Type t = arr.GetType().GetElementType();
                     if (!t.IsPrimitive && t != typeof(string)) {
                         return false;
@@ -86,9 +74,9 @@ namespace IronPython.Runtime {
 
             // reset the size based on the given buffer's original size
             if (size >= (length - offset) || size == -1) {
-                _size = length - offset;
+                Size = length - offset;
             } else {
-                _size = size;
+                Size = size;
             }
 
             _object = o;
@@ -129,13 +117,13 @@ namespace IronPython.Runtime {
         }
 
         public override int GetHashCode() {
-            return _object.GetHashCode() ^ _offset ^ (_size << 16 | (_size >> 16));
+            return _object.GetHashCode() ^ _offset ^ (Size << 16 | (Size >> 16));
         }
 
         private Slice GetSlice() {
             object end = null;
-            if (_size >= 0) {
-                end = _offset + _size;
+            if (Size >= 0) {
+                end = _offset + Size;
             }
             return new Slice(_offset, end);
         }
@@ -175,19 +163,16 @@ namespace IronPython.Runtime {
         }
 
         private object GetSelectedRange() {
-            IPythonArray arr = _object as IPythonArray;
-            if (arr != null) {
+            if (_object is IPythonArray arr) {
                 return arr.tostring();
             }
 
-            ByteArray bytearr = _object as ByteArray;
-            if (bytearr != null) {
+            if (_object is ByteArray bytearr) {
                 return new Bytes((IList<byte>)bytearr[GetSlice()]);
             }
 
-            IPythonBufferable pyBuf = _object as IPythonBufferable;
-            if (pyBuf != null) {
-                return new Bytes(pyBuf.GetBytes(_offset, _size));
+            if (_object is IPythonBufferable pyBuf) {
+                return new Bytes(pyBuf.GetBytes(_offset, Size));
             }
 
             return PythonOps.GetIndex(_context, _object, GetSlice());
@@ -228,20 +213,16 @@ namespace IronPython.Runtime {
         }
 
         public int __len__() {
-            return Math.Max(_size, 0);
+            return Math.Max(Size, 0);
         }
 
-        internal int Size {
-            get {
-                return _size;
-            }
-        }
+        internal int Size { get; private set; }
 
         #region ICodeFormattable Members
 
         public string/*!*/ __repr__(CodeContext/*!*/ context) {
             return string.Format("<read-only buffer for 0x{0:X16}, size {1}, offset {2} at 0x{3:X16}>",
-                PythonOps.Id(_object), _size, _offset, PythonOps.Id(this));
+                PythonOps.Id(_object), Size, _offset, PythonOps.Id(this));
         }
 
         #endregion
@@ -374,7 +355,8 @@ namespace IronPython.Runtime {
                 return true;
             }
         }
-        #endregion
+
+        #endregion       
     }
 
     /// <summary>

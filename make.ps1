@@ -25,6 +25,11 @@ if(!$global:isUnix) {
         Exit 1
     }
 
+    if(-not [System.IO.Directory]::Exists($_VSINSTPATH)) {
+        Write-Error "Could not determine installation path to Visual Studio"
+        Exit 1
+    }
+
     if([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin\MSBuild.exe'))) {
         $env:PATH = [String]::Join(';', $env:PATH, [System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin'))
     }

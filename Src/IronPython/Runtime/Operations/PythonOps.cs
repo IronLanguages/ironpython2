@@ -3900,6 +3900,18 @@ namespace IronPython.Runtime.Operations {
             }
             return ret;
         }
+        
+        public static bool TryMakeByteArray(this string s, out byte[] bytes) {
+            bytes = new byte[s.Length];
+            for (int i = 0; i < s.Length; i++) {
+                if(s[i] < 0x100) bytes[i] = (byte)s[i];
+                else {
+                    bytes = null;
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public static string MakeString(this IList<byte> bytes) {
             return MakeString(bytes, bytes.Count);
