@@ -95,7 +95,7 @@
 
   <Import Project="$(BeforeTargetFiles)" />
 
-  <Target Name="Stage">
+  <Target Name="Stage" DependsOnTargets="Bootstrap">
     <CopyStdLib SourceFiles="@(Content)" Destination="$(OutputPath)\Lib" BasePath="$(StdLibPath)" />
   </Target>
 
