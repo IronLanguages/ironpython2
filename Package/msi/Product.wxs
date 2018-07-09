@@ -58,9 +58,7 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
       </Directory>
 
       <Directory Id="ProgramFiles64Folder">
-        <Directory Id="ProductShortNameFolder" Name="$(var.ProductShortName)">
-          <Directory Id="INSTALLDIR" Name="$(var.ReleaseSeries)" />
-        </Directory>
+        <Directory Id="INSTALLDIR" Name="$(var.ProductShortName) $(var.ReleaseSeries)" />
       </Directory>
 
       <Directory Id="GAC" Name="GAC" />
