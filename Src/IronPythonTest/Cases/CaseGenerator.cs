@@ -21,8 +21,6 @@ namespace IronPythonTest.Cases {
         public string Path { get; }
         public string Text { get; }
         public string Name { get; }
-        public string BaseName { get; }
-        public string RootDir { get; }
         public TestOptions Options { get; }
 
         private static string LoadTest(string path) {
