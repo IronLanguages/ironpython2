@@ -108,6 +108,7 @@ namespace IronPython.Modules {
             }
         }
 #endif
+
         public static void close(CodeContext/*!*/ context, int fd) {
             PythonContext pythonContext = context.LanguageContext;
             PythonFileManager fileManager = pythonContext.FileManager;
@@ -837,8 +838,8 @@ namespace IronPython.Modules {
             }
 
 #if FEATURE_UNIX
-            internal stat_result(Mono.Unix.Native.Stat stat) {
-                _mode = (uint)stat.st_mode;
+            internal stat_result(Mono.Unix.Native.Stat stat, int? mode = null) {
+                _mode = mode ?? (int)stat.st_mode;
                 st_ino = stat.st_ino;
                 _dev = stat.st_dev;
                 _nlink = stat.st_nlink;
@@ -1248,13 +1249,6 @@ namespace IronPython.Modules {
                 return LightExceptions.Throw(PythonOps.TypeError("expected string, got NoneType"));
             }
 
-#if FEATURE_UNIX
-            if (Mono.Unix.Native.Syscall.stat(path, out Mono.Unix.Native.Stat buf) == 0) {
-                return new stat_result(buf);
-            }
-#endif
-
-            stat_result sr;
 
             try {
                 FileInfo fi = new FileInfo(path);
@@ -1274,22 +1268,28 @@ namespace IronPython.Modules {
                     return LightExceptions.Throw(PythonExceptions.CreateThrowable(WindowsError, PythonExceptions._WindowsError.ERROR_PATH_NOT_FOUND, "file does not exist: " + path));
                 }
 
-                long st_atime = (long)PythonTime.TicksToTimestamp(fi.LastAccessTime.ToUniversalTime().Ticks);
-                long st_ctime = (long)PythonTime.TicksToTimestamp(fi.CreationTime.ToUniversalTime().Ticks);
-                long st_mtime = (long)PythonTime.TicksToTimestamp(fi.LastWriteTime.ToUniversalTime().Ticks);
                 mode |= S_IREAD;
                 if ((fi.Attributes & FileAttributes.ReadOnly) == 0) {
                     mode |= S_IWRITE;
                 }
 
-                sr = new stat_result(mode, size, st_atime, st_mtime, st_ctime);
+#if FEATURE_UNIX
+                if (Mono.Unix.Native.Syscall.stat(path, out Mono.Unix.Native.Stat buf) == 0) {
+                    // TODO: get rid of the mode override
+                    return new stat_result(buf, mode);
+                }
+#endif
+
+                long st_atime = (long)PythonTime.TicksToTimestamp(fi.LastAccessTime.ToUniversalTime().Ticks);
+                long st_ctime = (long)PythonTime.TicksToTimestamp(fi.CreationTime.ToUniversalTime().Ticks);
+                long st_mtime = (long)PythonTime.TicksToTimestamp(fi.LastWriteTime.ToUniversalTime().Ticks);
+
+                return new stat_result(mode, size, st_atime, st_mtime, st_ctime);
             } catch (ArgumentException) {
                 return LightExceptions.Throw(PythonExceptions.CreateThrowable(WindowsError, PythonExceptions._WindowsError.ERROR_INVALID_NAME, "The path is invalid: " + path));
             } catch (Exception e) {
                 return LightExceptions.Throw(ToPythonException(e, path));
             }
-
-            return sr;
         }
 
         public static string strerror(int code) {
