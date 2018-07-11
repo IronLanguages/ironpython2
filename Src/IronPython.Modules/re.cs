@@ -953,23 +953,18 @@ namespace IronPython.Modules {
                                                 // remove the (?P=
                                                 pattern = pattern.Remove(nameIndex - 2, 4);
                                                 pattern = pattern.Insert(nameIndex - 2, "\\k<");
-                                                int tmpIndex = nameIndex;
-                                                while (tmpIndex < pattern.Length && pattern[tmpIndex] != ')')
-                                                    tmpIndex++;
-
-                                                if (tmpIndex == pattern.Length) throw PythonExceptions.CreateThrowable(error(context), "unexpected end of regex");
+                                                int tmpIndex = pattern.IndexOf(')', nameIndex);
+                                                
+                                                if (tmpIndex == -1) throw PythonExceptions.CreateThrowable(error(context), "unexpected end of regex");
 
                                                 pattern = pattern.Substring(0, tmpIndex) + ">" + pattern.Substring(tmpIndex + 1);
                                             } else {
-                                                containsNamedGroup = true;
-                                                
+                                                containsNamedGroup = true;                                                
                                                 // we need to look and see if the named group was already seen and throw an error if it was
                                                 if(nameIndex + 1 < pattern.Length && pattern[nameIndex + 1] == '<') {
-                                                    int tmpIndex = nameIndex + 2;
-                                                    while (tmpIndex < pattern.Length && pattern[tmpIndex] != '>')
-                                                        tmpIndex++;
+                                                    int tmpIndex = pattern.IndexOf('>', nameIndex);
 
-                                                    if (tmpIndex == pattern.Length) throw PythonExceptions.CreateThrowable(error(context), "unexpected end of regex");
+                                                    if (tmpIndex == -1) throw PythonExceptions.CreateThrowable(error(context), "unexpected end of regex");
 
                                                     var namedGroup = pattern.Substring(nameIndex + 2, tmpIndex - (nameIndex + 2));
                                                     if(namedGroups.ContainsKey(namedGroup)) {
