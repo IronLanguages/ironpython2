@@ -31,7 +31,7 @@ namespace IronPython.Runtime.Types {
         }
 
         public static NameType TryGetName(PythonType dt, PropertyInfo pi, MethodInfo prop, out string name) {
-            if (pi.IsDefined(typeof(PythonHiddenAttribute), false)) {
+            if (PythonHiddenAttribute.IsHidden(pi)) {
                 name = null;
                 return NameType.None;
             }

@@ -18,7 +18,7 @@ using IronPython.Runtime.Operations;
 
 using System.Numerics;
 
-[assembly: PythonModule("msvcrt", typeof(IronPython.Modules.PythonMsvcrt), PythonModuleAttribute.PlatformFamily.Windows)]
+[assembly: PythonModule("msvcrt", typeof(IronPython.Modules.PythonMsvcrt), ValidPlatformCheckingAttribute.PlatformFamily.Windows)]
 namespace IronPython.Modules {
     [PythonType("msvcrt")]
     public class PythonMsvcrt {

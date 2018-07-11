@@ -14,7 +14,7 @@ using IronPython.Runtime.Operations;
 
 using System.Numerics;
 
-[assembly: PythonModule("spwd", typeof(IronPython.Modules.PythonSpwd), PythonModuleAttribute.PlatformFamily.Unix)]
+[assembly: PythonModule("spwd", typeof(IronPython.Modules.PythonSpwd), ValidPlatformCheckingAttribute.PlatformFamily.Unix)]
 namespace IronPython.Modules {
     
     public static class PythonSpwd {
