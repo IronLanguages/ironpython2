@@ -95,8 +95,8 @@
 
   <Import Project="$(BeforeTargetFiles)" />
 
-  <Target Name="Stage" DependsOnTargets="Bootstrap">
-    <CopyStdLib SourceFiles="@(Content)" Destination="$(OutputPath)\Lib" BasePath="$(StdLibPath)" />
+  <Target Name="Stage">
+    <Copy SourceFiles="@(Content)" DestinationFiles="@(Content->'$(OutputPath)\Lib\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
 </Project>
