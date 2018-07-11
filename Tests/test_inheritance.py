@@ -1138,10 +1138,8 @@ class InheritanceTest(IronPythonTestCase):
         DReturnTypes.M_IEnumerable = lambda self: { 1 : "one", 10: "two", 100: "three"}
         self.assertEqual(reduce(add, used.Use_IEnumerable()), 111)
         
-        # https://github.com/mono/mono/issues/7095
-        if not is_mono:
-            DReturnTypes.M_IEnumerator = lambda self: iter(System.Array[int](range(10)))
-            self.assertEqual(list(used.Use_IEnumerator()), range(10))
+        DReturnTypes.M_IEnumerator = lambda self: iter(System.Array[int](range(10)))
+        self.assertEqual(list(used.Use_IEnumerator()), range(10))
         
         DReturnTypes.M_IEnumerable = lambda self: System.Array[int](range(10))
         self.assertEqual(reduce(add, used.Use_IEnumerable()), 45)
