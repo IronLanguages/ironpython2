@@ -74,9 +74,9 @@ namespace IronPythonTest.Util {
             }
         }
 
-        public string Condition {
+        public string RunCondition {
             get {
-                return this.manifest.GetValue(this.testName, "Condition", string.Empty);
+                return this.manifest.GetValue(this.testName, "RunCondition", string.Empty);
             }
         }
 
