@@ -206,19 +206,11 @@ namespace IronPython.Modules {
         public class RE_Pattern : IWeakReferenceable {
             internal Regex _re;
             private PythonDictionary _groups;
-            private int _compileFlags;
+            private readonly int _compileFlags;
             private WeakRefTracker _weakRefTracker;
             internal ParsedRegex _pre;
 
-            internal RE_Pattern(CodeContext/*!*/ context, object pattern)
-                : this(context, pattern, 0) {
-            }
-
-            internal RE_Pattern(CodeContext/*!*/ context, object pattern, int flags) :
-                this(context, pattern, flags, false) {
-            }
-
-            internal RE_Pattern(CodeContext/*!*/ context, object pattern, int flags, bool compiled) {
+            internal RE_Pattern(CodeContext/*!*/ context, object pattern, int flags=0, bool compiled=false) {
                 _pre = PreParseRegex(context, ValidatePatternAsString(pattern));
                 try {
                     flags |= OptionToFlags(_pre.Options);
@@ -473,8 +465,7 @@ namespace IronPython.Modules {
             }
 
             public override bool Equals(object obj) {
-                RE_Pattern other = obj as RE_Pattern;
-                if (other == null) {
+                if (!(obj is RE_Pattern other)) {
                     return false;
                 }
 
@@ -505,8 +496,7 @@ namespace IronPython.Modules {
 
         public static PythonTuple _pickle(CodeContext/*!*/ context, RE_Pattern pattern) {
             object scope = Importer.ImportModule(context, new PythonDictionary(), "re", false, 0);
-            object compile;
-            if (scope is PythonModule && ((PythonModule)scope).__dict__.TryGetValue("compile", out compile)) {
+            if (scope is PythonModule && ((PythonModule)scope).__dict__.TryGetValue("compile", out object compile)) {
                 return PythonTuple.MakeTuple(compile, PythonTuple.MakeTuple(pattern.pattern, pattern.flags));
             }
             throw new InvalidOperationException("couldn't find compile method");
@@ -514,11 +504,12 @@ namespace IronPython.Modules {
 
         [PythonType]
         public class RE_Match {
-            RE_Pattern _pattern;
+            private RE_Pattern _pattern;
             private Match _m;
-            private string _text;
+            private readonly string _text;
             private int _lastindex = -1;
-            private int _pos, _endPos;
+            private readonly int _pos;
+            private readonly int _endPos;
 
             #region Internal makers
             internal static RE_Match make(Match m, RE_Pattern pattern, string input) {
@@ -799,8 +790,7 @@ namespace IronPython.Modules {
             }
 
             private int GetGroupIndex(object group) {
-                int grpIndex;
-                if (!Converter.TryConvertToInt32(group, out grpIndex)) {
+                if (!Converter.TryConvertToInt32(group, out int grpIndex)) {
                     grpIndex = _pattern._re.GroupNumberFromName(ValidateString(group, "group"));
                 }
                 if (grpIndex < 0 || grpIndex >= _m.Groups.Count) {
@@ -821,8 +811,7 @@ namespace IronPython.Modules {
         }
 
         private static RE_Pattern GetPattern(CodeContext/*!*/ context, object pattern, int flags, bool compiled) {
-            RE_Pattern res = pattern as RE_Pattern;
-            if (res != null) {
+            if (pattern is RE_Pattern res) {
                 return res;
             }
 
@@ -887,7 +876,7 @@ namespace IronPython.Modules {
             public RegexOptions Options = RegexOptions.CultureInvariant;
         }
 
-        private static char[] _preParsedChars = new[] { '(', '{', '[', ']' };
+        private static readonly char[] _preParsedChars = new[] { '(', '{', '[', ']' };
         private const string _mangledNamedGroup = "___PyRegexNameMangled";
         /// <summary>
         /// Preparses a regular expression text returning a ParsedRegex class
@@ -901,6 +890,9 @@ namespace IronPython.Modules {
             int curGroup = 0;
             bool isCharList = false;
             bool containsNamedGroup = false;
+
+            int groupCount = 0;
+            var namedGroups = new Dictionary<string, int>();
 
             for (; ; ) {
                 nameIndex = pattern.IndexOfAny(_preParsedChars, cur);
@@ -941,6 +933,7 @@ namespace IronPython.Modules {
                     case '(':
                         // make sure we're not dealing with [(]
                         if (!isCharList) {
+                            groupCount++;
                             switch (pattern[++nameIndex]) {
                                 case '?':
                                     // extension syntax
@@ -960,17 +953,30 @@ namespace IronPython.Modules {
                                                 // remove the (?P=
                                                 pattern = pattern.Remove(nameIndex - 2, 4);
                                                 pattern = pattern.Insert(nameIndex - 2, "\\k<");
-                                                int tmpIndex = nameIndex;
-                                                while (tmpIndex < pattern.Length && pattern[tmpIndex] != ')')
-                                                    tmpIndex++;
-
-                                                if (tmpIndex == pattern.Length) throw PythonExceptions.CreateThrowable(error(context), "unexpected end of regex");
+                                                int tmpIndex = pattern.IndexOf(')', nameIndex);
+                                                
+                                                if (tmpIndex == -1) throw PythonExceptions.CreateThrowable(error(context), "unexpected end of regex");
 
                                                 pattern = pattern.Substring(0, tmpIndex) + ">" + pattern.Substring(tmpIndex + 1);
                                             } else {
-                                                containsNamedGroup = true;
+                                                containsNamedGroup = true;                                                
+                                                // we need to look and see if the named group was already seen and throw an error if it was
+                                                if(nameIndex + 1 < pattern.Length && pattern[nameIndex + 1] == '<') {
+                                                    int tmpIndex = pattern.IndexOf('>', nameIndex);
+
+                                                    if (tmpIndex == -1) throw PythonExceptions.CreateThrowable(error(context), "unexpected end of regex");
+
+                                                    var namedGroup = pattern.Substring(nameIndex + 2, tmpIndex - (nameIndex + 2));
+                                                    if(namedGroups.ContainsKey(namedGroup)) {
+                                                        throw PythonExceptions.CreateThrowable(error(context), $"redefinition of group name '{namedGroup}' as group {groupCount}; was group {namedGroups[namedGroup]}");
+                                                    }
+
+                                                    namedGroups[namedGroup] = groupCount;
+                                                }
+
                                                 pattern = pattern.Remove(nameIndex, 1);
                                             }
+
                                             break;
                                         case 'i':
                                             res.Options |= RegexOptions.IgnoreCase;
@@ -1133,10 +1139,9 @@ namespace IronPython.Modules {
                                             //  grab the # or 'name' of the group between '< >'
                                             int lengrp = anglebrkEnd - (anglebrkStart + 1);
                                             string grp = text.Substring(anglebrkStart + 1, lengrp);
-                                            int num;
                                             Group g;
 
-                                            if (StringUtils.TryParseInt32(grp, out num)) {
+                                            if (StringUtils.TryParseInt32(grp, out int num)) {
                                                 g = m.Groups[num];
                                                 if (String.IsNullOrEmpty(g.Value)) {
                                                     throw PythonOps.IndexError("unknown group reference");
@@ -1191,16 +1196,13 @@ namespace IronPython.Modules {
         private static object ValidatePattern(object pattern) {
             if (pattern is string) return pattern as string;
 
-            ExtensibleString es = pattern as ExtensibleString;
-            if (es != null) return es.Value;
+            if (pattern is ExtensibleString es) return es.Value;
 
-            Bytes bytes = pattern as Bytes;
-            if (bytes != null) {
+            if (pattern is Bytes bytes) {
                 return bytes.ToString();
             }
 
-            RE_Pattern rep = pattern as RE_Pattern;
-            if (rep != null) return rep;
+            if (pattern is RE_Pattern rep) return rep;
 
             throw PythonOps.TypeError("pattern must be a string or compiled pattern");
         }
@@ -1208,16 +1210,13 @@ namespace IronPython.Modules {
         private static string ValidatePatternAsString(object pattern) {
             if (pattern is string) return pattern as string;
 
-            ExtensibleString es = pattern as ExtensibleString;
-            if (es != null) return es.Value;
+            if (pattern is ExtensibleString es) return es.Value;
 
-            Bytes bytes = pattern as Bytes;
-            if (bytes != null) {
+            if (pattern is Bytes bytes) {
                 return bytes.ToString();
             }
 
-            RE_Pattern rep = pattern as RE_Pattern;
-            if (rep != null) return rep._pre.UserPattern;
+            if (pattern is RE_Pattern rep) return rep._pre.UserPattern;
 
             throw PythonOps.TypeError("pattern must be a string or compiled pattern");
         }
@@ -1225,44 +1224,38 @@ namespace IronPython.Modules {
         private static string ValidateString(object str, string param) {
             if (str is string) return str as string;
 
-            ExtensibleString es = str as ExtensibleString;
-            if (es != null) return es.Value;
+            if (str is ExtensibleString es) return es.Value;
 
-            PythonBuffer buf = str as PythonBuffer;
-            if (buf != null) {
+            if (str is PythonBuffer buf) {
                 return buf.ToString();
             }
 
-            Bytes bytes = str as Bytes;
-            if (bytes != null) {
+            if (str is Bytes bytes) {
                 return bytes.ToString();
             }
 
-            ByteArray byteArray = str as ByteArray;
-            if (byteArray != null) {
+            if (str is ByteArray byteArray) {
                 return byteArray.MakeString();
             }
 
-            ArrayModule.array array = str as ArrayModule.array;
-            if(array != null) {
+            if (str is ArrayModule.array array) {
                 return Bytes.Make(array.ToByteArray()).ToString();
             }
 
 #if FEATURE_MMAP
-            MmapModule.mmap mmapFile = str as MmapModule.mmap;
-            if (mmapFile != null) {
+            if (str is MmapModule.mmap mmapFile) {
                 return mmapFile.GetSearchString();
             }
 #endif
 
-            throw PythonOps.TypeError("expected string for parameter '{0}' but got '{1}'", param, PythonOps.GetPythonTypeName(str));
+            throw PythonOps.TypeError($"expected string for parameter '{param}' but got '{PythonOps.GetPythonTypeName(str)}'");
         }
 
         private static PythonType error(CodeContext/*!*/ context) {
             return (PythonType)context.LanguageContext.GetModuleState("reerror");
         }
 
-        class PatternKey : IEquatable<PatternKey> {
+        private class PatternKey : IEquatable<PatternKey> {
             public string Pattern;
             public int Flags;
 
@@ -1272,8 +1265,7 @@ namespace IronPython.Modules {
             }
 
             public override bool Equals(object obj) {
-                PatternKey key = obj as PatternKey;
-                if (key != null) {
+                if (obj is PatternKey key) {
                     return Equals(key);
                 }
                 return false;
