@@ -16,7 +16,7 @@ namespace IronPython.Runtime {
     /// Members of a built-in module type should all be static as an instance is never created.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
-    public sealed class PythonModuleAttribute : ValidPlatformCheckingAttribute {
+    public sealed class PythonModuleAttribute : PlatformsAttribute {
 
         /// <summary>
         /// Creates a new PythonModuleAttribute that can be used to specify a built-in module that exists
@@ -34,7 +34,7 @@ namespace IronPython.Runtime {
             ValidPlatforms = validPlatforms;
         }
 
-        public PythonModuleAttribute(string/*!*/ name, Type/*!*/ type, ValidPlatformCheckingAttribute.PlatformFamily validPlatformFamily) {
+        public PythonModuleAttribute(string/*!*/ name, Type/*!*/ type, PlatformsAttribute.PlatformFamily validPlatformFamily) {
             ContractUtils.RequiresNotNull(name, nameof(name));
             ContractUtils.RequiresNotNull(type, nameof(type));
 

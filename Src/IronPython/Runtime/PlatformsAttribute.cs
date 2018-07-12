@@ -3,7 +3,7 @@ using System;
 using IronPython.Runtime.Operations;
 
 namespace IronPython.Runtime {
-    public class ValidPlatformCheckingAttribute : Attribute {
+    public class PlatformsAttribute : Attribute {
         public enum PlatformFamily {
             Windows,
             Unix
