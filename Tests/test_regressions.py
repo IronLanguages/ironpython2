@@ -1165,6 +1165,8 @@ class C:
         # this is not available on Linux systems
         if is_posix:
             self.assertRaises(AttributeError, lambda: os.startfile('/bin/bash'))
+        else:
+            self.assertTrue(hasattr(os, 'startfile'))
 
 
 
