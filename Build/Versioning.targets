@@ -69,7 +69,11 @@
         <ReplacementValue>$(AssemblyFileRevision)</ReplacementValue>
       </Tokens>
     </ItemGroup>
-    <TemplateFile Template="@(CurrentVersionTemplate)" OutputFilename="$(MSBuildProjectDirectory)\Properties\CurrentVersion.Generated.cs" Tokens="@(Tokens)"/>
+    <PropertyGroup>  
+        <OutputDirectory>$(MSBuildProjectDirectory)\Properties</OutputDirectory>
+    </PropertyGroup>
+    <MakeDir Directories="$(OutputDirectory)" Condition="!Exists('$(OutputDirectory)')" />
+    <TemplateFile Template="@(CurrentVersionTemplate)" OutputFilename="$(OutputDirectory)\CurrentVersion.Generated.cs" Tokens="@(Tokens)"/>
   </Target>
 
   <Target Name="GenerateBuildInfo"
@@ -80,6 +84,10 @@
         <ReplacementValue>$(Configuration)</ReplacementValue>
       </Tokens>
     </ItemGroup>
-    <TemplateFile Template="@(BuildInfoTemplate)" OutputFilename="$(MSBuildProjectDirectory)\Properties\BuildInfo.Generated.cs" Tokens="@(Tokens)"/>
+    <PropertyGroup>
+        <OutputDirectory>$(MSBuildProjectDirectory)\Properties</OutputDirectory>  
+    </PropertyGroup>  
+    <MakeDir Directories="$(OutputDirectory)" Condition="!Exists('$(OutputDirectory)')" />
+    <TemplateFile Template="@(BuildInfoTemplate)" OutputFilename="$(OutputDirectory)\BuildInfo.Generated.cs" Tokens="@(Tokens)"/>
   </Target>
 </Project>
