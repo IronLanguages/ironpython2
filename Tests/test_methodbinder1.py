@@ -350,9 +350,7 @@ class MethodBinder1Test(IronPythonTestCase):
         self._helper(self.target.M652, [arrayInt, arrayObj, arrayByte, listInt, tupleInt, tupleLong1, tupleLong2, ], 652, [], TypeError)
         
         # IEnumerator[int]
-        # https://github.com/mono/mono/issues/7093
-        if not is_mono:
-            self._helper(self.target.M653, [], 653, [arrayInt, arrayObj, arrayByte, listInt, tupleInt, tupleLong1, tupleLong2, ], TypeError)
+        self._helper(self.target.M653, [], 653, [arrayInt, arrayObj, arrayByte, listInt, tupleInt, tupleLong1, tupleLong2, ], TypeError)
         
         # Int32[]
         self._helper(self.target.M500, [arrayInt, tupleInt, tupleLong1, tupleBool, ], 500, [listInt, arrayByte, arrayObj, ], TypeError)
