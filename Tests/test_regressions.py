@@ -1158,4 +1158,16 @@ class C:
         for i in rng:
             self.assertEqual(i, next(it))
 
+    @skipUnlessIronPython()
+    def test_ipy2_gh25(self):
+        """https://github.com/IronLanguages/ironpython2/issues/25"""
+
+        # this is not available on Linux systems
+        if is_posix:
+            self.assertRaises(AttributeError, lambda: os.startfile('/bin/bash'))
+        else:
+            self.assertTrue(hasattr(os, 'startfile'))
+
+
+
 run_test(__name__)

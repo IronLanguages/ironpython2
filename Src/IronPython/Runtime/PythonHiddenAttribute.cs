@@ -4,14 +4,32 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
+
+using IronPython.Runtime.Operations;
 
 namespace IronPython.Runtime {
     /// <summary>
     /// Marks a member as being hidden from Python code.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Event | AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public sealed class PythonHiddenAttribute : Attribute {
+    public sealed class PythonHiddenAttribute : PlatformsAttribute {
+
+        public PythonHiddenAttribute(params PlatformID[] hiddenPlatforms) {
+            ValidPlatforms = hiddenPlatforms;
+        }
+
+        public PythonHiddenAttribute(PlatformsAttribute.PlatformFamily hiddenPlatformFamily) {
+            SetValidPlatforms(hiddenPlatformFamily);
+        }
+
+        public static bool IsHidden(MemberInfo m, bool inherit=false) {
+            var hasHiddenAttribute = m.IsDefined(typeof(PythonHiddenAttribute), inherit);
+            if(hasHiddenAttribute) {
+                var attrs = m.GetCustomAttributes(typeof(PythonHiddenAttribute), inherit);
+                return ((PythonHiddenAttribute)attrs[0]).IsPlatformValid;
+            }
+            return false;
+        }
     }
 }

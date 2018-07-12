@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using IronPython.Runtime.Operations;
 using Microsoft.Scripting.Utils;
 
 namespace IronPython.Runtime {
@@ -15,14 +16,7 @@ namespace IronPython.Runtime {
     /// Members of a built-in module type should all be static as an instance is never created.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
-    public sealed class PythonModuleAttribute : Attribute {
-        public enum PlatformFamily {
-            Windows,
-            Unix
-        }
-
-        private static readonly PlatformID[] Windows = { PlatformID.Win32NT, PlatformID.Win32S, PlatformID.Win32Windows, PlatformID.WinCE, PlatformID.Xbox };
-        private static readonly PlatformID[] Unix = { PlatformID.MacOSX, PlatformID.Unix };
+    public sealed class PythonModuleAttribute : PlatformsAttribute {
 
         /// <summary>
         /// Creates a new PythonModuleAttribute that can be used to specify a built-in module that exists
@@ -40,22 +34,14 @@ namespace IronPython.Runtime {
             ValidPlatforms = validPlatforms;
         }
 
-        public PythonModuleAttribute(string/*!*/ name, Type/*!*/ type, PlatformFamily validPlatformFamily) {
+        public PythonModuleAttribute(string/*!*/ name, Type/*!*/ type, PlatformsAttribute.PlatformFamily validPlatformFamily) {
             ContractUtils.RequiresNotNull(name, nameof(name));
             ContractUtils.RequiresNotNull(type, nameof(type));
 
             Name = name;
             Type = type;
-            switch (validPlatformFamily) {
-                case PlatformFamily.Unix:
-                    ValidPlatforms = Unix;
-                    break;
-                default:
-                    ValidPlatforms = Windows;
-                    break;
-            }
+            SetValidPlatforms(validPlatformFamily);
         }
-
 
         /// <summary>
         /// The built-in module name
@@ -66,9 +52,5 @@ namespace IronPython.Runtime {
         /// The type that implements the built-in module
         /// </summary>
         public Type/*!*/ Type { get; }
-
-        public PlatformID[] ValidPlatforms { get; }
-
-        public bool IsPlatformValid => ValidPlatforms == null || ValidPlatforms.Length == 0 || Array.IndexOf(ValidPlatforms, Environment.OSVersion.Platform) >= 0;
     }
 }

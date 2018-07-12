@@ -812,7 +812,8 @@ namespace IronPython.Modules {
         }
 
 #if FEATURE_PROCESS
-        public static void startfile(string filename, [DefaultParameterValue("open")]string operation) {
+        [PythonHidden(PlatformsAttribute.PlatformFamily.Unix)]
+        public static void startfile(string filename, string operation="open") {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo.FileName = filename;
             process.StartInfo.UseShellExecute = true;

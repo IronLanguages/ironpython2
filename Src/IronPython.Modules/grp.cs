@@ -15,7 +15,7 @@ using IronPython.Runtime.Operations;
 
 using System.Numerics;
 
-[assembly: PythonModule("grp", typeof(IronPython.Modules.PythonGrp), PythonModuleAttribute.PlatformFamily.Unix)]
+[assembly: PythonModule("grp", typeof(IronPython.Modules.PythonGrp), PlatformsAttribute.PlatformFamily.Unix)]
 namespace IronPython.Modules {
     
     public static class PythonGrp {
