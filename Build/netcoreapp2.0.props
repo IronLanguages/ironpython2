@@ -46,7 +46,5 @@
     <Features>$(Features);FEATURE_WARNING_EXCEPTION</Features>
     <Features>$(Features);FEATURE_WIN32EXCEPTION</Features>
     <Features>$(Features);FEATURE_XMLDOC</Features>
-    <Features Condition=" '$(OS)' != 'Unix' ">$(Features);FEATURE_WINDOWS</Features>
-    <Features Condition=" '$(OS)' == 'Unix' ">$(Features);FEATURE_UNIX</Features>
   </PropertyGroup>
 </Project>

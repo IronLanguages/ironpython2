@@ -8,9 +8,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
@@ -22,7 +21,6 @@ using IronPython.Runtime;
 using IronPython.Runtime.Exceptions;
 using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
-using System.Numerics;
 
 [assembly: PythonModule("nt", typeof(IronPython.Modules.PythonNT))]
 namespace IronPython.Modules {
@@ -391,20 +389,23 @@ namespace IronPython.Modules {
             return stat(path);
         }
 
-#if FEATURE_UNIX && FEATURE_NATIVE
+#if FEATURE_NATIVE
+        [PythonHidden(PlatformsAttribute.PlatformFamily.Windows)]
         public static void symlink(string source, string link_name) {
             int result = Mono.Unix.Native.Syscall.symlink(source, link_name);
-            if(result != 0) {
+            if (result != 0) {
                 throw PythonExceptions.CreateThrowable(PythonExceptions.OSError, 0, source, link_name);
             }
         }
 
+        [PythonHidden(PlatformsAttribute.PlatformFamily.Windows)]
         public static PythonTuple uname() {
             Mono.Unix.Native.Utsname info;
             Mono.Unix.Native.Syscall.uname(out info);
             return PythonTuple.MakeTuple(info.sysname, info.nodename, info.release, info.version, info.machine);
         }
 
+        [PythonHidden(PlatformsAttribute.PlatformFamily.Windows)]
         public static uint geteuid() {
             return Mono.Unix.Native.Syscall.geteuid();
         }
@@ -838,7 +839,6 @@ namespace IronPython.Modules {
                 _mode = mode;
             }
 
-#if FEATURE_UNIX
             internal stat_result(Mono.Unix.Native.Stat stat, int? mode = null) {
                 _mode = mode ?? (int)stat.st_mode;
                 st_ino = stat.st_ino;
@@ -851,7 +851,6 @@ namespace IronPython.Modules {
                 st_mtime = _mtime = stat.st_mtime;
                 st_ctime = _ctime = stat.st_ctime;
             }
-#endif
 
             internal stat_result(int mode, BigInteger size, BigInteger st_atime, BigInteger st_mtime, BigInteger st_ctime) {
                 _mode = mode;
@@ -1250,7 +1249,6 @@ namespace IronPython.Modules {
                 return LightExceptions.Throw(PythonOps.TypeError("expected string, got NoneType"));
             }
 
-
             try {
                 FileInfo fi = new FileInfo(path);
                 int mode = 0;
@@ -1274,12 +1272,10 @@ namespace IronPython.Modules {
                     mode |= S_IWRITE;
                 }
 
-#if FEATURE_UNIX
-                if (Mono.Unix.Native.Syscall.stat(path, out Mono.Unix.Native.Stat buf) == 0) {
-                    // TODO: get rid of the mode override
-                    return new stat_result(buf, mode);
+                if (Environment.OSVersion.Platform == PlatformID.Unix) {
+                    var stat = statUnix(mode);
+                    if (stat != null) return stat;
                 }
-#endif
 
                 long st_atime = (long)PythonTime.TicksToTimestamp(fi.LastAccessTime.ToUniversalTime().Ticks);
                 long st_ctime = (long)PythonTime.TicksToTimestamp(fi.CreationTime.ToUniversalTime().Ticks);
@@ -1290,6 +1286,15 @@ namespace IronPython.Modules {
                 return LightExceptions.Throw(PythonExceptions.CreateThrowable(WindowsError, PythonExceptions._WindowsError.ERROR_INVALID_NAME, "The path is invalid: " + path));
             } catch (Exception e) {
                 return LightExceptions.Throw(ToPythonException(e, path));
+            }
+
+            // Isolate Mono.Unix from the rest of the method so that we don't try to load the Mono.Posix assembly on Windows.
+            stat_result statUnix(int mode) {
+                if (Mono.Unix.Native.Syscall.stat(path, out Mono.Unix.Native.Stat buf) == 0) {
+                    // TODO: get rid of the mode override
+                    return new stat_result(buf, mode);
+                }
+                return null;
             }
         }
 
