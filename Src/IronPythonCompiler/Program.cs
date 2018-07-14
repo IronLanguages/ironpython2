@@ -22,25 +22,40 @@ using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Providers;
 
-
 namespace IronPythonCompiler {
     
-    class Program {
+    public class Program {
 
         /// <summary>
         /// Generates the stub .exe file for starting the app
         /// </summary>
         /// <param name="config"></param>
-        static void GenerateExe(Config config) {
+        private static void GenerateExe(Config config) {
             var u = new Universe();
             var aName = new AssemblyName(Path.GetFileNameWithoutExtension(new FileInfo(config.Output).Name));
-            var ab = u.DefineDynamicAssembly(aName, AssemblyBuilderAccess.Save, Path.GetDirectoryName(config.Output));
+            var ab = u.DefineDynamicAssembly(aName, AssemblyBuilderAccess.Save, config.OutputPath);
             var mb = ab.DefineDynamicModule(config.Output, aName.Name + (aName.Name.EndsWith(".exe") ? string.Empty : ".exe"));
             var tb = mb.DefineType("PythonMain", IKVM.Reflection.TypeAttributes.Public);
 
             if (!string.IsNullOrEmpty(config.Win32Icon)) {
                 ab.__DefineIconResource(File.ReadAllBytes(config.Win32Icon));
             }
+
+            var attributes = new List<Tuple<string, Type>> {
+                Tuple.Create(config.FileVersion, u.Import(typeof(System.Reflection.AssemblyFileVersionAttribute))),
+                Tuple.Create(config.ProductName, u.Import(typeof(System.Reflection.AssemblyProductAttribute))),
+                Tuple.Create(config.ProductVersion, u.Import(typeof(System.Reflection.AssemblyInformationalVersionAttribute))),
+                Tuple.Create(config.Copyright, u.Import(typeof(System.Reflection.AssemblyCopyrightAttribute)))
+            };
+
+            foreach(var attr in attributes) {
+                if (!string.IsNullOrWhiteSpace(config.FileVersion)) {
+                    CustomAttributeBuilder builder = new CustomAttributeBuilder(attr.Item2.GetConstructor(new[] { u.Import(typeof(string)) }), new object[] { attr.Item1 });
+                    ab.SetCustomAttribute(builder);
+                }
+            }            
+
+            ab.DefineVersionInfoResource();
 
             MethodBuilder assemblyResolveMethod = null;
             ILGenerator gen = null;
@@ -52,10 +67,17 @@ namespace IronPythonCompiler {
                 foreach (var a in System.AppDomain.CurrentDomain.GetAssemblies()) {
                     var n = new AssemblyName(a.FullName);
                     if (!a.IsDynamic && a.EntryPoint == null && (n.Name.StartsWith("IronPython") || n.Name == "Microsoft.Dynamic" || n.Name == "Microsoft.Scripting")) {
-                        ConsoleOps.Info("\tEmbedded {0} {1}", n.Name, n.Version);
+                        ConsoleOps.Info($"\tEmbedded {n.Name} {n.Version}");
                         var f = new FileStream(a.Location, FileMode.Open, FileAccess.Read);
                         mb.DefineManifestResource("Dll." + n.Name, f, IKVM.Reflection.ResourceAttributes.Public);
                     }
+                }
+
+                foreach(var dll in config.DLLs) {
+                    var name = Path.GetFileNameWithoutExtension(dll);
+                    ConsoleOps.Info($"\tEmbedded {name}");
+                    var f = new FileStream(dll, FileMode.Open, FileAccess.Read);
+                    mb.DefineManifestResource("Dll." + name, f, IKVM.Reflection.ResourceAttributes.Public);
                 }
 
                 // we currently do no error checking on what is passed in to the assemblyresolve event handler
@@ -128,8 +150,7 @@ namespace IronPythonCompiler {
                 foreach (var option in config.PythonOptions) {
                     gen.Emit(OpCodes.Ldloc, dictVar);    
                     gen.Emit(OpCodes.Ldstr, option.Key);
-                    if (option.Value is int) {
-                        int val = (int)option.Value;
+                    if (option.Value is int val) {
                         if (val >= -128 && val <= 127)
                             gen.Emit(OpCodes.Ldc_I4_S, val); // this is more optimized
                         else
@@ -137,7 +158,7 @@ namespace IronPythonCompiler {
                         gen.Emit(OpCodes.Box, u.Import(typeof(System.Int32)));
                     } else if (option.Value.Equals(ScriptingRuntimeHelpers.True)) {
                         gen.Emit(OpCodes.Ldsfld, True);
-                    } else if(option.Value.Equals(ScriptingRuntimeHelpers.False)) {
+                    } else if (option.Value.Equals(ScriptingRuntimeHelpers.False)) {
                         gen.Emit(OpCodes.Ldsfld, False);
                     }
                     gen.EmitCall(OpCodes.Callvirt, u.Import(typeof(Dictionary<string, object>)).GetMethod("Add", new IKVM.Reflection.Type[] { u.Import(typeof(string)), u.Import(typeof(object)) }), Type.EmptyTypes);            
@@ -151,11 +172,11 @@ namespace IronPythonCompiler {
                 // put the generated DLL into the resources for the stub exe
                 var mem = new MemoryStream();
                 var rw = new ResourceWriter(mem);
-                rw.AddResource("IPDll." + Path.GetFileNameWithoutExtension(config.Output) + ".dll", File.ReadAllBytes(config.Output + ".dll"));
+                rw.AddResource("IPDll." + Path.GetFileNameWithoutExtension(config.Output) + ".dll", File.ReadAllBytes(Path.Combine(config.OutputPath, config.Output) + ".dll"));
                 rw.Generate();
                 mem.Position = 0;
                 mb.DefineManifestResource("IPDll.resources", mem, ResourceAttributes.Public);
-                File.Delete(config.Output + ".dll");
+                File.Delete(Path.Combine(config.OutputPath, config.Output) + ".dll");
 
                 // generate code to load the resource
                 gen.Emit(OpCodes.Ldstr, "IPDll");
@@ -240,7 +261,7 @@ namespace IronPythonCompiler {
             ab.Save(fileName, config.Platform, config.Machine);
         }
 
-        static int Main(string[] args) {
+        public static int Main(string[] args) {
             var files = new List<string>();
             var config = new Config();
             config.ParseArgs(args);
@@ -251,27 +272,31 @@ namespace IronPythonCompiler {
             // we don't use the engine, but we create it so we can have a default context.
             ScriptEngine engine = Python.CreateEngine(config.PythonOptions);
 
-            ConsoleOps.Info("IronPython Compiler for {0} ({1})", engine.Setup.DisplayName, engine.LanguageVersion);
-            ConsoleOps.Info("{0}", config);
+            ConsoleOps.Info($"IronPython Compiler for {engine.Setup.DisplayName} ({engine.LanguageVersion})");
+            ConsoleOps.Info($"{config}");
             ConsoleOps.Info("compiling...");
 
             var compileOptions = new Dictionary<string, object>() {
-                { "mainModule", config.MainName }
+                { "mainModule", config.MainName },
+                { "assemblyFileVersion", config.FileVersion },
+                { "copyright", config.Copyright },
+                { "productName", config.ProductName },
+                { "productVersion", config.ProductVersion },
             };
             
             try
             {
                 ClrModule.CompileModules(DefaultContext.DefaultCLS, 
-                    Path.ChangeExtension(config.Output, ".dll"), 
+                    Path.Combine(config.OutputPath, Path.ChangeExtension(config.Output, ".dll")), 
                     compileOptions, 
                     config.Files.ToArray());
                 
-                var outputfilename = Path.ChangeExtension(config.Output, ".dll");
+                var outputfilename = Path.Combine(config.OutputPath, Path.ChangeExtension(config.Output, ".dll"));
                 if (config.Target != PEFileKinds.Dll) {
-                    outputfilename = Path.ChangeExtension(config.Output, ".exe");                    
+                    outputfilename = Path.Combine(config.OutputPath, Path.ChangeExtension(config.Output, ".exe"));
                     GenerateExe(config);
                 }
-                ConsoleOps.Info("Saved to {0}", outputfilename);
+                ConsoleOps.Info($"Saved to {outputfilename}");
             }
             catch (Exception e)
             {
