@@ -19,13 +19,16 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" Condition=" $(Features.Contains('FEATURE_CONFIGURATION')) " />
     <Reference Include="System.Runtime.Remoting" Condition=" $(Features.Contains('FEATURE_REMOTING')) " />
-    <Reference Condition="'$(Mono)' == 'true'" Include="Mono.Posix">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
   </ItemGroup>
 
-  <ItemGroup Condition=" ('$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp2.1') AND '$(OS)' != 'Windows_NT' ">
-    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="Mono.Posix" Condition=" '$(Mono)' == 'true' ">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition=" '$(Mono)' != 'true' " />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" Condition=" '$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp2.1' " />
   </ItemGroup>
 
   <ItemGroup>

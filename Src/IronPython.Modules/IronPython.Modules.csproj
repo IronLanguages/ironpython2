@@ -7,14 +7,14 @@
     <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(IsFullFramework)' == 'true' ">
-    <Reference Condition="'$(Mono)' == 'true'" Include="Mono.Posix">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="Mono.Posix" Condition=" '$(Mono)' == 'true' ">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition=" '$(Mono)' != 'true' " />
   </ItemGroup>
-
-  <ItemGroup Condition=" ('$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp2.1') AND '$(OS)' != 'Windows_NT' ">
-    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+  <ItemGroup>
+    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" Condition=" '$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp2.1' " />
   </ItemGroup>
 
   <ItemGroup>

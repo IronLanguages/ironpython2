@@ -6,14 +6,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using Microsoft.Scripting;
+
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 using Microsoft.Win32.SafeHandles;
@@ -1071,17 +1069,22 @@ namespace IronPython.Runtime {
 
             var inPipeFile = new PythonFile(context);
             var outPipeFile = new PythonFile(context);
-#if FEATURE_WINDOWS
-            var inPipe = new AnonymousPipeServerStream(PipeDirection.In);
-            inPipeFile.InitializePipe(inPipe, "r", encoding);
-            var outPipe = new AnonymousPipeClientStream(PipeDirection.Out, inPipe.ClientSafePipeHandle);
-            outPipeFile.InitializePipe(outPipe, "w", encoding);
-#else
-            Mono.Unix.UnixPipes pipes = Mono.Unix.UnixPipes.CreatePipes();
-            inPipeFile.InitializePipe(pipes.Reading, "r", encoding);
-            outPipeFile.InitializePipe(pipes.Writing,"w", encoding);
-#endif
-            return new [] {inPipeFile, outPipeFile};
+            if (Environment.OSVersion.Platform == PlatformID.Unix) {
+                InitializePipesUnix();
+            } else {
+                var inPipe = new AnonymousPipeServerStream(PipeDirection.In);
+                inPipeFile.InitializePipe(inPipe, "r", encoding);
+                var outPipe = new AnonymousPipeClientStream(PipeDirection.Out, inPipe.ClientSafePipeHandle);
+                outPipeFile.InitializePipe(outPipe, "w", encoding);
+            }
+            return new[] { inPipeFile, outPipeFile };
+
+            // Isolate Mono.Unix from the rest of the method so that we don't try to load the Mono.Posix assembly on Windows.
+            void InitializePipesUnix() {
+                Mono.Unix.UnixPipes pipes = Mono.Unix.UnixPipes.CreatePipes();
+                inPipeFile.InitializePipe(pipes.Reading, "r", encoding);
+                outPipeFile.InitializePipe(pipes.Writing, "w", encoding);
+            }
         }
 
         [PythonHidden]
@@ -1450,12 +1453,10 @@ namespace IronPython.Runtime {
                 handle = ((PipeStream)stream).SafePipeHandle.DangerousGetHandle().ToPython();
                 return true;
             }
-#if FEATURE_UNIX
-            if (stream is Mono.Unix.UnixStream) {
-                handle = ((Mono.Unix.UnixStream)stream).Handle;
-                return true;
+            if (Environment.OSVersion.Platform == PlatformID.Unix) {
+                handle = GetFileHandleUnix();
+                if (handle != null) return true;
             }
-#endif
 #endif
 
             // if all else fails try reflection
@@ -1467,7 +1468,16 @@ namespace IronPython.Runtime {
 
             handle = null;
             return false;
+
+            // Isolate Mono.Unix from the rest of the method so that we don't try to load the Mono.Posix assembly on Windows.
+            object GetFileHandleUnix() {
+                if (stream is Mono.Unix.UnixStream) {
+                    return ((Mono.Unix.UnixStream)stream).Handle;
+                }
+                return null;
+            }
         }
+
 
         // Enumeration of each stream mode.
         private enum PythonFileMode {
@@ -1969,29 +1979,29 @@ namespace IronPython.Runtime {
             return this;
         }
 
-#if FEATURE_NATIVE
-#if FEATURE_WINDOWS
+#if FEATURE_NATIVE || NETCOREAPP2_0 || NETCOREAPP2_1
         public bool isatty() {
+            if (Environment.OSVersion.Platform == PlatformID.Unix) {
+                return isattyUnix();
+            }
+
             return IsConsole && !isRedirected();
-        }
 
-        private bool isRedirected() {
-            if (_consoleStreamType == ConsoleStreamType.Output) {
-                return Console.IsOutputRedirected;
+            // Isolate Mono.Unix from the rest of the method so that we don't try to load the Mono.Posix assembly on Windows.
+            bool isattyUnix() {
+                return Mono.Unix.Native.Syscall.isatty(0) || Mono.Unix.Native.Syscall.isatty(1) || Mono.Unix.Native.Syscall.isatty(2);
             }
-            if (_consoleStreamType == ConsoleStreamType.Input) {
-                return Console.IsInputRedirected;
+
+            bool isRedirected() {
+                if (_consoleStreamType == ConsoleStreamType.Output) {
+                    return Console.IsOutputRedirected;
+                }
+                if (_consoleStreamType == ConsoleStreamType.Input) {
+                    return Console.IsInputRedirected;
+                }
+                return Console.IsErrorRedirected;
             }
-            return Console.IsErrorRedirected;
         }
-#endif
-#if FEATURE_UNIX
-
-        public bool isatty() {
-            return Mono.Unix.Native.Syscall.isatty(0) || Mono.Unix.Native.Syscall.isatty(1) || Mono.Unix.Native.Syscall.isatty(2);
-        }
-#endif
-
 #else
         public bool isatty() {
             return IsConsole;

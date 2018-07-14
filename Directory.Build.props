@@ -6,7 +6,7 @@
     <BuildSysDir Condition=" '$(BuildSysDir)' == '' ">$(RootDir)Build</BuildSysDir>
     <ReferenceDir Condition=" '$(ReferenceDir)' == '' ">$(RootDir)Util\References</ReferenceDir>
 
-    <Mono Condition=" '$(Mono)' == '' and '$(OS)' != 'Windows_NT'">true</Mono>
+    <Mono Condition=" '$(Mono)' == '' AND '$(OS)' != 'Windows_NT' ">true</Mono>
     
     <!-- The following two lines prevent csc.rsp and Microsoft.NETFramework.props from adding
          additional assembly references. -->
@@ -55,10 +55,6 @@
   <PropertyGroup Condition=" '$(BuildFlavour)' == '' ">
     <BuildFlavour>Debug</BuildFlavour>
     <BuildFlavour Condition="'$(Configuration)' == 'Release'">Release</BuildFlavour>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <WpfReferences>$(RootDir)Util\References\WPF\4.0</WpfReferences>
   </PropertyGroup>
 
   <!-- References -->
