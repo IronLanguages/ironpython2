@@ -184,9 +184,8 @@ variantTypes = [
         getStatements=[
                 "if (_typeUnion._unionTypes._bstr != IntPtr.Zero) {",
                 "    return Marshal.PtrToStringBSTR(_typeUnion._unionTypes._bstr);",
-                "} else {",
-                "    return null;",
-                "}"
+                "}",
+                "return null;"
         ],
         setStatements=[
                 "if (value != null) {",
@@ -200,9 +199,8 @@ variantTypes = [
         getStatements=[
                 "if (_typeUnion._unionTypes._dispatch != IntPtr.Zero) {",
                 "    return Marshal.GetObjectForIUnknown(_typeUnion._unionTypes._unknown);",
-                "} else {",
-                "    return null;",
-                "}"
+                "}",
+                "return null;"
         ],
         setStatements=[
                 "if (value != null) {",
@@ -216,9 +214,8 @@ variantTypes = [
         getStatements=[
                 "if (_typeUnion._unionTypes._dispatch != IntPtr.Zero) {",
                 "    return Marshal.GetObjectForIUnknown(_typeUnion._unionTypes._dispatch);",
-                "} else {",
-                "    return null;",
-                "}"
+                "}",
+                "return null;"
         ],
         setStatements=[
                 "if (value != null) {",
