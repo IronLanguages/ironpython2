@@ -322,7 +322,7 @@ namespace IronPython.Modules {
             /// <summary>
             /// gets the object or throws a reference exception
             /// </summary>
-            object GetObject() {
+            private object GetObject() {
                 object res;
                 if (!TryGetObject(out res)) {
                     throw PythonOps.ReferenceError("weakly referenced object no longer exists");
@@ -330,7 +330,7 @@ namespace IronPython.Modules {
                 return res;
             }
 
-            bool TryGetObject(out object result) {
+            private bool TryGetObject(out object result) {
                 result = _target.Target;
                 if (result == null) return false;
                 GC.KeepAlive(this);
@@ -754,7 +754,7 @@ namespace IronPython.Modules {
             }
         }
 
-        static class WeakRefHelpers {
+        private static class WeakRefHelpers {
             public static WeakRefTracker InitializeWeakRef(PythonContext context, object self, object target, object callback) {
                 IWeakReferenceable iwr = ConvertToWeakReferenceable(context, target);
 
@@ -764,14 +764,17 @@ namespace IronPython.Modules {
                         throw PythonOps.TypeError("cannot create weak reference to '{0}' object", PythonOps.GetPythonTypeName(target));
                 }
 
-                wrt.ChainCallback(callback,self);
+                if (callback != null || !wrt.Contains(callback, self)) {
+                    wrt.ChainCallback(callback, self);
+                }
+
                 return wrt;
             }
         }
     }
 
     [PythonType("wrapper_descriptor")]
-    class SlotWrapper : PythonTypeSlot, ICodeFormattable {
+    internal class SlotWrapper : PythonTypeSlot, ICodeFormattable {
         private readonly string _name;
         private readonly PythonType _type;
 
@@ -817,8 +820,8 @@ namespace IronPython.Modules {
 
     [PythonType("method-wrapper")]
     public class GenericMethodWrapper {
-        string name;
-        IProxyObject target;
+        private readonly string name;
+        private readonly IProxyObject target;
 
         public GenericMethodWrapper(string methodName, IProxyObject proxyTarget) {
             name = methodName;

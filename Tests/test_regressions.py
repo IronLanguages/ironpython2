@@ -1168,6 +1168,14 @@ class C:
         else:
             self.assertTrue(hasattr(os, 'startfile'))
 
+    def test_ipy2_gh437(self):
+        """https://github.com/IronLanguages/ironpython2/issues/437"""
+        import weakref
+        class SomeWeakReferenceableObject(object): pass
+
+        o = SomeWeakReferenceableObject()
+        x = [weakref.ref(o) for i in range(10)]
+        self.assertEqual(weakref.getweakrefcount(o), 1)
 
 
 run_test(__name__)
