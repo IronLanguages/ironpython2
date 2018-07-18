@@ -59,10 +59,7 @@
       $(StdLibPath)\multiprocessing\reduction.py;
       $(StdLibPath)\multiprocessing\sharedctypes.py;
       $(StdLibPath)\multiprocessing\synchronize.py;
-      $(StdLibPath)\xml\dom\expatbuilder.py;
       $(StdLibPath)\xml\etree\cElementTree.py;
-      $(StdLibPath)\xml\parsers\expat.py;
-      $(StdLibPath)\xml\sax\expatreader.py;
       $(StdLibPath)\cProfile.py;
       $(StdLibPath)\dbhash.py;
       $(StdLibPath)\pty.py;

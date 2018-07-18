@@ -1194,9 +1194,6 @@ def parse(source, parser=None):
 # @return A (event, elem) iterator.
 
 def iterparse(source, events=None, parser=None):
-    if sys.platform == 'cli':
-        raise NotImplementedError('iterparse is not supported on IronPython. (CP #31923)')
-
     close_source = False
     if not hasattr(source, "read"):
         source = open(source, "rb")
@@ -1675,10 +1672,6 @@ class XMLParser(object):
         tree = self.target.close()
         del self.target, self._parser # get rid of circular references
         return tree
-
-if sys.platform == 'cli':
-    from . import SimpleXMLTreeBuilder
-    XMLParser = SimpleXMLTreeBuilder.TreeBuilder
 
 # compatibility
 XMLTreeBuilder = XMLParser

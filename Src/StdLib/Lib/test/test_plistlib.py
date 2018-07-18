@@ -3,6 +3,7 @@
 import unittest
 import plistlib
 import os
+import sys
 import datetime
 from test import test_support
 
@@ -121,12 +122,14 @@ class TestPlistlib(unittest.TestCase):
         self.assertEqual(pl["aString"], "Doodah")
         self.assertEqual(pl["aDict"]["aFalseValue"], False)
 
+    @unittest.skipIf(sys.platform=='cli', 'unicode - https://github.com/IronLanguages/ironpython2/issues/464')
     def test_io(self):
         pl = self._create()
         plistlib.writePlist(pl, test_support.TESTFN)
         pl2 = plistlib.readPlist(test_support.TESTFN)
         self.assertEqual(dict(pl), dict(pl2))
 
+    @unittest.skipIf(sys.platform=='cli', 'unicode - https://github.com/IronLanguages/ironpython2/issues/464')
     def test_string(self):
         pl = self._create()
         data = plistlib.writePlistToString(pl)
@@ -147,18 +150,21 @@ class TestPlistlib(unittest.TestCase):
         data = {'1': {'2': [{'3': [[[[[{'test': plistlib.Data(b'aaaaaa')}]]]]]}]}}
         self.assertEqual(plistlib.readPlistFromString(plistlib.writePlistToString(data)), data)
 
+    @unittest.skipIf(sys.platform=='cli', 'unicode - https://github.com/IronLanguages/ironpython2/issues/464')
     def test_appleformatting(self):
         pl = plistlib.readPlistFromString(TESTDATA)
         data = plistlib.writePlistToString(pl)
         self.assertEqual(data, TESTDATA,
                          "generated data was not identical to Apple's output")
 
+    @unittest.skipIf(sys.platform=='cli', 'unicode - https://github.com/IronLanguages/ironpython2/issues/464')
     def test_appleformattingfromliteral(self):
         pl = self._create()
         pl2 = plistlib.readPlistFromString(TESTDATA)
         self.assertEqual(dict(pl), dict(pl2),
                          "generated data was not identical to Apple's output")
 
+    @unittest.skipIf(sys.platform=='cli', 'unicode - https://github.com/IronLanguages/ironpython2/issues/464')
     def test_stringio(self):
         from StringIO import StringIO
         f = StringIO()
@@ -167,6 +173,7 @@ class TestPlistlib(unittest.TestCase):
         pl2 = plistlib.readPlist(StringIO(f.getvalue()))
         self.assertEqual(dict(pl), dict(pl2))
 
+    @unittest.skipIf(sys.platform=='cli', 'unicode - https://github.com/IronLanguages/ironpython2/issues/464')
     def test_cstringio(self):
         from cStringIO import StringIO
         f = StringIO()
