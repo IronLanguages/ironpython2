@@ -2,6 +2,7 @@
 
 import copy
 import pickle
+import sys
 from StringIO import StringIO
 from test.test_support import verbose, run_unittest, findfile
 import unittest
@@ -989,6 +990,7 @@ class MinidomTest(unittest.TestCase):
                 text3.parentNode is elm1, "testSAX2DOM - parents")
         doc.unlink()
 
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def testEncodings(self):
         doc = parseString('<foo>&#x20ac;</foo>')
         self.confirm(doc.toxml() == u'<?xml version="1.0" ?><foo>\u20ac</foo>'
