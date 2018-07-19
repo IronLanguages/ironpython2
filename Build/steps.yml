@@ -36,7 +36,7 @@ steps:
           sudo apt install apt-transport-https
           echo "deb https://download.mono-project.com/repo/ubuntu stable-xenial main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
           sudo apt update
-          sudo apt-get -yq install mono-devel
+          sudo apt-get -yq install mono-devel dos2unix
 
   - powershell: ./make.ps1
     displayName: Build
