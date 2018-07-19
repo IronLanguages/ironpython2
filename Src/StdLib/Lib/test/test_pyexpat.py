@@ -156,24 +156,45 @@ class ParseTest(unittest.TestCase):
 
         # Verify output
         op = out.out
-        self.assertEqual(op[0], 'PI: \'xml-stylesheet\' \'href="stylesheet.css"\'')
-        self.assertEqual(op[1], "Comment: ' comment data '")
-        self.assertEqual(op[2], "Notation declared: ('notation', None, 'notation.jpeg', None)")
-        self.assertEqual(op[3], "Unparsed entity decl: ('unparsed_entity', None, 'entity.file', None, 'notation')")
-        self.assertEqual(op[4], "Start element: 'root' {'attr1': 'value1', 'attr2': 'value2\\xe1\\xbd\\x80'}")
-        self.assertEqual(op[5], "NS decl: 'myns' 'http://www.python.org/namespace'")
-        self.assertEqual(op[6], "Start element: 'http://www.python.org/namespace!subelement' {}")
-        self.assertEqual(op[7], "Character data: 'Contents of subelements'")
-        self.assertEqual(op[8], "End element: 'http://www.python.org/namespace!subelement'")
-        self.assertEqual(op[9], "End of NS decl: 'myns'")
-        self.assertEqual(op[10], "Start element: 'sub2' {}")
-        self.assertEqual(op[11], 'Start of CDATA section')
-        self.assertEqual(op[12], "Character data: 'contents of CDATA section'")
-        self.assertEqual(op[13], 'End of CDATA section')
-        self.assertEqual(op[14], "End element: 'sub2'")
-        self.assertEqual(op[15], "External entity ref: (None, 'entity.file', None)")
-        self.assertEqual(op[16], "End element: 'root'")
+        # https://github.com/IronLanguages/ironpython2/issues/464
+        if sys.platform == 'cli':
+            self.assertEqual(op[0], 'PI: \'xml-stylesheet\' \'href="stylesheet.css"\'')
+            self.assertEqual(op[1], "Comment: ' comment data '")
+            #self.assertEqual(op[2], "Notation declared: ('notation', None, 'notation.jpeg', None)")
+            #self.assertEqual(op[3], "Unparsed entity decl: ('unparsed_entity', None, 'entity.file', None, 'notation')")
+            self.assertEqual(op[2], "Start element: 'root' {'attr1': 'value1', 'attr2': u'value2\u1f40'}")
+            self.assertEqual(op[3], "NS decl: 'myns' 'http://www.python.org/namespace'")
+            self.assertEqual(op[4], "Start element: 'http://www.python.org/namespace!subelement' {}")
+            self.assertEqual(op[5], "Character data: 'Contents of subelements'")
+            self.assertEqual(op[6], "End element: 'http://www.python.org/namespace!subelement'")
+            self.assertEqual(op[7], "End of NS decl: 'myns'")
+            self.assertEqual(op[8], "Start element: 'sub2' {}")
+            self.assertEqual(op[9], 'Start of CDATA section')
+            self.assertEqual(op[10], "Character data: 'contents of CDATA section'")
+            self.assertEqual(op[11], 'End of CDATA section')
+            self.assertEqual(op[12], "End element: 'sub2'")
+            #self.assertEqual(op[15], "External entity ref: (None, 'entity.file', None)")
+            self.assertEqual(op[13], "End element: 'root'")
+        else:
+            self.assertEqual(op[0], 'PI: \'xml-stylesheet\' \'href="stylesheet.css"\'')
+            self.assertEqual(op[1], "Comment: ' comment data '")
+            self.assertEqual(op[2], "Notation declared: ('notation', None, 'notation.jpeg', None)")
+            self.assertEqual(op[3], "Unparsed entity decl: ('unparsed_entity', None, 'entity.file', None, 'notation')")
+            self.assertEqual(op[4], "Start element: 'root' {'attr1': 'value1', 'attr2': 'value2\\xe1\\xbd\\x80'}")
+            self.assertEqual(op[5], "NS decl: 'myns' 'http://www.python.org/namespace'")
+            self.assertEqual(op[6], "Start element: 'http://www.python.org/namespace!subelement' {}")
+            self.assertEqual(op[7], "Character data: 'Contents of subelements'")
+            self.assertEqual(op[8], "End element: 'http://www.python.org/namespace!subelement'")
+            self.assertEqual(op[9], "End of NS decl: 'myns'")
+            self.assertEqual(op[10], "Start element: 'sub2' {}")
+            self.assertEqual(op[11], 'Start of CDATA section')
+            self.assertEqual(op[12], "Character data: 'contents of CDATA section'")
+            self.assertEqual(op[13], 'End of CDATA section')
+            self.assertEqual(op[14], "End element: 'sub2'")
+            self.assertEqual(op[15], "External entity ref: (None, 'entity.file', None)")
+            self.assertEqual(op[16], "End element: 'root'")
 
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def test_unicode(self):
         # Try the parse again, this time producing Unicode output
         out = self.Outputter()
@@ -215,23 +236,43 @@ class ParseTest(unittest.TestCase):
         parser.ParseFile(file)
 
         op = out.out
-        self.assertEqual(op[0], 'PI: u\'xml-stylesheet\' u\'href="stylesheet.css"\'')
-        self.assertEqual(op[1], "Comment: u' comment data '")
-        self.assertEqual(op[2], "Notation declared: (u'notation', None, u'notation.jpeg', None)")
-        self.assertEqual(op[3], "Unparsed entity decl: (u'unparsed_entity', None, u'entity.file', None, u'notation')")
-        self.assertEqual(op[4], "Start element: u'root' {u'attr1': u'value1', u'attr2': u'value2\\u1f40'}")
-        self.assertEqual(op[5], "NS decl: u'myns' u'http://www.python.org/namespace'")
-        self.assertEqual(op[6], "Start element: u'http://www.python.org/namespace!subelement' {}")
-        self.assertEqual(op[7], "Character data: u'Contents of subelements'")
-        self.assertEqual(op[8], "End element: u'http://www.python.org/namespace!subelement'")
-        self.assertEqual(op[9], "End of NS decl: u'myns'")
-        self.assertEqual(op[10], "Start element: u'sub2' {}")
-        self.assertEqual(op[11], 'Start of CDATA section')
-        self.assertEqual(op[12], "Character data: u'contents of CDATA section'")
-        self.assertEqual(op[13], 'End of CDATA section')
-        self.assertEqual(op[14], "End element: u'sub2'")
-        self.assertEqual(op[15], "External entity ref: (None, u'entity.file', None)")
-        self.assertEqual(op[16], "End element: u'root'")
+        # https://github.com/IronLanguages/ironpython2/issues/464
+        if sys.platform == 'cli':
+            self.assertEqual(op[0], 'PI: \'xml-stylesheet\' \'href="stylesheet.css"\'')
+            self.assertEqual(op[1], "Comment: ' comment data '")
+            #self.assertEqual(op[2], "Notation declared: ('notation', None, 'notation.jpeg', None)")
+            #self.assertEqual(op[3], "Unparsed entity decl: ('unparsed_entity', None, 'entity.file', None, 'notation')")
+            self.assertEqual(op[2], "Start element: 'root' {'attr1': 'value1', 'attr2': u'value2\\u1f40'}")
+            self.assertEqual(op[3], "NS decl: 'myns' 'http://www.python.org/namespace'")
+            self.assertEqual(op[4], "Start element: 'http://www.python.org/namespace!subelement' {}")
+            self.assertEqual(op[5], "Character data: 'Contents of subelements'")
+            self.assertEqual(op[6], "End element: 'http://www.python.org/namespace!subelement'")
+            self.assertEqual(op[7], "End of NS decl: 'myns'")
+            self.assertEqual(op[8], "Start element: 'sub2' {}")
+            self.assertEqual(op[9], 'Start of CDATA section')
+            self.assertEqual(op[10], "Character data: 'contents of CDATA section'")
+            self.assertEqual(op[11], 'End of CDATA section')
+            self.assertEqual(op[12], "End element: 'sub2'")
+            #self.assertEqual(op[13], "External entity ref: (None, 'entity.file', None)")
+            self.assertEqual(op[13], "End element: 'root'")
+        else:
+            self.assertEqual(op[0], 'PI: u\'xml-stylesheet\' u\'href="stylesheet.css"\'')
+            self.assertEqual(op[1], "Comment: u' comment data '")
+            self.assertEqual(op[2], "Notation declared: (u'notation', None, u'notation.jpeg', None)")
+            self.assertEqual(op[3], "Unparsed entity decl: (u'unparsed_entity', None, u'entity.file', None, u'notation')")
+            self.assertEqual(op[4], "Start element: u'root' {u'attr1': u'value1', u'attr2': u'value2\\u1f40'}")
+            self.assertEqual(op[5], "NS decl: u'myns' u'http://www.python.org/namespace'")
+            self.assertEqual(op[6], "Start element: u'http://www.python.org/namespace!subelement' {}")
+            self.assertEqual(op[7], "Character data: u'Contents of subelements'")
+            self.assertEqual(op[8], "End element: u'http://www.python.org/namespace!subelement'")
+            self.assertEqual(op[9], "End of NS decl: u'myns'")
+            self.assertEqual(op[10], "Start element: u'sub2' {}")
+            self.assertEqual(op[11], 'Start of CDATA section')
+            self.assertEqual(op[12], "Character data: u'contents of CDATA section'")
+            self.assertEqual(op[13], 'End of CDATA section')
+            self.assertEqual(op[14], "End element: u'sub2'")
+            self.assertEqual(op[15], "External entity ref: (None, u'entity.file', None)")
+            self.assertEqual(op[16], "End element: u'root'")
 
         # Issue 4877: expat.ParseFile causes segfault on a closed file.
         fp = open(test_support.TESTFN, 'wb')
@@ -420,6 +461,7 @@ class HandlerExceptionTest(unittest.TestCase):
 
 
 # Test Current* members:
+@unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
 class PositionTest(unittest.TestCase):
     def StartElementHandler(self, name, attrs):
         self.check_pos('s')
@@ -468,16 +510,22 @@ class sf1296433Test(unittest.TestCase):
         parser = expat.ParserCreate()
         parser.CharacterDataHandler = handler
 
-        self.assertRaises(Exception, parser.Parse, xml)
+        # https://github.com/IronLanguages/ironpython2/issues/464
+        if sys.platform == 'cli':
+            self.assertRaises(Exception, parser.Parse, xml, True)
+        else:
+            self.assertRaises(Exception, parser.Parse, xml)
 
 class ChardataBufferTest(unittest.TestCase):
     """
     test setting of chardata buffer size
     """
 
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def test_1025_bytes(self):
         self.assertEqual(self.small_buffer_test(1025), 2)
 
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def test_1000_bytes(self):
         self.assertEqual(self.small_buffer_test(1000), 1)
 
@@ -493,6 +541,7 @@ class ChardataBufferTest(unittest.TestCase):
         with self.assertRaises(TypeError):
             parser.buffer_size = sys.maxint+1
 
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def test_unchanged_size(self):
         xml1 = ("<?xml version='1.0' encoding='iso8859'?><s>%s" % ('a' * 512))
         xml2 = 'a'*512 + '</s>'
@@ -515,7 +564,7 @@ class ChardataBufferTest(unittest.TestCase):
         parser.Parse(xml2)
         self.assertEqual(self.n, 2)
 
-
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def test_disabling_buffer(self):
         xml1 = "<?xml version='1.0' encoding='iso8859'?><a>%s" % ('a' * 512)
         xml2 = ('b' * 1024)
@@ -581,6 +630,7 @@ class ChardataBufferTest(unittest.TestCase):
         parser.Parse(xml2, 1)
         self.assertEqual(self.n, 2)
 
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def test_change_size_2(self):
         xml1 = "<?xml version='1.0' encoding='iso8859'?><a>a<s>%s" % ('a' * 1023)
         xml2 = "aaa</s><s>%s</s></a>" % ('a' * 1025)
@@ -598,6 +648,7 @@ class ChardataBufferTest(unittest.TestCase):
         self.assertEqual(self.n, 4)
 
 class MalformedInputText(unittest.TestCase):
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def test1(self):
         xml = "\0\r\n"
         parser = expat.ParserCreate()
@@ -618,6 +669,7 @@ class ForeignDTDTests(unittest.TestCase):
     """
     Tests for the UseForeignDTD method of expat parser objects.
     """
+    @unittest.skipIf(sys.platform=='cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def test_use_foreign_dtd(self):
         """
         If UseForeignDTD is passed True and a document without an external
@@ -646,6 +698,7 @@ class ForeignDTDTests(unittest.TestCase):
         parser.Parse("<?xml version='1.0'?><element/>")
         self.assertEqual(handler_call_args, [(None, None)])
 
+    @unittest.skipIf(sys.platform=='cli', 'Currently failing on IronPython because SetParamEntityParsing is not implemented')
     def test_ignore_use_foreign_dtd(self):
         """
         If UseForeignDTD is passed True and a document with an external

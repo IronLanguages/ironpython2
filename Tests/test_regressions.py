@@ -1176,6 +1176,19 @@ class C:
         o = SomeWeakReferenceableObject()
         x = [weakref.ref(o) for i in range(10)]
         self.assertEqual(weakref.getweakrefcount(o), 1)
+        
+    def test_gh370(self):
+        """https://github.com/IronLanguages/ironpython2/issues/370"""
+        from xml.etree import ElementTree as ET
+        from StringIO import StringIO
+        x = ET.iterparse(StringIO('<root/>'))
+        y = x.next()
+        self.assertTrue(y[0] == 'end' and y[1].tag == 'root')
 
+    def test_gh463(self):
+        """https://github.com/IronLanguages/ironpython2/issues/463"""
+        import plistlib
+        x = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>A</key><string>B</string></dict></plist>'
+        self.assertEquals(plistlib.readPlistFromString(x), {'A': 'B'})
 
 run_test(__name__)
