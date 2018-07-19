@@ -1,0 +1,122 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.0",
+    "signature": "f9b719c533e48bff407d4621c1a86654cca8caa1"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.0": {
+      "Mono.Posix.NETStandard/1.0.0": {
+        "runtimeTargets": {
+          "runtimes/linux-arm/lib/netstandard2.0/Mono.Posix.NETStandard.dll": {
+            "rid": "linux-arm",
+            "assetType": "runtime",
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "runtimes/linux-arm64/lib/netstandard2.0/Mono.Posix.NETStandard.dll": {
+            "rid": "linux-arm64",
+            "assetType": "runtime",
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "runtimes/linux-armel/lib/netstandard2.0/Mono.Posix.NETStandard.dll": {
+            "rid": "linux-armel",
+            "assetType": "runtime",
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "runtimes/linux-x64/lib/netstandard2.0/Mono.Posix.NETStandard.dll": {
+            "rid": "linux-x64",
+            "assetType": "runtime",
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "runtimes/linux-x86/lib/netstandard2.0/Mono.Posix.NETStandard.dll": {
+            "rid": "linux-x86",
+            "assetType": "runtime",
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "runtimes/osx/lib/netstandard2.0/Mono.Posix.NETStandard.dll": {
+            "rid": "osx",
+            "assetType": "runtime",
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "runtimes/win-x64/lib/netstandard2.0/Mono.Posix.NETStandard.dll": {
+            "rid": "win-x64",
+            "assetType": "runtime",
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "runtimes/win-x86/lib/netstandard2.0/Mono.Posix.NETStandard.dll": {
+            "rid": "win-x86",
+            "assetType": "runtime",
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "runtimes/linux-arm/native/libMonoPosixHelper.so": {
+            "rid": "linux-arm",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-arm64/native/libMonoPosixHelper.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-armel/native/libMonoPosixHelper.so": {
+            "rid": "linux-armel",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/libMonoPosixHelper.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x86/native/libMonoPosixHelper.so": {
+            "rid": "linux-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx/native/libMonoPosixHelper.dylib": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/MonoPosixHelper.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/libMonoPosixHelper.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/MonoPosixHelper.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/libMonoPosixHelper.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Mono.Posix.NETStandard/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vSN/L1uaVwKsiLa95bYu2SGkF0iY3xMblTfxc8alSziPuVfJpj3geVqHGAA75J7cZkMuKpFVikz82Lo6y6LLdA==",
+      "path": "mono.posix.netstandard/1.0.0",
+      "hashPath": "mono.posix.netstandard.1.0.0.nupkg.sha512"
+    }
+  }
+}
