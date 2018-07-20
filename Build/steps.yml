@@ -59,8 +59,8 @@ steps:
       inputs:
         SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
         Contents: |
-        **/*.nupkg
-        **/*.zip
+         **/*.nupkg
+         **/*.zip
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
       condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
       
@@ -69,8 +69,7 @@ steps:
       displayName: Copy MSI Installer
       inputs:
         SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
-        Contents: |
-        **/*.msi
+        Contents: '**/*.msi'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
       condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
 
@@ -79,8 +78,7 @@ steps:
       displayName: Copy Deb Installer
       inputs:
         SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
-        Contents: |
-        **/*.deb
+        Contents: '**/*.deb'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
       condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
 
@@ -105,6 +103,3 @@ steps:
       mergeTestResults: true
       testRunTitle: ${{ parameters.os }}
     condition: succeededOrFailed()
-    
-
-  
