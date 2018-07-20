@@ -94,7 +94,7 @@ or via the object attributes as named in the above tuple.
             }
         }
 
-        public static struct_group getgrgid(uint gid) {
+        public static struct_group getgrgid(int gid) {
             var grp = _getgrgid(gid);
             if(grp == IntPtr.Zero) {
                 throw PythonOps.KeyError($"getgrgid(): gid not found: {gid}");
@@ -128,7 +128,7 @@ or via the object attributes as named in the above tuple.
         #region P/Invoke Declarations
 
         [DllImport("libc", EntryPoint="getgrgid", CallingConvention=CallingConvention.Cdecl)]
-        private static extern IntPtr _getgrgid(uint uid);
+        private static extern IntPtr _getgrgid(int uid);
 
         [DllImport("libc", EntryPoint="getgrnam", CallingConvention=CallingConvention.Cdecl)]
         private static extern IntPtr _getgrnam([MarshalAs(UnmanagedType.LPStr)] string name);
