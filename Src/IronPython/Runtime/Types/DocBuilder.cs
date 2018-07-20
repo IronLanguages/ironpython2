@@ -599,6 +599,15 @@ namespace IronPython.Runtime.Types {
                     xpd = _CachedDoc;
                 } else {
                     xpd = new XPathDocument(xml);
+                    // attempt to redirect if required
+                    var node = xpd.CreateNavigator().SelectSingleNode("/doc/@redirect");
+                    if (node != null) {
+                        var redirect = node.Value;
+                        redirect = redirect.Replace("%PROGRAMFILESDIR%", Environment.GetFolderPath(Environment.Is64BitProcess ? Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles) + Path.DirectorySeparatorChar);
+                        if (File.Exists(redirect)) {
+                            xpd = new XPathDocument(redirect);
+                        }
+                    }
                 }
 
                 _CachedDoc = xpd;
