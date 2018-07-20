@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace IronPython.FakeInteropServices {
+namespace IronPython {
 #if NET45
     internal static class RuntimeInformation {
         private static readonly OSPlatform _osPlatform;

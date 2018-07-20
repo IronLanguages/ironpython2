@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 using Microsoft.Scripting.Runtime;
 
-using IronPython.FakeInteropServices;
+using IronPython;
 using IronPython.Runtime;
 using IronPython.Runtime.Operations;
 
