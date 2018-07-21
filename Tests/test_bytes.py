@@ -1181,7 +1181,7 @@ class BytesTest(IronPythonTestCase):
         def f(): x[0:1] = sys.maxint
         # mono doesn't throw an OutOfMemoryException on Linux when the size is too large,
         # it does get a value error for trying to set capacity to a negative number
-        if is_mono and not is_osx:
+        if is_mono:
             self.assertRaises(ValueError, f)
         else:
             self.assertRaises(MemoryError, f)
