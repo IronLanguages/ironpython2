@@ -101,6 +101,7 @@ namespace IronPython.Modules {
                 } else {
                     fi.Attributes |= FileAttributes.ReadOnly;
                 }
+                fi.Refresh();
             } catch (Exception e) {
                 throw ToPythonException(e, path);
             }
