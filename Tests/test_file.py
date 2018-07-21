@@ -555,7 +555,7 @@ class FileTest(IronPythonTestCase):
         except IOError, e:
             pass
         else:
-            AssertUnreachable() # should throw
+            self.assertUnreachable() # should throw
         #any other exceptions fail
 
     def test_inheritance_kwarg_override(self):
@@ -763,14 +763,14 @@ class FileTest(IronPythonTestCase):
         except Exception, e:
             self.assertEqual(e.errno, 2)
         else:
-            AssertUnreachable()
+            self.assertUnreachable()
 
         try:
             file('path_too_long' * 100) 
         except Exception, e:
             self.assertEqual(e.errno, 2)
         else:
-            AssertUnreachable()
+            self.assertUnreachable()
 
     def test_write_bytes(self):
         f = open("temp_ip", "w+")
