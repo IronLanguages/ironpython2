@@ -742,7 +742,7 @@ class CPickleTest(IronPythonTestCase):
             # exceptions vary between cPickle & Pickle
             try:
                 up.load()
-                AssertUnreachable()
+                self.assertUnreachable()
             except Exception, e:
                 pass
 

@@ -194,13 +194,13 @@ else:
             try:
                 x.__dict__ = {}
             except TypeError: pass
-            else: AssertUnreachable()
+            else: self.assertUnreachable()
             
             # can't delete __dict__
             try:
                 del(x.__dict__)
             except TypeError: pass
-            else: AssertUnreachable()
+            else: self.assertUnreachable()
             
             # init doesn't clobber dict, it just re-initializes values
             
@@ -220,7 +220,7 @@ else:
             try:
                 module.__new__(str)
             except TypeError: pass
-            else: AssertUnreachable()
+            else: self.assertUnreachable()
             
             # dir on non-initialized module raises TypeError
             x = module.__new__(module)
@@ -450,7 +450,7 @@ else:
 
         try:
             import TopModule.SubModule
-            AssertUnreachable()
+            self.assertUnreachable()
         except ImportError:
             pass
 
@@ -665,14 +665,14 @@ called = 3.14
         try:
             try:
                 import does_not_exist
-                AssertUnreachable()
+                self.assertUnreachable()
             except ImportError: pass
             
             self.assertEqual(myimpCalled, ('does_not_exist', None))
             
             try:
                 from testpkg1 import blah
-                AssertUnreachable()
+                self.assertUnreachable()
             except ImportError:
                 pass
 
@@ -891,7 +891,7 @@ called = 3.14
         '''
         try:
             import Nt
-            AssertUnreachable("Should not have been able to import 'Nt'")
+            self.assertUnreachable("Should not have been able to import 'Nt'")
         except:
             pass
 
@@ -919,7 +919,7 @@ called = 3.14
         
         try:
             import time
-            AssertUnreachable()
+            self.assertUnreachable()
         except MyException:
             pass    
         

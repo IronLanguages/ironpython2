@@ -314,7 +314,7 @@ class DelegateTest(IronPythonTestCase):
         try:
             pts = ParameterizedThreadStart(foo.baz)
             pts("Hello")
-            AssertUnreachable()
+            self.assertUnreachable()
         except TypeError: pass
 
 # SuperDelegate Tests
