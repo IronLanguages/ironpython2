@@ -41,6 +41,7 @@ steps:
           mono --version
           msbuild /version
           dotnet --info
+          df -Th
 
   - powershell: ./make.ps1
     displayName: Build
