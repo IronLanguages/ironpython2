@@ -43,7 +43,7 @@ namespace IronPython {
             _osPlatform = osPlatform;
         }
 
-        public bool Equals(OSPlatform other) => Equals(other._osPlatform);
+        public bool Equals(OSPlatform other) => _osPlatform.Equals(other._osPlatform);
 
         public override bool Equals(object obj) => obj is OSPlatform other && Equals(other);
 
