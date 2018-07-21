@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 
 using Microsoft.Scripting.Runtime;
 
+using IronPython;
 using IronPython.Runtime;
 using IronPython.Runtime.Operations;
 
@@ -104,12 +105,12 @@ or via the object attributes as named in the above tuple.")]
 
         private static struct_passwd Make(IntPtr pwd) {
             struct_passwd res = null;
-            if(Environment.OSVersion.Platform == PlatformID.MacOSX) {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
                 passwd_osx p = (passwd_osx)Marshal.PtrToStructure(pwd, typeof(passwd_osx));
                 res = new struct_passwd(p.pw_name, p.pw_passwd, p.pw_uid, p.pw_gid, p.pw_gecos, p.pw_dir, p.pw_shell);
-            } else {                
+            } else {
                 passwd_linux p = (passwd_linux)Marshal.PtrToStructure(pwd, typeof(passwd_linux));
-                res = new struct_passwd(p.pw_name, p.pw_passwd, p.pw_uid, p.pw_gid, p.pw_gecos, p.pw_dir, p.pw_shell); 
+                res = new struct_passwd(p.pw_name, p.pw_passwd, p.pw_uid, p.pw_gid, p.pw_gecos, p.pw_dir, p.pw_shell);
             }
 
             return res;
