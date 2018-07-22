@@ -545,12 +545,16 @@ class FileTest(IronPythonTestCase):
         f = file(filename, "w+")
         f.write("I am read-only")
         f.close()
+        print os.stat(filename)
         os.chmod(filename, 256)
+        print os.stat(filename)
         try:
             try:
                 f = file(filename, "w+") # FAIL
             finally:
+                print os.stat(filename)
                 os.chmod(filename, 128)
+                print os.stat(filename)
                 os.unlink(filename)
         except IOError, e:
             pass
