@@ -112,7 +112,9 @@ namespace IronPython.Modules {
 #endif
 
         private static void chmod_unix(string path, int mode) {
-            Mono.Unix.Native.Syscall.chmod(path, (Mono.Unix.Native.FilePermissions)mode);
+            if(Mono.Unix.Native.Syscall.chmod(path, (Mono.Unix.Native.FilePermissions)mode) != 0) {
+                Console.WriteLine($"chmod failed : {Mono.Unix.Native.Stdlib.GetLastError()}");
+            }
         }
 
         public static void close(CodeContext/*!*/ context, int fd) {
