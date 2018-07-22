@@ -94,18 +94,26 @@ namespace IronPython.Modules {
         }
 
         public static void chmod(string path, int mode) {
-            try {
-                FileInfo fi = new FileInfo(path);
-                if ((mode & S_IWRITE) != 0) {
-                    fi.Attributes &= ~(FileAttributes.ReadOnly);
-                } else {
-                    fi.Attributes |= FileAttributes.ReadOnly;
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                try {
+                    FileInfo fi = new FileInfo(path);
+                    if ((mode & S_IWRITE) != 0) {
+                        fi.Attributes &= ~(FileAttributes.ReadOnly);
+                    } else {
+                        fi.Attributes |= FileAttributes.ReadOnly;
+                    }
+                } catch (Exception e) {
+                    throw ToPythonException(e, path);
                 }
-            } catch (Exception e) {
-                throw ToPythonException(e, path);
+            } else {
+                chmod_unix(path, mode);
             }
         }
 #endif
+
+        private static void chmod_unix(string path, int mode) {
+            Mono.Unix.Native.Syscall.chmod(path, (Mono.Unix.Native.FilePermissions)mode);
+        }
 
         public static void close(CodeContext/*!*/ context, int fd) {
             PythonContext pythonContext = context.LanguageContext;
@@ -131,6 +139,7 @@ namespace IronPython.Modules {
                 }
             }
         }
+
         private static bool IsValidFd(CodeContext/*!*/ context, int fd) {
             PythonContext pythonContext = context.LanguageContext;
             PythonFile file;
