@@ -115,5 +115,11 @@ namespace IronPythonTest.Util {
                 return this.manifest.GetInt(this.testName, "Timeout", -1);
             }
         }
+        
+        public int RetryCount {
+            get {
+                return this.manifest.GetInt(this.testName, "RetryCount", 0);
+            }
+        }
     }
 }
