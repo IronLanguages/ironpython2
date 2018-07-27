@@ -105,6 +105,8 @@ namespace IronPythonTest.Cases {
                     
                     if(res != 0) {
                         NUnit.Framework.TestContext.Progress.WriteLine($"Test {testcase.Name} failed, retrying again. Retry #{i+1}");
+                    } else {
+                        break;
                     }
                 }
                 return res;
