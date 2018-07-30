@@ -24,6 +24,7 @@ namespace IronPythonTest.Cases {
         [Test, TestCaseSource(typeof(StandardCPythonCaseGenerator))]
         public int StandardCPythonTests(TestInfo testcase) {
             try {
+                TestContext.Progress.WriteLine(testcase.Name); // should be printed immediately
                 return executor.RunTest(testcase);
             } catch (Exception e) {
                 Assert.Fail(executor.FormatException(e));

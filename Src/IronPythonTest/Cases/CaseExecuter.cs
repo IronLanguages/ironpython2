@@ -90,6 +90,32 @@ namespace IronPythonTest.Cases {
         }
 
         public int RunTest(TestInfo testcase) {
+            int retryCount = testcase.Options.RetryCount;
+            if(retryCount > 0) {
+                int res = -1;
+                for(int i = 0; i < retryCount; i++) {
+                    try {
+                        res = RunTestImpl(testcase);
+                    } catch(Exception ex) {
+                        res = -1;
+                        if(i == (retryCount - 1)) {
+                            throw ex;
+                        }
+                    }
+                    
+                    if(res != 0) {
+                        NUnit.Framework.TestContext.Progress.WriteLine($"Test {testcase.Name} failed, retrying again. Retry #{i+1}");
+                    } else {
+                        break;
+                    }
+                }
+                return res;
+            } 
+            
+            return RunTestImpl(testcase);
+        }
+        
+        private int RunTestImpl(TestInfo testcase) {
             switch(testcase.Options.IsolationLevel) {
                 case TestIsolationLevel.DEFAULT:
                     return GetScopeTest(testcase);
@@ -101,7 +127,7 @@ namespace IronPythonTest.Cases {
                     return GetProcessTest(testcase);
 
                 default:
-                    throw new ArgumentException(String.Format("IsolationLevel {0} is not supported.", testcase.Options.IsolationLevel.ToString()), "testcase.IsolationLevel");
+                    throw new ArgumentException($"IsolationLevel {testcase.Options.IsolationLevel} is not supported.", "testcase.IsolationLevel");
             }
         }
 
