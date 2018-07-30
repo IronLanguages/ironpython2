@@ -19,6 +19,8 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
   <Product Id="*" UpgradeCode="$(var.UpgradeCode)" Name="$(var.ProductShortName) $(var.ProductVersionText)" Version="$(var.ProductVersion)" Language="1033" Manufacturer="$(var.Manufacturer)">
     <Package Id="*" Compressed="yes" Description="$(var.ProductShortName) $(var.ProductVersionText) ($(var.ProductVersion))" InstallerVersion="200" ShortNames="no" Manufacturer="$(var.Manufacturer)" InstallScope="perMachine" />
     <Media Id="1" Cabinet="IronPy.cab" EmbedCab="yes" CompressionLevel="high" />
+    
+    <Icon Id="ipy.ico" SourceFile="..\..\Src\IronPythonConsole\ipy.ico" />
 
     <!-- Major upgrade -->
     <Upgrade Id="$(var.UpgradeCode)">
@@ -26,7 +28,9 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
       <UpgradeVersion Minimum="0.0.0.0" IncludeMinimum="yes" Maximum="$(var.ProductVersion)" IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" OnlyDetect="no" />
     </Upgrade>
 
+    <PropertyRef Id="NETFRAMEWORK45" />
     <!-- Properties -->
+    <Property Id="ARPPRODUCTICON" Value="ipy.ico" />
     <Property Id="ARPHELPLINK" Value="http://ironpython.net/support/" />
     <Property Id="ARPURLINFOABOUT" Value="http://www.ironpython.net" />
     <Property Id="ARPURLUPDATEINFO" Value="https://github.com/IronLanguages/ironpython2" />
@@ -42,9 +46,10 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
     </Property>
 
     <!-- Launch conditions -->
-    <Condition Message="An administrator must approve or install [ProductName]."> Privileged </Condition>
-    <Condition Message="A later version of [ProductName] is already installed."> NOT NEWERVERSIONDETECTED </Condition>
-    <Condition Message="[ProductName] requires .NET Framework 4.0 or later.">  Installed OR MsiNetAssemblySupport >= "4.0.0.0" </Condition>
+    <Condition Message="An administrator must approve or install [ProductName]."><![CDATA[Privileged]]></Condition>
+    <Condition Message="A later version of [ProductName] is already installed."><![CDATA[NOT NEWERVERSIONDETECTED]]></Condition>
+    <Condition Message="[ProductName] requires .NET Framework 4.5.2 or later. NETFRAMEWORK45 = [NETFRAMEWORK45]"><![CDATA[Installed OR (NETFRAMEWORK45 AND NETFRAMEWORK45>="#379893")]]></Condition>
+
 
     <!-- Root directories -->
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -70,8 +75,7 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
       
       <Component Id="IronPython32bitShortcuts">
         <Condition>VersionNT64</Condition>
-        <Shortcut Id="IronPython_Console32" Name="IronPython Console (32-bit)" Target="[INSTALLDIR]ipy32.exe" />
-        
+        <Shortcut Id="IronPython_Console32" Name="IronPython Console (32-bit)" Target="[INSTALLDIR]ipy32.exe" />        
         <RegistryValue Root="HKCU" Key="SOFTWARE\IronPython\$(var.ReleaseSeries)" Name="ipy32" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
@@ -79,25 +83,32 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
     <!-- Features - listed in the UI in the same order as they appear here -->
     <Feature Id="Feature_IronPython" ConfigurableDirectory="INSTALLDIR" Absent="disallow" AllowAdvertise="no" Display="expand" Level="1" Title="IronPython">
       <Feature Id="Feature_Core" Absent="disallow" AllowAdvertise="no" Display="collapse" Level="1" Title="IronPython" Description="IronPython binaries for the Desktop CLR.">
-        <ComponentGroupRef Id='Dlr' />
-        <ComponentGroupRef Id='IronPython' />
-        <!-- <ComponentGroupRef Id='IronPythonPlatform' /> -->
-        <ComponentGroupRef Id='IronPythonStdLib' />
+        <ComponentGroupRef Id="Dlr" />
+        <ComponentGroupRef Id="IronPython" />
+        <ComponentGroupRef Id="IronPythonStdLib" />
 
-        <ComponentRef Id='IronPythonCommonShortcuts'/>
-        <ComponentRef Id='IronPython32bitShortcuts'/>
+        <ComponentRef Id="IronPythonCommonShortcuts" />
 
-        <Feature Id='IronPython_Core_Gac' AllowAdvertise='no' Level='1' Title='GAC Assemblies' Description='Install the IronPython assemblies into the GAC.'>
-          <ComponentGroupRef Id='DlrGac' />
-          <ComponentGroupRef Id='IronPythonGac' />
+        <Feature Id="IronPython_32bit_Shortcuts" AllowAdvertise="no" Level="0" Title="32-bit Shortcuts" Description="Shortcuts for the 32-bit IronPython executables">
+          <ComponentRef Id="IronPython32bitShortcuts"/>
+        </Feature>
+
+        <Feature Id="IronPython_Core_Gac" AllowAdvertise="no" Level="1" Title="GAC Assemblies" Description="Install the IronPython assemblies into the GAC.">
+          <ComponentGroupRef Id="DlrGac" />
+          <ComponentGroupRef Id="IronPythonGac" />
         </Feature>
       </Feature>
+      <Feature Id="Pip_Setup" AllowAdvertise="no" Display="expand" Level="1" Title="pip" Description="Install or upgrade pip, a tool for installing and managing Python packages" />
     </Feature>
 
     <!-- Sequences -->
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallInitialize"  />
-      <Custom Action='SetInstallLocation' After="InstallValidate" />
+      <Custom Action="SetInstallLocation" After="InstallValidate" />
+      
+      <Custom Action="SetUpdatePipCommandLine" After="InstallFiles">(&amp;Pip_Setup=3) AND NOT (!Pip_Setup=3)</Custom>
+      <Custom Action="SetRemovePipCommandLine" Before="RemoveFiles">(&amp;Pip_Setup=2) AND (!Pip_Setup=3)</Custom>
+
     </InstallExecuteSequence>
 
     <InstallUISequence>
@@ -113,6 +124,22 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
 
     <!-- InstallLocation key -->
     <CustomAction Id="SetInstallLocation" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
+    
+    <Property Id="IRONPYTHON_EXE" Secure="yes">
+      <ComponentSearch Id="IpyExe" Guid="$(var.IpyExeComponentGuid)">
+        <FileSearch Name="ipy.exe" />
+      </ComponentSearch>
+    </Property>
+    
+    <?if $(var.Platform)~="x64" ?>
+        <CustomAction Id="UpdatePip" BinaryKey="WixCA" DllEntry="CAQuietExec64" Execute="deferred" Return="ignore"/>
+    <?else ?>
+        <CustomAction Id="UpdatePip" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" Return="ignore"/>
+    <?endif ?>
+        
+    <!-- Install/uninstall pip -->
+    <CustomAction Id="SetUpdatePipCommandLine" Property="UpdatePip" Value='"[IRONPYTHONPYTHON_EXE]" -E -s -m ensurepip -U --default-pip' Execute="immediate"/>
+    <CustomAction Id="SetRemovePipCommandLine" Property="UpdatePip" Value='"[IRONPYTHONPYTHON_EXE]" -E -s -B -m ensurepip._uninstall' Execute="immediate"/>
 
   </Product>
 

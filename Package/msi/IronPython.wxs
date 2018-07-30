@@ -12,7 +12,7 @@
         <File Id="IronPython.Modules.dll" KeyPath="yes" Source="$(var.PlatformDir)\IronPython.Modules.dll" />
       </Component>
 
-      <Component Guid="{419DAD09-D6E8-47F0-BC58-874019842004}">
+      <Component Guid="$(var.IpyExeComponentGuid)">
         <File Id="ipy.exe" KeyPath="yes" Source="$(var.PlatformDir)\ipy.exe">
           <netfx:NativeImage Id="ngen_ipy.exe" Platform="all" AppBaseDirectory="INSTALLDIR"/>
         </File>
@@ -59,17 +59,17 @@
 
       <Component>
         <RegistryValue Id="InstallationKey"
-          Root='HKLM' Key='SOFTWARE\IronPython\$(var.ReleaseSeries)\InstallPath' Type='string' Value='[INSTALLDIR]' />
+          Root="HKLM" Key="SOFTWARE\IronPython\$(var.ReleaseSeries)\InstallPath" Type="string" Value="[INSTALLDIR]" />
       </Component>
       
       <Component>
-        <RegistryValue Id='VSNet45ReferenceAssemblyKey'
-          Root='HKLM' Key='SOFTWARE\Microsoft\.NETFramework\v4.5.50709\AssemblyFoldersEx\$(var.ProductShortName)$(var.ReleaseSeries)' Type='string' Value='[INSTALLDIR]' />
+        <RegistryValue Id="VSNet45ReferenceAssemblyKey"
+          Root="HKLM" Key="SOFTWARE\Microsoft\.NETFramework\v4.5.50709\AssemblyFoldersEx\$(var.ProductShortName)$(var.ReleaseSeries)" Type="string" Value="[INSTALLDIR]" />
       </Component>
       
     </DirectoryRef>
 
-    <DirectoryRef Id='GAC'>
+    <DirectoryRef Id="GAC">
       <Component Guid="{38CF0071-81C1-41A2-9F64-F3667160A5F5}">
         <File Id="gac_IronPython.dll" Name="IronPython.dll" Assembly=".net" KeyPath="yes" Source="$(var.PlatformDir)\IronPython.dll" >
           <netfx:NativeImage Id="ngen_IronPython.dll" Platform="all" AppBaseDirectory="INSTALLDIR"/>
