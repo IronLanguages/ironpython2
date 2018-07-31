@@ -15,7 +15,7 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
 
 <?define UpgradeCode = "a162604e-d515-4155-9b8b-2854502d1588" ?>
 
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
   <Product Id="*" UpgradeCode="$(var.UpgradeCode)" Name="$(var.ProductShortName) $(var.ProductVersionText)" Version="$(var.ProductVersion)" Language="1033" Manufacturer="$(var.Manufacturer)">
     <Package Id="*" Compressed="yes" Description="$(var.ProductShortName) $(var.ProductVersionText) ($(var.ProductVersion))" InstallerVersion="200" ShortNames="no" Manufacturer="$(var.Manufacturer)" InstallScope="perMachine" />
     <Media Id="1" Cabinet="IronPy.cab" EmbedCab="yes" CompressionLevel="high" />
@@ -23,12 +23,16 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
     <Icon Id="ipy.ico" SourceFile="..\..\Src\IronPythonConsole\ipy.ico" />
 
     <!-- Major upgrade -->
+    <MajorUpgrade AllowSameVersionUpgrades="no"
+                  DowngradeErrorMessage="A later version of [ProductName] is already installed."/>
+    
+    <!-- Normal upgrades -->
     <Upgrade Id="$(var.UpgradeCode)">
-      <UpgradeVersion Minimum="$(var.ProductVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
       <UpgradeVersion Minimum="0.0.0.0" IncludeMinimum="yes" Maximum="$(var.ProductVersion)" IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" OnlyDetect="no" />
     </Upgrade>
 
-    <PropertyRef Id="NETFRAMEWORK45" />
+    <PropertyRef Id="WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED" />
+    
     <!-- Properties -->
     <Property Id="ARPPRODUCTICON" Value="ipy.ico" />
     <Property Id="ARPHELPLINK" Value="http://ironpython.net/support/" />
@@ -47,9 +51,8 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
 
     <!-- Launch conditions -->
     <Condition Message="An administrator must approve or install [ProductName]."><![CDATA[Privileged]]></Condition>
-    <Condition Message="A later version of [ProductName] is already installed."><![CDATA[NOT NEWERVERSIONDETECTED]]></Condition>
-    <Condition Message="[ProductName] requires .NET Framework 4.5.2 or later. NETFRAMEWORK45 = [NETFRAMEWORK45]"><![CDATA[Installed OR (NETFRAMEWORK45 AND NETFRAMEWORK45>="#379893")]]></Condition>
-
+    <!--<Condition Message=""><![CDATA[NOT NEWERVERSIONDETECTED]]></Condition>-->
+    <Condition Message="[ProductName] requires .NET Framework 4.5.2 or later. WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED = [WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]"><![CDATA[Installed OR WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]]></Condition>
 
     <!-- Root directories -->
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -101,20 +104,7 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
       <Feature Id="Pip_Setup" AllowAdvertise="no" Display="expand" Level="1" Title="pip" Description="Install or upgrade pip, a tool for installing and managing Python packages" />
     </Feature>
 
-    <!-- Sequences -->
-    <InstallExecuteSequence>
-      <RemoveExistingProducts After="InstallInitialize"  />
-      <Custom Action="SetInstallLocation" After="InstallValidate" />
-      
-      <Custom Action="SetUpdatePipCommandLine" After="InstallFiles">(&amp;Pip_Setup=3) AND NOT (!Pip_Setup=3)</Custom>
-      <Custom Action="SetRemovePipCommandLine" Before="RemoveFiles">(&amp;Pip_Setup=2) AND (!Pip_Setup=3)</Custom>
-
-    </InstallExecuteSequence>
-
-    <InstallUISequence>
-      <!-- Because we have a launch condition that uses the results of FindRelatedProducts, put it first. -->
-      <LaunchConditions After="FindRelatedProducts" />
-    </InstallUISequence>
+    
 
     <!-- User interface -->
     <UIRef Id="WixUI_FeatureTree" />
@@ -124,22 +114,25 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
 
     <!-- InstallLocation key -->
     <CustomAction Id="SetInstallLocation" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
-    
-    <Property Id="IRONPYTHON_EXE" Secure="yes">
-      <ComponentSearch Id="IpyExe" Guid="$(var.IpyExeComponentGuid)">
-        <FileSearch Name="ipy.exe" />
-      </ComponentSearch>
-    </Property>
-    
-    <?if $(var.Platform)~="x64" ?>
-        <CustomAction Id="UpdatePip" BinaryKey="WixCA" DllEntry="CAQuietExec64" Execute="deferred" Return="ignore"/>
-    <?else ?>
-        <CustomAction Id="UpdatePip" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" Return="ignore"/>
-    <?endif ?>
-        
+
     <!-- Install/uninstall pip -->
-    <CustomAction Id="SetUpdatePipCommandLine" Property="UpdatePip" Value='"[IRONPYTHONPYTHON_EXE]" -E -s -m ensurepip -U --default-pip' Execute="immediate"/>
-    <CustomAction Id="SetRemovePipCommandLine" Property="UpdatePip" Value='"[IRONPYTHONPYTHON_EXE]" -E -s -B -m ensurepip._uninstall' Execute="immediate"/>
+    <?if $(var.Platform)~="x64" ?>
+        <CustomAction Id="UpdatePip" BinaryKey="WixCA" DllEntry="WixQuietExec64" Execute="deferred" Return="ignore"/>
+        <CustomAction Id="RemovePip" BinaryKey="WixCA" DllEntry="WixQuietExec64" Execute="deferred" Return="ignore"/>
+    <?else ?>
+        <CustomAction Id="UpdatePip" BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Return="ignore"/>
+        <CustomAction Id="RemovePip" BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Return="ignore"/>
+    <?endif ?>
+    
+    <SetProperty Id="UpdatePip" Value="&quot;[#ipy.exe]&quot; -E -s -m ensurepip -U --default-pip" Before="UpdatePip" Sequence="execute"/>
+    <SetProperty Id="RemovePip" Value="&quot;[#ipy.exe]&quot; -E -s -B -m ensurepip._uninstall" Before="RemovePip" Sequence="execute"/>
+
+    <!-- Sequences -->
+    <InstallExecuteSequence>
+      <Custom Action="SetInstallLocation" After="InstallValidate" />
+      <Custom Action="UpdatePip" After="InstallFiles"><![CDATA[(&Pip_Setup=3) AND NOT Installed]]></Custom>
+      <Custom Action="RemovePip" Before="RemoveFiles"><![CDATA[(!Pip_Setup<>2) AND Installed]]></Custom>
+    </InstallExecuteSequence>
 
   </Product>
 
