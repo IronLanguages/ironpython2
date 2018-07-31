@@ -288,12 +288,23 @@ namespace IronPython.Runtime
                     }
 #else
                     if(!IronPython.Runtime.ClrModule.IsNetCoreApp && Environment.OSVersion.Platform == PlatformID.Unix) {
-                        if(Directory.Exists("/usr/lib/ironpython2.7")) {
-                            path.append("/usr/lib/ironpython2.7");
-                        }
+                        if(IronPython.Runtime.ClrModule.IsMacOS) {
+                            var dirs = new string[] { "lib", "DLLs" };
+                            var version = IronPython.CurrentVersion.ReleaseLevel == "final" ? $"{IronPython.CurrentVersion.Major}.{IronPython.CurrentVersion.Minor}.{IronPython.CurrentVersion.Micro}" : $"{IronPython.CurrentVersion.Major}.{IronPython.CurrentVersion.Minor}.{IronPython.CurrentVersion.Micro}-{IronPython.CurrentVersion.ReleaseLevel}{IronPython.CurrentVersion.ReleaseSerial}";
+                            foreach(var dir in dirs) {
+                                var p = $"/Library/Frameworks/IronPython.framework/Versions/{version}/{dir}";
+                                if(Directory.Exists(p)) {
+                                    path.append(p);
+                                }
+                            }
+                        } else {
+                            if(Directory.Exists("/usr/lib/ironpython2.7")) {
+                                path.append("/usr/lib/ironpython2.7");
+                            }
 
-                        if(Directory.Exists("/usr/share/ironpython2.7/DLLs")) {
-                            path.append("/usr/share/ironpython2.7/DLLs");
+                            if(Directory.Exists("/usr/share/ironpython2.7/DLLs")) {
+                                path.append("/usr/share/ironpython2.7/DLLs");
+                            }
                         }
                     }
 #endif
