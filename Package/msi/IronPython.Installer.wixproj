@@ -44,6 +44,9 @@
     <WixConstant Include="PlatformDir">
       <Value>$(BindInputPaths)\net45</Value>
     </WixConstant>
+    <WixConstant Include="IpyExeComponentGuid">
+      <Value>{419DAD09-D6E8-47F0-BC58-874019842004}</Value>
+    </WixConstant>
   </ItemGroup>
 
   <PropertyGroup>
