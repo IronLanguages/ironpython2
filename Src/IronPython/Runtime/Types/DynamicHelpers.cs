@@ -19,8 +19,7 @@ namespace IronPython.Runtime.Types {
         }
 
         public static PythonType GetPythonType(object o) {
-            IPythonObject dt = o as IPythonObject;
-            if (dt != null) return dt.PythonType;
+            if (o is IPythonObject dt) return dt.PythonType;
             
             return GetPythonTypeFromType(CompilerHelpers.GetType(o));
         }
