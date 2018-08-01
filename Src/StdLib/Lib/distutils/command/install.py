@@ -41,9 +41,9 @@ else:
 
 INSTALL_SCHEMES = {
     'unix_prefix': {
-        'purelib': '$base/lib/python$py_version_short/site-packages',
-        'platlib': '$platbase/lib/python$py_version_short/site-packages',
-        'headers': '$base/include/python$py_version_short/$dist_name',
+        'purelib': '$base/lib/ironpython$py_version_short/site-packages',
+        'platlib': '$platbase/lib/ironpython$py_version_short/site-packages',
+        'headers': '$base/include/ironpython$py_version_short/$dist_name',
         'scripts': '$base/bin',
         'data'   : '$base',
         },
@@ -57,7 +57,7 @@ INSTALL_SCHEMES = {
     'unix_user': {
         'purelib': '$usersite',
         'platlib': '$usersite',
-        'headers': '$userbase/include/python$py_version_short/$dist_name',
+        'headers': '$userbase/include/ironpython$py_version_short/$dist_name',
         'scripts': '$userbase/bin',
         'data'   : '$userbase',
         },
@@ -79,7 +79,7 @@ INSTALL_SCHEMES = {
     'os2_home': {
         'purelib': '$usersite',
         'platlib': '$usersite',
-        'headers': '$userbase/include/python$py_version_short/$dist_name',
+        'headers': '$userbase/include/ironpython$py_version_short/$dist_name',
         'scripts': '$userbase/bin',
         'data'   : '$userbase',
         },
