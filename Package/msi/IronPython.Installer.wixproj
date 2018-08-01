@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)..\..\Directory.Build.props" />
   <Import Project="$(BeforeTargetFiles)" />
+  <Import Project="$(RootDir)packages\wix\3.11.1\build\wix.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -13,11 +14,6 @@
     <DefineSolutionProperties>false</DefineSolutionProperties>
     <SuppressPdbOutput>true</SuppressPdbOutput>
     <SuppressSpecificWarnings>5151</SuppressSpecificWarnings>
-    
-    <WixToolPath Condition=" '$(WixToolPath)' == '' ">$(RootDir)Util\Wix\</WixToolPath>
-    <WixTargetsPath>$(WixToolPath)Wix.targets</WixTargetsPath>
-    <WixTasksPath>$(WixToolPath)wixtasks.dll</WixTasksPath>
-
     <BindInputPaths Condition=" '$(BindInputPaths)' == '' ">$(RootDir)Package\Stage\$(Configuration)\IronPython-$(DisplayVersion)</BindInputPaths>
     <BuildDir Condition=" '$(BuildDir)' == '' ">$(RootDir)bin\$(Configuration)</BuildDir>
 
@@ -43,6 +39,9 @@
     </WixConstant>
     <WixConstant Include="PlatformDir">
       <Value>$(BindInputPaths)\net45</Value>
+    </WixConstant>
+    <WixConstant Include="IpyExeComponentGuid">
+      <Value>{419DAD09-D6E8-47F0-BC58-874019842004}</Value>
     </WixConstant>
   </ItemGroup>
 
@@ -93,12 +92,4 @@
     </HarvestDirectory>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
-  <!--
-  To modify your build process, add your task inside one of the targets below and uncomment it.
-  Other similar extension points exist, see Wix.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

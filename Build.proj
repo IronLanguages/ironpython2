@@ -14,7 +14,6 @@
     <BuildSysDir>$(RootDir)Build</BuildSysDir>
     <MSBuildCommunityTasksPath>$(RootDir)Util\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
     <TargetFrameworks Condition="'$(TargetFrameworks)' == ''">net45;netcoreapp2.0;netcoreapp2.1</TargetFrameworks>
-    <ChocolateyVersion>0.10.8</ChocolateyVersion>
   </PropertyGroup>
 
 
