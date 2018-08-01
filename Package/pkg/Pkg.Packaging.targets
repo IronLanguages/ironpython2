@@ -30,8 +30,9 @@
     <ItemGroup>
       <StdLibOutputFiles Include="$(StageDir)/Lib/**/*.py" />
     </ItemGroup>
+
     <!-- Change line endings of the .py files -->
-    <Exec Command="perl -pi -e 's/\r\n|\n|\r/\n/g' %(StdLibOutputFiles.Identity)" />
+    <Exec Command="$(MSBuildThisFileDirectory)dos2unix.sh %(StdLibOutputFiles.Identity)" />
 
     <Copy SourceFiles="@(ApplicationFiles)" DestinationFolder="$(PackageLayoutRootDir)/bin/%(ApplicationFiles.RecursiveDir)"/>
     <Copy SourceFiles="@(StdLibFiles)" DestinationFolder="$(PackageLayoutRootDir)/lib/%(StdLibFiles.RecursiveDir)"/>
