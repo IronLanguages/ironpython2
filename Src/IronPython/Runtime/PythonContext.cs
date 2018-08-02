@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading;
@@ -26,6 +27,7 @@ using Microsoft.Scripting.Generation;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
+using IronPython;
 using IronPython.Compiler;
 using IronPython.Hosting;
 using IronPython.Modules;
@@ -287,13 +289,22 @@ namespace IronPython.Runtime
                         path.append(devStdLib);
                     }
 #else
-                    if(!IronPython.Runtime.ClrModule.IsNetCoreApp && Environment.OSVersion.Platform == PlatformID.Unix) {
-                        if(Directory.Exists("/usr/lib/ironpython2.7")) {
-                            path.append("/usr/lib/ironpython2.7");
-                        }
 
-                        if(Directory.Exists("/usr/share/ironpython2.7/DLLs")) {
-                            path.append("/usr/share/ironpython2.7/DLLs");
+                    if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                        var dirs = new string[] { "lib", "DLLs" };
+                        var version = IronPython.CurrentVersion.ReleaseLevel == "final" ? $"{IronPython.CurrentVersion.Major}.{IronPython.CurrentVersion.Minor}.{IronPython.CurrentVersion.Micro}" : $"{IronPython.CurrentVersion.Major}.{IronPython.CurrentVersion.Minor}.{IronPython.CurrentVersion.Micro}-{IronPython.CurrentVersion.ReleaseLevel}{IronPython.CurrentVersion.ReleaseSerial}";
+                        foreach(var dir in dirs) {
+                            var p = $"/Library/Frameworks/IronPython.framework/Versions/{version}/{dir}";
+                            if(Directory.Exists(p)) {
+                                path.append(p);
+                            }
+                        }
+                    } else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+                        var dirs = new string[] { "/usr/lib/ironpython2.7", "/usr/share/ironpython2.7/DLLs" };
+                        foreach(var dir in dirs) {
+                            if(Directory.Exists(dir)) {
+                                path.append(dir);
+                            }
                         }
                     }
 #endif

@@ -63,20 +63,19 @@ steps:
       testRunTitle: ${{ parameters.os }}
     condition: succeededOrFailed()
 
-  - ${{ if ne(parameters.os, 'macOS') }}:
-    - powershell: ./make.ps1 package
-      displayName: Package
-      condition: succeededOrFailed()
+  - powershell: ./make.ps1 package
+    displayName: Package
+    condition: succeededOrFailed()
 
-    - task: CopyFiles@2
-      displayName: Copy NuGet and Zip Packages
-      inputs:
-        SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
-        Contents: |
-         **/*.nupkg
-         **/*.zip
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-      condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
+  - task: CopyFiles@2
+    displayName: Copy NuGet and Zip Packages
+    inputs:
+      SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
+      Contents: |
+        **/*.nupkg
+        **/*.zip
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
       
   - ${{ if eq(parameters.os, 'Windows') }}:
     - task: CopyFiles@2
@@ -93,6 +92,15 @@ steps:
       inputs:
         SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
         Contents: '**/*.deb'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
+
+  - ${{ if eq(parameters.os, 'macOS') }}:
+    - task: CopyFiles@2
+      displayName: Copy Pkg Installer
+      inputs:
+        SourceFolder: '$(Build.Repository.LocalPath)/Package/Release/Packages'
+        Contents: '**/*.pkg'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
       condition: and(succeededOrFailed(), eq(variables['system.pullrequest.isfork'], false))
 

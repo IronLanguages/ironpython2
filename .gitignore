@@ -103,3 +103,5 @@ build-*.ProjectImports.zip
 /Src/ctypes_test/*.pyd
 /Src/ctypes_test/*.pyd
 /Tests/modules/misc/test_data.gz
+/Package/deb/temp/
+/Package/pkg/temp/
