@@ -1191,4 +1191,11 @@ class C:
         x = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>A</key><string>B</string></dict></plist>'
         self.assertEquals(plistlib.readPlistFromString(x), {'A': 'B'})
 
+    def test_gh483(self):
+        """https://github.com/IronLanguages/ironpython2/issues/463"""
+        import ast
+        tree = ast.parse("print('hello world')")
+        c = compile(tree, filename="<ast>", mode="exec")
+        self.assertEqual(c.co_filename, "<ast>")
+
 run_test(__name__)
