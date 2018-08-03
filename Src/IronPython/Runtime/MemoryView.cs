@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Numerics;
 
-using System;
 using IronPython.Runtime.Operations;
 using Microsoft.Scripting.Runtime;
 
@@ -15,22 +15,27 @@ namespace IronPython.Runtime {
         private readonly int _start;
         private readonly int? _end;
 
-        public MemoryView(IBufferProtocol @object) {
-            _buffer = @object;
+        public MemoryView(IBufferProtocol obj) {
+            _buffer = obj;
         }
 
-        public MemoryView(IBufferProtocol @object, int start, int? end) : this(@object) {
+        private MemoryView(IBufferProtocol obj, int start, int? end) : this(obj) {
             _start = start;
             _end = end;
         }
 
-        public MemoryView(string @object) {
-            _buffer = new StringBufferProtocol(@object);
+        public MemoryView(MemoryView obj) {
+            _buffer = obj._buffer;
+            _start = obj._start;
+            _end = obj._end;
         }
 
-        public MemoryView(string @object, int start, int? end) : this(@object) {
-            _start = start;
-            _end = end;
+        public MemoryView(PythonBuffer obj) {
+            _buffer = new IListOfBytesBufferProtocol(obj);
+        }
+
+        public MemoryView(string obj) {
+            _buffer = new StringBufferProtocol(obj);
         }
 
         public int __len__() {

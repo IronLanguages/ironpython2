@@ -188,6 +188,14 @@ namespace IronPython.Runtime {
         }
 
         [SpecialName]
+        public ByteArray InPlaceAdd(MemoryView other) {
+            lock (this) {
+                _bytes.AddRange(other.tobytes());
+                return this;
+            }
+        }
+
+        [SpecialName]
         public ByteArray InPlaceMultiply(int len) {
             lock (this) {
                 _bytes = (this * len)._bytes;
@@ -891,6 +899,18 @@ namespace IronPython.Runtime {
             }
 
             bytes.AddRange(other);
+
+            return new ByteArray(bytes);
+        }
+
+        public static ByteArray operator +(ByteArray self, MemoryView other) {
+            List<byte> bytes;
+
+            lock (self) {
+                bytes = new List<byte>(self._bytes);
+            }
+
+            bytes.AddRange(other.tobytes());
 
             return new ByteArray(bytes);
         }
