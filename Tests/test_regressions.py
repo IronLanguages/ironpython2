@@ -1198,4 +1198,24 @@ class C:
         c = compile(tree, filename="<ast>", mode="exec")
         self.assertEqual(c.co_filename, "<ast>")
 
+    def test_gh34(self):
+        """https://github.com/IronLanguages/ironpython2/issues/34"""
+        from collections import OrderedDict
+        
+        class Example(OrderedDict):
+            def __eq__(self, other):
+                return True
+
+        e = Example()
+        o = OrderedDict(a=1)
+        
+        self.assertTrue(e == o, 'e != o')
+        self.assertTrue(o == e, 'o != e')
+        
+        class test(str):
+            def __eq__(self,other):
+                return True
+
+        self.assertTrue("a" == test("b"), 'strings are not equal')
+
 run_test(__name__)
