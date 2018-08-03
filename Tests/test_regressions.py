@@ -1218,4 +1218,40 @@ class C:
 
         self.assertTrue("a" == test("b"), 'strings are not equal')
 
+    def test_traceback_stack(self):
+        import sys
+        import traceback
+
+        def C():
+            raise Exception
+
+        def B():
+            C()
+
+        def A():
+            try:
+                B()
+            except:
+                return sys.exc_info()[2]
+
+        lineno = C.func_code.co_firstlineno
+        tb = A()
+
+        a = traceback.extract_tb(tb)
+        b = traceback.extract_stack(tb.tb_frame, 1)
+        self.assertEqual(a, [(__file__, 8+lineno, 'A', 'B()'), (__file__, 4+lineno, 'B', 'C()'), (__file__, 1+lineno, 'C', 'raise Exception')])
+        self.assertEqual([x[2] for x in b], ['A']) # only check that we're in the proper function, the rest does not work properly
+
+        tb = tb.tb_next
+        a = traceback.extract_tb(tb)
+        b = traceback.extract_stack(tb.tb_frame, 2)
+        self.assertEqual(a, [(__file__, 4+lineno, 'B', 'C()'), (__file__, 1+lineno, 'C', 'raise Exception')])
+        self.assertEqual([x[2] for x in b], ['A', 'B']) # only check that we're in the proper function, the rest does not work properly
+
+        tb = tb.tb_next
+        a = traceback.extract_tb(tb)
+        b = traceback.extract_stack(tb.tb_frame, 3)
+        self.assertEqual(a, [(__file__, 1+lineno, 'C', 'raise Exception')])
+        self.assertEqual([x[2] for x in b], ['A', 'B', 'C']) # only check that we're in the proper function, the rest does not work properly
+
 run_test(__name__)
