@@ -43,7 +43,7 @@ namespace IronPythonTest.Cases {
 
     abstract class CommonCaseGenerator<TCases> : IEnumerable {
         protected readonly TestManifest manifest = new TestManifest(typeof(TCases));
-        protected static readonly string category = typeof(TCases).Name;
+        protected static readonly string category = ((TestFixtureAttribute)typeof(TCases).GetCustomAttributes(typeof(TestFixtureAttribute), false)[0]).Category;
 
         public IEnumerator GetEnumerator() {
             foreach (var testcase in GetTests()) {
