@@ -60,8 +60,6 @@ class BytesTest(IronPythonTestCase):
         x = bytearray(b'aa')
         self.assertTrue(id(x.center(2, '*')) != id(x))
         self.assertTrue(id(x.center(2, b'*')) != id(x))
-        
-        
 
     def test_count(self):
         for testType in types:
@@ -129,9 +127,14 @@ class BytesTest(IronPythonTestCase):
         self.assertEqual(b, b'abcdef')
         b.extend(bytearray(b'ghi'))
         self.assertEqual(b, b'abcdefghi')
+
         b = bytearray(b'abc')
         b.extend([2,3,4])
         self.assertEqual(b, b'abc' + b'\x02\x03\x04')
+
+        b = bytearray(b'abc')
+        b.extend(memoryview(b"def"))
+        self.assertEqual(b, b'abcdef')
         
     def test_find(self):
         for testType in types:
@@ -1439,5 +1442,8 @@ class BytesTest(IronPythonTestCase):
 
     def test_cp35493(self):
         self.assertEqual(bytearray(u'\xde\xad\xbe\xef\x80'), bytearray(b'\xde\xad\xbe\xef\x80'))
+
+    def test_add(self):
+        self.assertEqual(bytearray(b"abc") + memoryview(b"def"), b"abcdef")
 
 run_test(__name__)

@@ -50,5 +50,18 @@ class TestGH1387(unittest.TestCase):
     def testMemoryViewTruncatedSliceLength(self):
         chunk = self.mview[8:12]
         self.assertEqual(len(chunk), 2)
+
+class MemoryViewTests(unittest.TestCase):
+    def test_init(self):
+        x = memoryview(b"abc")
+        self.assertEqual(x, b"abc")
+
+        y = memoryview(x)
+        self.assertEqual(x, y)
+        self.assertIsNot(x, y)
+
+        b = buffer(b"abc")
+        x = memoryview(b)
+        self.assertEqual(x, b"abc")
         
 run_test(__name__)

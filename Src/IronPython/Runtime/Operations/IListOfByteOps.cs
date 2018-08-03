@@ -7,9 +7,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 using System.Text;
 
-using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
 namespace IronPython.Runtime.Operations {
@@ -1327,5 +1327,62 @@ namespace IronPython.Runtime.Operations {
         }
 
         #endregion
+    }
+
+    [PythonHidden]
+    internal class IListOfBytesBufferProtocol : IBufferProtocol {
+        private static readonly PythonTuple strides = PythonTuple.MakeTuple(1);
+        private IList<byte> _wrapped;
+
+        public IListOfBytesBufferProtocol(IList<byte> wrapped) {
+            _wrapped = wrapped;
+        }
+
+        int IBufferProtocol.ItemCount => _wrapped.Count;
+
+        string IBufferProtocol.Format => "B";
+
+        BigInteger IBufferProtocol.ItemSize => 1;
+
+        BigInteger IBufferProtocol.NumberDimensions => 1;
+
+        bool IBufferProtocol.ReadOnly => true;
+
+        PythonTuple IBufferProtocol.Strides => strides;
+
+        object IBufferProtocol.SubOffsets => null;
+
+        Bytes IBufferProtocol.GetItem(int index) {
+            lock (this) {
+                return Bytes.Make(new byte[] { (byte)_wrapped[PythonOps.FixIndex(index, _wrapped.Count)] });
+            }
+        }
+
+        IList<BigInteger> IBufferProtocol.GetShape(int start, int? end) {
+            if (end != null) {
+                return new[] { (BigInteger)end - start };
+            }
+            return new[] { (BigInteger)_wrapped.Count - start };
+        }
+
+        void IBufferProtocol.SetItem(int index, object value) {
+            throw PythonOps.TypeError("cannot modify read-only memory");
+        }
+
+        void IBufferProtocol.SetSlice(Slice index, object value) {
+            throw PythonOps.TypeError("cannot modify read-only memory");
+        }
+
+        Bytes IBufferProtocol.ToBytes(int start, int? end) {
+            if (start == 0 && end == null) {
+                return new Bytes(_wrapped);
+            }
+
+            return new Bytes(_wrapped.Slice(new Slice(start, end)));
+        }
+
+        List IBufferProtocol.ToList(int start, int? end) {
+            return new List(_wrapped.Slice(new Slice(start, end)));
+        }
     }
 }
