@@ -1132,11 +1132,11 @@ namespace IronPython.Runtime.Binding {
             bool shouldWarn = false;
 
             // if the left operand is an instance of a built-in type or a new-style class, and the right operand is an instance of a proper subclass of that type or class
-            // and overrides the base’s __rop__() method, the right operand’s __rop__() method is tried before the left operand’s __op__() method.
+            // and overrides the base's __rop__() method, the right operand's __rop__() method is tried before the left operand's __op__() method.
             PythonType xPythonType = MetaPythonObject.GetPythonType(xType);
             PythonType yPythonType = MetaPythonObject.GetPythonType(yType);
             bool opReverse = false;
-            if ((xPythonType.IsSystemType || !xPythonType.IsOldClass) && (yPythonType != xPythonType) && BindingHelpers.IsSubclassOf(yType, xType) && (rop != null)) {
+            if ((rop != null) && (xPythonType.IsSystemType || !xPythonType.IsOldClass) && (yPythonType != xPythonType) && BindingHelpers.IsSubclassOf(yType, xType)) {
                 SlotOrFunction tmp = rop;
                 rop = fop;
                 fop = tmp;
