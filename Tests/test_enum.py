@@ -37,4 +37,22 @@ class Enum34Test(IronPythonTestCase):
             for value in invalid_values:
                 self.assertRaises(ValueError, EnumType, value)
 
+    @skipUnlessIronPython()
+    def test_from_str(self):
+        """check that enum could be constructed from str names"""
+        from IronPythonTest import DaysInt, DaysShort, DaysLong, DaysSByte, DaysByte, DaysUShort, DaysUInt, DaysULong
+        
+        enum_types = [DaysInt, DaysShort, DaysLong, DaysSByte, DaysByte, DaysUShort, DaysUInt, DaysULong]
+
+        for EnumType in enum_types:
+
+            self.assertEqual(EnumType['None'], EnumType.None)
+            self.assertEqual(EnumType['Mon'], EnumType.Mon)
+            self.assertEqual(EnumType['Weekend'], EnumType.Weekend)
+            
+            self.assertRaises(SystemError, lambda: EnumType[DaysInt])
+            self.assertRaises(TypeError, lambda: EnumType[None])
+            self.assertRaises(TypeError, lambda: EnumType[self])
+            self.assertRaises(KeyError, lambda: EnumType['invalid'])
+
 run_test(__name__)
