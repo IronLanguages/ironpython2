@@ -820,9 +820,6 @@ class Popen(object):
 
     elif mono:
         def _get_handles(self, stdin, stdout, stderr):
-            if stdin is None and stdout is None and stderr is None:
-                return (None, None, None, None, None, None)
-
             to_close = set()
             p2cread, p2cwrite = None, None
             c2pread, c2pwrite = None, None
