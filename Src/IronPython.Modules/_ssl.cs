@@ -197,7 +197,7 @@ namespace IronPython.Modules {
             }
 
             public object _wrap_socket(CodeContext context, [DefaultParameterValue(null)] PythonSocket.socket sock, [DefaultParameterValue(false)] bool server_side, [DefaultParameterValue(null)] string server_hostname, [DefaultParameterValue(null)] object ssl_sock) {
-                return new PythonSocket.ssl(context, sock, server_side, null, _cafile, verify_mode, protocol | options, null, _cert_store);
+                return new PythonSocket.ssl(context, sock, server_side, null, _cafile, verify_mode, protocol | options, null, _cert_store) { _serverHostName = server_hostname };
             }
         }
 
