@@ -692,7 +692,7 @@ namespace IronPython.Modules {
         public const int VERIFY_X509_STRICT = 0x20; // from openssl/x509_vfy.h
         public const int VERIFY_X509_TRUSTED_FIRST = 0x8000; // from openssl/x509_vfy.h
 
-        public const bool HAS_SNI = false;
+        public const bool HAS_SNI = true;
         public const bool HAS_ECDH = true;
         public const bool HAS_NPN = false;
         public const bool HAS_ALPN = false;
