@@ -36,6 +36,8 @@ steps:
           echo "deb https://download.mono-project.com/repo/ubuntu stable-xenial main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
           sudo apt update
           sudo apt-get -yq install mono-complete mono-vbnc dos2unix fakeroot
+          # workaround for issue with vbc.rsp file
+          sudo sed -ie 's/System.XML/System.Xml/g' /usr/lib/mono/4.5/vbc.rsp
           
           # Dump some info about the tools
           mono --version
