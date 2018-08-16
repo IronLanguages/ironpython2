@@ -51,7 +51,7 @@ WHEN PERFORMING MAJOR IP UPGRADES (e.g., 2.5 => 2.6):
 
     <!-- Launch conditions -->
     <Condition Message="An administrator must approve or install [ProductName]."><![CDATA[Privileged]]></Condition>
-    <Condition Message="[ProductName] requires .NET Framework 4.5.2 or later. WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED = [WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]"><![CDATA[Installed OR WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]]></Condition>
+    <Condition Message="[ProductName] requires .NET Framework 4.5.2 or later."><![CDATA[Installed OR WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]]></Condition>
 
     <!-- Root directories -->
     <Directory Id="TARGETDIR" Name="SourceDir">
