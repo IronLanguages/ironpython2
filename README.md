@@ -1,16 +1,19 @@
 IronPython
 ===
-[![Linux/OSX Build Status](https://travis-ci.org/IronLanguages/ironpython2.svg?branch=master)](https://travis-ci.org/IronLanguages/ironpython2)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/53h9jt1bym8wunh1?svg=true)](https://ci.appveyor.com/project/AlexEarl/ironpython2)
-[![Gitter chat](https://badges.gitter.im/IronLanguages/ironpython.png)](https://gitter.im/IronLanguages/ironpython)
-
 IronPython is an open-source implementation of the Python programming language which is tightly integrated with the .NET Framework. IronPython can use the .NET Framework and Python libraries, and other .NET languages can use Python code just as easily.
 
 IronPython can be obtained at [http://ironpython.net/](http://ironpython.net/).
 
+| **What?** | **Where?** |
+| --------: | :------------: |
+| **Windows/Linux/macOS Builds** | [![Build status](https://dotnetfoundation.visualstudio.com/IronLanguages/_apis/build/status/DLR)](https://dotnetfoundation.visualstudio.com/IronLanguages/_build/latest?definitionId=42) |
+| **Downloads** | [![NuGet](https://img.shields.io/nuget/v/IronPython.svg)](https://www.nuget.org/packages/IronPython/) [![Release](https://img.shields.io/github/release/IronLanguages/ironpython2.svg)](https://github.com/IronLanguages/ironpython2/releases/latest)|
+| **Help** | [![Gitter chat](https://badges.gitter.im/IronLanguages/ironpython.svg)](https://gitter.im/IronLanguages/ironpython) [![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/ironpython.svg)](http://stackoverflow.com/questions/tagged/ironpython) |
+
+
 Comparison of IronPython vs. C# for 'Hello World'
 
-c#:
+C#:
 
 ```cs
 using System;
@@ -30,7 +33,7 @@ print "Hello World"
 IronPython is a Dynamic Language that runs on the .NET DLR ([Dynamic Language Runtime](http://en.wikipedia.org/wiki/Dynamic_Language_Runtime)) in contrast with VB.NET and C# which are [static languages](http://en.wikipedia.org/wiki/Type_system).
 
 
-Iron Python can also import DLL files compiled in other languages and use functions defined therein. For example:
+IronPython can also import DLL files compiled in other languages and use functions defined therein. For example:
 
 ```py
 import clr
