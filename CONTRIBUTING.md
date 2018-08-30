@@ -2,9 +2,9 @@
 
 The steps to contribute a change are:
 
-* Fork the IronPython2 repository as mentioned at [Getting the Sources](getting-the-sources.md)
+* Fork the IronPython2 repository as mentioned at [Getting the Sources](Documentation/getting-the-sources.md)
 * Make your changes on your machine, ensure ```make.ps1 test-all``` runs successfully, and commit your changes.
-* Push the commits to your fork. This way your name will be the author of the commit in the main IronPython2 tree (once they commits are pulled into the main tree). 
+* Push the commits to your fork. This way your name will be the author of the commit in the main IronPython2 tree (once the commits are pulled into the main tree).
 * Create a pull request on Github, this will initiate a code review and CLA signing request
 * The IronPython team will review, and possibly request changes, to your PR
 * Once all comments/questions/concerns have been addressed, your PR will be merged.
