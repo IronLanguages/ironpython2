@@ -1255,8 +1255,19 @@ class C:
         self.assertEqual([x[2] for x in b], ['A', 'B', 'C']) # only check that we're in the proper function, the rest does not work properly
 
     def test_ipy2_gh505(self):
+        """https://github.com/IronLanguages/ironpython2/issues/505"""
         from xml.etree import ElementTree as ET
         text = ET.fromstring("<root>  \n<child>test</child>\n</root>").text
         self.assertEqual(text, "  \n")
+
+    def test_ipy2_gh507(self):
+        """https://github.com/IronLanguages/ironpython2/issues/507"""
+        from xml.etree import ElementTree as ET
+        root = ET.fromstring("""<root xmlns="default" xmlns:prefix="http://uri">
+  <child>default namespace</child>
+  <prefix:child>namespace "prefix"</prefix:child>
+</root>""")
+        self.assertEqual((root.tag, root.attrib), ("{default}root", {}))
+        self.assertItemsEqual([(child.tag, child.attrib) for child in root], [("{default}child", {}), ("{http://uri}child", {})])
 
 run_test(__name__)
