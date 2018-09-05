@@ -338,6 +338,11 @@ namespace IronPython.Modules {
                             case XmlNodeType.Text:
                                 BufferText(xmlReader.Value);
                                 break;
+                            case XmlNodeType.SignificantWhitespace:
+                            case XmlNodeType.Whitespace:
+                                if (xmlReader.Depth > 0)
+                                    BufferText(xmlReader.Value);
+                                break;
                             case XmlNodeType.ProcessingInstruction:
                                 handleProcessingInstruction();
                                 break;
