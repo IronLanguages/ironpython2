@@ -1254,4 +1254,9 @@ class C:
         self.assertEqual(a, [(__file__, 1+lineno, 'C', 'raise Exception')])
         self.assertEqual([x[2] for x in b], ['A', 'B', 'C']) # only check that we're in the proper function, the rest does not work properly
 
+    def test_ipy2_gh505(self):
+        from xml.etree import ElementTree as ET
+        text = ET.fromstring("<root>  \n<child>test</child>\n</root>").text
+        self.assertEqual(text, "  \n")
+
 run_test(__name__)
