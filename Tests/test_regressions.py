@@ -1254,6 +1254,12 @@ class C:
         self.assertEqual(a, [(__file__, 1+lineno, 'C', 'raise Exception')])
         self.assertEqual([x[2] for x in b], ['A', 'B', 'C']) # only check that we're in the proper function, the rest does not work properly
 
+    def test_ipy2_gh504(self):
+        """https://github.com/IronLanguages/ironpython2/issues/504"""
+        from xml.etree import ElementTree as ET
+        text = ET.fromstring(b"<root>hyv\xc3\xa4</root>").text
+        self.assertEqual(text, u"hyv\xe4")
+
     def test_ipy2_gh505(self):
         """https://github.com/IronLanguages/ironpython2/issues/505"""
         from xml.etree import ElementTree as ET

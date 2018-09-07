@@ -615,7 +615,10 @@ class ChardataBufferTest(unittest.TestCase):
         return self.n
 
     def test_change_size_1(self):
-        xml1 = "<?xml version='1.0' encoding='iso8859'?><a><s>%s" % ('a' * 1024)
+        if sys.platform=='cli': # https://github.com/IronLanguages/ironpython2/issues/513
+            xml1 = "<?xml version='1.0' encoding='iso8859-1'?><a><s>%s" % ('a' * 1024)
+        else:
+            xml1 = "<?xml version='1.0' encoding='iso8859'?><a><s>%s" % ('a' * 1024)
         xml2 = "aaa</s><s>%s</s></a>" % ('a' * 1025)
         parser = expat.ParserCreate()
         parser.CharacterDataHandler = self.counting_handler
