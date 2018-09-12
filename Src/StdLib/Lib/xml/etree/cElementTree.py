@@ -1,3 +1,3 @@
-# Wrapper module for _elementtree
+# Wrapper module for ElementTree
 
-from _elementtree import *
+from xml.etree.ElementTree import *
