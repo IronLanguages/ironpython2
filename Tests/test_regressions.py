@@ -1276,4 +1276,12 @@ class C:
         self.assertEqual((root.tag, root.attrib), ("{default}root", {}))
         self.assertItemsEqual([(child.tag, child.attrib) for child in root], [("{default}child", {}), ("{http://uri}child", {})])
 
+    def test_ipy2_gh519(self):
+        """https://github.com/IronLanguages/ironpython2/issues/519"""
+        x = set(range(8))
+        x.add(16)
+        x.remove(0)
+        self.assertTrue(16 in x)
+        self.assertTrue(16 in set(x))
+
 run_test(__name__)
