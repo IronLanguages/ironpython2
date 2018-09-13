@@ -352,7 +352,7 @@ namespace IronPython.SQLite
 
                             case Sqlite3.SQLITE_BLOB:
                             default:
-                                byte[] blob = Sqlite3.sqlite3_column_blob(this.statement.st, i);
+                                byte[] blob = Sqlite3.sqlite3_column_blob(this.statement.st, i) ?? new byte[0];
                                 PythonBuffer buffer = new PythonBuffer(context, blob);
                                 converted = buffer;
                                 break;
