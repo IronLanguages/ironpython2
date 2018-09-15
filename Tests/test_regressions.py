@@ -1284,6 +1284,7 @@ class C:
         self.assertTrue(16 in x)
         self.assertTrue(16 in set(x))
 
+    @unittest.skipIf(is_netcoreapp, 'https://github.com/IronLanguages/ironpython2/issues/524')
     def test_ipy2_gh522(self):
         """https://github.com/IronLanguages/ironpython2/issues/522"""
         import sqlite3
