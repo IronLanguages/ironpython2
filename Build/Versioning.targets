@@ -69,8 +69,8 @@
         <ReplacementValue>$(AssemblyFileRevision)</ReplacementValue>
       </Tokens>
     </ItemGroup>
-    <PropertyGroup>  
-        <OutputDirectory>$(MSBuildProjectDirectory)\Properties</OutputDirectory>
+    <PropertyGroup>
+      <OutputDirectory>$(MSBuildProjectDirectory)\Properties</OutputDirectory>
     </PropertyGroup>
     <MakeDir Directories="$(OutputDirectory)" Condition="!Exists('$(OutputDirectory)')" />
     <TemplateFile Template="@(CurrentVersionTemplate)" OutputFilename="$(OutputDirectory)\CurrentVersion.Generated.cs" Tokens="@(Tokens)"/>
@@ -85,8 +85,8 @@
       </Tokens>
     </ItemGroup>
     <PropertyGroup>
-        <OutputDirectory>$(MSBuildProjectDirectory)\Properties</OutputDirectory>  
-    </PropertyGroup>  
+      <OutputDirectory>$(MSBuildProjectDirectory)\Properties</OutputDirectory>
+    </PropertyGroup>
     <MakeDir Directories="$(OutputDirectory)" Condition="!Exists('$(OutputDirectory)')" />
     <TemplateFile Template="@(BuildInfoTemplate)" OutputFilename="$(OutputDirectory)\BuildInfo.Generated.cs" Tokens="@(Tokens)"/>
   </Target>
