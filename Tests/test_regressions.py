@@ -1294,4 +1294,24 @@ class C:
         c.execute("INSERT INTO test (test) VALUES (x'');")
         self.assertEqual(len(c.execute("SELECT * FROM test;").fetchone()[0]), 0)
 
+    def test_main_gh1081(self):
+        """https://github.com/IronLanguages/main/issues/1081"""
+        import io
+        import mmap
+
+        test_file_name = os.path.join(self.temporary_dir, "test_main_gh1081.bin")
+
+        with open(test_file_name, "wb") as f:
+            f.write(bytearray(range(256)))
+
+        try:
+            with io.open(test_file_name, "rb") as f:
+                mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
+                try:
+                    self.assertEqual(mm[:], bytearray(range(256)))
+                finally:
+                    mm.close()
+        finally:
+            os.remove(test_file_name)
+
 run_test(__name__)
