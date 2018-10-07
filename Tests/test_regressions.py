@@ -393,7 +393,6 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         self.assertEqual(MyFloat, 3.14)
         self.assertEqual(int(MyFloat), 3)
 
-
     @skipUnlessIronPython()
     def test_type_delegate_conversion(self):
         import clr
@@ -402,7 +401,6 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         class x(object): pass
         ctor = Func[object](x)
         self.assertEqual(type(ctor()), x)
-
 
     def test_module_alias_cp19656(self):
         old_path = [x for x in sys.path]
@@ -442,8 +440,9 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
             try:
                 os.rmdir(dir_name)
             except WindowsError as e:
-                pass
-            self.assertEqual(e.errno, errno.EACCES)
+                self.assertEqual(e.errno, errno.EACCES)
+            else:
+                self.fail()
         finally:
             os.chmod(dir_name, stat.S_IWRITE)
             os.rmdir(dir_name)
@@ -481,7 +480,6 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         finally:
             sys.stdout = oldstdout
         self.assertTrue(dir(System).count('Action') == 1)
-
 
     def test_not___len___cp_24129(self):
         class C(object):
@@ -564,23 +562,22 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
 
         self.assertEqual(f(), (['a', 'deepcopy'], ['deepcopy']))
 
-
     def cp22692_helper(self, source, flags):
         retVal = []
         err = err1 = err2 = None
         code = code1 = code2 = None
         try:
             code = compile(source, "dummy", "single", flags, 1)
-        except SyntaxError as err:
-            pass
+        except SyntaxError as e:
+            err = e
         try:
             code1 = compile(source + "\n", "dummy", "single", flags, 1)
-        except SyntaxError as err1:
-            pass
+        except SyntaxError as e:
+            err1 = e
         try:
             code2 = compile(source + "\n\n", "dummy", "single", flags, 1)
-        except SyntaxError as err2:
-            pass
+        except SyntaxError as e:
+            err2 = e
         if not code:
             retVal.append(type(err1))
             retVal.append(type(err2))
@@ -606,7 +603,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
         try:
             ClassWithDefaultField.Field = 20
         except ValueError as e:
-            self.assertEqual(e.message,
+            self.assertEqual(e.args[0],
                     "assignment to instance field w/o instance")
         self.assertEqual(ClassWithDefaultField().Field, 10)
 
@@ -690,7 +687,7 @@ class C:
                 l = m(C,1,2,3)
                 l = m(C,z=3,y=2,x=1)
             except Exception as e:
-                print(e.message)
+                print(e.args[0])
 
         self.assertEqual(trapper.messages[0:2], ['1 2 3', '1 2 3'])
 
@@ -1180,7 +1177,7 @@ class C:
         from xml.etree import ElementTree as ET
         from StringIO import StringIO
         x = ET.iterparse(StringIO('<root/>'))
-        y = x.next()
+        y = next(x)
         self.assertTrue(y[0] == 'end' and y[1].tag == 'root')
 
     def test_gh463(self):
