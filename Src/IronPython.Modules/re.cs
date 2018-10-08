@@ -1243,7 +1243,7 @@ namespace IronPython.Modules {
             }
 
 #if FEATURE_MMAP
-            if (str is MmapModule.mmap mmapFile) {
+            if (str is MmapModule.MmapDefault mmapFile) {
                 return mmapFile.GetSearchString();
             }
 #endif

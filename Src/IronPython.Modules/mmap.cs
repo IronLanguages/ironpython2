@@ -85,14 +85,24 @@ namespace IronPython.Modules {
             return PythonExceptions.CreateThrowable(PythonExceptions.WindowsError, code, FormatError(code));
         }
 
-        [PythonType("mmap"), PythonHidden(PlatformsAttribute.PlatformFamily.Windows)]
-        public class MmapUnix : mmap {
+        public static PythonType mmap {
+            get {
+                if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                    return DynamicHelpers.GetPythonTypeFromType(typeof(MmapDefault));
+                }
+
+                return DynamicHelpers.GetPythonTypeFromType(typeof(MmapUnix));
+            }
+        }
+
+        [PythonHidden]
+        public class MmapUnix : MmapDefault{
             public MmapUnix(CodeContext/*!*/ context, int fileno, long length, string tagname = null, int access = ACCESS_WRITE, long offset = 0, int flags = MAP_SHARED, int prot = PROT_WRITE | PROT_READ)
                 : base(context, fileno, length, tagname, access, offset) { }
         }
 
-        [PythonType("mmap"), PythonHidden(PlatformsAttribute.PlatformFamily.Unix)]
-        public class mmap {
+        [PythonHidden]
+        public class MmapDefault {
             private MemoryMappedFile _file;
             private MemoryMappedViewAccessor _view;
             private long _position;
@@ -105,7 +115,7 @@ namespace IronPython.Modules {
             private volatile bool _isClosed;
             private int _refCount = 1;
 
-            public mmap(CodeContext/*!*/ context, int fileno, long length, string tagname = null, int access = ACCESS_WRITE, long offset = 0) {
+            public MmapDefault(CodeContext/*!*/ context, int fileno, long length, string tagname = null, int access = ACCESS_WRITE, long offset = 0) {
                 switch (access) {
                     case ACCESS_READ:
                         _fileAccess = MemoryMappedFileAccess.Read;
@@ -837,9 +847,9 @@ namespace IronPython.Modules {
             }
 
             private struct MmapLocker : IDisposable {
-                private readonly mmap _mmap;
+                private readonly MmapDefault _mmap;
 
-                public MmapLocker(mmap mmap) {
+                public MmapLocker(MmapDefault mmap) {
                     _mmap = mmap;
                     Interlocked.Increment(ref _mmap._refCount);
                     _mmap.EnsureOpen();
