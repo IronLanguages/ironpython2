@@ -95,13 +95,13 @@ namespace IronPython.Modules {
             }
         }
 
-        [PythonHidden]
+        [PythonType("mmap.mmap"), PythonHidden]
         public class MmapUnix : MmapDefault{
             public MmapUnix(CodeContext/*!*/ context, int fileno, long length, string tagname = null, int access = ACCESS_WRITE, long offset = 0, int flags = MAP_SHARED, int prot = PROT_WRITE | PROT_READ)
                 : base(context, fileno, length, tagname, access, offset) { }
         }
 
-        [PythonHidden]
+        [PythonType("mmap.mmap"), PythonHidden]
         public class MmapDefault {
             private MemoryMappedFile _file;
             private MemoryMappedViewAccessor _view;
