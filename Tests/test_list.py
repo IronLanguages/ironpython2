@@ -2,7 +2,6 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 import os
 import unittest
 
@@ -72,7 +71,7 @@ class ListTest(IronPythonTestCase):
         def f1(): [a, b, c] = listOfSize2
         def f2(): del a
         def f3(): [a] = listOfSize2
-        
+
         self.assertRaises(ValueError, f1)
         self.assertRaises(NameError, f2)
         self.assertRaises(ValueError, f3)
@@ -127,18 +126,18 @@ class ListTest(IronPythonTestCase):
         x = [1,2,3]
         x += [4,5,6]
         self.assertTrue(x == [1,2,3,4,5,6])
-        
+
         x = [1,2,3]
         self.assertEqual(x * 2, [1,2,3,1,2,3])
         self.assertEqual(2 * x, [1,2,3,1,2,3])
 
         class mylong(long): pass
-        self.assertEqual([1, 2] * mylong(2L), [1, 2, 1, 2])
-        self.assertEqual([3, 4].__mul__(mylong(2L)), [3, 4, 3, 4])
-        self.assertEqual([5, 6].__rmul__(mylong(2L)), [5, 6, 5, 6])
-        self.assertEqual(mylong(2L) * [7,8] , [7, 8, 7, 8])
+        self.assertEqual([1, 2] * mylong(2), [1, 2, 1, 2])
+        self.assertEqual([3, 4].__mul__(mylong(2)), [3, 4, 3, 4])
+        self.assertEqual([5, 6].__rmul__(mylong(2)), [5, 6, 5, 6])
+        self.assertEqual(mylong(2) * [7,8] , [7, 8, 7, 8])
         self.assertRaises(TypeError, lambda: [1,2] * [3,4])
-        self.assertRaises(OverflowError, lambda: [1,2] * mylong(203958720984752098475023957209L))
+        self.assertRaises(OverflowError, lambda: [1,2] * mylong(203958720984752098475023957209))
 
     def test_reverse(self):
         x = ["begin",1,2,3,4,5,6,7,8,9,0,"end"]
@@ -156,26 +155,26 @@ class ListTest(IronPythonTestCase):
     def test_equal(self):
         self.assertEqual([2,3] == '', False)
         self.assertEqual(list.__eq__([], None), NotImplemented)
-        
+
         class MyEquality(object):
             def __eq__(self, other):
                 return 'abc'
-        
+
         class MyOldEquality(object):
             def __eq__(self, other):
                 return 'def'
-                
+
         self.assertEqual([] == MyEquality(), 'abc')
         self.assertEqual([] == MyOldEquality(), 'def')
-        
+
         self.assertEqual([2,3] == (2,3), False)
 
         class MyIterable(object):
             def __iter__(self): return MyIterable()
-            def next(self):
+            def __next__(self):
                 yield 'a'
                 yield 'b'
-                
+
         self.assertEqual(['a', 'b'] == MyIterable(), False)
 
     def test_self_init(self):
@@ -216,51 +215,51 @@ class ListTest(IronPythonTestCase):
         ## also borrow this place to test passing python dict to clr where
         ##      IDictionary or Hashtable is requested
         ##
-        
+
         def contains_all_1s(x):
             '''check the return value are 11111 or similar'''
             if type(x) == tuple:
                 x = x[0]
             s = str(x)
             self.assertEqual(s.count("1"), len(s))
-                
+
         def do_something(thetype, pl, cl, check_func):
             pt = thetype(pl)
             pt.AddRemove()
-            
+
             ct = thetype(cl)
             ct.AddRemove()
-                
+
             check_func()
-            
+
             x = pt.Inspect()
             y = ct.Inspect()
             contains_all_1s(x)
             contains_all_1s(y)
             self.assertEqual(x, y)
-                
+
             self.assertEqual(pt.Loop(), ct.Loop())
             check_func()
-                
+
         self.load_iron_python_test()
         import System
         import IronPythonTest
-            
+
         # test ListWrapperForIList
         pl = range(40)
         cl = System.Collections.Generic.List[int]()
         for x in pl: cl.Add(x)
-            
+
         def check_content():
             for x, y in zip(cl, pl): self.assertEqual(x, y)
-                
+
         do_something(IronPythonTest.UsePythonListAsList, pl, cl, check_content)
-            
+
         # test DictWrapperForIDict
         pl = {"redmond" : 10, "seattle" : 20}
         cl = System.Collections.Generic.Dictionary[str, int]()
         for x, y in pl.iteritems(): cl.Add(x, y)
-        
+
         pll = list(pl.iteritems())
         cll = list(cl)
         pll.sort(lambda x, y: cmp(x[0], y[0]))
@@ -270,14 +269,14 @@ class ListTest(IronPythonTestCase):
             for x, y in zip(cll, pll):
                 self.assertEqual(x.Key, y[0])
                 self.assertEqual(x.Value, y[1])
-        
+
         do_something(IronPythonTest.UsePythonDictAsDictionary, pl, cl, check_content)
 
     def test_inplace_addition(self):
         x = [2,3,4]
         x += x
         self.assertEqual(x, [2,3,4,2,3,4])
-        
+
         test_cases = [ ([],     [],     []),
                     ([1],    [],     [1]),
                     ([],     [1],    [1]),
@@ -294,41 +293,41 @@ class ListTest(IronPythonTestCase):
                     ([None], [2],    [None, 2]),
                     ([""],   [],     [""]),
                     ]
-                    
+
         for left_operand, right_operand, result in test_cases:
-        
+
             #(No access to copy.deepcopy in IP)
             #  Create new list to verify no side effects to the RHS list
             orig_right = [x for x in right_operand]
-                
+
             left_operand += right_operand
-            
+
             self.assertEqual(left_operand, result)
-            
+
             #Side effects...
             self.assertEqual(orig_right, right_operand)
-            
+
         #interesting cases
         x = [None]
         x += xrange(3)
         self.assertEqual(x, [None, 0, 1, 2])
-        
+
         x = [None]
         x += (0, 1, 2)
         self.assertEqual(x, [None, 0, 1, 2])
-        
+
         x = [None]
         x += "012"
         self.assertEqual(x, [None, "0", "1", "2"])
-        
+
         x = [None]
         x += Exception()
         self.assertEqual(x, [None])
-        
+
         #negative cases
         neg_cases = [   ([],    None),
                         ([],    1),
-                        ([],    1L),
+                        ([],    long(1)),
                         ([],    3.14),
                         ([],    object),
                         ([],    object()),
@@ -337,15 +336,15 @@ class ListTest(IronPythonTestCase):
             try:
                 left_operand += right_operand
                 self.assertUnreachable()
-            except TypeError, e:
+            except TypeError:
                 pass
-                
+
     def test_indexing(self):
         l = [2,3,4]
         def set(x, i, v): x[i] = v
         self.assertRaises(TypeError, lambda : l[2.0])
         self.assertRaises(TypeError, lambda : set(l, 2.0, 1))
-        
+
         class mylist(list):
             def __getitem__(self, index):
                 return list.__getitem__(self, int(index))
@@ -357,7 +356,6 @@ class ListTest(IronPythonTestCase):
         l[2.0] = 1
         self.assertEqual(l[2], 1)
 
-
     def test_getslice(self):
         """overriding __len__ doesn't get called when doing __getslice__"""
         class l(list):
@@ -366,21 +364,20 @@ class ListTest(IronPythonTestCase):
 
         x = l()
         self.assertEqual(x.__getslice__(-1, -200), [])
-        
+
         class mylist(list):
             def __getslice__(self, i, j):
                 return i, j
 
         class mylong(long): pass
         class myint(int): pass
-        
+
         # all indexes to __getslice__ should be ints
         for listType in list, mylist:
             for input in [0, 1, False, True, myint(0), myint(1), mylong(0), mylong(1), -1, myint(-1), mylong(-1)]:
                 for x in listType(range(5))[input:input]:
                     self.assertEqual(type(x), int)
-    
-    
+
     def test_repr(self):
         class mylist(list):
             def __repr__(self): return 'abc'
@@ -389,25 +386,25 @@ class ListTest(IronPythonTestCase):
 
     def test_index_multiply(self):
         for data in ([1,2], (1,2), 'ab'):
-        
+
             class M:
                 def __rmul__(self, other):
                     return 1
-        
+
             class Index(object):
                 def __index__(self): return 2
-                
+
             class OldIndex:
                 def __index__(self): return 2
-            
+
             self.assertEqual(data * M(), 1)
             self.assertRaises(TypeError, lambda : data.__mul__(M()))
-            
+
             self.assertEqual(data * Index(), data * 2)
             self.assertEqual(data * OldIndex(), data * 2)
             self.assertEqual(data.__mul__(Index()), data * 2)
             self.assertEqual(data.__mul__(OldIndex()), data * 2)
-            
+
             self.assertRaisesMessage(TypeError, "'NoneType' object cannot be interpreted as an index", lambda : data.__mul__(None))
             self.assertRaises(TypeError, lambda : data * None)
             self.assertRaises(TypeError, lambda : None * data)
@@ -415,7 +412,7 @@ class ListTest(IronPythonTestCase):
     def test_sequence_assign(self):
         tokens = [(chr(ord('a') + val), val) for val in range(0,10)]
         (first,pos),tokens = tokens[0], tokens[1:]
-        
+
         self.assertEqual(first, 'a')
         self.assertEqual(pos, 0)
         self.assertEqual(tokens, [('b', 1), ('c', 2), ('d', 3), ('e', 4), ('f', 5), ('g', 6), ('h', 7), ('i', 8), ('j', 9)])
@@ -427,7 +424,7 @@ class ListTest(IronPythonTestCase):
         for base in (listIter, reverseListIter):
             def subclass():
                 class x(base): pass
-                
+
             self.assertRaises(TypeError, subclass)
 
 
@@ -435,7 +432,7 @@ class ListTest(IronPythonTestCase):
         class mylist(object):
             def __getitem__(self, index):
                 return 'stuff'[index]
-        
+
         a = list('stuff')
         for val in (a, 'stuff', tuple('stuff'), mylist()):
             a[1:0] = val
