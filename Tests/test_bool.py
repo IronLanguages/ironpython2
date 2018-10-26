@@ -2,7 +2,6 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 import unittest
 
 from iptest import is_cli, run_test
@@ -35,19 +34,19 @@ class BoolTest(unittest.TestCase):
         for simple_type in [int, long, float, str, unicode, bool, object]:
             self.assertEqual(NotImplemented, True.__coerce__(simple_type))
             self.assertEqual(NotImplemented, False.__coerce__(simple_type))
-        
+
     def test__float__(self):
         self.assertEqual(float(True), 1.0)
         self.assertEqual(float(False), 0.0)
-    
+
     def test__index__(self):
         self.assertEqual(True.__index__(), 1)
         self.assertEqual(False.__index__(), 0)
-    
+
     def test__long__(self):
-        self.assertEqual(long(True), 1L)
-        self.assertEqual(long(False), 0L)
-    
+        self.assertEqual(long(True), long(1))
+        self.assertEqual(long(False), long(0))
+
     def test__rdivmod__(self):
         self.assertEqual(divmod(True, True),  (1, 0))
         self.assertEqual(divmod(False, True), (0, 0))
@@ -59,11 +58,11 @@ class BoolTest(unittest.TestCase):
         import System
         if not System.Decimal:
             Fail("should be true: %r", System.Decimal)
-            
+
         self.assertEqual(bool(System.Decimal(0)), False)
         self.assertEqual(bool(System.Decimal(1)), True)
         self.assertEqual(System.Decimal(True), System.Decimal(1))
         self.assertEqual(System.Decimal(False), System.Decimal(0))
-    
+
 run_test(__name__)
 
