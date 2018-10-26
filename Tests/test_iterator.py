@@ -2,7 +2,6 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 import sys
 import unittest
 
@@ -87,7 +86,6 @@ class IteratorTest(IronPythonTestCase):
         self.assertRaisesMessages(TypeError, "iter() takes at least 1 argument (0 given)",
                                         "iter expected at least 1 arguments, got 0", iter)
 
-
     def test_itertools_same_value(self):
         from itertools import izip
         x = iter(range(4))
@@ -96,55 +94,53 @@ class IteratorTest(IronPythonTestCase):
     def test_itertools_islice_end(self):
         """islice shouldn't consume values after the limit specified by step"""
         from itertools import izip, islice
-        
+
         # create a zipped iterator w/ odd number of values...
         it = izip([2,3,4], [4,5,6])
-        
+
         # slice in 2, turn that into a list...
         list(islice(it, 2))
-        
+
         # we should still have the last value still present
         for x in it:
             self.assertEqual(x, (4,6))
-
 
     def test_iterator_for(self):
         """test various iterable objects with multiple incomplete iterations"""
         def generator():
             yield 0
             yield 1
-        
+
         from cStringIO import StringIO
         strO = StringIO()
         strO.write('abc\n')
         strO.write('def')
         strI = StringIO('abc\ndef')
-        
+
         fi = sys.float_info
-        
+
         d = {2:3, 3:4}
         l = [2, 3]
         s = set([2, 3, 4])
-        
-        f = file('test_file.txt', 'w+')
-        f.write('abc\n')
-        f.write('def')
-        f.close()
 
-        f = file('test_file.txt')
-        
+        with open('test_file.txt', 'w+') as f:
+            f.write('abc\n')
+            f.write('def')
+
+        f = open('test_file.txt')
+
         import os
         stat = os.stat(__file__)
 
         class x(object):
             abc = 2
             bcd = 3
-            
+
         dictproxy = x.__dict__
         dictlist = list(x.__dict__)
-        
+
         ba = bytearray(b'abc')
-        
+
         try:
                         # iterator,       first Value,    second Value
             iterators = [
@@ -152,9 +148,9 @@ class IteratorTest(IronPythonTestCase):
                         (generator(),      0,              1),
                         (strI,             'abc\n',        'def'),
                         (strO,             'abc\n',        'def'),
-                        
+
                         # objects which when enumerated multiple times reset
-                        (xrange(10),       0,              0), 
+                        (xrange(10),       0,              0),
                         ([0, 1],           0,              0),
                         ((0, 1),           0,              0),
                         (fi,               fi[0],          fi[0]),
@@ -166,12 +162,12 @@ class IteratorTest(IronPythonTestCase):
                         (s,                list(s)[0],    list(s)[0]),
                         (dictproxy,        dictlist[0],   dictlist[0]),
                         ]
-            
+
             iterators.append((f,                'abc\n',        'def'))
             iterators.append((stat,             stat[0],        stat[0]))
 
             for iterator, res0, res1 in iterators:
-                for x in iterator: 
+                for x in iterator:
                     self.assertEqual(x, res0)
                     break
                 for x in iterator:
@@ -181,16 +177,14 @@ class IteratorTest(IronPythonTestCase):
             f.close()
             os.unlink('test_file.txt')
 
-
     def test_iterator_closed_file(self):
-        cf = file(__file__)
+        cf = open(__file__)
         cf.close()
-        
+
         def f():
             for x in cf: pass
-            
-        self.assertRaises(ValueError, f)
 
+        self.assertRaises(ValueError, f)
 
     def test_no_return_self_in_iter(self):
         class A(object):
@@ -199,14 +193,14 @@ class IteratorTest(IronPythonTestCase):
 
             def next(cls):
                 return 2
-        
+
         a = A()
         self.assertEqual(next(a), 2)
 
     def test_no_iter(self):
         class A(object):
             def next(cls):
-                return 2    
+                return 2
         a = A()
         self.assertEqual(next(a), 2)
 
@@ -216,7 +210,7 @@ class IteratorTest(IronPythonTestCase):
                 return cls
             def next(self):
                 return 2
-                
+
         a = A()
         self.assertEqual(next(a), 2)
 
@@ -240,13 +234,13 @@ class IteratorTest(IronPythonTestCase):
                 return cls
             def next(self):
                 return 3
-                
+
         class B(object):
             def __iter__(cls):
                 return A()
             def next(self):
                 return 2
-                
+
         b = B()
         self.assertEqual(next(b), 2)
 
