@@ -2,7 +2,6 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 import unittest
 
 from iptest.type_util import *
@@ -25,7 +24,6 @@ class ComplexTest(unittest.TestCase):
                 self.assertRaises(ValueError, complex, "%sj+%sj" % (x, y))
                 self.assertEqual(complex("   %s+%sj" % (x, y)), complex(" %s+%sj  " % (x, y)))
 
-
     def test_misc(self):
         self.assertEqual(mycomplex(), complex())
         a = mycomplex(1)
@@ -45,10 +43,10 @@ class ComplexTest(unittest.TestCase):
         self.assertEqual(complex()%a, complex())
         self.assertEqual(complex() // a, complex())
         self.assertEqual(complex(2), complex(2, 0))
-    
+
     def test_inherit(self):
         class mycomplex(complex): pass
-        
+
         a = mycomplex(2+1j)
         self.assertEqual(a.real, 2)
         self.assertEqual(a.imag, 1)
@@ -56,7 +54,7 @@ class ComplexTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual(repr(1-6j), '(1-6j)')
-    
+
 
     def test_infinite(self):
         self.assertEqual(repr(1.0e340j),  'infj')
