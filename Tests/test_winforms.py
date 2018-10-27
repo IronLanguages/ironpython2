@@ -2,7 +2,6 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 """Test cases for features that require WinForms and may display UI"""
 
 import unittest
@@ -62,13 +61,13 @@ class WinformsTest(IronPythonTestCase):
                 grid.Dock = SWF.DockStyle.Fill
                 self.grid = grid
                 self.Controls.Add(grid)
-        
+
         form = Form()
         def close_form():
             while not form.Visible:
                 System.Threading.Thread.Sleep(100)
             System.Threading.Thread.Sleep(1000)
-            
+
             for i in xrange(len(SAMPLE_DATA)):
                 row = form.grid.Rows[i]
                 self.assertEqual(int(row.Cells[0].FormattedValue), SAMPLE_DATA[i][1])
@@ -79,7 +78,7 @@ class WinformsTest(IronPythonTestCase):
         th = System.Threading.Thread(System.Threading.ThreadStart(close_form))
         th.Start()
         SWF.Application.Run(form)
-    
+
 
     def test_databinding_manual(self):
         import System.Windows.Forms as SWF
@@ -101,13 +100,13 @@ class WinformsTest(IronPythonTestCase):
                 grid.Dock = SWF.DockStyle.Fill
                 self.grid = grid
                 self.Controls.Add(grid)
-        
+
         form = Form()
         def close_form():
             while not form.Visible:
                 System.Threading.Thread.Sleep(100)
             System.Threading.Thread.Sleep(1000)
-                
+
             for i in xrange(len(SAMPLE_DATA)):
                 row = form.grid.Rows[i]
                 self.assertEqual(row.Cells[0].FormattedValue, SAMPLE_DATA[i][0])
@@ -123,7 +122,7 @@ class WinformsTest(IronPythonTestCase):
         import System.Windows.Forms as SWF
         self.assertEqual(SWF.TextBox.__name__, "TextBox")
         self.assertEqual(SWF.TextBox().__class__.__name__, "TextBox")
-    
+
     def test_cp17072(self):
         import System.Windows.Forms as SWF
         tb_class_dir = dir(SWF.TextBox)
@@ -144,16 +143,16 @@ class WinformsTest(IronPythonTestCase):
     def test_cp9908(self):
         from System.Windows.Forms import Panel
         from System.Windows.Forms.Layout import LayoutEngine
-        
+
         class LE(LayoutEngine):
             def Layout(self, parent, eventArgs):
                 LayoutEngine.Layout(self, parent, eventArgs)
-        
+
         le = LE()
-        
+
         class P(Panel):
             def get_LayoutEngine(self): return le
-        
+
         p = P()
         self.assertEqual(p.LayoutEngine, le)
 
@@ -174,13 +173,13 @@ class WinformsTest(IronPythonTestCase):
 
         example = PropertyExample(3)
         grid.SelectedObject = example
-        
+
         def close_form():
             while not form.Visible:
                 System.Threading.Thread.Sleep(100)
             System.Threading.Thread.Sleep(3000)
             form.Close()
-            
+
         th = System.Threading.Thread(System.Threading.ThreadStart(close_form))
         th.Start()
         SWF.Application.Run(form)

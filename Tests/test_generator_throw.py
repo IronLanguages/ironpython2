@@ -2,7 +2,6 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 #
 # Test Pep 342 enhancements to generator, including Throw(), Send(), Close() and yield expressions.
 #
@@ -20,7 +19,7 @@ class MyError(Exception):
     pass
 
 
-class MyError2:
+class MyError2(Exception):
     pass
 
 # this is straight from the sample in Pep342
@@ -29,7 +28,7 @@ class MyError2:
 def consumer(func):
     def wrapper(*args, **kw):
         gen = func(*args, **kw)
-        gen.next()
+        next(gen)
         return gen
     wrapper.__name__ = func.__name__
     wrapper.__dict__ = func.__dict__
@@ -64,8 +63,8 @@ def gen_compare():
 class GeneratorThrowTest(unittest.TestCase):
 
     def EnsureClosed(self, g):
-        self.assertRaises(StopIteration, g.next)
-
+        with self.assertRaises(StopIteration):
+            next(g)
 
     def test_del(self):
         """Test that generator.__del__ is invoked and that it calls Close()"""
@@ -86,7 +85,7 @@ class GeneratorThrowTest(unittest.TestCase):
                 finally:
                     l[0] += 1
             g = ff3(l)
-            self.assertEqual(g.next(), 10)  # move to inside the finally
+            self.assertEqual(next(g), 10)  # move to inside the finally
             del g
 
         nested()
@@ -109,7 +108,7 @@ class GeneratorThrowTest(unittest.TestCase):
         f = lambda x: (3 + (yield x), (yield x * 2))
 
         g = f(10)
-        self.assertEqual(g.next(), 10)
+        self.assertEqual(next(g), 10)
         self.assertEqual(g.send(9), 10 * 2)
         if is_cli:  # https://github.com/IronLanguages/main/issues/864
             self.assertEqual(g.send(5), (3 + 9, 5))
@@ -126,7 +125,7 @@ class GeneratorThrowTest(unittest.TestCase):
         self.assertEqual(l[1], 8)
         f = l[0]
         g = f()
-        self.assertEqual(g.next(), 3)
+        self.assertEqual(next(g), 3)
 
 
     def test_type_generator(self):
@@ -148,7 +147,7 @@ class GeneratorThrowTest(unittest.TestCase):
             yield lambda x=(yield 25): x * 2
 
         g = f()
-        self.assertEqual(g.next(), 25)
+        self.assertEqual(next(g), 25)
         # this sends in the default parameter, yields the lambda expression
         l = g.send(15)
         self.assertEqual(l(), 15 * 2)  # this now uses the default param
@@ -179,7 +178,7 @@ class GeneratorThrowTest(unittest.TestCase):
             (yield)[(yield)] = 'x'
             yield
         g = f()
-        self.assertEqual(g.next(), None)
+        self.assertEqual(next(g), None)
         l = [10, 20, 30]
         g.send(l)
         g.send(1)
@@ -203,9 +202,9 @@ class GeneratorThrowTest(unittest.TestCase):
             yield x
         l = [0, 0]
         g = f(l)
-        self.assertEqual(g.next(), 3)
+        self.assertEqual(next(g), 3)
         self.assertEqual(g.send(100), None)
-        self.assertEqual(g.next(), 10)
+        self.assertEqual(next(g), 10)
         self.assertEqual(l, [1, 0])
         self.assertEqual(g.send(30), 37)
         self.assertEqual(l, [1, 1])
@@ -237,10 +236,10 @@ class GeneratorThrowTest(unittest.TestCase):
             self.assertEqual(z, 100 / 25)
             yield 123
         g = f()
-        self.assertEqual(g.next(), (1, 2))
-        self.assertEqual(g.next(), None)
+        self.assertEqual(next(g), (1, 2))
+        self.assertEqual(next(g), None)
         self.assertEqual(g.send(15), 10)
-        self.assertEqual(g.next(), 99)
+        self.assertEqual(next(g), 99)
         self.assertEqual(g.send(100), None)
         self.assertEqual(g.send(40), (1, 2))
         self.assertEqual(g.send(39), None)
@@ -253,7 +252,7 @@ class GeneratorThrowTest(unittest.TestCase):
         def f():
             yield (yield 5)
         g = f()
-        self.assertEqual(g.next(), 5)
+        self.assertEqual(next(g), 5)
         self.assertEqual(g.send(15), 15)
 
 
@@ -266,7 +265,7 @@ class GeneratorThrowTest(unittest.TestCase):
             l[0] += 1
             self.assertEqual(x, 15)
         g = f()
-        self.assertEqual(g.next(), 10)
+        self.assertEqual(next(g), 10)
 
         def t():
             g.send(15)
@@ -290,8 +289,8 @@ class GeneratorThrowTest(unittest.TestCase):
             g.send(1)
         self.assertRaises(TypeError, t)  # can't send non-null on unstarted
         # should not change generator status
-        self.assertEqual(g.next(), 10)
-        self.assertEqual(g.next(), 5)
+        self.assertEqual(next(g), 10)
+        self.assertEqual(next(g), 5)
 
 
     def test_send_exception(self):
@@ -301,7 +300,7 @@ class GeneratorThrowTest(unittest.TestCase):
             self.assertEqual(y, MyError)
             yield
         g = f()
-        g.next()
+        next(g)
         g.send(MyError)
 
 
@@ -315,7 +314,7 @@ class GeneratorThrowTest(unittest.TestCase):
 
         g = f()
 
-        i = g.next()
+        i = next(g)
         self.assertEqual(i, 5)
 
         # This should go uncaught from the iterator
@@ -339,8 +338,8 @@ class GeneratorThrowTest(unittest.TestCase):
             yield 4
 
         g = f2()
-        self.assertEqual(g.next(), 1)
-        self.assertEqual(g.next(), 2)
+        self.assertEqual(next(g), 1)
+        self.assertEqual(next(g), 2)
 
         # generator will catch this.
         # this throws from the last yield point, resumes executing the generator
@@ -349,12 +348,12 @@ class GeneratorThrowTest(unittest.TestCase):
         self.assertEqual(i, 3)
 
         # Test that we can call next() after throw.
-        self.assertEqual(g.next(), 4)
+        self.assertEqual(next(g), 4)
 
 
     def test_throw_value(self):
         """Test another throw overload passing (type,value)."""
-        class MyClass2:
+        class MyClass2(Exception):
             def __init__(self, val):
                 self.val = val
 
@@ -362,12 +361,12 @@ class GeneratorThrowTest(unittest.TestCase):
             try:
                 yield 5
                 self.assertTrue(false)
-            except MyClass2, x:
+            except MyClass2 as x:
                 self.assertEqual(x.val, 10)
                 yield 15
 
         g = f()
-        self.assertEqual(g.next(), 5)
+        self.assertEqual(next(g), 5)
         self.assertEqual(g.throw(MyClass2, 10), 15)
 
 
@@ -381,7 +380,7 @@ class GeneratorThrowTest(unittest.TestCase):
                 raise MyError2
 
         g = f4()
-        g.next()  # move into try block
+        next(g)  # move into try block
         try:
             g.throw(MyError)  # will get caught and rethrow MyError 2
             self.assertTrue(False)
@@ -421,7 +420,7 @@ class GeneratorThrowTest(unittest.TestCase):
             yield 1
 
         g = f5()
-        self.assertEqual(g.next(), 1)
+        self.assertEqual(next(g), 1)
 
         # Loop this to ensure that we're in steady state.
         for i in range(0, 3):
@@ -450,10 +449,10 @@ class GeneratorThrowTest(unittest.TestCase):
 
         l = [0]
         g = f(l)
-        self.assertEqual(g.next(), 1)
+        self.assertEqual(next(g), 1)
         self.assertEqual(l[0], 1)
 
-        self.assertEqual(g.next(), 2)  # move into finally block
+        self.assertEqual(next(g), 2)  # move into finally block
         try:
             # throw, it will catch and run to completion
             g.throw(MyError)
@@ -473,10 +472,10 @@ class GeneratorThrowTest(unittest.TestCase):
             # 'Test: simple finally, no exception'
         l = [0]
         g = f1(l)
-        self.assertEqual(g.next(), 1)
-        self.assertEqual(g.next(), 2)
+        self.assertEqual(next(g), 1)
+        self.assertEqual(next(g), 2)
         self.assertEqual(l[0], 0)
-        self.assertEqual(g.next(), 3)
+        self.assertEqual(next(g), 3)
         self.assertEqual(l[0], 1)
         self.EnsureClosed(g)
 
@@ -485,7 +484,7 @@ class GeneratorThrowTest(unittest.TestCase):
         """Now try throwing before finally"""
         l = [0]
         g = f1(l)
-        self.assertEqual(g.next(), 1)
+        self.assertEqual(next(g), 1)
         try:
             g.throw(MyError)
             self.assertTrue(False)
@@ -501,8 +500,8 @@ class GeneratorThrowTest(unittest.TestCase):
         """Now try throwing in range of finally, so that finally is executed"""
         l = [0]
         g = f1(l)
-        self.assertEqual(g.next(), 1)
-        self.assertEqual(g.next(), 2)
+        self.assertEqual(next(g), 1)
+        self.assertEqual(next(g), 2)
         try:
             g.throw(MyError)
             self.assertTrue(False)
@@ -525,7 +524,7 @@ class GeneratorThrowTest(unittest.TestCase):
     def test_ctor_throws(self):
         """Creating the exception occurs inside the generator."""
         # Simple class to raise an error in __init__
-        class MyErrorClass:
+        class MyErrorClass(Exception):
             def __init__(self):
                 raise MyError
 
@@ -537,7 +536,7 @@ class GeneratorThrowTest(unittest.TestCase):
                 yield 12
 
         g = f()
-        self.assertEqual(g.next(), 5)
+        self.assertEqual(next(g), 5)
 
         # MyError's ctor will raise an exception. It should be invoked in the generator's body,
         # and so the generator can catch it and continue running to yield a value.
@@ -557,7 +556,7 @@ class GeneratorThrowTest(unittest.TestCase):
                 self.assertTrue(false)
 
         g = f()
-        self.assertEqual(g.next(), 5)
+        self.assertEqual(next(g), 5)
 
         # g.throw(None) should:
         # - throw a TypeError immediately, not from generator body (So generator can't catch it)
@@ -567,7 +566,7 @@ class GeneratorThrowTest(unittest.TestCase):
         self.assertRaises(TypeError, t)
 
         # verify that generator is still valid and can be resumed
-        self.assertEqual(g.next(), 10)
+        self.assertEqual(next(g), 10)
 
     def test_close_throw(self):
         """Test close(), which builds on throw()"""
@@ -602,7 +601,7 @@ class GeneratorThrowTest(unittest.TestCase):
             except GeneratorExit:
                 pass  # catch but exit, that's ok.
         g = f()
-        self.assertEqual(g.next(), 1)
+        self.assertEqual(next(g), 1)
         g.close()
 
 
@@ -615,7 +614,7 @@ class GeneratorThrowTest(unittest.TestCase):
                 # print 'caught and rethrow'
                 raise MyError
         g = f()
-        self.assertEqual(g.next(), 1)
+        self.assertEqual(next(g), 1)
         # close(), which will raise a GeneratorExit, which gets caught and
         # rethrown as MyError
 
@@ -632,7 +631,7 @@ class GeneratorThrowTest(unittest.TestCase):
             except GeneratorExit:
                 yield 2  # illegal, don't swallow GeneratorExit
         g = f()
-        self.assertEqual(g.next(), 1)
+        self.assertEqual(next(g), 1)
         # close(), which will raise a GeneratorExit, which gets caught and
         # rethrown as MyError
 
@@ -650,7 +649,7 @@ class GeneratorThrowTest(unittest.TestCase):
         def f():
             yield (1, (yield), 3)
         g = f()
-        g.next()
+        next(g)
         self.assertEqual(g.send(5), (1, 5, 3))
 
 
@@ -666,7 +665,7 @@ class GeneratorThrowTest(unittest.TestCase):
             # yield expression as a base class.
             class Foo((yield)):
                 def m(self):
-                    print 'x'
+                    print('x')
             yield Foo
 
         g = M()
@@ -691,7 +690,7 @@ class GeneratorThrowTest(unittest.TestCase):
             d = {(yield 2): (yield 1), (yield): (yield)}
             yield d
         g = f()
-        self.assertEqual(g.next(), 1)
+        self.assertEqual(next(g), 1)
         self.assertEqual(g.send('a'), 2)
         g.send(10)
         g.send('b')
@@ -704,7 +703,7 @@ class GeneratorThrowTest(unittest.TestCase):
     def test_exp_compare1(self):
         """Compare expecting true."""
         g = gen_compare()
-        self.assertEqual(g.next(), 1)
+        self.assertEqual(next(g), 1)
         self.assertEqual(g.send(5), 2)
         self.assertEqual(g.send(10), 3)
         self.assertEqual(g.send(15), True)
@@ -713,7 +712,7 @@ class GeneratorThrowTest(unittest.TestCase):
     def test_exp_compare2(self):
         """compare expecting false. This will short-circuit"""
         g = gen_compare()
-        self.assertEqual(g.next(), 1)
+        self.assertEqual(next(g), 1)
         self.assertEqual(g.send(5), 2)
         self.assertEqual(g.send(2), False)
         self.EnsureClosed(g)
@@ -728,7 +727,7 @@ class GeneratorThrowTest(unittest.TestCase):
         g.send(ValueError)
         try:
             g.send(15)
-        except ValueError, x:
+        except ValueError as x:
             self.assertEqual(x.args[0], 15)
         # Generator is now closed
         self.EnsureClosed(g)
@@ -755,7 +754,7 @@ class GeneratorThrowTest(unittest.TestCase):
                     (a, b) = ((yield), (yield))
                     d[a] = (b)
             g = f2()
-            g.next()
+            next(g)
             return g
         # Wrapper around a generator.
 
@@ -833,7 +832,7 @@ class GeneratorThrowTest(unittest.TestCase):
         yield 1
         l = [0, 1, 2]
         try:
-            raise MyError, 'a'
+            raise MyError('a')
         except (yield 'a'), l[(yield 'b')]:
             # doesn't work - cp35682
             # self.assertEqual(sys.exc_info(), (None,None,None)) # will print None from the
@@ -843,15 +842,15 @@ class GeneratorThrowTest(unittest.TestCase):
         except (yield 'c'):  # especially interesting here
             yield 'd'
         except:
-            print 'Not caught'
-        print 4
+            print('Not caught')
+        print(4)
 
 
     def test_yield_except_crazy1(self):
         """executes the generators 1st except clause"""
         g = self.getCatch()
-        self.assertEqual(g.next(), 1)
-        self.assertEqual(g.next(), 'a')
+        self.assertEqual(next(g), 1)
+        self.assertEqual(next(g), 'a')
         # doesn't work - cp35682
         #self.assertEqual(sys.exc_info(), (None, None, None))
         self.assertEqual(g.send(MyError), 'b')
@@ -864,8 +863,8 @@ class GeneratorThrowTest(unittest.TestCase):
         """executes the generators 2nd except clause"""
         # try the 2nd clause
         g = self.getCatch()
-        self.assertEqual(g.next(), 1)
-        self.assertEqual(g.next(), 'a')
+        self.assertEqual(next(g), 1)
+        self.assertEqual(next(g), 'a')
         # Cause us to skip the first except handler
         self.assertEqual(g.send(ValueError), 'c')
         self.assertEqual(g.send(MyError), 'd')
@@ -878,15 +877,15 @@ class GeneratorThrowTest(unittest.TestCase):
             yield
 
         g = f()
-        self.assertEqual(g.next(), None)
+        self.assertEqual(next(g), None)
 
         def f():
             if True:
                 yield
             yield
         g = f()
-        self.assertEqual(g.next(), None)
-        self.assertEqual(g.next(), None)
+        self.assertEqual(next(g), None)
+        self.assertEqual(next(g), None)
 
 
     def test_throw_stop_iteration(self):
@@ -896,9 +895,9 @@ class GeneratorThrowTest(unittest.TestCase):
 
         x = f()
         try:
-            x.next()
-        except StopIteration, e:
-            self.assertEqual(e.message, 'foo')
+            next(x)
+        except StopIteration as e:
+            self.assertEqual(e.args[0], 'foo')
 
 
 run_test(__name__)
