@@ -2146,7 +2146,7 @@ class NumberTest(IronPythonTestCase):
         class mylong(long):
             def __str__(self): return 'mylong'
 
-        self.assertEqual(repr(mylong(long(L))), '3L')
+        self.assertEqual(repr(mylong(long(3))), '3L')
 
     def test_override_eq(self):
         for base_type in [float, long, int]:
