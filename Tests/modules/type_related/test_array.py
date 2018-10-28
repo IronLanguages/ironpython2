@@ -145,7 +145,7 @@ class ArrayTest(unittest.TestCase):
                     (2**16)-2, (2**16)-1, (2**16), (2**16)+1, (2**16)+2,
                     (2**32)-2, (2**32)-1,
                     ]:
-        
+
             temp_array1 = array.array('I', [x])
             self.assertEqual(temp_array1[0], x)
 
@@ -168,7 +168,7 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(1732588562, a[0])
 
         #--B
-        a = array.array('B', [0]) * 2L
+        a = array.array('B', [0]) * long(2)
         self.assertEqual(2, len(a))
         self.assertEqual("array('B', [0, 0])", str(a))
 
@@ -455,11 +455,11 @@ class ArrayTest(unittest.TestCase):
 
 
     def test_cp9350(self):
-        for i in [1, 1L]:
+        for i in [1, long(1)]:
             a = array.array('B', [0]) * i
             self.assertEqual(a, array.array('B', [0]))
 
-        for i in [2, 2L]:
+        for i in [2, long(2)]:
             a = array.array('B', [0]) * i
             self.assertEqual(a, array.array('B', [0, 0]))
 
@@ -490,19 +490,19 @@ class ArrayTest(unittest.TestCase):
         '''
         #--Postive
         a = array.array('b', 'a')
-        for i in [  0L, 1L, 2L, 3L, 32766L, 32767L, 32768L, 65534L, 65535L, 65536L,
-                    456720545L, #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=24314
+        for i in [  long(0), long(1), long(2), long(3), long(32766), long(32767), long(32768), long(65534), long(65535), long(65536),
+                    long(456720545), #http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=24314
                     ]:
             self.assertEqual(i,
                     len(i*a))
             self.assertEqual(i, len(a*i))
 
         #--Negative
-        self.assertRaises(OverflowError, lambda: 4567206470L*a)
-        self.assertRaises(OverflowError, lambda: a*4567206470L)
+        self.assertRaises(OverflowError, lambda: long(4567206470)*a)
+        self.assertRaises(OverflowError, lambda: a*long(4567206470))
         if not is_mono: # these do not fail on Mono
-            self.assertRaises(MemoryError,   lambda: 2147483646L*a)
-            self.assertRaises(MemoryError,   lambda: a*2147483646L)
+            self.assertRaises(MemoryError,   lambda: long(2147483646)*a)
+            self.assertRaises(MemoryError,   lambda: a*long(2147483646))
 
         #--Positive
         a = array.array('b', 'abc')
