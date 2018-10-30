@@ -2,10 +2,9 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 """
 This module consists of regression tests for CodePlex and Dev10 IronPython bugs on
-.NET 4.0's dynamic feature added primarily by IP developers that need to be 
+.NET 4.0's dynamic feature added primarily by IP developers that need to be
 folded into other test modules and packages.
 
 Any test case added to this file should be of the form:
@@ -25,11 +24,11 @@ def GetMethodTest():
     return Method01()
 
 class Method01(object):
-    #Function 
+    #Function
     def Normal01(self, a, b):
         return a + b
 
-    #Function 
+    #Function
     def Optional01(self, a, b=1):
         return a + b
 
@@ -119,7 +118,7 @@ class DynamicRegressionTest(IronPythonTestCase):
     def test_cp24113(self):
         import clr
         import os
-        
+
         cp24113_vb_filename = os.path.join(self.temporary_dir, "cp24113_vb_module.vb")
         f = open(cp24113_vb_filename, "w")
         f.writelines(cp24113_vb_snippet)
@@ -132,9 +131,9 @@ class DynamicRegressionTest(IronPythonTestCase):
 
         class TestObj(object):
             Prop = None
-            def __getitem__(self, key): 
+            def __getitem__(self, key):
                 return key
-            def __setitem__(self, key, item): 
+            def __setitem__(self, key, item):
                 self.Prop = item
 
         to = TestObj()
@@ -161,10 +160,9 @@ class DynamicRegressionTest(IronPythonTestCase):
         self.assertEqual(self.run_vbc(compile_cmd), 0)
         for x in ["IronPython.dll", "Microsoft.Scripting.dll", "Microsoft.Dynamic.dll"]:
             System.IO.File.Copy(os.path.join(sys.exec_prefix, x), os.path.join(self.temporary_dir, x), True)
-        
+
         self.assertEqual(os.system(cp20519_vb_exename), 0)
         os.remove(cp20519_vb_exename)
         os.remove(cp20519_vb_filename)
-
 
 run_test(__name__)
