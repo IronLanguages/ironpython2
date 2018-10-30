@@ -2,11 +2,9 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 import sys
 import unittest
 
-from iptest import run_test
 #-----------------------------------------------------------------------------------
 #These have to be run first: importing iptest.assert_util masked a bug. Just make sure
 #these do not throw
@@ -20,7 +18,7 @@ class BuiltinsTest1(unittest.TestCase):
         builtins = __builtins__
         if type(builtins) is type(sys):
             builtins = builtins.__dict__
-        
+
         self.assertIn('hasattr', builtins, 'hasattr should be in __builtins__')
         self.assertNotIn('HasAttr', builtins, 'HasAttr should not be in __builtins__')
 
@@ -37,10 +35,15 @@ top_level_dir = dir()
 x = 10
 y = 20
 
-from iptest import IronPythonTestCase, is_cli, is_netcoreapp
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp, run_test
+
+def run_test_not_in_globals(self):
+    self.assertRaises(NameError, lambda: __dict__)
+    self.assertRaises(NameError, lambda: __module__)
+    self.assertRaises(NameError, lambda: __class__)
+    self.assertRaises(NameError, lambda: __init__)
 
 class BuiltinsTest2(IronPythonTestCase):
-
     def test_name_error(self):
         self.assertRaises(NameError, lambda: __new__)
 
@@ -112,11 +115,11 @@ class BuiltinsTest2(IronPythonTestCase):
         self.assertRaises(TypeError, reversed, 1) # arg to reversed must be a sequence
         self.assertRaises(TypeError, reversed, None)
         self.assertRaises(TypeError, reversed, ToReverse)
-        
+
         # no __len__ on class, reversed should throw
         class x(object):
             def __getitem__(self, index): return 2
-        
+
         def __len__(): return 42
 
         a = x()
@@ -127,7 +130,7 @@ class BuiltinsTest2(IronPythonTestCase):
         class x(object):
             def __len__(self): return 42
 
-        def __getitem__(index): return 2    
+        def __getitem__(index): return 2
         a = x()
         a.__getitem__ = __getitem__
         self.assertRaises(TypeError, reversed, a)
@@ -145,7 +148,7 @@ class BuiltinsTest2(IronPythonTestCase):
         self.assertRaises(TypeError, reduce, add, []) # arg 2 must not be empty sequence with no initial value
         self.assertRaises(TypeError, reduce, add, "") # empty string sequence
         self.assertRaises(TypeError, reduce, add, ()) # empty tuple sequence
-        
+
         self.assertTrue(reduce(add, [], 1), 1) # arg 2 has initial value through arg 3 so no TypeError for this
         self.assertTrue(reduce(add, [], None) == None)
         self.assertRaises(TypeError, reduce, add, [])
@@ -154,9 +157,9 @@ class BuiltinsTest2(IronPythonTestCase):
 
     def test_apply(self):
         def foo(): return 42
-        
+
         self.assertEqual(apply(foo), 42)
-        
+
     def test_map(self):
         def cat(x,y):
             ret = ""
@@ -164,27 +167,27 @@ class BuiltinsTest2(IronPythonTestCase):
             if y != None: ret += y
             return ret
 
-        self.assertTrue(map(cat, ["a","b"],["c","d", "e"]) == ["ac", "bd", "e"])
-        self.assertTrue(map(lambda x,y: x+y, [1,1],[2,2]) == [3,3])
-        self.assertTrue(map(None, [1,2,3]) == [1,2,3])
-        self.assertTrue(map(None, [1,2,3], [4,5,6]) == [(1,4),(2,5),(3,6)])
+        self.assertEqual(map(cat, ["a","b"], ["c","d", "e"]), ["ac", "bd", "e"])
+        self.assertEqual(map(lambda x,y: x+y, [1,1],[2,2]), [3,3])
+        self.assertEqual(map(None, [1,2,3]), [1,2,3])
+        self.assertEqual(map(None, [1,2,3], [4,5,6]), [(1,4),(2,5),(3,6)])
         self.assertEqual(map(lambda x:'a' + x + 'c', 'b'), ['abc'])
-        
+
     def test_range(self):
         self.assertRaisesMessage(TypeError, "range() integer end argument expected, got float.",
                             range, 2, 5.0)
         self.assertRaisesMessage(TypeError, "range() integer step argument expected, got float.",
                             range, 3, 10, 2.0)
 
-        self.assertRaisesMessage(TypeError, "range() integer end argument expected, got float.", 
+        self.assertRaisesMessage(TypeError, "range() integer end argument expected, got float.",
                             range, float(-2<<32))
-        self.assertRaisesMessage(TypeError, "range() integer end argument expected, got float.", 
+        self.assertRaisesMessage(TypeError, "range() integer end argument expected, got float.",
                             range, 0, float(-2<<32))
-        self.assertRaisesMessage(TypeError, "range() integer start argument expected, got float.", 
+        self.assertRaisesMessage(TypeError, "range() integer start argument expected, got float.",
                             range, float(-2<<32), 100)
-        self.assertRaisesMessage(TypeError, "range() integer step argument expected, got float.", 
+        self.assertRaisesMessage(TypeError, "range() integer step argument expected, got float.",
                             range, 0, 100, float(-2<<32))
-        self.assertRaisesMessage(TypeError, "range() integer end argument expected, got float.", 
+        self.assertRaisesMessage(TypeError, "range() integer end argument expected, got float.",
                             range, float(-2<<32), float(-2<<32), float(-2<<32))
 
     def test_sorted(self):
@@ -231,7 +234,7 @@ class BuiltinsTest2(IronPythonTestCase):
 
         x = sorted(a,None,key_p)
         y = [P("carl",5),P("David",3),P("gary",4),P("jack",9),P("Joe",1),P("John",6),P("Tim",7),P("todd",8),P("Tom",2)]
-        
+
         for i,j in zip(x,y): self.assertTrue(equal_p(i,j))
 
         d = {'John': 6, 'Jack': 9, 'Gary': 4, 'Carl': 5, 'David': 3, 'Joe': 1, 'Tom': 2, 'Tim': 7, 'Todd': 8}
@@ -244,16 +247,16 @@ class BuiltinsTest2(IronPythonTestCase):
                 return self
             def __radd__(self, other):
                 return self
-            
+
         def gen(x):
             for a in x: yield a
-            
+
         def sumtest(values, expected):
             for value in values, tuple(values), gen(values):
                 res = sum(values)
                 self.assertEqual(res, expected)
                 self.assertEqual(type(res), type(expected))
-        
+
                 res = sum(values, 0)
                 self.assertEqual(res, expected)
                 self.assertEqual(type(res), type(expected))
@@ -261,47 +264,47 @@ class BuiltinsTest2(IronPythonTestCase):
         uo = user_object()
         # int + other
         sumtest([1, 1], 2)
-        sumtest([2147483647, 1], 2147483648L)
+        sumtest([2147483647, 1], long(2147483648))
         sumtest([1, 1.0], 2.0)
-        sumtest([1, 1L], 2L)
+        sumtest([1, long(1)], long(2))
         sumtest([1, uo], uo)
 
         # double and other
         sumtest([1.0, 1], 2.0)
         sumtest([2147483647.0, 1], 2147483648.0)
         sumtest([1.0, 1.0], 2.0)
-        sumtest([1.0, 1L], 2.0)
+        sumtest([1.0, long(1)], 2.0)
         sumtest([1.0, uo], uo)
 
         # long and other
-        sumtest([1L, 1], 2L)
-        sumtest([2147483647L, 1], 2147483648L)
-        sumtest([1L, 1.0], 2.0)
-        sumtest([1L, 1L], 2L)
-        sumtest([1L, uo], uo)
+        sumtest([long(1), 1], long(2))
+        sumtest([long(2147483647), 1], long(2147483648))
+        sumtest([long(1), 1.0], 2.0)
+        sumtest([long(1), long(1)], long(2))
+        sumtest([long(1), uo], uo)
 
         # corner cases
-        sumtest([1L, 2.0, 3], 6.0)
-        sumtest([2147483647, 1, 1.0], 2147483649.0)    
+        sumtest([long(1), 2.0, 3], 6.0)
+        sumtest([2147483647, 1, 1.0], 2147483649.0)
         inf = 1.7976931348623157e+308*2
-        sumtest([1.7976931348623157e+308, long(1.7976931348623157e+308)], inf)        
-        self.assertRaises(OverflowError, sum, [1.0, 100000000L<<2000])
-        
+        sumtest([1.7976931348623157e+308, long(1.7976931348623157e+308)], inf)
+        self.assertRaises(OverflowError, sum, [1.0, 100000000<<2000])
+
     def test_unichr(self):
 
         #Added the following to resolve Codeplex WorkItem #3220.
         max_uni = sys.maxunicode
         self.assertTrue(max_uni==0xFFFF or max_uni==0x10FFFF)
         max_uni_plus_one = max_uni + 1
-        
+
         huger_than_max = 100000
         max_ok_value = u'\uffff'
-        
+
         #special case for WorkItem #3220
         if max_uni==0x10FFFF:
             huger_than_max = 10000000
-            max_ok_value = u'\u0010FFFF' #OK representation for UCS4???
-            
+            max_ok_value = u'\U0010FFFF'
+
         self.assertRaises(ValueError, unichr, -1) # arg must be in the range [0...65535] or [0...1114111] inclusive
         self.assertRaises(ValueError, unichr, max_uni_plus_one)
         self.assertRaises(ValueError, unichr, huger_than_max)
@@ -312,11 +315,11 @@ class BuiltinsTest2(IronPythonTestCase):
         self.assertTrue(max([1,2,3]) == 3)
         self.assertTrue(max((1,2,3)) == 3)
         self.assertTrue(max(1,2,3) == 3)
-        
+
         self.assertTrue(min([1,2,3]) == 1)
         self.assertTrue(min((1,2,3)) == 1)
         self.assertTrue(min(1,2,3) == 1)
-        
+
         self.assertEqual(max((1,2), None), (1, 2))
         self.assertEqual(min((1,2), None), None)
 
@@ -324,8 +327,8 @@ class BuiltinsTest2(IronPythonTestCase):
         self.assertRaises(TypeError,abs,None)
 
         #long integer passed to abs
-        self.assertEqual(22L, abs(22L))
-        self.assertEqual(22L, abs(-22L))
+        self.assertEqual(long(22), abs(long(22)))
+        self.assertEqual(long(22), abs(-long(22)))
 
         #bool passed to abs
         self.assertEqual(1, abs(True))
@@ -337,12 +340,12 @@ class BuiltinsTest2(IronPythonTestCase):
                 return "myabs"
         c = myclass()
         self.assertEqual("myabs", abs(c))
-        
+
     def test_coerce(self):
         self.assertEqual(coerce(None, None), (None, None))
         self.assertRaises(TypeError, coerce, None, 1)
         self.assertRaises(TypeError, coerce, 1, None)
-        
+
         class x(object):
             def __init__(self, value):
                 self.value = value
@@ -360,7 +363,7 @@ class BuiltinsTest2(IronPythonTestCase):
             l, r = coerce(0, value)
             self.assertEqual((r, l), (value, type(value)(0)))
             self.assertEqual((type(l), type(r)), (type(value), type(value)))
-    
+
     def test_zip(self):
         def foo(): yield 2
 
@@ -374,7 +377,7 @@ class BuiltinsTest2(IronPythonTestCase):
 
         self.assertEqual(zip(bar(), foo()), [(2,2)])
         self.assertEqual(zip(foo(), bar()), [(2,2)])
-        
+
         # test passing the same object for multiple iterables
         self.assertEqual(zip(*[iter([])]), [])
         self.assertEqual(zip(*[iter([])] * 2), [])
@@ -386,12 +389,12 @@ class BuiltinsTest2(IronPythonTestCase):
     def test_dir(self):
         local_var = 10
         self.assertEqual(dir(), ['local_var', 'self'])
-        
+
         def f():
             local_var = 10
             self.assertEqual(dir(*()), ['local_var', 'self'])
         f()
-        
+
         def f():
             local_var = 10
             self.assertEqual(dir(**{}), ['local_var', 'self'])
@@ -407,38 +410,38 @@ class BuiltinsTest2(IronPythonTestCase):
                     return ['foo']
             def __init__(self):
                     self.abc = 3
-        
+
         self.assertEqual(dir(A()), ['foo'])
 
         class C:
             a = 1
-        
-        class D(object, C):
+
+        class D(C, object):
             b = 2
-        
+
         self.assertTrue('a' in dir(D()))
         self.assertTrue('b' in dir(D()))
         self.assertTrue('__hash__' in dir(D()))
-        
+
         if is_cli:
             import clr
             if is_netcoreapp:
                 clr.AddReference("System.Linq.Expressions")
             else:
                 clr.AddReference("System.Core")
-            
+
             from System.Dynamic import ExpandoObject
             eo = ExpandoObject()
             eo.bill = 5
             self.assertTrue('bill' in dir(eo))
 
-        
+
     def test_ord(self):
         # ord of extensible string
         class foo(str): pass
-        
+
         self.assertEqual(ord(foo('A')), 65)
-        
+
     def test_top_level_dir(self):
         self.assertTrue("__name__" in top_level_dir)
         self.assertTrue("__builtins__" in top_level_dir)
@@ -458,7 +461,7 @@ class BuiltinsTest2(IronPythonTestCase):
         try:
             eval('1+')
             self.assertUnreachable()
-        except Exception, exp:
+        except Exception as exp:
             pass
         else:
             self.assertUnreachable()
@@ -480,23 +483,23 @@ class BuiltinsTest2(IronPythonTestCase):
         foo = 1
         bar = 2
         def f(): return 42
-        exprs = ['foo', 
-                '23', 
-                '$inp and $inp', 
-                '$inp or $inp', 
-                '`42`', 
-                '$inp + $inp', 
-                'f()', 
-                'lambda :42',  
-                '$inp if $inp else $inp', 
-                '[$inp]', 
-                '{$inp:$inp}', 
-                '($inp).__class__', 
-                '{$inp}', 
-                '($inp, )', 
-                '($inp)', 
+        exprs = ['foo',
+                '23',
+                '$inp and $inp',
+                '$inp or $inp',
+                '`42`',
+                '$inp + $inp',
+                'f()',
+                'lambda :42',
+                '$inp if $inp else $inp',
+                '[$inp]',
+                '{$inp:$inp}',
+                '($inp).__class__',
+                '{$inp}',
+                '($inp, )',
+                '($inp)',
                 '[x for x in (2, 3, 4)]']
-        
+
         def process(depth):
             if(depth > 2):
                 yield '42'
@@ -508,19 +511,19 @@ class BuiltinsTest2(IronPythonTestCase):
                             try:
                                 newx = x
                                 for i in xrange(len(processors)):
-                                    new = processors[i].next()
+                                    new = next(processors[i])
                                     newx = newx.replace('$inp', new, 1)
                                 yield newx
                             except StopIteration:
                                 break
-                        
+
                     else:
                         yield x
-                
+
         for x in process(0):
             try:
-                print eval(x)
-            except SyntaxError: pass            
+                eval(x)
+            except SyntaxError: pass
             except TypeError: pass
 
     def test_len(self):
@@ -528,37 +531,37 @@ class BuiltinsTest2(IronPythonTestCase):
         # TypeError
         self.assertRaises(TypeError, len, 2)
         class foo: pass
-        
+
         self.assertRaises(AttributeError, len, foo())
-        
+
         class foo(object): pass
-        
+
         self.assertRaises(TypeError, len, foo())
 
     def test_int_ctor(self):
         self.assertEqual(int('0x10', 16), 16)
         self.assertEqual(int('0X10', 16), 16)
-        self.assertEqual(long('0x10', 16), 16L)
-        self.assertEqual(long('0X10', 16), 16L)
-    
+        self.assertEqual(long('0x10', 16), long(16))
+        self.assertEqual(long('0X10', 16), long(16))
+
     def test_type(self):
         self.assertEqual(len(type.__bases__), 1)
         self.assertEqual(type.__bases__[0], object)
-        
+
     def test_globals(self):
-        self.assertTrue(not globals().has_key("_"))
+        self.assertTrue("_" not in globals())
         self.assertEqual(globals().keys().count("_"), 0)
 
     def test_vars(self):
         """vars should look for user defined __dict__ value and directly return the provided value"""
-        
+
         class foo(object):
             def getDict(self):
                     return {'a':2}
             __dict__ = property(fget=getDict)
-        
+
         self.assertEqual(vars(foo()), {'a':2})
-        
+
         class foo(object):
             def __getattribute__(self, name):
                 if name == "__dict__":
@@ -566,14 +569,14 @@ class BuiltinsTest2(IronPythonTestCase):
                 return object.__getattribute__(self, name)
 
         self.assertEqual(vars(foo()), {'a':2})
-        
+
         class foo(object):
             def getDict(self):
                     return 'abc'
             __dict__ = property(fget=getDict)
-        
+
         self.assertEqual(vars(foo()), 'abc')
-        
+
         class foo(object):
             def __getattribute__(self, name):
                 if name == "__dict__":
@@ -601,7 +604,7 @@ class BuiltinsTest2(IronPythonTestCase):
         for x in ['exec', 'eval', 'single']:
             c = compile('2', 'foo', x)
             self.assertEqual(c.co_filename, 'foo')
-            
+
         class mystdout(object):
             def __init__(self):
                 self.data = []
@@ -612,11 +615,11 @@ class BuiltinsTest2(IronPythonTestCase):
         sys.stdout = out
         try:
             c = compile('2', 'test', 'single')
-            exec c
+            exec(c)
             self.assertEqual(out.data, ['2', '\n'])
         finally:
             sys.stdout = sys.__stdout__
-            
+
         for code in ["abc" + chr(0) + "def", chr(0) + "def", "def" + chr(0)]:
             self.assertRaises(TypeError, compile, code, 'f', 'exec')
 
@@ -624,15 +627,12 @@ class BuiltinsTest2(IronPythonTestCase):
         class foo(object):
             def __str__(self):
                     return None
-        
+
         self.assertEqual(foo().__str__(), None)
         self.assertRaises(TypeError, str, foo())
 
     def test_not_in_globals(self):
-        self.assertRaises(NameError, lambda: __dict__)
-        self.assertRaises(NameError, lambda: __module__)
-        self.assertRaises(NameError, lambda: __class__)
-        self.assertRaises(NameError, lambda: __init__)
+        run_test_not_in_globals(self)
 
     # Regress bug 319126: __int__ on long should return long, not overflow
     def test_long_int(self):
@@ -640,7 +640,7 @@ class BuiltinsTest2(IronPythonTestCase):
         i = l.__int__()
         self.assertTrue(type(l) == type(i))
         self.assertTrue(i == l)
-        
+
     def test_round(self):
         self.assertEqual(round(number=3.4), 3.0)
         self.assertEqual(round(number=3.125, ndigits=3), 3.125)
@@ -656,7 +656,7 @@ class BuiltinsTest2(IronPythonTestCase):
 
 
         temp_list = [   None, str, int, long, K,
-                        "", "abc", u"abc", 34, 1111111111111L, 3.14, K(), K.FOO,
+                        "", "abc", u"abc", 34, long(1111111111111), 3.14, K(), K.FOO,
                         id, hex, K.fooFunc, K.memberFunc, K().memberFunc,
                     ]
 
@@ -666,7 +666,7 @@ class BuiltinsTest2(IronPythonTestCase):
                             System.Single, System.UInt16(5), System.Version(0, 0)]
 
         for x in temp_list:
-            self.assertTrue(type(id(x)) in [int, long], 
+            self.assertTrue(type(id(x)) in [int, long],
                 str(type(id(x))))
 
 
@@ -680,30 +680,30 @@ class BuiltinsTest2(IronPythonTestCase):
 # def in_main():
 #     self.assertTrue(not 'locals_globals' in locals())
 #     self.assertTrue(not 'locals_globals' in globals())
-    
+
 #     def in_main_sub1():
 #         self.assertTrue(not 'locals_globals' in locals())
 #         self.assertTrue(not 'locals_globals' in globals())
-    
+
 #     def in_main_sub2():
 #         global local_globals
 #         self.assertTrue(not 'locals_globals' in locals())
 #         self.assertTrue('locals_globals' in globals())
-        
+
 #         def in_main_sub3():
 #             local_globals = 42
 #             self.assertTrue(not 'locals_globals' in locals())
 #             self.assertTrue('locals_globals' in globals())
-        
+
 #         in_main_sub3()
-    
+
 #     in_main_sub1()
 #     return in_main_sub2
 
 
     def test_error_messages(self):
         self.assertRaisesMessages(TypeError, "join() takes exactly 1 argument (2 given)", "join() takes exactly one argument (2 given)", "".join, ["a", "b"], "c")
-    
+
     def test_enumerate(self):
         class MyIndex(object):
             def __init__(self, value):
@@ -716,10 +716,9 @@ class BuiltinsTest2(IronPythonTestCase):
             self.assertEqual([(10, 2), (11, 3), (12, 4)], list(enumerate([2,3,4], start=value_maker(10))))
             self.assertEqual([(2147483647, 2), (2147483648, 3), (2147483649, 4)], list(enumerate([2,3,4], value_maker(int((1<<31) - 1)))))
             self.assertEqual([(2147483648, 2), (2147483649, 3), (2147483650, 4)], list(enumerate([2,3,4], value_maker(1<<31))))
-    
+
 # temp_func = in_main()
 # locals_globals = 7
 # temp_func()
 
 run_test(__name__)
-
