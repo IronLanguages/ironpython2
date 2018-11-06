@@ -54,7 +54,7 @@ Documentation can be found here: http://ironpython.net/documentation/dotnet/
 
 Please see http://wiki.github.com/IronLanguages/main for information on:
 - Setting up a development environment with easy access to utility scripts
-- Building
+- [Building](Documentation/building.md)
 - Running test
 
 ## Chat/Communication
