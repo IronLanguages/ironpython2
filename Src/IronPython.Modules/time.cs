@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -57,13 +58,19 @@ namespace IronPython.Modules {
         }
 
         static PythonTime() {
-
+            var now = DateTime.Now;
             // altzone, timezone are offsets from UTC in seconds, so they always fit in the
             // -13*3600 to 13*3600 range and are safe to cast to ints
             daylight = TimeZoneInfo.Local.SupportsDaylightSavingTime ? 1 : 0;
             tzname = PythonTuple.MakeTuple(TimeZoneInfo.Local.StandardName, TimeZoneInfo.Local.DaylightName);
             timezone = (int)-TimeZoneInfo.Local.BaseUtcOffset.TotalSeconds;
-            altzone = (int)-TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalSeconds;
+            altzone = timezone;
+            if (TimeZoneInfo.Local.SupportsDaylightSavingTime) {
+                var rule = TimeZoneInfo.Local.GetAdjustmentRules().Where(x => x.DateStart <= now && x.DateEnd >= now).FirstOrDefault();
+                if(rule != null) {
+                    altzone = timezone + ((int)-rule.DaylightDelta.TotalSeconds);
+                }
+            }
         }
 
         internal static long TimestampToTicks(double seconds) {
