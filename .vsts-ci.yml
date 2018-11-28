@@ -3,8 +3,8 @@ jobs:
 ################################################################################
 - job: Windows
 ################################################################################
-  displayName: Windows (x64)
-  timeoutInMinutes: 120
+  displayName: Windows
+  timeoutInMinutes: 180
   pool:
     vmImage: vs2017-win2016
   steps:
@@ -16,7 +16,7 @@ jobs:
 - job: Linux
 ################################################################################
   displayName: Linux (Ubuntu)
-  timeoutInMinutes: 120
+  timeoutInMinutes: 180
   pool:
     vmImage: 'ubuntu-16.04'    
   steps:
@@ -28,7 +28,7 @@ jobs:
 - job: macOS
 ################################################################################
   displayName: macOS
-  timeoutInMinutes: 120
+  timeoutInMinutes: 180
   pool: 
     vmImage: 'macOS-10.13'    
   steps:
