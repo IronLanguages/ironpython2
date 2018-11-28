@@ -9,8 +9,8 @@ phases:
       os: 'Windows'
 
 - phase: Linux
-  queue: 
-    name: Hosted Linux Preview
+  pool:
+    vmImage: 'ubuntu-16.04'
     timeoutInMinutes: 120
   steps:
   - template: Build/steps.yml
