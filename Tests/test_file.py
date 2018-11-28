@@ -540,7 +540,6 @@ class FileTest(IronPythonTestCase):
                 
         os.unlink('tempfile.txt')
 
-    @unittest.skipIf(is_posix, 'Currently failing on CI because of running as root, needs more debug')
     def test_overwrite_readonly(self):
         filename = "tmp.txt"
         f = file(filename, "w+")

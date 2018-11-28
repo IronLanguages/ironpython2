@@ -335,6 +335,9 @@ def _find_mac(command, args, hw_identifiers, get_index):
                             pass
     except IOError:
         pass
+    except OSError:
+        # this is because we get a WindowsError on IronPython
+        pass
 
 def _ifconfig_getnode():
     """Get the hardware address on Unix by running ifconfig."""
