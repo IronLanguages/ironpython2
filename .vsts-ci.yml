@@ -1,26 +1,36 @@
-phases:
-- phase: Windows
-  queue: 
-    name: Hosted VS2017
-    timeoutInMinutes: 120
+jobs:
+
+################################################################################
+- job: Windows
+################################################################################
+  displayName: Windows (x64)
+  timeoutInMinutes: 120
+  pool:
+    vmImage: vs2017-win2016
   steps:
   - template: Build/steps.yml
     parameters:
       os: 'Windows'
 
-- phase: Linux
+################################################################################
+- job: Linux
+################################################################################
+  displayName: Linux (Ubuntu)
+  timeoutInMinutes: 120
   pool:
-    vmImage: 'ubuntu-16.04'
-    timeoutInMinutes: 120
+    vmImage: 'ubuntu-16.04'    
   steps:
   - template: Build/steps.yml
     parameters:
       os: 'Linux'
 
-- phase: macOS
-  queue: 
-    name: Hosted macOS Preview
-    timeoutInMinutes: 120
+################################################################################
+- job: macOS
+################################################################################
+  displayName: macOS
+  timeoutInMinutes: 120
+  pool: 
+    vmImage: 'macOS-10.13'    
   steps:
   - template: Build/steps.yml
     parameters:
