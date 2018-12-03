@@ -431,13 +431,10 @@ namespace IronPython.Runtime.Operations {
             [DefaultParameterValue(null)] string encoding,
             [DefaultParameterValue("strict")] string errors) {
 
-            string str = @string as string;
-            if (str == null) throw PythonOps.TypeError("converting to unicode: need string, got {0}", DynamicHelpers.GetPythonType(@string).Name);
-
             if (cls == TypeCache.String) {
-                return decode(context, str, encoding ?? context.LanguageContext.GetDefaultEncodingName(), errors);
+                return FastNewUnicode(context, @string, encoding ?? context.LanguageContext.GetDefaultEncodingName(), errors);
             } else {
-                return cls.CreateInstance(context, __new__(context, TypeCache.String, str, encoding, errors));
+                return cls.CreateInstance(context, __new__(context, TypeCache.String, @string, encoding, errors));
             }
         }
 
