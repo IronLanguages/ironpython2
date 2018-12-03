@@ -7,7 +7,7 @@
     <RootNamespace>IronPythonWindow</RootNamespace>
     <AssemblyName>ipyw32</AssemblyName>
     <ApplicationIcon>ipyw.ico</ApplicationIcon>
-    <CodeAnalysisRuleSet>IronPythonWindow.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\IronPython.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>$(OutputPath)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
@@ -17,6 +17,13 @@
 
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <Import Project="$(AfterTargetFiles)" />
