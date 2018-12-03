@@ -1309,4 +1309,16 @@ class C:
         finally:
             os.remove(test_file_name)
 
+    def test_ipy2_gh556(self):
+        """https://github.com/IronLanguages/ironpython2/issues/556"""
+        self.assertEqual("aaaa", unicode(b"aaaa", errors="strict"))
+
+        self.assertTrue(str is unicode)
+        try:
+            self.assertEqual("aaaa", str(b"aaaa", errors="strict"))
+            x = unicode
+            self.assertEqual("aaaa", x(b"aaaa", errors="strict"))
+        except TypeError:
+            self.fail("These should no longer fail")
+
 run_test(__name__)
