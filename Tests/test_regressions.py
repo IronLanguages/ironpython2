@@ -1288,6 +1288,10 @@ class C:
         c.execute("CREATE TABLE test (test BLOB);")
         c.execute("INSERT INTO test (test) VALUES (x'');")
         self.assertEqual(len(c.execute("SELECT * FROM test;").fetchone()[0]), 0)
+        
+    def test_dictproxy_not_hashable(self):
+        """https://github.com/IronLanguages/ironpython2/issues/541"""
+        self.assertRaises(TypeError, hash, type.__dict__)
 
     def test_main_gh1081(self):
         """https://github.com/IronLanguages/main/issues/1081"""
