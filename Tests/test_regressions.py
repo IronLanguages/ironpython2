@@ -1288,6 +1288,12 @@ class C:
         c.execute("CREATE TABLE test (test BLOB);")
         c.execute("INSERT INTO test (test) VALUES (x'');")
         self.assertEqual(len(c.execute("SELECT * FROM test;").fetchone()[0]), 0)
+        
+    def test_ipy2_gh528(self):
+        class x(int):
+            def __hash__(self): return 42
+
+        self.assertEquals(42, hash(x()))
 
     def test_main_gh1081(self):
         """https://github.com/IronLanguages/main/issues/1081"""
