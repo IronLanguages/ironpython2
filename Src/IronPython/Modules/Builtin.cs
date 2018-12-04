@@ -671,6 +671,10 @@ namespace IronPython.Modules {
             return o;
         }
 
+        public static int hash(CodeContext/*!*/ context, Extensible<int> o) {
+            return PythonContext.Hash(o);
+        }
+
         public static int hash(CodeContext/*!*/ context, [NotNull]string o) {
             return o.GetHashCode();
         }

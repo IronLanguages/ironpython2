@@ -1293,6 +1293,12 @@ class C:
         """https://github.com/IronLanguages/ironpython2/issues/541"""
         self.assertRaises(TypeError, hash, type.__dict__)
 
+    def test_ipy2_gh528(self):
+        class x(int):
+            def __hash__(self): return 42
+
+        self.assertEquals(42, hash(x()))
+
     def test_main_gh1081(self):
         """https://github.com/IronLanguages/main/issues/1081"""
         import io
@@ -1312,5 +1318,29 @@ class C:
                     mm.close()
         finally:
             os.remove(test_file_name)
+    
+    def test_ipy2_gh536(self):
+        """https://github.com/IronLanguages/ironpython2/issues/536"""
+        import ctypes
+        class bar(ctypes.Union):
+            _fields_ = [("t", ctypes.c_uint), ("b", ctypes.c_uint)]
+
+        o = bar()
+        o.t = 1
+        self.assertEqual(1, o.b)
+        self.assertEqual(o.t, o.b)
+
+
+    def test_ipy2_gh556(self):
+        """https://github.com/IronLanguages/ironpython2/issues/556"""
+        self.assertEqual("aaaa", unicode(b"aaaa", errors="strict"))
+
+        self.assertTrue(str is unicode)
+        try:
+            self.assertEqual("aaaa", str(b"aaaa", errors="strict"))
+            x = unicode
+            self.assertEqual("aaaa", x(b"aaaa", errors="strict"))
+        except TypeError:
+            self.fail("These should no longer fail")
 
 run_test(__name__)
