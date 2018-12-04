@@ -79,6 +79,10 @@ namespace IronPython.Runtime.Types {
             return new DictionaryValueEnumerator(_dt.GetMemberDictionary(context, false)._storage);
         }
 
+        public int __hash__(CodeContext/*!*/ context) {
+            throw PythonOps.TypeError($"unhashable type: '{PythonOps.GetPythonTypeName(this)}'");
+        }
+
         #endregion
 
         #region Object overrides
