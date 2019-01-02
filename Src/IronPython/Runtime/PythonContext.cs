@@ -1962,7 +1962,11 @@ namespace IronPython.Runtime
         }
 
         internal static string GetVersionString() {
-            string configuration = BuildInfo.IsDebug ? " DEBUG" : "";
+#if DEBUG
+            const string configuration = " DEBUG";
+#else
+            string configuration = string.Empty;
+#endif
             string platform = Type.GetType("Mono.Runtime") == null ? ".NET" : "Mono";
             string bitness = (IntPtr.Size * 8).ToString();
 

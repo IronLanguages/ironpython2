@@ -12,7 +12,13 @@
          additional assembly references. -->
     <NoConfig>true</NoConfig>
     <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
   </PropertyGroup>
   
   <Import Project="$(RootDir)CurrentVersion.props" />
@@ -33,7 +39,7 @@
 
   <PropertyGroup>
     <BeforeTargetFiles>$(BuildSysDir)\Versioning.targets</BeforeTargetFiles>
-    <BeforeTargets>GenerateBuildInfo</BeforeTargets>
+    <BeforeTargets></BeforeTargets>
     <AfterTargetFiles>$(BuildSysDir)\After.targets</AfterTargetFiles>
     <AfterTargets>Stage</AfterTargets>
   </PropertyGroup>

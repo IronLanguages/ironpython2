@@ -11,7 +11,6 @@ using System.Security;
 // associated with an assembly.
 [assembly: AssemblyTitle("IronPythonTest")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("IronPythonTest")]
 [assembly: AssemblyCopyright("© IronPython Contributors.  All rights reserved.")]

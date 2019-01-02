@@ -37,7 +37,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{CE9DF8A7-CEE3-44CB-8C17-E0E3004A8755}"
 	ProjectSection(SolutionItems) = preProject
-		Build\Templates\BuildInfo.Template.cs = Build\Templates\BuildInfo.Template.cs
 		Build\Templates\CurrentVersion.Template.cs = Build\Templates\CurrentVersion.Template.cs
 	EndProjectSection
 EndProject
