@@ -16,7 +16,7 @@ using IronPython.Runtime;
 namespace IronPython.Compiler.Ast {
     using Ast = MSAst.Expression;
 
-    internal class PythonVariable {
+    public class PythonVariable {
         private readonly string _name;
         private readonly ScopeStatement/*!*/ _scope;
         private VariableKind _kind;    // the type of variable, 
