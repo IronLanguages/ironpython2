@@ -18,10 +18,5 @@ namespace IronPython {
         public const string Series = "${MajorVersion}.${MinorVersion}";
         public const string DisplayVersion = "${DisplayVersion}";
         public const string DisplayName = "IronPython ${DisplayVersion}";
-
-        public const string AssemblyVersion = "${MajorVersion}.${MinorVersion}.${MicroVersion}.${AssemblyRevision}";
-        
-        public const string AssemblyFileVersion = "${MajorVersion}.${MinorVersion}.${MicroVersion}.${AssemblyFileRevision}";
-        public const string AssemblyInformationalVersion = "IronPython ${MajorVersion}.${MinorVersion}.${MicroVersion} ${ReleaseLevel} ${ReleaseSerial}";
     }
 }

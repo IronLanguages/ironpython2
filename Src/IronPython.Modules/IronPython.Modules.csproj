@@ -25,10 +25,6 @@
     <None Include="IronPython.Modules.ruleset" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
-  </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' OR '$(TargetFramework)' == 'netcoreapp2.1' ">
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.5.0" />
   </ItemGroup>

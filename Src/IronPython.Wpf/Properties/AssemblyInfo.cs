@@ -11,7 +11,6 @@ using System.Security;
 // associated with an assembly.
 [assembly: AssemblyTitle("IronPython.Wpf")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyProduct("IronPython")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

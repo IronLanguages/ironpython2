@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Compile Include="..\IronPythonConsole\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
     <Compile Include="..\IronPythonConsole\Console.cs" Link="Console.cs" />
   </ItemGroup>
 

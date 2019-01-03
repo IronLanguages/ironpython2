@@ -15,10 +15,6 @@
     <ProjectReference Include="..\IronPython\IronPython.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\AssemblyVersion.cs" Link="Properties\AssemblyVersion.cs" />
-  </ItemGroup>
-
   <Import Project="$(BeforeTargetFiles)" />
   <Target Name="BeforeBuildStarts" BeforeTargets="BeforeBuild" DependsOnTargets="$(BeforeTargets);GenerateCurrentVersion" />
   <ItemGroup>

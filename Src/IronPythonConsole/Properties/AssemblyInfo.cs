@@ -15,7 +15,6 @@ using System.Security;
 //
 [assembly: AssemblyTitle("IronPython Console")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyProduct("IronPython")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

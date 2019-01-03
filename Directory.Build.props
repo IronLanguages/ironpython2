@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
+  <Import Project="$(MSBuildThisFileDirectory)\CurrentVersion.props" />
+
   <PropertyGroup>
     <!-- These are normally set by Build.proj, except when building from VS. -->
     <RootDir Condition=" '$(RootDir)' == '' ">$(MSBuildThisFileDirectory)</RootDir>
@@ -13,16 +15,21 @@
     <NoConfig>true</NoConfig>
     <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
 
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <AssemblyFileRevision Condition="'$(ReleaseLevel)' == 'alpha'">000$(ReleaseSerial)</AssemblyFileRevision>
+    <AssemblyFileRevision Condition="'$(ReleaseLevel)' == 'beta'">00$(ReleaseSerial)0</AssemblyFileRevision>
+    <AssemblyFileRevision Condition="'$(ReleaseLevel)' == 'candidate'">0$(ReleaseSerial)00</AssemblyFileRevision>
+    <AssemblyFileRevision Condition="'$(ReleaseLevel)' == 'final'">1000</AssemblyFileRevision>
+
+    <Product>IronPython</Product>
+    <Company>IronPython Team</Company>
+    <Copyright>© IronPython Contributors</Copyright>
+    <AssemblyVersion>$(MajorVersion).$(MinorVersion).$(MicroVersion).$(AssemblyRevision)</AssemblyVersion>
+    <FileVersion>$(MajorVersion).$(MinorVersion).$(MicroVersion).$(AssemblyFileRevision)</FileVersion>
+    <InformationalVersion>$(MSBuildProjectName) $(MajorVersion).$(MinorVersion).$(MicroVersion) $(ReleaseLevel) $(ReleaseSerial)</InformationalVersion>
+
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
   </PropertyGroup>
   
-  <Import Project="$(RootDir)CurrentVersion.props" />
-
   <!-- Signing -->
   <PropertyGroup>
     <PublicKey>$(BuildSysDir)\Key.snk</PublicKey>

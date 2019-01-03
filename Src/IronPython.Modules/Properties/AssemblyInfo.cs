@@ -11,7 +11,6 @@ using System.Security;
 // associated with an assembly.
 [assembly: AssemblyTitle("IronPython.Modules")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyProduct("IronPython.Modules")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
