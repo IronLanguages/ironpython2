@@ -45,7 +45,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <BeforeTargetFiles>$(BuildSysDir)\Versioning.targets</BeforeTargetFiles>
     <AfterTargetFiles>$(BuildSysDir)\After.targets</AfterTargetFiles>
     <AfterTargets>Stage</AfterTargets>
   </PropertyGroup>
