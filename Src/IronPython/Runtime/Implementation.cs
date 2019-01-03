@@ -125,7 +125,7 @@ namespace IronPython.Runtime {
             Minor = version.Minor;
             Micro = version.Build;
             Series = version.ToString(2);
-            DisplayName = version.ToString(3);
+            DisplayName = $"IronPython {version.ToString(3)}";
             var split = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             ReleaseLevel = split[split.Length - 2];
             ReleaseSerial = int.Parse(split[split.Length - 1]);
