@@ -17,11 +17,6 @@
     <TargetFrameworks Condition="'$(TargetFrameworks)' == ''">net45;netcoreapp2.0;netcoreapp2.1</TargetFrameworks>
   </PropertyGroup>
 
-
-  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
-  <Import Project="$(BuildSysDir)\Versioning.targets" />
-  
-  
   <PropertyGroup>
     <StageDir>$(RootDir)Package\$(Configuration)\Stage\IronPython-$(PackageVersion)</StageDir>
     <PackageDir>$(RootDir)Package\$(Configuration)\Packages\IronPython-$(PackageVersion)</PackageDir>
