@@ -86,7 +86,6 @@
     <Content Include="$(StdLibPath)\multiprocessing\sharedctypes.py" />
     <Content Include="$(StdLibPath)\multiprocessing\synchronize.py" />
   </ItemGroup>
-  <Import Project="$(BeforeTargetFiles)" />
   <Target Name="Stage">
     <Copy SourceFiles="@(Content)" DestinationFolder="$(OutputPath)\%(RelativeDir)" />
   </Target>

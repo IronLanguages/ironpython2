@@ -44,7 +44,7 @@ namespace IronPython.Runtime
     public delegate int HashDelegate(object o, ref HashDelegate dlg);
 
     public sealed partial class PythonContext : LanguageContext {
-        internal const string/*!*/ IronPythonDisplayName = CurrentVersion.DisplayName;
+        internal static readonly string/*!*/ IronPythonDisplayName = CurrentVersion.DisplayName;
         internal const string/*!*/ IronPythonNames = "IronPython;Python;py";
         internal const string/*!*/ IronPythonFileExtensions = ".py";
 
@@ -289,10 +289,9 @@ namespace IronPython.Runtime
                         path.append(devStdLib);
                     }
 #else
-
                     if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
                         var dirs = new string[] { "lib", "DLLs" };
-                        var version = IronPython.CurrentVersion.ReleaseLevel == "final" ? $"{IronPython.CurrentVersion.Major}.{IronPython.CurrentVersion.Minor}.{IronPython.CurrentVersion.Micro}" : $"{IronPython.CurrentVersion.Major}.{IronPython.CurrentVersion.Minor}.{IronPython.CurrentVersion.Micro}-{IronPython.CurrentVersion.ReleaseLevel}{IronPython.CurrentVersion.ReleaseSerial}";
+                        var version = CurrentVersion.ReleaseLevel == "final" ? $"{CurrentVersion.Major}.{CurrentVersion.Minor}.{CurrentVersion.Micro}" : $"{CurrentVersion.Major}.{CurrentVersion.Minor}.{CurrentVersion.Micro}-{CurrentVersion.ReleaseLevel}{CurrentVersion.ReleaseSerial}";
                         foreach(var dir in dirs) {
                             var p = $"/Library/Frameworks/IronPython.framework/Versions/{version}/{dir}";
                             if(Directory.Exists(p)) {
@@ -1962,7 +1961,11 @@ namespace IronPython.Runtime
         }
 
         internal static string GetVersionString() {
-            string configuration = BuildInfo.IsDebug ? " DEBUG" : "";
+#if DEBUG
+            const string configuration = " DEBUG";
+#else
+            string configuration = string.Empty;
+#endif
             string platform = Type.GetType("Mono.Runtime") == null ? ".NET" : "Mono";
             string bitness = (IntPtr.Size * 8).ToString();
 
