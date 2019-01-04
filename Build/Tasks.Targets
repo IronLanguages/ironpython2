@@ -15,7 +15,7 @@
         try {
           if(!string.IsNullOrWhiteSpace(WorkingDirectory)) {
             if(!Directory.Exists(WorkingDirectory)) {
-              Log.LogError($"{WorkingDirectory} doesn't exist");
+              Log.LogError(string.Format("{0} doesn't exist", WorkingDirectory));
               return false;
             }
             cwd = Environment.CurrentDirectory;
@@ -58,7 +58,7 @@
 	  System.Text.RegularExpressions.Regex replaceRegex = new System.Text.RegularExpressions.Regex(Expression);
 	  foreach(ITaskItem item in Files) {
 	    string fileName = item.ItemSpec;
-	    Log.LogMessage($"Updating File \"{fileName}\".");
+	    Log.LogMessage(string.Format("Updating File \"{0}\".", fileName));
 	    string buffer = File.ReadAllText(fileName);
 	    buffer = replaceRegex.Replace(buffer, Replacement);
 	    File.WriteAllText(fileName, buffer);
