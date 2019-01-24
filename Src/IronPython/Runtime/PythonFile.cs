@@ -1146,7 +1146,8 @@ namespace IronPython.Runtime {
             try {
                 Stream stream;
                 try {
-                    if (Environment.OSVersion.Platform == PlatformID.Win32NT && name == "nul") {
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && name == "nul"
+                        || (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) && name == "/dev/null") {
                         stream = Stream.Null;
                     } else if (buffering <= 0) {
                         stream = context.LanguageContext.DomainManager.Platform.OpenInputFileStream(name, fmode, faccess, fshare);
@@ -1373,6 +1374,9 @@ namespace IronPython.Runtime {
             FileStream fs = stream as FileStream;
             if (fs != null) {
                 _name = fs.Name;
+            } else
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                _name = "/dev/null";
             } else {
                 _name = "nul";
             }
@@ -1979,7 +1983,7 @@ namespace IronPython.Runtime {
             return this;
         }
 
-#if FEATURE_NATIVE || NETCOREAPP2_0 || NETCOREAPP2_1
+#if FEATURE_NATIVE
         public bool isatty() {
             if (Environment.OSVersion.Platform == PlatformID.Unix) {
                 return isattyUnix();
