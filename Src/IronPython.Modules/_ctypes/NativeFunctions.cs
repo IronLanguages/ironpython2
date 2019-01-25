@@ -44,7 +44,7 @@ namespace IronPython.Modules {
         [DllImport("libc")]
         private static extern void memcpy(IntPtr dst, IntPtr src, IntPtr length);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", EntryPoint = "RtlMoveMemory", ExactSpelling = true)]
         private static extern void CopyMemory(IntPtr destination, IntPtr source, IntPtr length);
 
         public static void MemCopy(IntPtr destination, IntPtr source, IntPtr length) {
