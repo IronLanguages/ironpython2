@@ -1339,4 +1339,17 @@ class C:
         except TypeError:
             self.fail("These should no longer fail")
 
+    def test_ipy2_gh584(self):
+        """https://github.com/IronLanguages/ironpython2/issues/584"""
+        class NoValue(object):
+            def __getattr__(self2, attr):
+                self.fail()
+
+        noValue = NoValue()
+
+        class test(object):
+            defaultValue = noValue
+
+        self.assertIs(test().defaultValue, noValue)
+
 run_test(__name__)
