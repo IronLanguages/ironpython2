@@ -17,6 +17,14 @@ namespace IronPython.Runtime {
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
     public sealed class PythonModuleAttribute : PlatformsAttribute {
+        // this overload is to allow binding redirects to assemblies using over versions of ipy (e.g. NumpyDotNet.dll)
+        public PythonModuleAttribute(string/*!*/ name, Type/*!*/ type) {
+            ContractUtils.RequiresNotNull(name, nameof(name));
+            ContractUtils.RequiresNotNull(type, nameof(type));
+
+            Name = name;
+            Type = type;
+        }
 
         /// <summary>
         /// Creates a new PythonModuleAttribute that can be used to specify a built-in module that exists
