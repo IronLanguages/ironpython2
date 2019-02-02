@@ -2,7 +2,6 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 '''
 Ensures we can import from .NET 2.0 namespaces and types
 '''
@@ -210,7 +209,7 @@ def deep_dive(in_name, in_type):
     if is_cli:
         import System
     stuff_list = dir(in_type)
-    
+
     for member in stuff_list:
         member_type = eval("type(%s.%s)" % (in_name, member))
         member_fullname = in_name + "." + member
@@ -218,18 +217,16 @@ def deep_dive(in_name, in_type):
             if member_fullname in broken_types:
                 print "SKIPPING", member_fullname
                 continue
-                        
+
             net_type = Type.GetType(member_fullname)
             #We can only import * from static classes.
             if not net_type or (not (net_type.IsAbstract and net_type.IsSealed) and not net_type.IsEnum):
                 continue
-                
-            print member_fullname
-            exec "from " + member_fullname + " import *"
-            
-            
-            deep_dive(member_fullname, member_type)
 
+            print(member_fullname)
+            exec("from " + member_fullname + " import *")
+
+            deep_dive(member_fullname, member_type)
 
 @unittest.skipIf(is_netcoreapp, 'references are different')
 @skipUnlessIronPython()
@@ -237,5 +234,5 @@ class SystemNamespacesTest(IronPythonTestCase):
     def test_system_deep(self):
         import System
         deep_dive("System", System)
-    
+
 run_test(__name__)
