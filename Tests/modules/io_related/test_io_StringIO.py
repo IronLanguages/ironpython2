@@ -1,17 +1,6 @@
-#####################################################################################
-#
-# Copyright (c) IronPython Team. All rights reserved.
-#
-# This source code is subject to terms and conditions of the Apache License, Version 2.0. A
-# copy of the license can be found in the License.html file at the root of this distribution. If
-# you cannot locate the  Apache License, Version 2.0, please send an email to
-# ironpy@microsoft.com. By using this source code in any fashion, you are agreeing to be bound
-# by the terms of the Apache License, Version 2.0.
-#
-# You must not remove this notice, or any other, from this software.
-#
-#
-#####################################################################################
+# Licensed to the .NET Foundation under one or more agreements.
+# The .NET Foundation licenses this file to you under the Apache 2.0 License.
+# See the LICENSE file in the project root for more information.
 
 ##
 ## Test the io.StringIO
@@ -20,7 +9,7 @@
 
 import unittest
 
-import io as cStringIO
+import io
 
 from iptest import run_test
 
@@ -97,8 +86,8 @@ class StringIOTest(unittest.TestCase):
     # __iter__, next
     def call_next(self, i):
         self.assertEqual(i.__iter__(), i)
-        self.assertEqual(i.next(), "Line 1\n")
-        self.assertEqual(i.next(), "Line 2\n")
+        self.assertEqual(next(i), "Line 1\n")
+        self.assertEqual(next(i), "Line 2\n")
         self.assertEqual([l for l in i], ["Line 3\n", "Line 4\n", "Line 5"])
         i.close()
         self.assertRaises(ValueError, i.readlines)
@@ -208,16 +197,16 @@ class StringIOTest(unittest.TestCase):
         self.assertEqual(i,i)
 
     def init_StringI(self):
-        return cStringIO.StringIO(text)
+        return io.StringIO(text)
 
     def init_StringO(self):
-        o = cStringIO.StringIO()
+        o = io.StringIO()
         o.write(text)
         o.seek(0)
         return o
 
     def init_emptyStringI(self):
-        return cStringIO.StringIO("")
+        return io.StringIO("")
 
     def test_empty(self):
         i = self.init_emptyStringI()
@@ -302,7 +291,7 @@ class StringIOTest(unittest.TestCase):
     def test_cp8567(self):
         for x in ["", "1", "12", "12345"]:
             for i in [5, 6, 7, 2**8, 100, 2**16-1, 2**16, 2**16, 2**31-2, 2**31-1]:
-                cio = cStringIO.StringIO(x)
+                cio = io.StringIO(x)
                 # make sure it doesn't thorow and it doesn't change seek position
                 cio.truncate(i)
                 self.assertEqual(cio.tell(), 0)
@@ -336,7 +325,7 @@ class StringIOTest(unittest.TestCase):
             t(o)
 
     def test_cp22017(self):
-        m = cStringIO.StringIO()
+        m = io.StringIO()
         m.seek(2)
         m.write("hello!")
         self.assertEqual(m.getvalue(), '\x00\x00hello!')
@@ -346,19 +335,19 @@ class StringIOTest(unittest.TestCase):
     # tests from Jeffrey Bester, cp34683
     def test_read(self):
         # test stringio is readable
-        with cStringIO.StringIO("hello world\r\n") as infile:
+        with io.StringIO("hello world\r\n") as infile:
             self.assertSequenceEqual(infile.readline(), "hello world\r\n")
 
     def test_seekable(self):
         # test stringio is seekable
-        with cStringIO.StringIO("hello") as infile:
+        with io.StringIO("hello") as infile:
             infile.seek(0, 2)
             infile.write(" world\r\n")
             self.assertSequenceEqual(infile.getvalue(), "hello world\r\n")
 
     def test_write(self):
         # test stringio is writable
-        with cStringIO.StringIO() as output_file:
+        with io.StringIO() as output_file:
             output_file.write("hello")
             output_file.write(" world\n")
             self.assertSequenceEqual(output_file.getvalue(), "hello world\n")
@@ -367,9 +356,9 @@ class StringIOTest(unittest.TestCase):
     def test_redirect(self):
         import sys
         stdout_save = sys.stdout
-        capture = cStringIO.StringIO()
+        capture = io.StringIO()
         sys.stdout = capture
-        print "Testing"
+        print("Testing")
         sys.stdout = stdout_save
         self.assertEqual(capture.getvalue(), "Testing\n")
 
