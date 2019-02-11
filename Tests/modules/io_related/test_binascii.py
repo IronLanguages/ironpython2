@@ -2,7 +2,6 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 ##
 ## Test the binascii module
 ##
@@ -11,7 +10,6 @@ import binascii
 import unittest
 
 from iptest import run_test, skipUnlessIronPython
-
 
 class BinasciiTest(unittest.TestCase):
     def test_negative(self):

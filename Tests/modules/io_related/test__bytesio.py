@@ -10,6 +10,7 @@ import sys
 import unittest
 
 from _io import BytesIO
+
 from iptest import run_test
 
 def bytesio_helper():
@@ -28,131 +29,129 @@ def bytesio_helper():
 class BytesIOTest(unittest.TestCase):
 
     def test__BytesIO___class__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___delattr__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___doc__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___format__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___getattribute__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___hash__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___init__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___iter__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___new__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___reduce__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___reduce_ex__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___repr__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___setattr__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___sizeof__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___str__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO___subclasshook__(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_close(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_closed(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_flush(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_getvalue(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_isatty(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_next(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_read(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_read1(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_readable(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_readinto(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_readline(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_readlines(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_seek(self):
-        # TODO: add cases that seek
         x = BytesIO()
 
         # these should all succeed
         x.seek(0)
-        x.seek(0L)
+        x.seek(long(0))
         x.seek(0, 0)
-        x.seek(0L, 0)
-        x.seek(0, 0L)
-        x.seek(0L, 0L)
+        x.seek(long(0), 0)
+        x.seek(0, long(0))
+        x.seek(long(0), long(0))
 
         # these should all fail
         self.assertRaises(TypeError, x.seek, 0, 0.0)
-        self.assertRaises(TypeError, x.seek, 0L, 0.0)
+        self.assertRaises(TypeError, x.seek, long(0), 0.0)
         self.assertRaises(ValueError, x.seek, 0, 1000)
-        self.assertRaises(ValueError, x.seek, 0L, 1000)
+        self.assertRaises(ValueError, x.seek, long(0), 1000)
         self.assertRaises(OverflowError, x.seek, 0, sys.maxsize+1)
-        self.assertRaises(OverflowError, x.seek, 0L, sys.maxsize+1)
+        self.assertRaises(OverflowError, x.seek, long(0), sys.maxsize+1)
         self.assertRaises(TypeError, x.seek, 0.0)
         self.assertRaises(TypeError, x.seek, 0.0, 0)
         self.assertRaises(OverflowError, x.seek, sys.maxsize+1)
         self.assertRaises(OverflowError, x.seek, sys.maxsize+1, 0)
 
     def test__BytesIO_seekable(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_tell(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_truncate(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_writable(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_write(self):
-        print "TODO"
+        print("TODO")
 
     def test__BytesIO_writelines(self):
-        print "TODO"
-
+        print("TODO")
 
     def test_coverage(self):
         '''
@@ -254,11 +253,11 @@ class BytesIOTest(unittest.TestCase):
                             [('I',),
                             [[],[],[],[],[],[],[],[],[],[]],
                             [0,0,0,0,0,0,0,0,0,0]],
-                            [('I',[1L]),
-                            [[1L],[97L],[25185L],[6513249L],[1684234849L],[1684234849L],[1684234849L],[1684234849L],[1684234849L],[1684234849L]],
+                            [('I',[long(1)]),
+                            [[long(1)],[long(97)],[long(25185)],[long(6513249)],[long(1684234849)],[long(1684234849)],[long(1684234849)],[long(1684234849)],[long(1684234849)],[long(1684234849)]],
                             [0,1,2,3,4,4,4,4,4,4]],
-                            [('I',[1L,999L,47L]),
-                            [[1L,999L,47L],[97L,999L,47L],[25185L,999L,47L],[6513249L,999L,47L],[1684234849L,999L,47L],[1684234849L,869L,47L],[1684234849L,26213L,47L],[1684234849L,6776421L,47L],[1684234849L,1751606885L,47L],[1684234849L,1751606885L,105L]],
+                            [('I',[long(1),long(999),long(47)]),
+                            [[long(1),long(999),long(47)],[long(97),long(999),long(47)],[long(25185),long(999),long(47)],[long(6513249),long(999),long(47)],[long(1684234849),long(999),long(47)],[long(1684234849),long(869),long(47)],[long(1684234849),long(26213),long(47)],[long(1684234849),long(6776421),long(47)],[long(1684234849),long(1751606885),long(47)],[long(1684234849),long(1751606885),long(105)]],
                             [0,1,2,3,4,5,6,7,8,9]],
                             [('l',),
                             [[],[],[],[],[],[],[],[],[],[]],
@@ -278,11 +277,11 @@ class BytesIOTest(unittest.TestCase):
                             [('L',),
                             [[],[],[],[],[],[],[],[],[],[]],
                             [0,0,0,0,0,0,0,0,0,0]],
-                            [('L',[100000000L]),
-                            [[100000000L],[100000097L],[99967585L],[90399329L],[1684234849L],[1684234849L],[1684234849L],[1684234849L],[1684234849L],[1684234849L]],
+                            [('L',[long(100000000)]),
+                            [[long(100000000)],[long(100000097)],[long(99967585)],[long(90399329)],[long(1684234849)],[long(1684234849)],[long(1684234849)],[long(1684234849)],[long(1684234849)],[long(1684234849)]],
                             [0,1,2,3,4,4,4,4,4,4]],
-                            [('L',[1L,99L,47L]),
-                            [[1L,99L,47L],[97L,99L,47L],[25185L,99L,47L],[6513249L,99L,47L],[1684234849L,99L,47L],[1684234849L,101L,47L],[1684234849L,26213L,47L],[1684234849L,6776421L,47L],[1684234849L,1751606885L,47L],[1684234849L,1751606885L,105L]],
+                            [('L',[long(1),long(99),long(47)]),
+                            [[long(1),long(99),long(47)],[long(97),long(99),long(47)],[long(25185),long(99),long(47)],[long(6513249),long(99),long(47)],[long(1684234849),long(99),long(47)],[long(1684234849),long(101),long(47)],[long(1684234849),long(26213),long(47)],[long(1684234849),long(6776421),long(47)],[long(1684234849),long(1751606885),long(47)],[long(1684234849),long(1751606885),long(105)]],
                             [0,1,2,3,4,5,6,7,8,9]],
                             [('f',[]),
                             [[],[],[],[],[],[],[],[],[],[]],
