@@ -70,10 +70,7 @@ namespace IronPython.Compiler.Ast {
             return IsComparison() && IsComparison(_right);
         }
 
-        public static bool IsComparison(Expression expression) {
-            BinaryExpression be = expression as BinaryExpression;
-            return be != null && be.IsComparison();
-        }
+        public static bool IsComparison(Expression expression) => expression is BinaryExpression be && be.IsComparison();
 
         // This is a compound comparison operator like: a < b < c.
         // That's represented as binary operators, but it's not the same as (a<b) < c, so we do special transformations.

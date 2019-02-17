@@ -33,8 +33,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public override DynamicMetaObject Bind(DynamicMetaObject target, DynamicMetaObject[] args) {
-            IPythonOperable op = target as IPythonOperable;
-            if (op != null) {
+            if (target is IPythonOperable op) {
                 DynamicMetaObject res = op.BindOperation(this, ArrayUtils.Insert(target, args));
                 if (res != null) {
                     return res;

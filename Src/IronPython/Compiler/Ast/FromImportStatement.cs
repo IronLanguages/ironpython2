@@ -123,8 +123,7 @@ namespace IronPython.Compiler.Ast {
         }
 
         private object GetLevel() {
-            RelativeModuleName rmn = _root as RelativeModuleName;
-            if (rmn != null) {
+            if (_root is RelativeModuleName rmn) {
                 return rmn.DotCount;
             }
 

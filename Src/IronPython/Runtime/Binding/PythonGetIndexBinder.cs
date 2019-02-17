@@ -80,8 +80,7 @@ namespace IronPython.Runtime.Binding {
         private object ListIndex(CallSite site, object target, object index) {
             // using as is ok here because [] is virtual and will call the user method if
             // we have a user defined subclass of list.
-            List lst = target as List;
-            if (lst != null && index != null && index.GetType() == typeof(int)) {
+            if (target is List lst && index != null && index.GetType() == typeof(int)) {
                 return lst[(int)index];
             }
 
@@ -89,8 +88,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         private object ListIndex(CallSite site, object target, int index) {
-            List lst = target as List;
-            if (lst != null) {
+            if (target is List lst) {
                 return lst[index];
             }
 
@@ -106,8 +104,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         private object TupleIndex(CallSite site, object target, object index) {
-            PythonTuple lst = target as PythonTuple;
-            if (lst != null && index != null && index.GetType() == typeof(int)) {
+            if (target is PythonTuple lst && index != null && index.GetType() == typeof(int)) {
                 return lst[(int)index];
             }
             
@@ -115,8 +112,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         private object TupleIndex(CallSite site, object target, int index) {
-            PythonTuple lst = target as PythonTuple;
-            if (lst != null) {
+            if (target is PythonTuple lst) {
                 return lst[index];
             }
 
@@ -132,8 +128,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         private object StringIndex(CallSite site, object target, object index) {
-            string str = target as string;
-            if (str != null && index != null && index.GetType() == typeof(int)) {
+            if (target is string str && index != null && index.GetType() == typeof(int)) {
                 return StringOps.GetItem(str, (int)index);
             }
 
@@ -141,8 +136,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         private object StringIndex(CallSite site, object target, int index) {
-            string str = target as string;
-            if (str != null) {
+            if (target is string str) {
                 return StringOps.GetItem(str, index);
             }
 

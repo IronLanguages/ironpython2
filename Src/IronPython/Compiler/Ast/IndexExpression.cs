@@ -41,13 +41,11 @@ namespace IronPython.Compiler.Ast {
         }
 
         private MSAst.Expression[] GetActionArgumentsForGetOrDelete() {
-            TupleExpression te = _index as TupleExpression;
-            if (te != null && te.IsExpandable) {
+            if (_index is TupleExpression te && te.IsExpandable) {
                 return ArrayUtils.Insert(_target, te.Items);
             }
 
-            SliceExpression se = _index as SliceExpression;
-            if (se != null) {
+            if (_index is SliceExpression se) {
                 if (se.StepProvided) {
                     return new[] { 
                         _target,

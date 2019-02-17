@@ -92,10 +92,9 @@ namespace IronPython.Compiler.Ast {
         private MSAst.Expression AssignOne() {
             Debug.Assert(_left.Length == 1);
 
-            SequenceExpression seLeft = _left[0] as SequenceExpression;
-            SequenceExpression seRight = _right as SequenceExpression;
-
-            if (seLeft != null && seRight != null && seLeft.Items.Count == seRight.Items.Count) {
+            if (_left[0] is SequenceExpression seLeft &&
+                _right is SequenceExpression seRight &&
+                seLeft.Items.Count == seRight.Items.Count) {
                 int cnt = seLeft.Items.Count;
                 
                 // a, b = 1, 2, or [a,b] = 1,2 - not something like a, b = range(2)

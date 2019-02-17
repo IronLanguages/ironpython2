@@ -71,8 +71,7 @@ namespace IronPython.Runtime.Binding {
             }
 
 
-            IPythonConvertible convertible = target as IPythonConvertible;
-            if (convertible != null) {
+            if (target is IPythonConvertible convertible) {
                 res = convertible.BindConvert(this);
             } else if (res == null) {
                 res = BindConvert(self);
@@ -345,8 +344,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public string StringConversion(CallSite site, object value) {
-            string str = value as string;
-            if (str != null) {
+            if (value is string str) {
                 return str;
             }
 

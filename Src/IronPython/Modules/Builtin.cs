@@ -82,8 +82,7 @@ namespace IronPython.Modules {
                 return LightExceptions.Throw(PythonOps.ImportError("No module named {0}", name));
             }
 
-            PythonModule mod = ret as PythonModule;
-            if (mod != null && from != null) {
+            if (ret is PythonModule mod && from != null) {
                 string strAttrName;
                 for (int i = 0; i < from.Count; i++) {
                     object attrName = from[i];
@@ -249,8 +248,7 @@ namespace IronPython.Modules {
 
             converted = TryCoerce(context, y, x);
             if (converted != null && converted != NotImplementedType.Value) {
-                PythonTuple pt = converted as PythonTuple;
-                if (pt != null && pt.Count == 2) {
+                if (converted is PythonTuple pt && pt.Count == 2) {
                     return PythonTuple.MakeTuple(pt[1], pt[0]);
                 }
             }
@@ -1567,8 +1565,7 @@ namespace IronPython.Modules {
 
             string stringValue = value as string;
             if (stringValue == null) {
-                ExtensibleString es = value as ExtensibleString;
-                if (es != null) stringValue = es.Value;
+                if (value is ExtensibleString es) stringValue = es.Value;
             }
             
             if (stringValue != null) {
@@ -1578,8 +1575,7 @@ namespace IronPython.Modules {
                 return stringValue[0];
             }
 
-            IList<byte> bytes = value as IList<byte>;
-            if (bytes != null) {
+            if (value is IList<byte> bytes) {
                 if (bytes.Count != 1) {
                     throw PythonOps.TypeError("expected a character, but string of length {0} found", bytes.Count);
                 }

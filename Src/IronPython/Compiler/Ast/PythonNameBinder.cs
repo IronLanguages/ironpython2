@@ -83,8 +83,7 @@ namespace IronPython.Compiler.Ast {
         private void WalkTuple(TupleExpression tuple) {
             tuple.Parent = _binder._currentScope;
             foreach (Expression innerNode in tuple.Items) {
-                NameExpression name = innerNode as NameExpression;
-                if (name != null) {
+                if (innerNode is NameExpression name) {
                     _binder.DefineName(name.Name);
                     name.Parent = _binder._currentScope;
                     name.Reference = _binder.Reference(name.Name);
@@ -619,8 +618,7 @@ namespace IronPython.Compiler.Ast {
 
         public override bool Walk(ReturnStatement node) {
             node.Parent = _currentScope;
-            FunctionDefinition funcDef = _currentScope as FunctionDefinition;
-            if (funcDef != null) {
+            if (_currentScope is FunctionDefinition funcDef) {
                 funcDef._hasReturn = true;
             }
             return base.Walk(node);

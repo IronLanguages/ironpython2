@@ -169,8 +169,7 @@ namespace IronPython.Compiler.Ast {
                 }
 
                 // most constants (int, float, long, etc...) will throw here
-                ConstantExpression ce = _list as ConstantExpression;
-                if (ce != null) {
+                if (_list is ConstantExpression ce) {
                     if (ce.Value is string) {
                         return false;
                     }

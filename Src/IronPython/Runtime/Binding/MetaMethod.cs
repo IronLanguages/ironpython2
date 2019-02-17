@@ -185,8 +185,7 @@ namespace IronPython.Runtime.Binding {
         private DynamicMetaObject GetMetaSelf(DynamicMetaObject/*!*/ self) {
             DynamicMetaObject func;
 
-            IDynamicMetaObjectProvider ido = Value.im_self as IDynamicMetaObjectProvider;
-            if (ido != null) {
+            if (Value.im_self is IDynamicMetaObjectProvider ido) {
                 func = ido.GetMetaObject(GetSelfExpression(self));
             } else if (Value.im_self == null) {
                 func = new DynamicMetaObject(
@@ -205,8 +204,7 @@ namespace IronPython.Runtime.Binding {
         
         private DynamicMetaObject/*!*/ GetMetaFunction(DynamicMetaObject/*!*/ self) {
             DynamicMetaObject func;
-            IDynamicMetaObjectProvider ido = Value.im_func as IDynamicMetaObjectProvider;
-            if (ido != null) {
+            if (Value.im_func is IDynamicMetaObjectProvider ido) {
                 func = ido.GetMetaObject(GetFunctionExpression(self));
             } else {
                 func = new DynamicMetaObject(

@@ -299,8 +299,7 @@ namespace IronPython.Compiler.Ast {
             if (stmts == null) return "";
 
             foreach (Statement stmt in stmts.Statements) {
-                FunctionDefinition def = stmt as FunctionDefinition;
-                if (def != null && def.Name == "__init__") {
+                if (stmt is FunctionDefinition def && def.Name == "__init__") {
                     return string.Join(",", SelfNameFinder.FindNames(def));
                 }
             }
@@ -353,8 +352,7 @@ namespace IronPython.Compiler.Ast {
 
             public override bool Walk(AssignmentStatement node) {
                 foreach (Expression lhs in node.Left) {
-                    MemberExpression me = lhs as MemberExpression;
-                    if (me != null) {
+                    if (lhs is MemberExpression me) {
                         if (IsSelfReference(me.Target)) {
                             _names[me.Name] = true;
                         }

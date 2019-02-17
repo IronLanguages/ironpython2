@@ -2055,12 +2055,10 @@ namespace IronPython.Compiler {
                     NextToken();
                     var start = GetStart();
                     object cv = t.Value;
-                    string cvs = cv as string;
-                    if (cvs != null) {
+                    if (cv is string cvs) {
                         cv = FinishStringPlus(cvs);
                     } else {
-                        Bytes bytes = cv as Bytes;
-                        if (bytes != null) {
+                        if (cv is Bytes bytes) {
                             cv = FinishBytesPlus(bytes);
                         }
                     }
@@ -3128,10 +3126,8 @@ namespace IronPython.Compiler {
                 Statement s = ParseStmt();
                 l.Add(s);
                 _fromFutureAllowed = false;
-                ExpressionStatement es = s as ExpressionStatement;
-                if (es != null) {
-                    ConstantExpression ce = es.Expression as ConstantExpression;
-                    if (ce != null && ce.Value is string) {
+                if (s is ExpressionStatement es) {
+                    if (es.Expression is ConstantExpression ce && ce.Value is string) {
                         // doc string
                         _fromFutureAllowed = true;
                     }
@@ -3145,8 +3141,7 @@ namespace IronPython.Compiler {
                 while (PeekToken(Tokens.KeywordFromToken)) {
                     Statement s = ParseStmt();
                     l.Add(s);
-                    FromImportStatement fis = s as FromImportStatement;
-                    if (fis != null && !fis.IsFromFuture) {
+                    if (s is FromImportStatement fis && !fis.IsFromFuture) {
                         // end of from __future__
                         break;
                     }
@@ -3167,8 +3162,7 @@ namespace IronPython.Compiler {
             Statement[] stmts = l.ToArray();
 
             if (returnValue && stmts.Length > 0) {
-                ExpressionStatement exprStmt = stmts[stmts.Length - 1] as ExpressionStatement;
-                if (exprStmt != null) {
+                if (stmts[stmts.Length - 1] is ExpressionStatement exprStmt) {
                     var retStmt = new ReturnStatement(exprStmt.Expression);
                     stmts[stmts.Length - 1] = retStmt;
                     retStmt.SetLoc(_globalParent, exprStmt.Expression.IndexSpan);
@@ -3282,8 +3276,7 @@ namespace IronPython.Compiler {
         }
 
         private Exception/*!*/ BadSourceError(BadSourceException bse) {
-            StreamReader sr = _sourceReader.BaseReader as StreamReader;
-            if (sr != null && sr.BaseStream.CanSeek) {
+            if (_sourceReader.BaseReader is StreamReader sr && sr.BaseStream.CanSeek) {
                 return PythonContext.ReportEncodingError(sr.BaseStream, _sourceUnit.Path);
 
             }

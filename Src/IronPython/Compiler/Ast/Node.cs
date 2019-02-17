@@ -312,11 +312,9 @@ namespace IronPython.Compiler.Ast {
         }
 
         internal static MSAst.Expression RemoveDebugInfo(int prevStart, MSAst.Expression res) {
-            MSAst.BlockExpression block = res as MSAst.BlockExpression;
-            if (block != null && block.Expressions.Count > 0) {
-                MSAst.DebugInfoExpression dbgInfo = block.Expressions[0] as MSAst.DebugInfoExpression;
+            if (res is BlockExpression block && block.Expressions.Count > 0) {
                 // body on the same line as an if, don't generate a 2nd sequence point
-                if (dbgInfo != null && dbgInfo.StartLine == prevStart) {
+                if (block.Expressions[0] is DebugInfoExpression dbgInfo && dbgInfo.StartLine == prevStart) {
                     // we remove the debug info based upon how it's generated in DebugStatement.AddDebugInfo which is
                     // the helper method which adds the debug info.
                     if (block.Type == typeof(void)) {
@@ -351,8 +349,7 @@ namespace IronPython.Compiler.Ast {
 
         class FramedCodeVisitor : ExpressionVisitor {
             public override MSAst.Expression Visit(MSAst.Expression node) {
-                FramedCodeExpression framedCode = node as FramedCodeExpression;
-                if (framedCode != null) {
+                if (node is FramedCodeExpression framedCode) {
                     return framedCode.Body;
                 }
                 return base.Visit(node);
@@ -443,8 +440,7 @@ namespace IronPython.Compiler.Ast {
             Debug.Assert(expression != null);
             Debug.Assert(value != null);
 
-            IPythonVariableExpression pyGlobal = expression as IPythonVariableExpression;
-            if (pyGlobal != null) {
+            if (expression is IPythonVariableExpression pyGlobal) {
                 return pyGlobal.Assign(value);
             }
 
@@ -452,8 +448,7 @@ namespace IronPython.Compiler.Ast {
         }
 
         internal static MSAst.Expression/*!*/ Delete(MSAst.Expression/*!*/ expression) {
-            IPythonVariableExpression pyGlobal = expression as IPythonVariableExpression;
-            if (pyGlobal != null) {
+            if (expression is IPythonVariableExpression pyGlobal) {
                 return pyGlobal.Delete();
             }
 
