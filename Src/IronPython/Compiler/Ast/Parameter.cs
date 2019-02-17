@@ -102,9 +102,7 @@ namespace IronPython.Compiler.Ast {
 
         public override void Walk(PythonWalker walker) {
             if (walker.Walk(this)) {
-                if (_defaultValue != null) {
-                    _defaultValue.Walk(walker);
-                }
+                _defaultValue?.Walk(walker);
             }
             walker.PostWalk(this);
         }
@@ -130,12 +128,8 @@ namespace IronPython.Compiler.Ast {
 
         public override void Walk(PythonWalker walker) {
             if (walker.Walk(this)) {
-                if (_tuple != null) {
-                    _tuple.Walk(walker);
-                }
-                if (_defaultValue != null) {
-                    _defaultValue.Walk(walker);
-                }
+                _tuple?.Walk(walker);
+                _defaultValue?.Walk(walker);
             }
             walker.PostWalk(this);
         }

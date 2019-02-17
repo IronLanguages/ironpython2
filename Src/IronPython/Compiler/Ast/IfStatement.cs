@@ -123,9 +123,8 @@ namespace IronPython.Compiler.Ast {
                         test.Walk(walker);
                     }
                 }
-                if (_else != null) {
-                    _else.Walk(walker);
-                }
+
+                _else?.Walk(walker);
             }
             walker.PostWalk(this);
         }

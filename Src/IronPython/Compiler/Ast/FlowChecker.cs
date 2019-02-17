@@ -237,9 +237,7 @@ namespace IronPython.Compiler.Ast {
             return _loops != null && _loops.Count > 0 ? _loops.Peek() : null;
         }
 
-        private void PopLoop() {
-            if (_loops != null) _loops.Pop();
-        }
+        private void PopLoop() => _loops?.Pop();
 
         #region AstWalker Methods
 
@@ -322,9 +320,8 @@ namespace IronPython.Compiler.Ast {
         // BreakStmt
         public override bool Walk(BreakStatement node) {
             BitArray exit = PeekLoop();
-            if (exit != null) { // break outside loop
-                exit.And(_bits);
-            }
+            // break outside loop
+            exit?.And(_bits);
             return true;
         }
 
@@ -492,12 +489,9 @@ namespace IronPython.Compiler.Ast {
             // Flow the body
             node.Body.Walk(this);
 
-            if (node.Else != null) {
-                // Else is flown only after completion of Try with same bits
-                node.Else.Walk(this);
-            }
-
-
+            // Else is flown only after completion of Try with same bits
+            node.Else?.Walk(this);
+            
             if (node.Handlers != null) {
                 foreach (TryStatementHandler tsh in node.Handlers) {
                     // Restore to saved state
@@ -505,14 +499,10 @@ namespace IronPython.Compiler.Ast {
                     _bits.Or(save);
 
                     // Flow the test
-                    if (tsh.Test != null) {
-                        tsh.Test.Walk(this);
-                    }
+                    tsh.Test?.Walk(this);
 
                     // Define the target
-                    if (tsh.Target != null) {
-                        tsh.Target.Walk(_fdef);
-                    }
+                    tsh.Target?.Walk(_fdef);
 
                     // Flow the body
                     tsh.Body.Walk(this);

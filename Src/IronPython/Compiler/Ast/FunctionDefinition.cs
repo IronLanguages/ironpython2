@@ -809,9 +809,8 @@ namespace IronPython.Compiler.Ast {
                         decorator.Walk(walker);
                     }
                 }
-                if (_body != null) {
-                    _body.Walk(walker);
-                }
+
+                _body?.Walk(walker);
             }
             walker.PostWalk(this);
         }

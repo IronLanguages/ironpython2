@@ -101,9 +101,7 @@ namespace IronPython.Compiler.Ast {
 
         public override void Walk(PythonWalker walker) {
             if (walker.Walk(this)) {
-                if (_dest != null) {
-                    _dest.Walk(walker);
-                }
+                _dest?.Walk(walker);
                 if (_expressions != null) {
                     foreach (Expression expression in _expressions) {
                         expression.Walk(walker);
