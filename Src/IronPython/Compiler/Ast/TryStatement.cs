@@ -427,20 +427,15 @@ namespace IronPython.Compiler.Ast {
 
         public override void Walk(PythonWalker walker) {
             if (walker.Walk(this)) {
-                if (_body != null) {
-                    _body.Walk(walker);
-                }
+                _body?.Walk(walker);
                 if (_handlers != null) {
                     foreach (TryStatementHandler handler in _handlers) {
                         handler.Walk(walker);
                     }
                 }
-                if (_else != null) {
-                    _else.Walk(walker);
-                }
-                if (_finally != null) {
-                    _finally.Walk(walker);
-                }
+
+                _else?.Walk(walker);
+                _finally?.Walk(walker);
             }
             walker.PostWalk(this);
         }
@@ -481,15 +476,9 @@ namespace IronPython.Compiler.Ast {
 
         public override void Walk(PythonWalker walker) {
             if (walker.Walk(this)) {
-                if (_test != null) {
-                    _test.Walk(walker);
-                }
-                if (_target != null) {
-                    _target.Walk(walker);
-                }
-                if (_body != null) {
-                    _body.Walk(walker);
-                }
+                _test?.Walk(walker);
+                _target?.Walk(walker);
+                _body?.Walk(walker);
             }
             walker.PostWalk(this);
         }

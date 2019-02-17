@@ -55,15 +55,9 @@ namespace IronPython.Compiler.Ast {
 
         public override void Walk(PythonWalker walker) {
             if (walker.Walk(this)) {
-                if (_sliceStart != null) {
-                    _sliceStart.Walk(walker);
-                }
-                if (_sliceStop != null) {
-                    _sliceStop.Walk(walker);
-                }
-                if (_sliceStep != null) {
-                    _sliceStep.Walk(walker);
-                }
+                _sliceStart?.Walk(walker);
+                _sliceStop?.Walk(walker);
+                _sliceStep?.Walk(walker);
             }
             walker.PostWalk(this);
         }
