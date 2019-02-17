@@ -230,8 +230,7 @@ namespace IronPython.Hosting {
                     PythonContext.SetSystemStateValue("warnoptions", o);
                 }
 
-                List warnoptions = o as List;
-                if (warnoptions != null && !string.IsNullOrEmpty(warnings)) {
+                if (o is List warnoptions && !string.IsNullOrEmpty(warnings)) {
                     string[] warns = warnings.Split(',');
                     foreach(string warn in warns) {
                         warnoptions.Add(warn);
@@ -406,8 +405,7 @@ namespace IronPython.Hosting {
             } catch (ThreadAbortException) {
 #else
             } catch (ThreadAbortException tae) {
-                KeyboardInterruptException pki = tae.ExceptionState as KeyboardInterruptException;
-                if (pki != null) {
+                if (tae.ExceptionState is KeyboardInterruptException pki) {
                     Thread.ResetAbort();
                 }
 #endif

@@ -28,8 +28,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public DynamicMetaObject/*!*/ FallbackConvert(DynamicMetaObjectBinder/*!*/ binder) {
-            PythonConversionBinder pyBinder = binder as PythonConversionBinder;
-            if (pyBinder != null) {
+            if (binder is PythonConversionBinder pyBinder) {
                 return pyBinder.FallbackConvert(binder.ReturnType, this, null);
             }
 
@@ -115,8 +114,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         protected static DynamicMetaObject GetMemberFallback(DynamicMetaObject self, DynamicMetaObjectBinder member, DynamicMetaObject codeContext) {
-            PythonGetMemberBinder gmb = member as PythonGetMemberBinder;
-            if (gmb != null) {
+            if (member is PythonGetMemberBinder gmb) {
                 return gmb.Fallback(self, codeContext);
             }
 
@@ -126,13 +124,11 @@ namespace IronPython.Runtime.Binding {
         }
 
         protected static string GetGetMemberName(DynamicMetaObjectBinder member) {
-            PythonGetMemberBinder gmb = member as PythonGetMemberBinder;
-            if (gmb != null) {
+            if (member is PythonGetMemberBinder gmb) {
                 return gmb.Name;
             }
 
-            InvokeMemberBinder invoke = member as InvokeMemberBinder;
-            if (invoke != null) {
+            if (member is InvokeMemberBinder invoke) {
                 return invoke.Name;
             }
 
@@ -140,6 +136,5 @@ namespace IronPython.Runtime.Binding {
 
             return gma.Name;
         }
-
     }
 }

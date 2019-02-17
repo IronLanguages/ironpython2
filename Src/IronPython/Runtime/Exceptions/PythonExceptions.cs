@@ -426,14 +426,12 @@ namespace IronPython.Runtime.Exceptions {
 
         public partial class _SyntaxError : BaseException {
             public override string ToString() {
-                PythonTuple t = ((PythonTuple)args) as PythonTuple;
-                if (t != null) {
+                if (((PythonTuple)args) is PythonTuple t) {
                     switch (t.__len__()) {
                         case 0: return PythonOps.ToString(null);
                         case 1: return PythonOps.ToString(t[0]);
                         case 2:
-                            string msg = t[0] as string;
-                            if (msg != null) {
+                            if (t[0] is string msg) {
                                 return msg;
                             }
 
@@ -455,8 +453,7 @@ namespace IronPython.Runtime.Exceptions {
                         //  (msg, filename, lineno, offset, text, printFileandLineStr)
                         // or:
                         //  (msg, (filename, lineno, offset, text, printFileandLineStr))
-                        PythonTuple locationInfo = args[1] as PythonTuple;
-                        if(locationInfo != null) {
+                        if(args[1] is PythonTuple locationInfo) {
                             if (locationInfo.__len__() != 4) {
                                 throw PythonOps.IndexError("SyntaxError expected tuple with 4 arguments, got {0}", locationInfo.__len__());
                             }
@@ -538,14 +535,12 @@ namespace IronPython.Runtime.Exceptions {
                     return;                    
                 }
 
-                UnauthorizedAccessException noAccess = exception as UnauthorizedAccessException;
-                if (noAccess != null) {
+                if (exception is UnauthorizedAccessException noAccess) {
                     __init__(EACCES, exception.Message);
                     return;
                 }
 
-                var ioExcep = exception as System.IO.IOException;
-                if (ioExcep != null) {
+                if (exception is IOException ioExcep) {
                     try {
                         uint hr = (uint)GetHRForException(exception);
                         if ((hr & 0xffff0000U) == 0x80070000U) {
@@ -969,14 +964,12 @@ for k, v in toError.iteritems():
         /// creating a new exception if necessary
         /// </summary>
         internal static System.Exception ToClr(object pythonException) {
-            PythonExceptions.BaseException pyExcep = pythonException as PythonExceptions.BaseException;
-            if (pyExcep != null) {
+            if (pythonException is BaseException pyExcep) {
                 return pyExcep.GetClrException();
             }
 
             System.Exception res;
-            OldInstance oi = pythonException as OldInstance;
-            if(oi != null) {
+            if(pythonException is OldInstance oi) {
                 res = new OldInstanceException(oi);
             } else {
                 // default exception message is the exception type (from Python)
@@ -996,8 +989,7 @@ for k, v in toError.iteritems():
 
             // certain Python exceptions (StringException, OldInstanceException, ObjectException)
             // expose the underlying object they're wrapping directly.
-            IPythonException ipe = clrException as IPythonException;
-            if (ipe != null) {
+            if (clrException is IPythonException ipe) {
                 return ipe.ToPythonException();
             }
 
@@ -1084,15 +1076,13 @@ for k, v in toError.iteritems():
         /// Internal helper to associate a .NET exception and a Python exception.
         /// </summary>
         private static void SetPythonException(this Exception e, object exception) {
-            IPythonAwareException pyAware = e as IPythonAwareException;
-            if (pyAware != null) {
+            if (e is IPythonAwareException pyAware) {
                 pyAware.PythonException = exception;
             } else {
                 e.SetData(_pythonExceptionKey, new ExceptionDataWrapper(exception));
             }
 
-            BaseException be = exception as BaseException;
-            if (be != null) {
+            if (exception is BaseException be) {
                 be.clsException = e;
             }            
         }
@@ -1101,13 +1091,11 @@ for k, v in toError.iteritems():
         /// Internal helper to get the associated Python exception from a .NET exception.
         /// </summary>
         private static object GetPythonException(this Exception e) {
-            IPythonAwareException pyAware = e as IPythonAwareException;
-            if (pyAware != null) {
+            if (e is IPythonAwareException pyAware) {
                 return pyAware.PythonException;
             }
 
-            var wrapper = e.GetData(_pythonExceptionKey) as ExceptionDataWrapper;
-            if (wrapper != null) {
+            if (e.GetData(_pythonExceptionKey) is ExceptionDataWrapper wrapper) {
                 return wrapper.Value;
             }
 
@@ -1115,8 +1103,7 @@ for k, v in toError.iteritems():
         }
 
         internal static List<DynamicStackFrame> GetFrameList(this Exception e) {
-            IPythonAwareException pyAware = e as IPythonAwareException;
-            if (pyAware != null) {
+            if (e is IPythonAwareException pyAware) {
                 return pyAware.Frames;
             } else {
                 return e.GetData(typeof(DynamicStackFrame)) as List<DynamicStackFrame>;
@@ -1124,8 +1111,7 @@ for k, v in toError.iteritems():
         }
 
         internal static void SetFrameList(this Exception e, List<DynamicStackFrame> frames) {
-            IPythonAwareException pyAware = e as IPythonAwareException;
-            if (pyAware != null) {
+            if (e is IPythonAwareException pyAware) {
                 pyAware.Frames = frames;
             } else {
                 e.SetData(typeof(DynamicStackFrame), frames);
@@ -1133,8 +1119,7 @@ for k, v in toError.iteritems():
         }
 
         internal static void RemoveFrameList(this Exception e) {
-            IPythonAwareException pyAware = e as IPythonAwareException;
-            if (pyAware != null) {
+            if (e is IPythonAwareException pyAware) {
                 pyAware.Frames = null;
             } else {
                 e.RemoveData(typeof(DynamicStackFrame));
@@ -1142,8 +1127,7 @@ for k, v in toError.iteritems():
         }
 
         internal static TraceBack GetTraceBack(this Exception e) {
-            IPythonAwareException pyAware = e as IPythonAwareException;
-            if (pyAware != null) {
+            if (e is IPythonAwareException pyAware) {
                 return pyAware.TraceBack;
             } else {
                 return e.GetData(typeof(TraceBack)) as TraceBack;
@@ -1151,8 +1135,7 @@ for k, v in toError.iteritems():
         }
 
         internal static void SetTraceBack(this Exception e, TraceBack traceback) {
-            IPythonAwareException pyAware = e as IPythonAwareException;
-            if (pyAware != null) {
+            if (e is IPythonAwareException pyAware) {
                 pyAware.TraceBack = traceback;
             } else {
                 e.SetData(typeof(TraceBack), traceback);
@@ -1160,8 +1143,7 @@ for k, v in toError.iteritems():
         }
 
         internal static void RemoveTraceBack(this Exception e) {
-            IPythonAwareException pyAware = e as IPythonAwareException;
-            if (pyAware != null) {
+            if (e is IPythonAwareException pyAware) {
                 pyAware.TraceBack = null;
             } else {
                 e.RemoveData(typeof(TraceBack));

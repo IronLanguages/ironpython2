@@ -375,9 +375,7 @@ namespace IronPython.Compiler.Ast {
         }
 
         internal MSAst.Expression ReduceWorker() {
-            var retStmt = _body as ReturnStatement;
-            
-            if (retStmt != null && 
+            if (_body is ReturnStatement retStmt && 
                 (_languageFeatures == ModuleOptions.None || 
                 _languageFeatures == (ModuleOptions.ExecOrEvalCode | ModuleOptions.Interpret) ||
                 _languageFeatures == (ModuleOptions.ExecOrEvalCode | ModuleOptions.Interpret | ModuleOptions.LightThrow))) {
@@ -789,24 +787,20 @@ namespace IronPython.Compiler.Ast {
                 }
 
                 // we need to re-write nested scoeps
-                ScopeStatement scope = node as ScopeStatement;
-                if (scope != null) {
+                if (node is ScopeStatement scope) {
                     return base.VisitExtension(VisitScope(scope));
                 }
 
-                LambdaExpression lambda = node as LambdaExpression;
-                if (lambda != null) {
+                if (node is LambdaExpression lambda) {
                     return base.VisitExtension(new LambdaExpression((FunctionDefinition)VisitScope(lambda.Function)));
                 }
 
-                GeneratorExpression generator = node as GeneratorExpression;
-                if (generator != null) {
+                if (node is GeneratorExpression generator) {
                     return base.VisitExtension(new GeneratorExpression((FunctionDefinition)VisitScope(generator.Function), generator.Iterable));
                 }
 
                 // update the global get/set/raw gets variables
-                PythonGlobalVariableExpression global = node as PythonGlobalVariableExpression;
-                if (global != null) {
+                if (node is PythonGlobalVariableExpression global) {
                     return new LookupGlobalVariable(
                         _curScope == null ? PythonAst._globalContext : _curScope.LocalContext,
                         global.Variable.Name,
@@ -815,8 +809,7 @@ namespace IronPython.Compiler.Ast {
                 }
 
                 // set covers sets and deletes
-                var setGlobal = node as PythonSetGlobalVariableExpression;
-                if (setGlobal != null) {
+                if (node is PythonSetGlobalVariableExpression setGlobal) {
                     if (setGlobal.Value == PythonGlobalVariableExpression.Uninitialized) {
                         return new LookupGlobalVariable(
                             _curScope == null ? PythonAst._globalContext : _curScope.LocalContext,
@@ -832,8 +825,7 @@ namespace IronPython.Compiler.Ast {
                     }
                 }
 
-                var rawValue = node as PythonRawGlobalValueExpression;
-                if (rawValue != null) {
+                if (node is PythonRawGlobalValueExpression rawValue) {
                     return new LookupGlobalVariable(
                         _curScope == null ? PythonAst._globalContext : _curScope.LocalContext,
                         rawValue.Global.Variable.Name,

@@ -352,8 +352,7 @@ namespace IronPython.Runtime.Operations {
             if (hasGetState) {
                 state = PythonOps.CallWithContext(context, getState);
             } else {
-                IPythonObject ipo = self as IPythonObject;
-                if (ipo != null) {
+                if (self is IPythonObject ipo) {
                     state = ipo.Dict;
                 } else if (!PythonOps.TryGetBoundAttr(context, self, "__dict__", out state)) {
                     state = null;
@@ -412,8 +411,7 @@ namespace IronPython.Runtime.Operations {
                     "__getstate__",
                     out state)) {
                 object dict;
-                IPythonObject ipo = self as IPythonObject;
-                if (ipo != null) {
+                if (self is IPythonObject ipo) {
                     dict = ipo.Dict;
                 } else if (!PythonOps.TryGetBoundAttr(context, self, "__dict__", out dict)) {
                     dict = null;

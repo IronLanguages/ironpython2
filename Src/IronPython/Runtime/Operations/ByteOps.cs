@@ -135,8 +135,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static byte GetByteListOk(object o) {
-            IList<byte> lbval = o as IList<byte>;
-            if (lbval != null) {
+            if (o is IList<byte> lbval) {
                 if (lbval.Count == 1) {
                     return lbval[0];
                 }

@@ -451,14 +451,12 @@ namespace IronPython.Compiler.Ast {
                 return;
             }
 
-            MSAst.ParameterExpression functionValueParam = variable as MSAst.ParameterExpression;
-            if (functionValueParam != null) {
+            if (variable is MSAst.ParameterExpression functionValueParam) {
                 instructions.EmitStoreLocal(compiler.Locals.GetLocalIndex(functionValueParam));
                 return;
             }
 
-            var globalVar = variable as PythonGlobalVariableExpression;
-            if (globalVar != null) {
+            if (variable is PythonGlobalVariableExpression globalVar) {
                 instructions.Emit(new PythonSetGlobalInstruction(globalVar.Global));
                 instructions.EmitPop();
                 return;
@@ -575,8 +573,7 @@ namespace IronPython.Compiler.Ast {
             List<MSAst.Expression> init = new List<MSAst.Expression>();
 
             foreach (var param in _parameters) {
-                IPythonVariableExpression pyVar = GetVariableExpression(param.PythonVariable) as IPythonVariableExpression;
-                if (pyVar != null) {
+                if (GetVariableExpression(param.PythonVariable) is IPythonVariableExpression pyVar) {
                     var varInit = pyVar.Create();
                     if (varInit != null) {
                         init.Add(varInit);
@@ -848,8 +845,7 @@ namespace IronPython.Compiler.Ast {
             protected override MSAst.Expression VisitExtension(MSAst.Expression node) {
 
                 // update the global get/set/raw gets variables
-                var global = node as PythonGlobalVariableExpression;
-                if (global != null) {
+                if (node is PythonGlobalVariableExpression global) {
                     return new LookupGlobalVariable(
                         PythonAst._globalContext,
                         global.Variable.Name,
@@ -858,8 +854,7 @@ namespace IronPython.Compiler.Ast {
                 }
 
                 // set covers sets and deletes
-                var setGlobal = node as PythonSetGlobalVariableExpression;
-                if (setGlobal != null) {
+                if (node is PythonSetGlobalVariableExpression setGlobal) {
                     if (setGlobal.Value == PythonGlobalVariableExpression.Uninitialized) {
                         return new LookupGlobalVariable(
                             PythonAst._globalContext,

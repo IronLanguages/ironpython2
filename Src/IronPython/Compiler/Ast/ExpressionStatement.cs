@@ -47,8 +47,7 @@ namespace IronPython.Compiler.Ast {
 
         public override string Documentation {
             get {
-                ConstantExpression ce = _expression as ConstantExpression;
-                if (ce != null) {
+                if (_expression is ConstantExpression ce) {
                     return ce.Value as string;
                 }
                 return null;
