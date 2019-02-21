@@ -3817,7 +3817,7 @@ namespace IronPython.Runtime.Operations {
                 );
             }
 
-            return builder.CreateType();
+            return builder.CreateTypeInfo();
         }
 
         /// <summary>

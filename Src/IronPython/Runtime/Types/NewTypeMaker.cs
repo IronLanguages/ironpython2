@@ -188,7 +188,7 @@ namespace IronPython.Runtime.Types {
                 ilg.Emit(OpCodes.Stelem_Ref);
             }
             ilg.Emit(OpCodes.Ret);
-            tb.CreateType();
+            tb.CreateTypeInfo();
             ag.SaveAssembly();
         }
 #endif
@@ -1373,7 +1373,7 @@ namespace IronPython.Runtime.Types {
                 _cctor.Emit(OpCodes.Ret);
             }
 
-            return _tg.CreateType();
+            return _tg.CreateTypeInfo();
         }
 
         private ILGen DefineExplicitInterfaceImplementation(MethodInfo baseMethod, out MethodBuilder builder) {
