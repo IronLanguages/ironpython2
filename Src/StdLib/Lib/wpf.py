@@ -4,7 +4,10 @@ def _():
     import sys
     if sys.platform == 'cli':
         import clr
-        clr.AddReference('IronPython.Wpf')
+        try:
+            clr.AddReference('IronPython.Wpf')
+        except:
+            pass
 _()
 del _
 

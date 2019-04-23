@@ -25,7 +25,10 @@ def _():
     import sys
     if sys.platform == 'cli':
         import clr
-        clr.AddReference('IronPython.SQLite')
+        try:
+            clr.AddReference('IronPython.SQLite')
+        except:
+            pass
 _()
 del _
 
