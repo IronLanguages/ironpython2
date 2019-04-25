@@ -9,7 +9,6 @@ from test import test_support
 import abc
 from inspect import isabstract
 
-import sys
 
 class TestABC(unittest.TestCase):
 
