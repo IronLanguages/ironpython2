@@ -714,7 +714,7 @@ namespace IronPython.Modules {
             arr.NativeType.SetValue(arr._memHolder, 0, value);
         }
 
-        public static void DeleteCharArrayValue(_Array arr, object value) {
+        public static void DeleteCharArrayValue(_Array arr) {
             throw PythonOps.TypeError("cannot delete char array value");
         }
 
@@ -753,7 +753,7 @@ namespace IronPython.Modules {
         }
 
         public static object DeleteWCharArrayRaw(_Array arr) {
-            throw PythonOps.TypeError("cannot delete wchar array raw");
+            throw PythonOps.AttributeError("cannot delete wchar array raw");
         }
         
         class RefCountInfo {
