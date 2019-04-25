@@ -4819,6 +4819,7 @@ class TestImportStar(TestCase):
 class TestWrappingMetavar(TestCase):
 
     def setUp(self):
+        super(TestWrappingMetavar, self).setUp()
         self.parser = ErrorRaisingArgumentParser(
             'this_is_spammy_prog_with_a_long_name_sorry_about_the_name'
         )

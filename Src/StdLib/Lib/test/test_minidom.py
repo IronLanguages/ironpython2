@@ -759,6 +759,7 @@ class MinidomTest(unittest.TestCase):
         self.assertIs(handler.src, entity)
         self.assertIs(handler.dst, dst)
 
+    @unittest.skipIf(sys.platform == 'cli', 'https://github.com/IronLanguages/ironpython2/issues/464')
     def testCloneNodeEntity(self):
         self.check_clone_node_entity(False)
         self.check_clone_node_entity(True)
