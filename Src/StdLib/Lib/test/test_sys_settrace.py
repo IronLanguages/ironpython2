@@ -1069,7 +1069,7 @@ output.append(4)
                "can only jump from a 'line' trace event"))
     def test_no_jump_from_exception_event(output):
         output.append(1)
-        1 / 0
+        1 // 0
 
     @unittest.skipIf(sys.platform == 'cli', 'TODO')
     @jump_test(3, 2, [2], event='return', error=(ValueError,
