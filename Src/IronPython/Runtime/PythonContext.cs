@@ -1956,8 +1956,7 @@ namespace IronPython.Runtime
             dict["implementation"] = implementation;
             dict["version_info"] = implementation.version;
             dict["hexversion"] = implementation.hexversion;
-            dict["version"] = implementation.version.GetVersionString(
-                    _initialVersionString ?? GetVersionString());
+            dict["version"] = _initialVersionString;
         }
 
         internal static string GetVersionString() {
@@ -1969,9 +1968,9 @@ namespace IronPython.Runtime
             string platform = Type.GetType("Mono.Runtime") == null ? ".NET" : "Mono";
             string bitness = (IntPtr.Size * 8).ToString();
 
-            return String.Format("{0}{3} ({1}) on {4} {2} ({5}-bit)",
-                                PythonContext.IronPythonDisplayName,
-                                PythonContext.GetPythonVersion().ToString(),
+            return string.Format("{0}{3} ({1}) on {4} {2} ({5}-bit)",
+                                Implementation.Instance.version.GetVersionString(),
+                                FileVersionInfo.GetVersionInfo(typeof(PythonContext).Assembly.Location).FileVersion,
                                 Environment.Version,
                                 configuration,
                                 platform,
