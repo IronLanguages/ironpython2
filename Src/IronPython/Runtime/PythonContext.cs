@@ -1965,17 +1965,10 @@ namespace IronPython.Runtime
 #else
             string configuration = string.Empty;
 #endif
-            string platform = Type.GetType("Mono.Runtime") == null ? ".NET" : "Mono";
             string bitness = (IntPtr.Size * 8).ToString();
 
-            return string.Format("{0}{3} ({1}) on {4} {2} ({5}-bit)",
-                                Implementation.Instance.version.GetVersionString(),
-                                FileVersionInfo.GetVersionInfo(typeof(PythonContext).Assembly.Location).FileVersion,
-                                Environment.Version,
-                                configuration,
-                                platform,
-                                bitness
-                                );
+            return $"{Implementation.Instance.version.GetVersionString()}{configuration} ({Runtime.ClrModule.FileVersion})\n" +
+                $"[{Runtime.ClrModule.TargetFramework} on {Runtime.ClrModule.FrameworkDescription} ({bitness}-bit)]";
         }
 
         private static string GetInitialPrefix() {

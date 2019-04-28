@@ -1354,6 +1354,7 @@ def processor():
 
 _sys_version_parser = re.compile(
     r'([\w.+]+)\s*'  # "version<space>"
+    r'(?: DEBUG)?\s*' # DEBUG - IronPython DEBUG builds only
     r'\(#?([^,]+)'  # "(#buildno"
     r'(?:,\s*([\w ]*)'  # ", builddate"
     r'(?:,\s*([\w :]*))?)?\)\s*'  # ", buildtime)<space>"
@@ -1415,6 +1416,20 @@ def _sys_version(sys_version=None):
         version, alt_version, compiler = match.groups()
         buildno = ''
         builddate = ''
+
+    elif sys.platform == "cli":
+        # IronPython
+        name = 'IronPython'
+        match = _sys_version_parser.match(sys_version)
+        if match is None:
+            raise ValueError(
+                'failed to parse IronPython sys.version: %s' %
+                repr(sys_version))
+
+        version, _, _, _, _ = match.groups()
+        buildno = ''
+        builddate = ''
+        compiler = ''
 
     elif sys.platform.startswith('java'):
         # Jython
