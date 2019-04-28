@@ -62,7 +62,11 @@ namespace IronPython.Runtime {
         internal static string FrameworkDescription {
             get {
 #if FEATURE_RUNTIMEINFORMATION
-                return RuntimeInformation.FrameworkDescription;
+                var frameworkDescription = RuntimeInformation.FrameworkDescription;
+                if (frameworkDescription.StartsWith(".NET Core 4.6.", StringComparison.OrdinalIgnoreCase)) {
+                    return $".NET Core 2.x ({frameworkDescription.Substring(10)})";
+                }
+                return frameworkDescription;
 #else
                 // try reflection since we're probably running on a newer runtime anyway
                 if (typeof(void).Assembly.GetType("System.Runtime.InteropServices.RuntimeInformation")?.GetProperty("FrameworkDescription")?.GetValue(null) is string frameworkDescription) {
