@@ -1960,11 +1960,7 @@ namespace IronPython.Runtime
         }
 
         internal static string GetVersionString() {
-#if DEBUG
-            const string configuration = " DEBUG";
-#else
-            string configuration = string.Empty;
-#endif
+            string configuration = Runtime.ClrModule.IsDebug ? " DEBUG" : string.Empty;
             string bitness = (IntPtr.Size * 8).ToString();
 
             return $"{Implementation.Instance.version.GetVersionString()}{configuration} ({Runtime.ClrModule.FileVersion})\n" +
