@@ -2,11 +2,10 @@
 # The .NET Foundation licenses this file to you under the Apache 2.0 License.
 # See the LICENSE file in the project root for more information.
 
-
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp30, run_test, skipUnlessIronPython
 
 class A:
     def __str__(self):
@@ -37,7 +36,7 @@ class FormattingTest(IronPythonTestCase):
         else:
             self.assertEqual(str(123456789012.00), "1.23456789012e+11")
             self.assertEqual(str(123456789012.0), "1.23456789012e+11")
-            
+
         self.assertEqual(str(00.123456789012), "0.123456789012")
         self.assertEqual(str(0.000123456789012), "0.000123456789012")
 
@@ -55,20 +54,24 @@ class FormattingTest(IronPythonTestCase):
             self.assertEqual(str(123456789012.3), "123456789012.0")
         else:
             self.assertEqual(str(123456789012.3), "1.23456789012e+11")
-            
+
         self.assertEqual(str(1.234567890123), "1.23456789012")
 
         # More than 12 significant digits near the decimal point, with rounding up
 
         #https://github.com/IronLanguages/ironpython2/issues/17
-        if is_cli: 
-            self.assertEqual(str(12345678901.25), "12345678901.3")
-            self.assertEqual(str(123456789012.5), "123456789013.0")
+        if is_cli:
+            if is_netcoreapp30:
+                self.assertEqual(str(12345678901.25), "12345678901.2")
+                self.assertEqual(str(123456789012.5), "123456789012.0")
+            else:
+                self.assertEqual(str(12345678901.25), "12345678901.3")
+                self.assertEqual(str(123456789012.5), "123456789013.0")
         else:
             self.assertEqual(str(12345678901.25), "12345678901.2")
             self.assertEqual(str(123456789012.5), "1.23456789012e+11")
-            
-        if is_cli:
+
+        if is_cli and not is_netcoreapp30:
             self.assertEqual(str(1.234567890125), "1.23456789013")
         else:
             self.assertEqual(str(1.234567890125), "1.23456789012")
@@ -134,7 +137,7 @@ class FormattingTest(IronPythonTestCase):
                 (1000000.0, "1e+06"),
                 (0.0001, "0.0001"),
                 (0.00001, "1e-05")]
-        if is_cli: #http://ironpython.codeplex.com/workitem/28206
+        if is_cli and not is_netcoreapp30: #http://ironpython.codeplex.com/workitem/28206
             values.append((123456.5, "123457"))
         else:
             values.append((123456.5, "123456"))
@@ -165,7 +168,7 @@ class FormattingTest(IronPythonTestCase):
     def test_errors(self):
         def formatError():
             "%d" % (1,2)
-            
+
         self.assertRaises(TypeError, formatError, None)
 
         def formatError_earlyEnd():
@@ -243,7 +246,7 @@ class FormattingTest(IronPythonTestCase):
         self.assertEqual("%5s" % 'abc', '  abc')
         self.assertEqual("%+5s" % 'abc', '  abc')
         self.assertEqual("%-5s" % 'abc', 'abc  ')
- 
+
     def test_named_inputs_nested_parens(self):
         """Test named inputs with nested ()"""
 
@@ -303,11 +306,14 @@ class FormattingTest(IronPythonTestCase):
         self.assertEqual('% -10.1e' % -1, '-1.0e+00  ')
         self.assertEqual('%+-10.1e' % -1, '-1.0e+00  ')
 
-
     def test_format_testfile(self):
         """the following is borrowed from stdlib"""
         import math
         format_testfile = 'formatfloat_testcases.txt'
+        bugged = {
+            ('%.2f', 0.004999): "0.01",
+            ('%f', 4.9989999999999997e-07): "0.000001",
+        }
         with open(os.path.join(self.test_dir, format_testfile)) as testfile:
             for line in testfile:
                 print line
@@ -320,9 +326,11 @@ class FormattingTest(IronPythonTestCase):
                 lhs, rhs = map(str.strip, line.split('->'))
                 fmt, arg = lhs.split()
                 arg = float(arg)
+                if is_netcoreapp30: # https://github.com/dotnet/corefx/issues/37524
+                    rhs = bugged.get((fmt, arg), rhs)
                 self.assertEqual(fmt % arg, rhs)
                 if not math.isnan(arg) and math.copysign(1.0, arg) > 0.0:
-                    print "minus"
+                    print("minus")
                     self.assertEqual(fmt % -arg, '-' + rhs)
 
 run_test(__name__)

@@ -450,10 +450,7 @@ file(r"%s", "w").writelines(output)''' % (test_log_name)
     @skipUnlessIronPython()
     def test_cp22735(self):
         import System
-        if System.Environment.Version.Major < 4:
-            clr.AddReference("System.Core")
         from System import Func
-
 
     def test_xxsubtype_bench(self):
         import xxsubtype

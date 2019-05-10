@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using IronPython.Compiler;
 using IronPython.Modules;
@@ -27,9 +28,9 @@ namespace IronPython.Hosting {
         private PythonContext PythonContext {
             get { return (PythonContext)Language; }
         }
-        
+
         private new PythonConsoleOptions Options { get { return (PythonConsoleOptions)base.Options; } }
-        
+
         public PythonCommandLine() {
         }
 
@@ -124,7 +125,7 @@ namespace IronPython.Hosting {
 
         protected override int RunInteractiveLoop() {
             var sys = Engine.GetSysModule();
-                        
+
             sys.SetVariable("ps1", ">>> ");
             sys.SetVariable("ps2", "... ");
             return base.RunInteractiveLoop();
@@ -139,10 +140,10 @@ namespace IronPython.Hosting {
 
             Console.Output = new OutputWriter(PythonContext, false);
             Console.ErrorOutput = new OutputWriter(PythonContext, true);
-            
+
             // TODO: must precede path initialization! (??? - test test_importpkg.py)
             int pathIndex = PythonContext.PythonOptions.SearchPaths.Count;
-                        
+
             Language.DomainManager.LoadAssembly(typeof(string).Assembly);
             Language.DomainManager.LoadAssembly(typeof(System.Diagnostics.Debug).Assembly);
 
@@ -207,7 +208,7 @@ namespace IronPython.Hosting {
 
             return modCtx.GlobalScope;
         }
-        
+
         private void InitializePath(ref int pathIndex) {
             // paths, environment vars
             if (!Options.IgnoreEnvironmentVariables) {
@@ -222,7 +223,7 @@ namespace IronPython.Hosting {
         }
 
         private void InitializeEnvironmentVariables() {
-            if(!Options.IgnoreEnvironmentVariables) {
+            if (!Options.IgnoreEnvironmentVariables) {
                 string warnings = Environment.GetEnvironmentVariable("IRONPYTHONWARNINGS");
                 object o = PythonContext.GetSystemStateValue("warnoptions");
                 if (o == null) {
@@ -232,7 +233,7 @@ namespace IronPython.Hosting {
 
                 if (o is List warnoptions && !string.IsNullOrEmpty(warnings)) {
                     string[] warns = warnings.Split(',');
-                    foreach(string warn in warns) {
+                    foreach (string warn in warns) {
                         warnoptions.Add(warn);
                     }
                 }
@@ -244,18 +245,30 @@ namespace IronPython.Hosting {
             string prefix = null;
             // paths     
             Assembly entryAssembly = Assembly.GetEntryAssembly();
-            //Can be null if called from unmanaged code (VS integration scenario)
+            // Can be null if called from unmanaged code (VS integration scenario)
             if (entryAssembly != null) {
                 executable = entryAssembly.Location;
                 prefix = Path.GetDirectoryName(executable);
-#if NETCOREAPP2_0 || NETCOREAPP2_1 || NETSTANDARD2_0
+#if NETCOREAPP || NETSTANDARD
                 if (Path.GetExtension(executable) == ".dll") {
                     var name = Path.GetFileNameWithoutExtension(executable);
-                    var runner = Path.Combine(prefix, name + ".bat");
-                    if (Environment.OSVersion.Platform == PlatformID.Unix) {
-                        runner = Path.Combine(prefix, name + ".sh");
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                        var runner = Path.Combine(prefix, name + ".exe");
+                        if (File.Exists(runner)) {
+                            executable = runner;
+                        } else {
+                            runner = Path.Combine(prefix, name + ".bat");
+                            if (File.Exists(runner)) executable = runner;
+                        }
+                    } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                        var runner = Path.Combine(prefix, name);
+                        if (File.Exists(runner)) {
+                            executable = runner;
+                        } else {
+                            runner = Path.Combine(prefix, name + ".sh");
+                            if (File.Exists(runner)) executable = runner;
+                        }
                     }
-                    if (File.Exists(runner)) executable = runner;
                 }
 #endif
             }
@@ -278,7 +291,7 @@ namespace IronPython.Hosting {
             string dir = Path.Combine(PythonContext.InitialPrefix, "DLLs");
             if (Directory.Exists(dir)) {
                 foreach (string file in Directory.EnumerateFiles(dir, "*.dll")) {
-                    if(file.ToLower().EndsWith(".dll")) {
+                    if (file.ToLower().EndsWith(".dll")) {
                         try {
                             ClrModule.AddReferenceToFile(PythonContext.SharedContext, new FileInfo(file).Name);
                         } catch {
@@ -319,7 +332,7 @@ namespace IronPython.Hosting {
             }
 
             var sys = Engine.GetSysModule();
-            
+
             sys.SetVariable("ps1", ">>> ");
             sys.SetVariable("ps2", "... ");
 
@@ -353,7 +366,7 @@ namespace IronPython.Hosting {
                 return "... ";
             }
         }
-        
+
         private void RunStartup() {
             if (Options.IgnoreEnvironmentVariables)
                 return;
@@ -439,7 +452,7 @@ namespace IronPython.Hosting {
             PythonCompilerOptions pco = (PythonCompilerOptions)Language.GetCompilerOptions(Scope);
             pco.Module |= ModuleOptions.ExecOrEvalCode;
 
-            Action action = delegate() {
+            Action action = delegate () {
                 try {
                     su.Compile(pco, ErrorSink).Run(Scope);
                 } catch (Exception e) {
@@ -481,9 +494,9 @@ namespace IronPython.Hosting {
                     Console.WriteLine(Language.FormatException(e), Style.Error);
                     return 1;
                 }
-            } 
+            }
 
-            return RunCommandWorker(command);            
+            return RunCommandWorker(command);
         }
 
         private int RunCommandWorker(string command) {
@@ -491,7 +504,7 @@ namespace IronPython.Hosting {
             ModuleOptions trueDiv = (PythonContext.PythonOptions.DivisionOptions == PythonDivisionOptions.New) ?
                 ModuleOptions.TrueDivision : ModuleOptions.None;
             ModuleOptions modOpt = ModuleOptions.Optimized | ModuleOptions.ModuleBuiltins | trueDiv;
-                ;
+            ;
             if (Options.SkipFirstSourceLine) {
                 modOpt |= ModuleOptions.SkipFirstLine;
             }
@@ -530,8 +543,8 @@ namespace IronPython.Hosting {
             }
 
             return result;
-        }        
-        
+        }
+
         private int RunFileWorker(string/*!*/ fileName) {
             try {
                 // There is no PEP for this case, only http://bugs.python.org/issue1739468
@@ -552,15 +565,15 @@ namespace IronPython.Hosting {
             // classic file
             ScriptCode compiledCode;
             ModuleOptions modOpt = ModuleOptions.Optimized | ModuleOptions.ModuleBuiltins;
-            if(Options.SkipFirstSourceLine) {
+            if (Options.SkipFirstSourceLine) {
                 modOpt |= ModuleOptions.SkipFirstLine;
 
             }
             PythonModule module = PythonContext.CompileModule(
-                fileName, 
+                fileName,
                 "__main__",
                 PythonContext.CreateFileUnit(String.IsNullOrEmpty(fileName) ? null : fileName, PythonContext.DefaultEncoding),
-                modOpt, 
+                modOpt,
                 out compiledCode);
             PythonContext.PublishModule("__main__", module);
             Scope = module.Scope;
@@ -568,7 +581,7 @@ namespace IronPython.Hosting {
             try {
                 compiledCode.Run(Scope);
             } catch (SystemExitException pythonSystemExit) {
-                
+
                 // disable introspection when exited:
                 Options.Introspection = false;
 
