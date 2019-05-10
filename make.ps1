@@ -73,7 +73,7 @@ function Main([String] $target, [String] $configuration) {
         }
     }
 
-    msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
+    dotnet msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
     # use the exit code of msbuild as the exit code for this script
     $global:Result = $LastExitCode
 }
