@@ -1356,6 +1356,7 @@ namespace IronPython.Runtime {
             append(item);
         }
 
+        [PythonHidden]
         public void CopyTo(object[] array, int arrayIndex) {
             for (int i = 0; i < Count; i++) {
                 array[arrayIndex + i] = this[i];
