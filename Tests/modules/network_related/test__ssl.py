@@ -19,8 +19,8 @@ SSL_URL      = "www.microsoft.com"
 SSL_ISSUER   = "CN=Microsoft IT TLS CA 4, OU=Microsoft IT, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
 SSL_SERVER   = "www.microsoft.com"
 SSL_PORT     = 443
-SSL_REQUEST  = "GET / HTTP/1.0\r\nHost: www.microsoft.com\r\n\r\n"
-SSL_RESPONSE = "Microsoft Corporation"
+SSL_REQUEST  = "GET /en-us HTTP/1.0\r\nHost: www.microsoft.com\r\n\r\n"
+SSL_RESPONSE = "Microsoft"
 
 CERTFILE = os.path.join(os.path.dirname(__file__), "keycert.pem")
 
