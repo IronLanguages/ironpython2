@@ -9,6 +9,8 @@ Param(
     [switch] $runIgnored
 )
 
+$ErrorActionPreference="Continue"
+
 [int] $global:Result = 0
 [bool] $global:isUnix = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Unix
 
