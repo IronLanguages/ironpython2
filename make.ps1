@@ -75,7 +75,12 @@ function Main([String] $target, [String] $configuration) {
         }
     }
 
-    dotnet msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
+    if (!$global:isUnix -And ($target -eq "Package")) {
+        msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
+    }
+    else {
+        dotnet msbuild Build.proj /m /t:$target /p:Configuration=$configuration /verbosity:minimal /nologo /p:Platform="Any CPU" /bl:build-$target-$configuration.binlog
+    }
     # use the exit code of msbuild as the exit code for this script
     $global:Result = $LastExitCode
 }
