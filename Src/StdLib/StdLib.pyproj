@@ -75,8 +75,8 @@
   <ItemGroup>
     <Content Include="$(StdLibPath)\**\*.py" Exclude="$(ExcludedPackages)" />
     <Content Include="$(StdLibPath)\site-packages\README.txt" />
-    <Content Include="$(StdLibPath)\ensurepip\_bundled\pip-8.1.1-py2.py3-none-any.whl" />
-    <Content Include="$(StdLibPath)\ensurepip\_bundled\setuptools-20.10.1-py2.py3-none-any.whl" />
+    <Content Include="$(StdLibPath)\ensurepip\_bundled\pip-18.1-py2.py3-none-any.whl" />
+    <Content Include="$(StdLibPath)\ensurepip\_bundled\setuptools-40.6.2-py2.py3-none-any.whl" />
     <Content Include="$(StdLibPath)\multiprocessing\connection.py" />
     <Content Include="$(StdLibPath)\multiprocessing\forking.py" />
     <Content Include="$(StdLibPath)\multiprocessing\heap.py" />
