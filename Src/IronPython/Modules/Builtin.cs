@@ -167,7 +167,7 @@ namespace IronPython.Modules {
         
         public static string bin(object obj) {
             if (obj is int) return Int32Ops.ToBinary((int)obj);
-            if (obj is Index) return Int32Ops.ToBinary(Converter.ConvertToIndex((Index)obj));
+            if (obj is Runtime.Index) return Int32Ops.ToBinary(Converter.ConvertToIndex((Runtime.Index)obj));
             if (obj is BigInteger) return BigIntegerOps.ToBinary((BigInteger)obj);
 
             object res = PythonOps.Index(obj);

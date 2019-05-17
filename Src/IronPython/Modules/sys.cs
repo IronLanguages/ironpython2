@@ -541,11 +541,11 @@ Handle an exception by displaying it with a traceback on sys.stderr._")]
                 return f._tuple * n;
             }
 
-            public static object operator *([NotNull]SysFlags f, [NotNull]Index n) {
+            public static object operator *([NotNull]SysFlags f, [NotNull]Runtime.Index n) {
                 return f._tuple * n;
             }
 
-            public static object operator *([NotNull]Index n, [NotNull]SysFlags f) {
+            public static object operator *([NotNull]Runtime.Index n, [NotNull]SysFlags f) {
                 return f._tuple * n;
             }
 
@@ -696,6 +696,8 @@ Handle an exception by displaying it with a traceback on sys.stderr._")]
                     this.bits_per_digit, this.sizeof_digit);
             }
         }
+
+        public static string float_repr_style = "legacy";
 
         public static floatinfo float_info = new floatinfo(
             Double.MaxValue,    // DBL_MAX

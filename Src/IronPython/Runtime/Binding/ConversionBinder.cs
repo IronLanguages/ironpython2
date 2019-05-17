@@ -646,12 +646,11 @@ namespace IronPython.Runtime.Binding {
                     ),
                     typeof(string).GetProperty("Length")
                 );
-
                 if (strVal.Length == 1) {
                     res = new DynamicMetaObject(
                         Ast.Call(
                             AstUtils.Convert(strExpr, typeof(string)),
-                            typeof(string).GetMethod("get_Chars"),
+                            typeof(string).GetMethod("get_Chars", new[] { typeof(int) }),
                             AstUtils.Constant(0)
                         ),
                         self.Restrictions.Merge(BindingRestrictions.GetExpressionRestriction(Ast.Equal(getLen, AstUtils.Constant(1))))
