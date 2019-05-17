@@ -8,7 +8,7 @@ Covers VB default indexer.
 
 import unittest
 
-from iptest import IronPythonTestCase, is_netcoreapp20, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, run_test, skipUnlessIronPython
 
 @skipUnlessIronPython()
 class DefaultMemberTest(IronPythonTestCase):
@@ -102,8 +102,6 @@ class DefaultMemberTest(IronPythonTestCase):
     def test_cp_19510(self):
         """Test indexing on .NET classes with default members"""
         import clr
-        if is_netcoreapp20:
-            clr.AddReference("System.Private.Xml")
         clr.AddReference("System.Xml")
         import System.Xml
         
