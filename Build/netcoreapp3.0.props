@@ -14,6 +14,7 @@
     <Features>$(Features);FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY</Features>
     <Features>$(Features);FEATURE_BASIC_CONSOLE</Features>
     <Features>$(Features);FEATURE_CODEDOM</Features>
+    <Features>$(Features);FEATURE_COM</Features>
     <Features>$(Features);FEATURE_CONFIGURATION</Features>
     <Features>$(Features);FEATURE_CTYPES</Features>
     <Features>$(Features);FEATURE_CUSTOM_TYPE_DESCRIPTOR</Features>
