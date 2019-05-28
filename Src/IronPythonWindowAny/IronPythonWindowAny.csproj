@@ -1,20 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp3.0</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <RootNamespace>IronPythonWindow</RootNamespace>
     <AssemblyName>ipyw</AssemblyName>
     <ApplicationIcon>..\IronPythonWindow\ipyw.ico</ApplicationIcon>
     <CodeAnalysisRuleSet>..\..\IronPython.ruleset</CodeAnalysisRuleSet>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IronPython\IronPython.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <ItemGroup>
