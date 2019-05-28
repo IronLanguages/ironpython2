@@ -356,7 +356,7 @@ class StrFormatTest(IronPythonTestCase):
                 (2.0,              'x= 10.10', ' xxxxxx2.0'),
                 (2.0,              'x^ 10.10', 'xxx 2.0xxx'),
                 (2.0,              'x^ 9.10',  'xx 2.0xxx'),
-                (2.0,              '\0^ 9.10', '   2.0   '),
+                (2.0,              '\0^ 9.10', '   2.0   ' if is_cli else '\x00\x00 2.0\x00\x00\x00'),
                 (2.23,             '6.2',      '   2.2'),
                 (2.25,             '6.3',      '  2.25'),
                 (2.123456789,      '2.10',     '2.123456789'),
@@ -525,7 +525,6 @@ class StrFormatTest(IronPythonTestCase):
         for value, spec, result in tests:
             self.assertEqual(value.__format__(spec), result)
 
-
         # check locale specific formatting
         import _locale
         try:
@@ -623,7 +622,7 @@ class StrFormatTest(IronPythonTestCase):
                 (-2,   'x= 10',   '-xxxxxxxx2'),
                 (-2,   'x^ 10',    'xxxx-2xxxx'),
                 (-2,   'x^ 9',     'xxx-2xxxx'),
-                (2,    '\0^ 9',    '    2    '),
+                (2,    '\0^ 9',    '    2    ' if is_cli else '\x00\x00\x00 2\x00\x00\x00\x00'),
 
                 (2,    'c',         '\x02'),
                 (2,    '<5c',       '\x02    '),
@@ -676,7 +675,7 @@ class StrFormatTest(IronPythonTestCase):
                 (-3,   'x^ 10b',    'xxx-11xxxx'),
                 (-3,   'x^ #10b',   'xx-0b11xxx'),
                 (-3,   'x^ 9b',     'xxx-11xxx'),
-                (3,    '\0^ 9b',    '    11   '),
+                (3,    '\0^ 9b',    '    11   ' if is_cli else '\x00\x00\x00 11\x00\x00\x00'),
                 (-2147483648, 'b',  '-10000000000000000000000000000000'),
                 (0,      'b',  '0'),
 
