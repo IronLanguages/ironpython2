@@ -59,19 +59,17 @@ class FormattingTest(IronPythonTestCase):
 
         # More than 12 significant digits near the decimal point, with rounding up
 
-        #https://github.com/IronLanguages/ironpython2/issues/17
-        if is_cli:
-            if is_netcoreapp30:
-                self.assertEqual(str(12345678901.25), "12345678901.2")
-                self.assertEqual(str(123456789012.5), "123456789012.0")
-            else:
-                self.assertEqual(str(12345678901.25), "12345678901.3")
-                self.assertEqual(str(123456789012.5), "123456789013.0")
+        if is_cli and not is_netcoreapp30: # https://github.com/IronLanguages/ironpython2/issues/634
+            self.assertEqual(str(12345678901.25), "12345678901.3")
+            self.assertEqual(str(123456789012.5), "123456789013.0")
         else:
             self.assertEqual(str(12345678901.25), "12345678901.2")
-            self.assertEqual(str(123456789012.5), "1.23456789012e+11")
+            if is_cli: # https://github.com/IronLanguages/ironpython2/issues/17
+                self.assertEqual(str(123456789012.5), "123456789012.0")
+            else:
+                self.assertEqual(str(123456789012.5), "1.23456789012e+11")
 
-        if is_cli and not is_netcoreapp30:
+        if is_cli and not is_netcoreapp30: # https://github.com/IronLanguages/ironpython2/issues/634
             self.assertEqual(str(1.234567890125), "1.23456789013")
         else:
             self.assertEqual(str(1.234567890125), "1.23456789012")
@@ -79,7 +77,7 @@ class FormattingTest(IronPythonTestCase):
 
         # Signficiant digits away from the decimal point
 
-        if is_cli: #https://github.com/IronLanguages/ironpython2/issues/17
+        if is_cli: # https://github.com/IronLanguages/ironpython2/issues/17
             self.assertEqual(str(100000000000.0), "100000000000.0")
         else:
             self.assertEqual(str(100000000000.0), "1e+11")
@@ -137,7 +135,7 @@ class FormattingTest(IronPythonTestCase):
                 (1000000.0, "1e+06"),
                 (0.0001, "0.0001"),
                 (0.00001, "1e-05")]
-        if is_cli and not is_netcoreapp30: #http://ironpython.codeplex.com/workitem/28206
+        if is_cli and not is_netcoreapp30: # https://github.com/IronLanguages/ironpython2/issues/634
             values.append((123456.5, "123457"))
         else:
             values.append((123456.5, "123456"))
