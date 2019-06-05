@@ -717,6 +717,7 @@ namespace IronPython.Runtime {
             if (context.EnableTracing && _lambda != null) {
                 if (_tracingLambda == null) {
                     if (!forceCreation) {
+                        if (_lambda is Compiler.Ast.ClassDefinition) return; // ClassDefinition does not have the same signature as call targets
                         // the user just called sys.settrace(), don't force re-compilation of every method in the system.  Instead
                         // we'll just re-compile them as they're invoked.
                         PythonCallTargets.GetPythonTargetType(_lambda.ParameterNames.Length > PythonCallTargets.MaxArgs, _lambda.ParameterNames.Length, out Delegate target);
