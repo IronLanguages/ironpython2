@@ -32,8 +32,6 @@ namespace IronPython.Runtime {
     [PythonType("code")]
     [DebuggerDisplay("{co_name}, FileName = {co_filename}")]
     public class FunctionCode : IExpressionSerializable, ICodeFormattable {
-        [PythonHidden]
-        internal Delegate Target, LightThrowTarget;                 // the current target for the function.  This can change based upon adaptive compilation, recursion enforcement, and tracing.
         internal Delegate _normalDelegate;                          // the normal delegate - this can be a compiled or interpreted delegate.
         private Compiler.Ast.ScopeStatement _lambda;                // the original DLR lambda that contains the code
         internal readonly string _initialDoc;                       // the initial doc string
@@ -89,7 +87,7 @@ namespace IronPython.Runtime {
         /// </summary>
         internal FunctionCode(PythonContext context, Delegate initialDelegate, Compiler.Ast.ScopeStatement scope, string documentation, bool? tracing, bool register) {
             _lambda = scope;
-            Target = LightThrowTarget = initialDelegate;
+            SetTarget(initialDelegate);
             _initialDoc = documentation;
             _localCount = scope.Variables == null ? 0 : scope.Variables.Count;
             _argCount = CalculateArgumentCount();
@@ -582,6 +580,13 @@ namespace IronPython.Runtime {
             }
         }
 
+        /// <summary>
+        /// The current target for the function.  This can change based upon adaptive compilation, recursion enforcement, and tracing.
+        /// </summary>
+        internal Delegate Target { get; private set; }
+
+        internal Delegate LightThrowTarget { get; private set; }
+
         internal object Call(CodeContext/*!*/ context) {
             if (co_freevars != PythonTuple.EMPTY) {
                 throw PythonOps.TypeError("cannot exec code object that contains free variables: {0}", co_freevars.__repr__(context));
@@ -591,18 +596,15 @@ namespace IronPython.Runtime {
                 UpdateDelegate(context.LanguageContext, true);
             }
 
-            Func<CodeContext, CodeContext> classTarget = Target as Func<CodeContext, CodeContext>;
-            if (classTarget != null) {
+            if (Target is Func<CodeContext, CodeContext> classTarget) {
                 return classTarget(context);
             }
 
-            LookupCompilationDelegate moduleCode = Target as LookupCompilationDelegate;
-            if (moduleCode != null) {
+            if (Target is LookupCompilationDelegate moduleCode) {
                 return moduleCode(context, this);
             }
 
-            Func<FunctionCode, object> optimizedModuleCode = Target as Func<FunctionCode, object>;
-            if (optimizedModuleCode != null) {
+            if (Target is Func<FunctionCode, object> optimizedModuleCode) {
                 return optimizedModuleCode(this);
             }
 
@@ -715,10 +717,11 @@ namespace IronPython.Runtime {
             if (context.EnableTracing && _lambda != null) {
                 if (_tracingLambda == null) {
                     if (!forceCreation) {
+                        if (_lambda is Compiler.Ast.ClassDefinition) return; // ClassDefinition does not have the same signature as call targets
                         // the user just called sys.settrace(), don't force re-compilation of every method in the system.  Instead
                         // we'll just re-compile them as they're invoked.
-                        PythonCallTargets.GetPythonTargetType(_lambda.ParameterNames.Length > PythonCallTargets.MaxArgs, _lambda.ParameterNames.Length, out Target);
-                        LightThrowTarget = Target;
+                        PythonCallTargets.GetPythonTargetType(_lambda.ParameterNames.Length > PythonCallTargets.MaxArgs, _lambda.ParameterNames.Length, out Delegate target);
+                        SetTarget(target);
                         return;
                     }
                     _tracingLambda = GetGeneratorOrNormalLambdaTracing(context);
@@ -735,8 +738,8 @@ namespace IronPython.Runtime {
                         // we cannot create the delegate when forceCreation is false because we hold the
                         // _CodeCreateAndUpdateDelegateLock and compiling the delegate may create a FunctionCode
                         // object which requires the lock.
-                        PythonCallTargets.GetPythonTargetType(_lambda.ParameterNames.Length > PythonCallTargets.MaxArgs, _lambda.ParameterNames.Length, out Target);
-                        LightThrowTarget = Target;
+                        PythonCallTargets.GetPythonTargetType(_lambda.ParameterNames.Length > PythonCallTargets.MaxArgs, _lambda.ParameterNames.Length, out Delegate target);
+                        SetTarget(target);
                         return;
                     }
                     _normalDelegate = CompileLambda(GetGeneratorOrNormalLambda(), new TargetUpdaterForCompilation(context, this).SetCompiledTarget);
