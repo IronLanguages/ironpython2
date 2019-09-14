@@ -1358,4 +1358,16 @@ class C:
         class Test(BytesIO): pass
         Test().seek(0)
 
+    def test_ipy2_gh655(self):
+        """https://github.com/IronLanguages/ironpython2/issues/655"""
+        import pyexpat
+        buffer_size = pyexpat.ParserCreate().buffer_size
+        self.assertEqual(buffer_size, 8192)
+
+        import xml.etree.ElementTree as ET
+        for count in range(buffer_size - 100, buffer_size + 100):
+            txt = '<Data>' + '1'*count + '</Data>'
+            result = ET.tostring(ET.fromstring(txt))
+            self.assertEqual(txt, result)
+
 run_test(__name__)
