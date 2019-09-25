@@ -939,6 +939,7 @@ namespace IronPython.Runtime {
         }
 
         void IDisposable.Dispose() {
+            _keys.Dispose();
         }
 
         public object __iter__() {
