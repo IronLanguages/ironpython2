@@ -308,10 +308,6 @@ class FormattingTest(IronPythonTestCase):
         """the following is borrowed from stdlib"""
         import math
         format_testfile = 'formatfloat_testcases.txt'
-        bugged = {
-            ('%.2f', 0.004999): "0.01",
-            ('%f', 4.9989999999999997e-07): "0.000001",
-        }
         with open(os.path.join(self.test_dir, format_testfile)) as testfile:
             for line in testfile:
                 print line
@@ -324,8 +320,6 @@ class FormattingTest(IronPythonTestCase):
                 lhs, rhs = map(str.strip, line.split('->'))
                 fmt, arg = lhs.split()
                 arg = float(arg)
-                if is_netcoreapp30: # https://github.com/dotnet/corefx/issues/37524
-                    rhs = bugged.get((fmt, arg), rhs)
                 self.assertEqual(fmt % arg, rhs)
                 if not math.isnan(arg) and math.copysign(1.0, arg) > 0.0:
                     print("minus")

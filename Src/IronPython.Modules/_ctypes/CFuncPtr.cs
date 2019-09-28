@@ -493,7 +493,6 @@ namespace IronPython.Modules {
                 private ArgumentMarshaller/*!*/[]/*!*/ GetArgumentMarshallers(DynamicMetaObject/*!*/[]/*!*/ args) {
                     CFuncPtrType funcType = ((CFuncPtrType)Value.NativeType);
                     ArgumentMarshaller[] res = new ArgumentMarshaller[args.Length];
-                    
 
                     // first arg is taken by self if we're a com method
                     for (int i = 0; i < args.Length; i++) {
