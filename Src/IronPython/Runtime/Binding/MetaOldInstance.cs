@@ -108,7 +108,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public DynamicMetaObject ConvertWorker(DynamicMetaObjectBinder binder, Type type, Type retType, ConversionResultKind kind) {
-            if (!type.IsEnum()) {
+            if (!type.IsEnum) {
                 switch (type.GetTypeCode()) {
                     case TypeCode.Boolean:
                         return MakeConvertToBool(binder);
@@ -127,7 +127,7 @@ namespace IronPython.Runtime.Binding {
                             return MakeConvertToIEnumerable(binder);
                         } else if (type == typeof(IEnumerator)) {
                             return MakeConvertToIEnumerator(binder);
-                        } else if (type.IsGenericType() && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) {
+                        } else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) {
                             return MakeConvertToIEnumerable(binder, type, type.GetGenericArguments()[0]);
                         } else if (type.IsSubclassOf(typeof(Delegate))) {
                             return MakeDelegateTarget(binder, type, Restrict(typeof(OldInstance)));

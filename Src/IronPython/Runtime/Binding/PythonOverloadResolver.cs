@@ -67,7 +67,7 @@ namespace IronPython.Runtime.Binding {
 
         public override bool CanConvertFrom(Type fromType, DynamicMetaObject fromArg, ParameterWrapper toParameter, NarrowingLevel level) {
             if ((fromType == typeof(List) || fromType.IsSubclassOf(typeof(List)))) {
-                if (toParameter.Type.IsGenericType() &&
+                if (toParameter.Type.IsGenericType &&
                     toParameter.Type.GetGenericTypeDefinition() == typeof(IList<>) &&
                     (toParameter.ParameterInfo.IsDefined(typeof(BytesConversionAttribute), false) ||
                      toParameter.ParameterInfo.IsDefined(typeof(BytesConversionNoStringAttribute), false))) {
@@ -141,7 +141,7 @@ namespace IronPython.Runtime.Binding {
             Type res = PythonTypeOps.GetFinalSystemType(dynamicObject.LimitType);
             if (res == typeof(ExtensibleString) ||
                 res == typeof(ExtensibleComplex) || 
-                (res.IsGenericType() && res.GetGenericTypeDefinition() == typeof(Extensible<>))) {
+                (res.IsGenericType && res.GetGenericTypeDefinition() == typeof(Extensible<>))) {
                 return typeof(object);
             }
 
