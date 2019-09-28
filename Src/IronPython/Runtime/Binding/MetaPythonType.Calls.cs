@@ -148,7 +148,7 @@ namespace IronPython.Runtime.Binding {
 
             if (TooManyArgsForDefaultNew(call, args)) {
                 return MakeIncorrectArgumentsForCallError(call, ai, valInfo);
-            } else if (Value.UnderlyingSystemType.IsGenericTypeDefinition()) {
+            } else if (Value.UnderlyingSystemType.IsGenericTypeDefinition) {
                 return MakeGenericTypeDefinitionError(call, ai, valInfo);
             } else if (Value.HasAbstractMethods(PythonContext.GetPythonContext(call).SharedContext)) {
                 return MakeAbstractInstantiationError(call, ai, valInfo);

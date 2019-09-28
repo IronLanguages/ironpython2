@@ -88,9 +88,9 @@ namespace IronPython.Runtime.Types {
 
             NewTypeInfo typeInfo = NewTypeInfo.GetTypeInfo(typeName, bases);
 
-            if (typeInfo.BaseType.IsValueType()) {
+            if (typeInfo.BaseType.IsValueType) {
                 throw PythonOps.TypeError("cannot derive from {0} because it is a value type", typeInfo.BaseType.FullName);
-            } else if (typeInfo.BaseType.IsSealed()) {
+            } else if (typeInfo.BaseType.IsSealed) {
                 throw PythonOps.TypeError("cannot derive from {0} because it is sealed", typeInfo.BaseType.FullName);
             }
 
@@ -209,7 +209,7 @@ namespace IronPython.Runtime.Types {
             var typeInfo = (CachedNewTypeInfo[])mi.Invoke(null, new object[0]);
             foreach (var v in typeInfo) {
                 _newTypes.GetOrCreateValue(
-                    new NewTypeInfo(v.Type.GetBaseType(), v.InterfaceTypes),
+                    new NewTypeInfo(v.Type.BaseType, v.InterfaceTypes),
                     () => {
                         // type wasn't already created, go ahead and publish
                         // the info and return the type.
@@ -911,7 +911,7 @@ namespace IronPython.Runtime.Types {
                 }
             }
             
-            if (type.IsAbstract() && !type.IsInterface()) {
+            if (type.IsAbstract() && !type.IsInterface) {
                 // abstract types can define interfaces w/o implementations
                 foreach (Type iface in type.GetInterfaces()) {
                     InterfaceMapping mapping = type.GetInterfaceMap(iface);
@@ -1113,7 +1113,7 @@ namespace IronPython.Runtime.Types {
                 basePythonType = DynamicHelpers.GetPythonTypeFromType(_baseType);
             } else {
                 // We must be inherting from an interface
-                Debug.Assert(mi.DeclaringType.IsInterface());
+                Debug.Assert(mi.DeclaringType.IsInterface);
                 basePythonType = DynamicHelpers.GetPythonTypeFromType(mi.DeclaringType);
             }
             return basePythonType;
@@ -1668,7 +1668,7 @@ namespace IronPython.Runtime.Types {
         }
 
         private static void StoreOverriddenProperty(MethodInfo mi, string newName) {
-            Type baseType = mi.DeclaringType.GetBaseType();
+            Type baseType = mi.DeclaringType.BaseType;
 
             lock (PythonTypeOps._propertyCache) {
                 string propName = newName.Substring(4); // get_ or set_
@@ -1782,7 +1782,7 @@ namespace IronPython.Runtime.Types {
         private readonly int _index;
 
         private ReturnFixer(LocalBuilder reference, ParameterInfo parameter, int index) {
-            Debug.Assert(reference.LocalType.IsGenericType() && reference.LocalType.GetGenericTypeDefinition() == typeof(StrongBox<>));
+            Debug.Assert(reference.LocalType.IsGenericType && reference.LocalType.GetGenericTypeDefinition() == typeof(StrongBox<>));
             Debug.Assert(parameter.ParameterType.IsByRef);
 
             _parameter = parameter;
