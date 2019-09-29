@@ -1046,7 +1046,7 @@ namespace IronPython.Runtime.Types {
 
         private static MemberGroup/*!*/ AllResolver(MemberBinder/*!*/ binder, Type/*!*/ type) {
             // static types are like modules and define __all__.
-            if (type.IsAbstract() && type.IsSealed) {
+            if (type.IsAbstract && type.IsSealed) {
                 return new MemberGroup(new ExtensionPropertyTracker("__all__", typeof(InstanceOps).GetMethod("Get__all__").MakeGenericMethod(type), null, null, type));
             }
 

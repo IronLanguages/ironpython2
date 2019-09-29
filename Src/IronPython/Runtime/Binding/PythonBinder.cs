@@ -99,7 +99,7 @@ namespace IronPython.Runtime.Binding {
 
         internal static MethodInfo GetGenericConvertMethod(Type toType) {
             if (toType.IsValueType) {
-                if (toType.IsGenericType() && toType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+                if (toType.IsGenericType && toType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
                     return typeof(Converter).GetMethod("ConvertToNullableType");
                 } else {
                     return typeof(Converter).GetMethod("ConvertToValueType");
