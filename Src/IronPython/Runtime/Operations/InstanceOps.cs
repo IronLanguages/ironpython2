@@ -691,7 +691,7 @@ namespace IronPython.Runtime.Operations {
 
         [PropertyMethod, StaticExtensionMethod]
         public static List/*!*/ Get__all__<T>(CodeContext/*!*/ context) {
-            Debug.Assert(typeof(T).IsSealed && typeof(T).IsAbstract(), "__all__ should only be produced for static members"); 
+            Debug.Assert(typeof(T).IsSealed && typeof(T).IsAbstract, "__all__ should only be produced for static members"); 
 
             PythonType pt = DynamicHelpers.GetPythonTypeFromType(typeof(T));
 
@@ -730,13 +730,13 @@ namespace IronPython.Runtime.Operations {
                 }
 
                 BuiltinMethodDescriptor method = pts as BuiltinMethodDescriptor;
-                if (method != null && (!method.DeclaringType.IsSealed || !method.DeclaringType.IsAbstract())) {
+                if (method != null && (!method.DeclaringType.IsSealed || !method.DeclaringType.IsAbstract)) {
                     // inherited object member on a static class (GetHashCode, Equals, etc...)
                     return false;
                 }
 
                 BuiltinFunction bf = pts as BuiltinFunction;
-                if (bf != null && (!bf.DeclaringType.IsSealed || !bf.DeclaringType.IsAbstract())) {
+                if (bf != null && (!bf.DeclaringType.IsSealed || !bf.DeclaringType.IsAbstract)) {
                     // __new__/ReferenceEquals inherited from object
                     return false;
                 }

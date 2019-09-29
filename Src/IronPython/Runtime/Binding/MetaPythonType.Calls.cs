@@ -111,7 +111,7 @@ namespace IronPython.Runtime.Binding {
                 );
             } else {
                 string msg;
-                if (Value.UnderlyingSystemType.IsAbstract()) {
+                if (Value.UnderlyingSystemType.IsAbstract) {
                     msg = String.Format("Cannot create instances of {0} because it is abstract", Value.Name);
                 }else{
                     msg = String.Format("Cannot create instances of {0} because it has no public constructors", Value.Name);

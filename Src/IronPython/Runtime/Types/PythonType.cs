@@ -2419,7 +2419,7 @@ type(name, bases, dict) -> creates a new type instance with the given name, base
             List<PythonType> mro = new List<PythonType>();
             mro.Add(this);
 
-            if (_underlyingSystemType.GetBaseType() != null) {
+            if (_underlyingSystemType.BaseType != null) {
                 Type baseType;
                 if (_underlyingSystemType == typeof(bool)) {
                     // bool inherits from int in python
@@ -2566,7 +2566,7 @@ type(name, bases, dict) -> creates a new type instance with the given name, base
                         _underlyingSystemType
                     )
                 );
-            } else if (!_underlyingSystemType.IsAbstract()) {
+            } else if (!_underlyingSystemType.IsAbstract) {
                 BuiltinFunction reflectedCtors = GetConstructors();
                 if (reflectedCtors == null) {
                     return; // no ctors, no __new__
