@@ -870,8 +870,7 @@ namespace IronPython.Compiler.Ast {
                     }
                 }
 
-                var rawValue = node as PythonRawGlobalValueExpression;
-                if (rawValue != null) {
+                if (node is PythonRawGlobalValueExpression rawValue) {
                     return new LookupGlobalVariable(
                         PythonAst._globalContext,
                         rawValue.Global.Variable.Name,

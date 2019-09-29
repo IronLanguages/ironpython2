@@ -84,8 +84,7 @@ namespace IronPython.Runtime.Types {
         #region Object overrides
 
         public override bool Equals(object obj) {
-            DictProxy proxy = obj as DictProxy;
-            if (proxy == null) return false;
+            if (!(obj is DictProxy proxy)) return false;
 
             return proxy._dt == _dt;
         }
@@ -149,8 +148,7 @@ namespace IronPython.Runtime.Types {
         ICollection IDictionary.Keys {
             get {
                 ICollection<object> res = _dt.GetMemberDictionary(DefaultContext.Default, false).Keys;
-                ICollection coll = res as ICollection;
-                if (coll != null) {
+                if (res is ICollection coll) {
                     return coll;
                 }
 
@@ -265,12 +263,10 @@ namespace IronPython.Runtime.Types {
         #region Internal implementation details
 
         private object GetIndex(CodeContext context, object index) {
-            string strIndex = index as string;
-            if (strIndex != null) {
+            if (index is string strIndex) {
                 PythonTypeSlot dts;
                 if (_dt.TryLookupSlot(context, strIndex, out dts)) {
-                    PythonTypeUserDescriptorSlot uds = dts as PythonTypeUserDescriptorSlot;
-                    if (uds != null) {
+                    if (dts is PythonTypeUserDescriptorSlot uds) {
                         return uds.Value;
                     }
 
@@ -282,12 +278,10 @@ namespace IronPython.Runtime.Types {
         }
 
         private bool TryGetValue(CodeContext/*!*/ context, object key, out object value) {
-            string strIndex = key as string;
-            if (strIndex != null) {
+            if (key is string strIndex) {
                 PythonTypeSlot dts;
                 if (_dt.TryLookupSlot(context, strIndex, out dts)) {
-                    PythonTypeUserDescriptorSlot uds = dts as PythonTypeUserDescriptorSlot;
-                    if (uds != null) {
+                    if (dts is PythonTypeUserDescriptorSlot uds) {
                         value = uds.Value;
                         return true;
                     }

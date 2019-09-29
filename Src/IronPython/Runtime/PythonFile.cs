@@ -252,8 +252,7 @@ namespace IronPython.Runtime {
         // Discard any data we may have buffered based on the current stream position. Called after seeking in
         // the stream.
         public override void DiscardBufferedData() {
-            StreamReader streamReader = _reader as StreamReader;
-            if (streamReader != null) {
+            if (_reader is StreamReader streamReader) {
                 streamReader.DiscardBufferedData();
             }
         }
@@ -856,8 +855,7 @@ namespace IronPython.Runtime {
         }
 
         public override void FlushToDisk() {
-            var streamWriter = _writer as StreamWriter;
-            if (streamWriter != null) {
+            if (_writer is StreamWriter streamWriter) {
                 streamWriter.Flush();
                 FlushToDiskWorker(streamWriter.BaseStream);
             }
@@ -1358,7 +1356,7 @@ namespace IronPython.Runtime {
             }
         }
 
-        internal void InternalInitialize(Stream/*!*/ stream, Encoding/*!*/ encoding, string/*!*/ mode) {
+        internal void InternalInitialize(Stream /*!*/ stream, Encoding /*!*/ encoding, string /*!*/ mode) {
             Assert.NotNull(stream, encoding, mode);
 
             _stream = stream;
@@ -1371,11 +1369,10 @@ namespace IronPython.Runtime {
             InitializeReaderAndWriter(stream, encoding);
 
             // only possible if the user provides us w/ the stream directly
-            FileStream fs = stream as FileStream;
-            if (fs != null) {
+            if (stream is FileStream fs) {
                 _name = fs.Name;
-            } else
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+            } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
+                       RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
                 _name = "/dev/null";
             } else {
                 _name = "nul";
@@ -1762,8 +1759,7 @@ namespace IronPython.Runtime {
             }
 
             lock (this) {
-                FileStream fs = _stream as FileStream;
-                if (fs != null) {
+                if (_stream is FileStream fs) {
                     if (fs.CanWrite) {
                         fs.SetLength(size);
                     } else {
@@ -1826,8 +1822,7 @@ namespace IronPython.Runtime {
         private void WriteWorker(object/*!*/ arr, bool locking) {
             Debug.Assert(arr != null);
 
-            IPythonArray array = arr as IPythonArray;
-            if (array == null) {
+            if (!(arr is IPythonArray array)) {
                 throw PythonOps.TypeError("file.write() argument must be string or read-only character buffer, not {0}", DynamicHelpers.GetPythonType(arr).Name);
             } else if (_fileMode != PythonFileMode.Binary) {
                 throw PythonOps.TypeError("file.write() argument must be string or buffer, not {0}", DynamicHelpers.GetPythonType(arr).Name);
@@ -1849,22 +1844,18 @@ namespace IronPython.Runtime {
 
             lock (this) {
                 do {
-                    string line = e.Current as string;
-                    if (line == null) {
-                        Bytes b = e.Current as Bytes;
-                        if (b != null) {
+                    if (!(e.Current is string line)) {
+                        if (e.Current is Bytes b) {
                             WriteWorker(b, false);
                             continue;
                         }
 
-                        PythonBuffer buf = e.Current as PythonBuffer;
-                        if (buf != null) {
+                        if (e.Current is PythonBuffer buf) {
                             WriteNoLock(buf);
                             continue;
                         }
 
-                        IPythonArray arr = e.Current as IPythonArray;
-                        if (arr != null) {
+                        if (e.Current is IPythonArray arr) {
                             WriteWorker(arr, false);
                             continue;
                         }

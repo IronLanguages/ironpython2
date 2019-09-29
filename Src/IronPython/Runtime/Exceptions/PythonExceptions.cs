@@ -864,8 +864,7 @@ for k, v in toError.iteritems():
         public partial class _UnicodeEncodeError : BaseException {
             [PythonHidden]
             protected internal override void InitializeFromClr(System.Exception/*!*/ exception) {
-                EncoderFallbackException ex = exception as EncoderFallbackException;
-                if (ex != null) {
+                if (exception is EncoderFallbackException ex) {
                     __init__((exception.Data.Contains("encoding")) ? exception.Data["encoding"] : "unknown",
                         new string(ex.CharUnknown, 1), ex.Index, ex.Index + 1, exception.Message);
                 } else {
@@ -1006,8 +1005,7 @@ for k, v in toError.iteritems():
                 ThreadAbortException ta;
                 if ((ta = clrException as ThreadAbortException) != null) {
                     // transform TA w/ our reason into a KeyboardInterrupt exception.
-                    KeyboardInterruptException reason = ta.ExceptionState as KeyboardInterruptException;
-                    if (reason != null) {
+                    if (ta.ExceptionState is KeyboardInterruptException reason) {
                         ta.Data[typeof(KeyboardInterruptException)] = reason;
                         return ToPython(reason);
                     }

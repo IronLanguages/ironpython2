@@ -38,8 +38,7 @@ namespace IronPython.Compiler.Ast {
         } 
 
         public bool NeedsLocalsDictionary() {
-            NameExpression nameExpr = _target as NameExpression;
-            if (nameExpr == null) return false;
+            if (!(_target is NameExpression nameExpr)) return false;
 
             if (_args.Length == 0) {
                 if (nameExpr.Name == "locals") return true;

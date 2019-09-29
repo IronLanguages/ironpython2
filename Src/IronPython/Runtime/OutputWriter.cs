@@ -30,8 +30,7 @@ namespace IronPython.Runtime {
 
         public override Encoding Encoding {
             get {
-                PythonFile file = Sink as PythonFile;
-                return (file != null) ? file.Encoding : null;
+                return (Sink is PythonFile file) ? file.Encoding : null;
             }
         }
 
@@ -54,8 +53,7 @@ namespace IronPython.Runtime {
 
         public override void Flush() {
             // avoid creating a site in the common case
-            PythonFile pf = Sink as PythonFile;
-            if (pf != null) {
+            if (Sink is PythonFile pf) {
                 pf.flush();
                 return;
             }

@@ -121,9 +121,7 @@ namespace IronPython.Runtime.Operations {
                 PythonTypeSlot dts;
                 object value;
                 if (cdt.IsOldClass) {
-                    OldClass oc = PythonOps.ToPythonType(cdt) as OldClass;
-
-                    if (oc != null && oc.TryGetBoundCustomMember(context, "__init__", out value)) {
+                    if (PythonOps.ToPythonType(cdt) is OldClass oc && oc.TryGetBoundCustomMember(context, "__init__", out value)) {
                         return oc.GetOldStyleDescriptor(context, value, newObject, oc);
                     }
                     // fall through to new-style only case.  We might accidently
@@ -786,10 +784,9 @@ namespace IronPython.Runtime.Operations {
                 if ((getter != null && PythonHiddenAttribute.IsHidden(getter, true)) ||
                     setter != null && PythonHiddenAttribute.IsHidden(setter, true)) {
                     nt = NameType.Property;
-                }                
+                }
 
-                ExtensionPropertyTracker ept = pt as ExtensionPropertyTracker;
-                if (ept == null) {
+                if (!(pt is ExtensionPropertyTracker ept)) {
                     ReflectedPropertyTracker rpt = pt as ReflectedPropertyTracker;
                     Debug.Assert(rpt != null);
 

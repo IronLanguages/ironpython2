@@ -51,8 +51,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public override bool Equals(object obj) {
-            PythonDeleteMemberBinder ob = obj as PythonDeleteMemberBinder;
-            if (ob == null) {
+            if (!(obj is PythonDeleteMemberBinder ob)) {
                 return false;
             }
 

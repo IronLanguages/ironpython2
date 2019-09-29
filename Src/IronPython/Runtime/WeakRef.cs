@@ -13,6 +13,7 @@ using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
 using IronPython.Runtime.Operations;
+using IronPython.Runtime.Types;
 
 namespace IronPython.Runtime {
 
@@ -164,8 +165,7 @@ namespace IronPython.Runtime {
                             // a little ugly - we only run callbacks that aren't a part
                             // of cyclic trash.  but classes use a single field for
                             // finalization & GC - and that's always cyclic, so we need to special case it.
-                            InstanceFinalizer fin = ci.Callback as InstanceFinalizer;
-                            if (fin != null) {
+                            if (ci.Callback is InstanceFinalizer fin) {
                                 // Going through PythonCalls / Rules requires the types be public.
                                 // Explicit check so that we can keep InstanceFinalizer internal.
                                 fin.CallDirect(DefaultContext.Default);
@@ -214,8 +214,7 @@ namespace IronPython.Runtime {
         internal object CallDirect(CodeContext context) {
             object o;
 
-            IronPython.Runtime.Types.OldInstance oi = _instance as IronPython.Runtime.Types.OldInstance;
-            if (oi != null) {
+            if (_instance is OldInstance oi) {
                 if (oi.TryGetBoundCustomMember(context, "__del__", out o)) {
                     return context.LanguageContext.CallSplat(o);
                 }

@@ -62,8 +62,7 @@ namespace IronPython.Runtime {
             if (cls == TypeCache.PythonTuple) {
                 return EMPTY;
             } else {
-                PythonTuple tupObj = cls.CreateInstance(context) as PythonTuple;
-                if (tupObj == null) throw PythonOps.TypeError("{0} is not a subclass of tuple", cls);
+                if (!(cls.CreateInstance(context) is PythonTuple tupObj)) throw PythonOps.TypeError("{0} is not a subclass of tuple", cls);
                 return tupObj;
             }
         }
@@ -75,8 +74,7 @@ namespace IronPython.Runtime {
                 if (sequence.GetType() == typeof(PythonTuple)) return (PythonTuple)sequence;
                 return new PythonTuple(MakeItems(sequence));
             } else {
-                PythonTuple tupObj = cls.CreateInstance(context, sequence) as PythonTuple;
-                if (tupObj == null) throw PythonOps.TypeError("{0} is not a subclass of tuple", cls);
+                if (!(cls.CreateInstance(context, sequence) is PythonTuple tupObj)) throw PythonOps.TypeError("{0} is not a subclass of tuple", cls);
                 return tupObj;
             }
         }
@@ -428,8 +426,7 @@ namespace IronPython.Runtime {
         #region IStructuralComparable Members
 
         int IStructuralComparable.CompareTo(object obj, IComparer comparer) {
-            PythonTuple other = obj as PythonTuple;
-            if (other == null) {
+            if (!(obj is PythonTuple other)) {
                 throw new ValueErrorException("expected tuple");
             }
 
@@ -440,8 +437,7 @@ namespace IronPython.Runtime {
 
         public override bool Equals(object obj) {
             if (!Object.ReferenceEquals(this, obj)) {
-                PythonTuple other = obj as PythonTuple;
-                if (other == null || _data.Length != other._data.Length) {
+                if (!(obj is PythonTuple other) || _data.Length != other._data.Length) {
                     return false;
                 }
 
@@ -515,8 +511,7 @@ namespace IronPython.Runtime {
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer) {
             // Optimization for when comparer is IronPython's default IEqualityComparer
-            PythonContext.PythonEqualityComparer pythonComparer = comparer as PythonContext.PythonEqualityComparer;
-            if (pythonComparer != null) {
+            if (comparer is PythonContext.PythonEqualityComparer pythonComparer) {
                 return GetHashCode(pythonComparer.Context.InitialHasher);
             }
 
@@ -525,8 +520,7 @@ namespace IronPython.Runtime {
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer) {
             if (!Object.ReferenceEquals(other, this)) {
-                PythonTuple l = other as PythonTuple;
-                if (l == null || _data.Length != l._data.Length) {
+                if (!(other is PythonTuple l) || _data.Length != l._data.Length) {
                     return false;
                 }
 

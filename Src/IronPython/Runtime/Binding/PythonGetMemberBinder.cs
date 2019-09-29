@@ -666,8 +666,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public override bool Equals(object obj) {
-            PythonGetMemberBinder ob = obj as PythonGetMemberBinder;
-            if (ob == null) {
+            if (!(obj is PythonGetMemberBinder ob)) {
                 return false;
             }
 
@@ -763,8 +762,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public override bool Equals(object obj) {
-            CompatibilityGetMember ob = obj as CompatibilityGetMember;
-            if (ob == null) {
+            if (!(obj is CompatibilityGetMember ob)) {
                 return false;
             }
 

@@ -32,8 +32,7 @@ namespace IronPython.Runtime {
 
         [SpecialName]
         public static void PerformModuleReload(PythonContext context, PythonDictionary dict) {
-            PythonModule scope = Importer.ImportModule(context.SharedContext, context.SharedContext.GlobalDict, "itertools", false, -1) as PythonModule;
-            if (scope != null) {
+            if (Importer.ImportModule(context.SharedContext, context.SharedContext.GlobalDict, "itertools", false, -1) is PythonModule scope) {
                 dict["map"] = scope.__dict__["imap"];
                 dict["filter"] = scope.__dict__["ifilter"];
                 dict["zip"] = scope.__dict__["izip"];

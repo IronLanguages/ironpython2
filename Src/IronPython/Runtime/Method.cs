@@ -120,16 +120,13 @@ namespace IronPython.Runtime {
         #region Object Overrides
         private string DeclaringClassAsString() {
             if (im_class == null) return "?";
-            PythonType dt = im_class as PythonType;
-            if (dt != null) return dt.Name;
-            OldClass oc = im_class as OldClass;
-            if (oc != null) return oc.Name;
+            if (im_class is PythonType dt) return dt.Name;
+            if (im_class is OldClass oc) return oc.Name;
             return im_class.ToString();
         }
 
         public override bool Equals(object obj) {
-            Method other = obj as Method;
-            if (other == null) return false;
+            if (!(obj is Method other)) return false;
 
             return
                 (object.ReferenceEquals(_inst, other._inst) || PythonOps.EqualRetBool(_inst, other._inst)) &&
@@ -203,8 +200,7 @@ namespace IronPython.Runtime {
 
             ret.AddNoLockNoDups("__module__");
 
-            PythonFunction pf = _func as PythonFunction;
-            if (pf != null) {
+            if (_func is PythonFunction pf) {
                 PythonDictionary dict = pf.func_dict;
                 
                 // Check the func

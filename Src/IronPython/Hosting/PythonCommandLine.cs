@@ -599,8 +599,7 @@ namespace IronPython.Hosting {
         public override IList<string> GetGlobals(string name) {
             IList<string> res = base.GetGlobals(name);
             foreach (object builtinName in PythonContext.BuiltinModuleInstance.__dict__.Keys) {
-                string strName = builtinName as string;
-                if (strName != null && strName.StartsWith(name)) {
+                if (builtinName is string strName && strName.StartsWith(name)) {
                     res.Add(strName);
                 }
             }

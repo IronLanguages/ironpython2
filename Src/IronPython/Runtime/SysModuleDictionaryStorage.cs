@@ -33,8 +33,7 @@ namespace IronPython.Runtime {
 
         public override void AddNoLock(ref DictionaryStorage storage, object key, object value) {            
             // add always needs to check...
-            string strKey = key as string;
-            if (strKey != null) {
+            if (key is string strKey) {
                 switch (strKey) {
                     case "exc_type":
                         _setValues |= ExceptionStateFlags.Type;
@@ -61,8 +60,7 @@ namespace IronPython.Runtime {
             // check the strKey only if we have some exception info set
             ExceptionState exState = _exceptionState;
             if (exState != null || _setValues != 0) {
-                string strKey = key as string;
-                if (strKey != null) {
+                if (key is string strKey) {
                     switch (strKey) {
                         case "exc_type":
                             lock (this) {
@@ -96,9 +94,8 @@ namespace IronPython.Runtime {
             ExceptionState exState = _exceptionState;
             // check the strKey only if we have some exception info set
             if (exState != null || _setValues != 0) {
-                string strKey = key as string;
-                if (strKey != null && TryGetExcValue(exState, strKey, out value)) {
-                    return true;                    
+                if (key is string strKey && TryGetExcValue(exState, strKey, out value)) {
+                    return true;
                 }
             }
 

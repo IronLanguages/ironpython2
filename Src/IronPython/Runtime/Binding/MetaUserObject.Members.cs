@@ -730,9 +730,7 @@ namespace IronPython.Runtime.Binding {
         /// </summary>
         private static bool TryGetGetAttribute(CodeContext/*!*/ context, PythonType/*!*/ type, out PythonTypeSlot dts) {
             if (type.TryResolveSlot(context, "__getattribute__", out dts)) {
-                BuiltinMethodDescriptor bmd = dts as BuiltinMethodDescriptor;
-
-                if (bmd == null || bmd.DeclaringType != typeof(object) ||
+                if (!(dts is BuiltinMethodDescriptor bmd) || bmd.DeclaringType != typeof(object) ||
                     bmd.Template.Targets.Count != 1 ||
                     bmd.Template.Targets[0].DeclaringType != typeof(ObjectOps) ||
                     bmd.Template.Targets[0].Name != "__getattribute__") {
@@ -1110,8 +1108,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         private static bool IsStandardObjectMethod(PythonTypeSlot dts) {
-            BuiltinMethodDescriptor bmd = dts as BuiltinMethodDescriptor;
-            if (bmd == null) return false;
+            if (!(dts is BuiltinMethodDescriptor bmd)) return false;
             return bmd.Template.Targets[0].DeclaringType == typeof(ObjectOps);
         }
 

@@ -32,8 +32,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public override bool Equals(object obj) {
-            PythonGetSliceBinder ob = obj as PythonGetSliceBinder;
-            if (ob == null) {
+            if (!(obj is PythonGetSliceBinder ob)) {
                 return false;
             }
 

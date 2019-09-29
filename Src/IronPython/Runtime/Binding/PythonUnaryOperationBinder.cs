@@ -36,8 +36,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public override bool Equals(object obj) {
-            PythonUnaryOperationBinder ob = obj as PythonUnaryOperationBinder;
-            if (ob == null) {
+            if (!(obj is PythonUnaryOperationBinder ob)) {
                 return false;
             }
 

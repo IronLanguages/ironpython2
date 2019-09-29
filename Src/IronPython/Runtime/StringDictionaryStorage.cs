@@ -38,8 +38,7 @@ namespace IronPython.Runtime {
         public void AddNoLock(object key, object value) {
             EnsureData();
 
-            string strKey = key as string;
-            if (strKey != null) {
+            if (key is string strKey) {
                 _data[strKey] = value;
             } else {
                 GetObjectDictionary()[key] = value;
@@ -50,8 +49,7 @@ namespace IronPython.Runtime {
             if (_data == null) return false;
 
             lock (this) {
-                string strKey = key as string;
-                if (strKey != null) {
+                if (key is string strKey) {
                     return _data.ContainsKey(strKey);
                 } else {
                     Dictionary<object, object> dict = TryGetObjectDictionary();
@@ -72,8 +70,7 @@ namespace IronPython.Runtime {
             if (_data == null) return false;
 
             lock (this) {
-                string strKey = key as string;
-                if (strKey != null) {
+                if (key is string strKey) {
                     return _data.Remove(strKey);
                 } else {
                     Dictionary<object, object> dict = TryGetObjectDictionary();
@@ -89,8 +86,7 @@ namespace IronPython.Runtime {
         public override bool TryGetValue(object key, out object value) {
             if (_data != null) {
                 lock (this) {
-                    string strKey = key as string;
-                    if (strKey != null) {
+                    if (key is string strKey) {
                         return _data.TryGetValue(strKey, out value);
                     }
 
