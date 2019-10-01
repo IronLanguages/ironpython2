@@ -6,7 +6,7 @@ IronPython can be obtained at [http://ironpython.net/](http://ironpython.net/).
 
 | **What?** | **Where?** |
 | --------: | :------------: |
-| **Windows/Linux/macOS Builds** | [![Build status](https://dotnet.visualstudio.com/IronLanguages/_apis/build/status/ironpython2)](https://dotnet.visualstudio.com/IronLanguages/_build/latest?definitionId=42) |
+| **Windows/Linux/macOS Builds** | [![Azure build status](https://dotnet.visualstudio.com/IronLanguages/_apis/build/status/ironpython2)](https://dotnet.visualstudio.com/IronLanguages/_build/latest?definitionId=42) [![Github build status](https://github.com/IronLanguages/ironpython2/workflows/CI/badge.svg)](https://github.com/IronLanguages/ironpython2/actions?workflow=CI) |
 | **Downloads** | [![NuGet](https://img.shields.io/nuget/v/IronPython.svg)](https://www.nuget.org/packages/IronPython/) [![Release](https://img.shields.io/github/release/IronLanguages/ironpython2.svg)](https://github.com/IronLanguages/ironpython2/releases/latest)|
 | **Help** | [![Gitter chat](https://badges.gitter.im/IronLanguages/ironpython.svg)](https://gitter.im/IronLanguages/ironpython) [![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/ironpython.svg)](http://stackoverflow.com/questions/tagged/ironpython) |
 
