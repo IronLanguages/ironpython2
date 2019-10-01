@@ -563,8 +563,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public override bool Equals(object obj) {
-            PythonConversionBinder ob = obj as PythonConversionBinder;
-            if (ob == null) {
+            if (!(obj is PythonConversionBinder ob)) {
                 return false;
             }
 
@@ -621,8 +620,7 @@ namespace IronPython.Runtime.Binding {
             string strVal = self.Value as string;
             Expression strExpr = self.Expression;
             if (strVal == null) {
-                Extensible<string> extstr = self.Value as Extensible<string>;
-                if (extstr != null) {
+                if (self.Value is Extensible<string> extstr) {
                     strVal = extstr.Value;
                     strExpr =
                         Ast.Property(

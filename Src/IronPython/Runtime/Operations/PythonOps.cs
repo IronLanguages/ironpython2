@@ -188,9 +188,8 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static string GetPythonTypeName(object obj) {
-            OldInstance oi = obj as OldInstance;
-            if (oi != null) return oi._class._name.ToString();
-            else return PythonTypeOps.GetName(obj);
+            if (obj is OldInstance oi) return oi._class._name.ToString();
+            return PythonTypeOps.GetName(obj);
         }
 
         public static string Repr(CodeContext/*!*/ context, object o) {
@@ -204,8 +203,7 @@ namespace IronPython.Runtime.Operations {
             // could be a container object, we need to detect recursion, but only
             // for our own built-in types that we're aware of.  The user can setup
             // infinite recursion in their own class if they want.
-            ICodeFormattable f = o as ICodeFormattable;
-            if (f != null) {
+            if (o is ICodeFormattable f) {
                 return f.__repr__(context);
             }
 
@@ -242,10 +240,8 @@ namespace IronPython.Runtime.Operations {
 #endif
 
             object value = PythonContext.InvokeUnaryOperator(context, UnaryOperators.String, o);
-            string ret = value as string;
-            if (ret == null) {
-                Extensible<string> es = value as Extensible<string>;
-                if (es == null) {
+            if (!(value is string ret)) {
+                if (!(value is Extensible<string> es)) {
                     throw PythonOps.TypeError("expected str, got {0} from __str__", PythonTypeOps.GetName(value));
                 }
 
@@ -337,8 +333,7 @@ namespace IronPython.Runtime.Operations {
                 return false;
             }
 
-            OldClass oc = typeinfo as OldClass;
-            if (oc != null) {
+            if (typeinfo is OldClass oc) {
                 return c.IsSubclassOf(oc.TypeObject);
             }
 
@@ -348,8 +343,7 @@ namespace IronPython.Runtime.Operations {
             }
 
             object bases;
-            PythonType dt = typeinfo as PythonType;
-            if (dt == null) {
+            if (!(typeinfo is PythonType dt)) {
                 if (!PythonOps.TryGetBoundAttr(typeinfo, "__bases__", out bases)) {
                     //!!! deal with classes w/ just __bases__ defined.
                     throw PythonOps.TypeErrorForBadInstance("issubclass(): {0} is not a class nor a tuple of classes", typeinfo);
@@ -357,11 +351,8 @@ namespace IronPython.Runtime.Operations {
 
                 IEnumerator ie = PythonOps.GetEnumerator(bases);
                 while (ie.MoveNext()) {
-                    PythonType baseType = ie.Current as PythonType;
-
-                    if (baseType == null) {
-                        OldClass ocType = ie.Current as OldClass;
-                        if (ocType == null) {
+                    if (!(ie.Current is PythonType baseType)) {
+                        if (!(ie.Current is OldClass ocType)) {
                             continue;
                         }
 
@@ -413,10 +404,9 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static bool IsInstance(CodeContext/*!*/ context, object o, object typeinfo) {
-            if (typeinfo == null) throw PythonOps.TypeError("isinstance: arg 2 must be a class, type, or tuple of classes and types");
+            if (typeinfo == null) throw TypeError("isinstance: arg 2 must be a class, type, or tuple of classes and types");
 
-            PythonTuple tt = typeinfo as PythonTuple;
-            if (tt != null) {
+            if (typeinfo is PythonTuple tt) {
                 return IsInstance(context, o, tt);
             }
 
@@ -425,8 +415,7 @@ namespace IronPython.Runtime.Operations {
                 // of instance but they can "be subclasses" of other
                 // OldClass's.  To check their types we need the actual
                 // instance.
-                OldInstance oi = o as OldInstance;
-                if (oi != null) return oi._class.IsSubclassOf(typeinfo);
+                if (o is OldInstance oi) return oi._class.IsSubclassOf(typeinfo);
             }
 
             PythonType odt = DynamicHelpers.GetPythonType(o);
@@ -466,8 +455,8 @@ namespace IronPython.Runtime.Operations {
             if (!PythonOps.TryGetBoundAttr(cls, "__bases__", out bases)) {
                 return false;   // no bases, cannot be subclass
             }
-            PythonTuple tbases = bases as PythonTuple;
-            if (tbases == null) {
+
+            if (!(bases is PythonTuple tbases)) {
                 return false;   // not a tuple, cannot be subclass
             }
 
@@ -505,8 +494,7 @@ namespace IronPython.Runtime.Operations {
             // Python (particularly in tests), but non-Python code may not stick to the
             // convention of only using the two singleton instances at ScriptingRuntimeHelpers.
             // (https://github.com/IronLanguages/main/issues/1299)
-            var xb = x as bool?;
-            if (xb.HasValue)
+            if (x is bool xb)
                 return xb == (y as bool?);
 
             // else
@@ -913,13 +901,11 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static int Length(object o) {
-            string s = o as string;
-            if (s != null) {
+            if (o is string s) {
                 return s.Length;
             }
 
-            object[] os = o as object[];
-            if (os != null) {
+            if (o is object[] os) {
                 return os.Length;
             }
 
@@ -962,8 +948,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static object CallWithArgsTupleAndContext(CodeContext/*!*/ context, object func, object[] args, object argsTuple) {
-            PythonTuple tp = argsTuple as PythonTuple;
-            if (tp != null) {
+            if (argsTuple is PythonTuple tp) {
                 object[] nargs = new object[args.Length + tp.__len__()];
                 for (int i = 0; i < args.Length; i++) nargs[i] = args[i];
                 for (int i = 0; i < tp.__len__(); i++) nargs[i + args.Length] = tp[i];
@@ -994,8 +979,7 @@ namespace IronPython.Runtime.Operations {
                 List<object> largs;
 
                 if (argsTuple != null && args.Length == names.Length) {
-                    PythonTuple tuple = argsTuple as PythonTuple;
-                    if (tuple == null) tuple = new PythonTuple(argsTuple);
+                    if (!(argsTuple is PythonTuple tuple)) tuple = new PythonTuple(argsTuple);
 
                     largs = new List<object>(tuple);
                     largs.AddRange(args);
@@ -1025,8 +1009,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static object CallWithArgsTuple(object func, object[] args, object argsTuple) {
-            PythonTuple tp = argsTuple as PythonTuple;
-            if (tp != null) {
+            if (argsTuple is PythonTuple tp) {
                 object[] nargs = new object[args.Length + tp.__len__()];
                 for (int i = 0; i < args.Length; i++) nargs[i] = args[i];
                 for (int i = 0; i < tp.__len__(); i++) nargs[i + args.Length] = tp[i];
@@ -1107,8 +1090,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static object ObjectGetAttribute(CodeContext/*!*/ context, object o, string name) {
-            OldClass oc = o as OldClass;
-            if (oc != null) {
+            if (o is OldClass oc) {
                 return oc.GetMember(context, name);
             }
 
@@ -1450,8 +1432,7 @@ namespace IronPython.Runtime.Operations {
                 if (dt is TypeGroup) {
                     object[] newBases = new object[bases.Length];
                     for (int i = 0; i < bases.Length; i++) {
-                        TypeGroup tc = bases[i] as TypeGroup;
-                        if (tc != null) {
+                        if (bases[i] is TypeGroup tc) {
                             Type nonGenericType;
                             if (!tc.TryGetNonGenericType(out nonGenericType)) {
                                 throw PythonOps.TypeError("cannot derive from open generic types " + Builtin.repr(context, tc).ToString());
@@ -1691,8 +1672,7 @@ namespace IronPython.Runtime.Operations {
                 throw PythonOps.RuntimeError("lost sys.stdout");
             }
 
-            PythonFile pf = f as PythonFile;
-            if (pf != null) {
+            if (f is PythonFile pf) {
                 // avoid spinning up a site in the normal case
                 pf.write(text);
                 return;
@@ -1723,8 +1703,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static bool CheckSoftspace(object f) {
-            PythonFile pf = f as PythonFile;
-            if (pf != null) {
+            if (f is PythonFile pf) {
                 // avoid spinning up a site in the common case
                 return pf.softspace;
             }
@@ -1811,8 +1790,7 @@ namespace IronPython.Runtime.Operations {
             pc.SetSystemStateValue("last_traceback", exInfo[2]);
 
             object exceptHook = pc.GetSystemStateValue("excepthook");
-            BuiltinFunction bf = exceptHook as BuiltinFunction;
-            if (console != null && bf != null && bf.DeclaringType == typeof(SysModule) && bf.Name == "excepthook") {
+            if (console != null && exceptHook is BuiltinFunction bf && bf.DeclaringType == typeof(SysModule) && bf.Name == "excepthook") {
                 // builtin except hook, display it to the console which may do nice coloring
                 console.WriteLine(pc.FormatException(exception), Style.Error);
             } else {
@@ -1922,8 +1900,7 @@ namespace IronPython.Runtime.Operations {
 
             // iterate through the names and populate the scope with the values.
             while (exports.MoveNext()) {
-                string name = exports.Current as string;
-                if (name == null) {
+                if (!(exports.Current is string name)) {
                     throw PythonOps.TypeErrorForNonStringAttribute();
                 } else if (filterPrivates && name.Length > 0 && name[0] == '_') {
                     continue;
@@ -1966,9 +1943,8 @@ namespace IronPython.Runtime.Operations {
             PythonDictionary locals = null;
             PythonDictionary globals = null;
 
-            // if the user passes us a tuple we'll extract the 3 values out of it            
-            PythonTuple codeTuple = code as PythonTuple;
-            if (codeTuple != null && codeTuple.__len__() > 0 && codeTuple.__len__() <= 3) {
+            // if the user passes us a tuple we'll extract the 3 values out of it
+            if (code is PythonTuple codeTuple && codeTuple.__len__() > 0 && codeTuple.__len__() <= 3) {
                 code = codeTuple[0];
 
                 if (codeTuple.__len__() > 1 && codeTuple[1] != null) {
@@ -2021,9 +1997,7 @@ namespace IronPython.Runtime.Operations {
                 noLineFeed = false;
             }
 
-            string strCode = code as string;
-
-            if (strCode != null) {
+            if (code is string strCode) {
                 SourceUnit source;
 
                 if (noLineFeed) {
@@ -2038,8 +2012,7 @@ namespace IronPython.Runtime.Operations {
                 code = FunctionCode.FromSourceUnit(source, compilerOptions, false);
             }
 
-            FunctionCode fc = code as FunctionCode;
-            if (fc == null) {
+            if (!(code is FunctionCode fc)) {
                 throw PythonOps.TypeError("exec: arg 1 must be a string, file, Stream, or code object");
             }
 
@@ -2066,8 +2039,7 @@ namespace IronPython.Runtime.Operations {
         #endregion
 
         public static ICollection GetCollection(object o) {
-            ICollection ret = o as ICollection;
-            if (ret != null) return ret;
+            if (o is ICollection ret) return ret;
 
             List<object> al = new List<object>();
             IEnumerator e = GetEnumerator(o);
@@ -2208,8 +2180,7 @@ namespace IronPython.Runtime.Operations {
             // This is necessary to be able to catch python's KeyboardInterrupt exceptions.
             // CLR restrictions require that this must be called from within a catch block.  This gets
             // called even if we aren't going to handle the exception - we'll just reset the abort 
-            ThreadAbortException tae = clrException as ThreadAbortException;
-            if (tae != null && tae.ExceptionState is KeyboardInterruptException) {
+            if (clrException is ThreadAbortException tae && tae.ExceptionState is KeyboardInterruptException) {
                 Thread.ResetAbort();
             }
 #endif
@@ -2470,8 +2441,7 @@ namespace IronPython.Runtime.Operations {
 
             if (traceback != null) {
                 if (!forRethrow) {
-                    TraceBack tb = traceback as TraceBack;
-                    if (tb == null) throw PythonOps.TypeError("traceback argument must be a traceback object");
+                    if (!(traceback is TraceBack tb)) throw PythonOps.TypeError("traceback argument must be a traceback object");
 
                     throwable.SetTraceBack(tb);
                 }
@@ -2522,10 +2492,8 @@ namespace IronPython.Runtime.Operations {
             IEnumerator enumerator = GetEnumerator(keys);
             while (enumerator.MoveNext()) {
                 object o = enumerator.Current;
-                string s = o as string;
-                if (s == null) {
-                    Extensible<string> es = o as Extensible<string>;
-                    if (es == null) {
+                if (!(o is string s)) {
+                    if (!(o is Extensible<string> es)) {
                         throw PythonOps.TypeError("{0}() keywords must be strings, not {0}",
                             funcName,
                             PythonTypeOps.GetName(dict));
@@ -2879,8 +2847,7 @@ namespace IronPython.Runtime.Operations {
         /// <param name="version"></param>
         /// <returns></returns>
         public static bool CheckTypeVersion(object o, int version) {
-            IPythonObject po = o as IPythonObject;
-            if (po == null) return false;
+            if (!(o is IPythonObject po)) return false;
 
             return po.PythonType.Version == version;
         }
@@ -3231,8 +3198,7 @@ namespace IronPython.Runtime.Operations {
         #region Function helpers
 
         public static PythonGenerator MakeGenerator(PythonFunction function, MutableTuple data, object generatorCode) {
-            Func<MutableTuple, object> next = generatorCode as Func<MutableTuple, object>;
-            if (next == null) {
+            if (!(generatorCode is Func<MutableTuple, object> next)) {
                 next = ((LazyCode<Func<MutableTuple, object>>)generatorCode).EnsureDelegate();
             }
 
@@ -3303,8 +3269,7 @@ namespace IronPython.Runtime.Operations {
         #endregion
 
         public static object ReturnConversionResult(object value) {
-            PythonTuple pt = value as PythonTuple;
-            if (pt != null) {
+            if (value is PythonTuple pt) {
                 return pt[0];
             }
             return NotImplementedType.Value;
@@ -3353,8 +3318,7 @@ namespace IronPython.Runtime.Operations {
                 return null;
             }
 
-            PythonTuple pt = coerceResult as PythonTuple;
-            if (pt == null) throw PythonOps.TypeError("coercion should return None, NotImplemented, or 2-tuple, got {0}", PythonTypeOps.GetName(coerceResult));
+            if (!(coerceResult is PythonTuple pt)) throw PythonOps.TypeError("coercion should return None, NotImplemented, or 2-tuple, got {0}", PythonTypeOps.GetName(coerceResult));
             return pt;
         }
 
@@ -3396,10 +3360,8 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static bool ContainsFromEnumerable(CodeContext/*!*/ context, object enumerable, object value) {
-            IEnumerator ie = enumerable as IEnumerator;
-            if (ie == null) {
-                IEnumerable ienum = enumerable as IEnumerable;
-                if (ienum != null) {
+            if (!(enumerable is IEnumerator ie)) {
+                if (enumerable is IEnumerable ienum) {
                     ie = ienum.GetEnumerator();
                 } else {
                     ie = Converter.ConvertToIEnumerator(enumerable);
@@ -3503,8 +3465,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static object OldInstanceGetOptimizedDictionary(OldInstance instance, int keyVersion) {
-            CustomInstanceDictionaryStorage storage = instance.Dictionary._storage as CustomInstanceDictionaryStorage;
-            if (storage == null || instance._class.HasSetAttr || storage.KeyVersion != keyVersion) {
+            if (!(instance.Dictionary._storage is CustomInstanceDictionaryStorage storage) || instance._class.HasSetAttr || storage.KeyVersion != keyVersion) {
                 return null;
             }
 
@@ -4173,8 +4134,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static Exception AttributeErrorForMissingAttribute(object o, string name) {
-            PythonType dt = o as PythonType;
-            if (dt != null) {
+            if (o is PythonType dt) {
                 return PythonOps.AttributeErrorForMissingAttribute(dt.Name, name);
             }
             else if (o is NamespaceTracker) {
@@ -4600,45 +4560,40 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static void ScopeSetMember(CodeContext/*!*/ context, Scope scope, string name, object value) {
-            ScopeStorage scopeStorage = ((object)scope.Storage) as ScopeStorage;
-            if (scopeStorage != null) {
+            if (((object)scope.Storage) is ScopeStorage scopeStorage) {
                 scopeStorage.SetValue(name, false, value);
                 return;
             }
 
-            PythonOps.SetAttr(context, scope, name, value);
+            SetAttr(context, scope, name, value);
         }
 
         internal static object ScopeGetMember(CodeContext/*!*/ context, Scope scope, string name) {
-            ScopeStorage scopeStorage = ((object)scope.Storage) as ScopeStorage;
-            if (scopeStorage != null) {
+            if (((object)scope.Storage) is ScopeStorage scopeStorage) {
                 return scopeStorage.GetValue(name, false);
             }
 
-            return PythonOps.GetBoundAttr(context, scope, name);
+            return GetBoundAttr(context, scope, name);
         }
 
         internal static bool ScopeTryGetMember(CodeContext/*!*/ context, Scope scope, string name, out object value) {
-            ScopeStorage scopeStorage = ((object)scope.Storage) as ScopeStorage;
-            if (scopeStorage != null) {
+            if (((object)scope.Storage) is ScopeStorage scopeStorage) {
                 return scopeStorage.TryGetValue(name, false, out value);
             }
 
-            return PythonOps.TryGetBoundAttr(context, scope, name, out value);
+            return TryGetBoundAttr(context, scope, name, out value);
         }
 
         internal static bool ScopeContainsMember(CodeContext/*!*/ context, Scope scope, string name) {
-            ScopeStorage scopeStorage = ((object)scope.Storage) as ScopeStorage;
-            if (scopeStorage != null) {
+            if (((object)scope.Storage) is ScopeStorage scopeStorage) {
                 return scopeStorage.HasValue(name, false);
             }
 
-            return PythonOps.HasAttr(context, scope, name);
+            return HasAttr(context, scope, name);
         }
 
         internal static bool ScopeDeleteMember(CodeContext/*!*/ context, Scope scope, string name) {
-            ScopeStorage scopeStorage = ((object)scope.Storage) as ScopeStorage;
-            if (scopeStorage != null) {
+            if (((object)scope.Storage) is ScopeStorage scopeStorage) {
                 return scopeStorage.DeleteValue(name, false);
             }
 
@@ -4648,8 +4603,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static IList<object> ScopeGetMemberNames(CodeContext/*!*/ context, Scope scope) {
-            ScopeStorage scopeStorage = ((object)scope.Storage) as ScopeStorage;
-            if (scopeStorage != null) {
+            if (((object)scope.Storage) is ScopeStorage scopeStorage) {
                 List<object> res = new List<object>();
 
                 foreach (string name in scopeStorage.GetMemberNames()) {

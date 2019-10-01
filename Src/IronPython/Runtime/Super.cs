@@ -166,8 +166,7 @@ namespace IronPython.Runtime {
                     return _thisClass;
                 }
 
-                PythonType dt = _selfClass as PythonType;
-                if (dt != null) return dt;
+                if (_selfClass is PythonType dt) return dt;
 
                 return ((OldClass)_selfClass).TypeObject;
             }

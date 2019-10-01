@@ -77,12 +77,9 @@ namespace IronPython.Runtime.Operations {
                 return EqualsWorker(other);
             }
 
-            ExtensibleString es = other as ExtensibleString;
-            if (es != null) return EqualsWorker(es.Value, comparer);
-            string os = other as string;
-            if (os != null) return EqualsWorker(os, comparer);
-            Bytes tempBytes = other as Bytes;
-            if (tempBytes != null) return EqualsWorker(tempBytes.ToString(), comparer);
+            if (other is ExtensibleString es) return EqualsWorker(es.Value, comparer);
+            if (other is string os) return EqualsWorker(os, comparer);
+            if (other is Bytes tempBytes) return EqualsWorker(tempBytes.ToString(), comparer);
 
             return false;
         }
@@ -90,12 +87,9 @@ namespace IronPython.Runtime.Operations {
         private bool EqualsWorker(object other) {
             if (other == null) return false;
 
-            ExtensibleString es = other as ExtensibleString;
-            if (es != null) return Value == es.Value;
-            string os = other as string;
-            if (os != null) return Value == os;
-            Bytes tempBytes = other as Bytes;
-            if (tempBytes != null) return Value == tempBytes.ToString();
+            if (other is ExtensibleString es) return Value == es.Value;
+            if (other is string os) return Value == os;
+            if (other is Bytes tempBytes) return Value == tempBytes.ToString();
 
             return false;
         }
@@ -234,8 +228,7 @@ namespace IronPython.Runtime.Operations {
                 return "None";
             }
 
-            string xstr = (x as string);
-            if (xstr != null) {
+            if (x is string xstr) {
                 return xstr;
             }
 
@@ -250,30 +243,25 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static string FastNewUnicode(CodeContext context, object value, object encoding, object errors) {
-            string strErrors = errors as string;
-            if (strErrors == null) {
+            if (!(errors is string strErrors)) {
                 throw PythonOps.TypeError("unicode() argument 3 must be string, not {0}", PythonTypeOps.GetName(errors));
             }
 
             if (value != null) {
-                string strValue = value as string;
-                if (strValue != null) {
-                    return StringOps.RawDecode(context, strValue, encoding, strErrors);
+                if (value is string strValue) {
+                    return RawDecode(context, strValue, encoding, strErrors);
                 }
 
-                Extensible<string> es = value as Extensible<string>;
-                if (es != null) {
-                    return StringOps.RawDecode(context, es.Value, encoding, strErrors);
+                if (value is Extensible<string> es) {
+                    return RawDecode(context, es.Value, encoding, strErrors);
                 }
 
-                Bytes bytes = value as Bytes;
-                if (bytes != null) {
-                    return StringOps.RawDecode(context, bytes.ToString(), encoding, strErrors);
+                if (value is Bytes bytes) {
+                    return RawDecode(context, bytes.ToString(), encoding, strErrors);
                 }
 
-                PythonBuffer buffer = value as PythonBuffer;
-                if (buffer != null) {
-                    return StringOps.RawDecode(context, buffer.ToString(), encoding, strErrors);
+                if (value is PythonBuffer buffer) {
+                    return RawDecode(context, buffer.ToString(), encoding, strErrors);
                 }
             }
 
@@ -292,8 +280,7 @@ namespace IronPython.Runtime.Operations {
             }
 
             object res;
-            OldInstance oi = value as OldInstance;
-            if (oi != null &&
+            if (value is OldInstance oi &&
                 (oi.TryGetBoundCustomMember(context, "__unicode__", out res) || oi.TryGetBoundCustomMember(context, "__str__", out res))) {
                 res = context.LanguageContext.Call(context, res);
                 if (res is string || res is Extensible<string>) {
@@ -581,8 +568,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         private static string CastString(object o) {
-            string res = o as string;
-            if (res != null) {
+            if (o is string res) {
                 return res;
             }
 
@@ -590,13 +576,11 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static string AsString(object o) {
-            string res = o as string;
-            if (res != null) {
+            if (o is string res) {
                 return res;
             }
 
-            Extensible<string> es = o as Extensible<string>;
-            if (es != null) {
+            if (o is Extensible<string> es) {
                 return es.Value;
             }
 
@@ -1391,13 +1375,11 @@ namespace IronPython.Runtime.Operations {
         [SpecialName]
         [return: MaybeNotImplemented]
         public static object Mod(CodeContext/*!*/ context, object other, string self) {
-            string str = other as string;
-            if (str != null) {
+            if (other is string str) {
                 return new StringFormatter(context, str, self).Format();
             }
 
-            Extensible<string> es = other as Extensible<string>;
-            if (es != null) {
+            if (other is Extensible<string> es) {
                 return new StringFormatter(context, es.Value, self).Format();
             }
 
@@ -1902,8 +1884,7 @@ namespace IronPython.Runtime.Operations {
             if (strRes != null) return strRes;
 
             // tuple is string, bytes used, we just want the string...
-            PythonTuple t = res as PythonTuple;
-            if (t == null) throw PythonOps.TypeErrorForBadInstance("expected tuple, but found {0}", res);
+            if (!(res is PythonTuple t)) throw PythonOps.TypeErrorForBadInstance("expected tuple, but found {0}", res);
 
             return Converter.ConvertToString(t[0]);
         }
@@ -2525,10 +2506,9 @@ namespace IronPython.Runtime.Operations {
             internal static string CheckReplacementTuple(object res, string encodeOrDecode) {
                 bool ok = true;
                 string replacement = null;
-                PythonTuple tres = res as PythonTuple;
 
                 // verify the result is sane...
-                if (tres != null && tres.__len__() == 2) {
+                if (res is PythonTuple tres && tres.__len__() == 2) {
                     if (!Converter.TryConvertToString(tres[0], out replacement)) ok = false;
                     if (ok) {
                         int bytesSkipped;

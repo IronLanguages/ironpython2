@@ -511,8 +511,7 @@ namespace IronPython.Runtime {
                     int start, stop, step;
                     slice.indices(_size, out start, out stop, out step);
 
-                    List lstVal = value as List;
-                    if (lstVal != null) {
+                    if (value is List lstVal) {
                         SliceNoStep(start, stop, lstVal);
                     } else {
                         SliceNoStep(start, stop, value);
@@ -1343,8 +1342,7 @@ namespace IronPython.Runtime {
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer) {
             if (Object.ReferenceEquals(this, other)) return true;
 
-            List l = other as List;
-            if (l == null || l.Count != Count) return false;
+            if (!(other is List l) || l.Count != Count) return false;
             return Equals(l, comparer);
         }
 
@@ -1416,32 +1414,28 @@ namespace IronPython.Runtime {
 
         [return: MaybeNotImplemented]
         public static object operator > (List self, object other) {
-            List l = other as List;
-            if (l == null) return NotImplementedType.Value;
+            if (!(other is List l)) return NotImplementedType.Value;
 
             return self.CompareTo(l) > 0 ? ScriptingRuntimeHelpers.True : ScriptingRuntimeHelpers.False;
         }
 
         [return: MaybeNotImplemented]
         public static object operator <(List self, object other) {
-            List l = other as List;
-            if (l == null) return NotImplementedType.Value;
+            if (!(other is List l)) return NotImplementedType.Value;
 
             return self.CompareTo(l) < 0 ? ScriptingRuntimeHelpers.True : ScriptingRuntimeHelpers.False;
         }
 
         [return: MaybeNotImplemented]
         public static object operator >=(List self, object other) {
-            List l = other as List;
-            if (l == null) return NotImplementedType.Value;
+            if (!(other is List l)) return NotImplementedType.Value;
 
             return self.CompareTo(l) >= 0 ? ScriptingRuntimeHelpers.True : ScriptingRuntimeHelpers.False;
         }
 
         [return: MaybeNotImplemented]
         public static object operator <=(List self, object other) {
-            List l = other as List;
-            if (l == null) return NotImplementedType.Value;
+            if (!(other is List l)) return NotImplementedType.Value;
 
             return self.CompareTo(l) <= 0 ? ScriptingRuntimeHelpers.True : ScriptingRuntimeHelpers.False;
         }
@@ -1451,8 +1445,7 @@ namespace IronPython.Runtime {
         #region IStructuralComparable Members
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer) {
-            List l = other as List;
-            if (l == null) {
+            if (!(other is List l)) {
                 throw new ValueErrorException("expected List");
             }
 

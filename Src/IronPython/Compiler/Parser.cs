@@ -388,8 +388,7 @@ namespace IronPython.Compiler {
                 return "None";
             }
 
-            NameToken n = t as NameToken;
-            if (n == null) {
+            if (!(t is NameToken n)) {
                 ReportSyntaxError("syntax error");
                 return null;
             }
@@ -399,8 +398,7 @@ namespace IronPython.Compiler {
         }
 
         private string ReadName() {
-            NameToken n = PeekToken() as NameToken;
-            if (n == null) {
+            if (!(PeekToken() is NameToken n)) {
                 ReportSyntaxError(_lookahead);
                 return null;
             }
@@ -1939,8 +1937,7 @@ namespace IronPython.Compiler {
             Expression ret = ParseFactor();
             while (true) {
                 Token t = PeekToken();
-                OperatorToken ot = t as OperatorToken;
-                if (ot == null) return ret;
+                if (!(t is OperatorToken ot)) return ret;
 
                 int prec = ot.Precedence;
                 if (prec >= precedence) {
@@ -2324,8 +2321,7 @@ namespace IronPython.Compiler {
         }
 
         private Arg FinishKeywordArgument(Expression t) {
-            NameExpression n = t as NameExpression;
-            if (n == null) {
+            if (!(t is NameExpression n)) {
                 ReportSyntaxError(IronPython.Resources.ExpectedName);
                 Arg arg = new Arg(null, t);
                 arg.SetLoc(_globalParent, t.StartIndex, t.EndIndex);

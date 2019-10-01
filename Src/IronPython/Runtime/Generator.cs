@@ -261,8 +261,7 @@ namespace IronPython.Runtime {
         }
 
         private MutableTuple<int, object> GetDataTuple() {
-            MutableTuple<int, object> res = _data as MutableTuple<int, object>;
-            if (res == null) {
+            if (!(_data is MutableTuple<int, object> res)) {
                 res = GetBigData(_data);
             }
             return res;

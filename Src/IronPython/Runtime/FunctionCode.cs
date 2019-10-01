@@ -833,8 +833,7 @@ namespace IronPython.Runtime {
                 // If the adaptive compiler decides to compile this function, we
                 // want to store the new compiled target. This saves us from going
                 // through the interpreter stub every call.
-                var lightLambda = result.Target as LightLambda;
-                if (lightLambda != null) {
+                if (result.Target is LightLambda lightLambda) {
                     lightLambda.Compile += handler;
                 }
 
@@ -856,8 +855,7 @@ namespace IronPython.Runtime {
                 // If the adaptive compiler decides to compile this function, we
                 // want to store the new compiled target. This saves us from going
                 // through the interpreter stub every call.
-                var lightLambda = result.Target as LightLambda;
-                if (lightLambda != null) {
+                if (result.Target is LightLambda lightLambda) {
                     lightLambda.Compile += handler;
                 }
 

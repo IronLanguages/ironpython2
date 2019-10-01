@@ -344,13 +344,11 @@ namespace IronPython.Runtime.Types {
         }
 
         private List<OldClass> ValidateBases(object value) {
-            PythonTuple t = value as PythonTuple;
-            if (t == null) throw PythonOps.TypeError("__bases__ must be a tuple object");
+            if (!(value is PythonTuple t)) throw PythonOps.TypeError("__bases__ must be a tuple object");
 
             List<OldClass> res = new List<OldClass>(t.__len__());
             foreach (object o in t) {
-                OldClass oc = o as OldClass;
-                if (oc == null) throw PythonOps.TypeError("__bases__ items must be classes (got {0})", PythonTypeOps.GetName(o));
+                if (!(o is OldClass oc)) throw PythonOps.TypeError("__bases__ items must be classes (got {0})", PythonTypeOps.GetName(o));
 
                 if (oc.IsSubclassOf(this)) {
                     throw PythonOps.TypeError("a __bases__ item causes an inheritance cycle");
@@ -437,8 +435,7 @@ namespace IronPython.Runtime.Types {
         internal bool IsSubclassOf(object other) {
             if (this == other) return true;
 
-            OldClass dt = other as OldClass;
-            if (dt == null) return false;
+            if (!(other is OldClass dt)) return false;
 
             List<OldClass> bases = _bases;
             foreach (OldClass bc in bases) {
@@ -534,14 +531,12 @@ namespace IronPython.Runtime.Types {
         }
 
         internal void SetName(object value) {
-            string n = value as string;
-            if (n == null) throw PythonOps.TypeError("TypeError: __name__ must be a string object");
+            if (!(value is string n)) throw PythonOps.TypeError("TypeError: __name__ must be a string object");
             _name = n;
         }
 
         internal void SetDictionary(object value) {
-            PythonDictionary d = value as PythonDictionary;
-            if (d == null) throw PythonOps.TypeError("__dict__ must be set to dictionary");
+            if (!(value is PythonDictionary d)) throw PythonOps.TypeError("__dict__ must be set to dictionary");
             _dict = d;
         }
 

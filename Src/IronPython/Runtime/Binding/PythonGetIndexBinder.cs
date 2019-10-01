@@ -148,8 +148,7 @@ namespace IronPython.Runtime.Binding {
         }
 
         public override bool Equals(object obj) {
-            PythonGetIndexBinder ob = obj as PythonGetIndexBinder;
-            if (ob == null) {
+            if (!(obj is PythonGetIndexBinder ob)) {
                 return false;
             }
 

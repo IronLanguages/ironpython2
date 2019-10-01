@@ -20,8 +20,7 @@ namespace IronPython.Runtime {
             throw new NotSupportedException();
         }
         public override bool Equals(object other) {
-            TwoObjects o = other as TwoObjects;
-            if (o == null) return false;
+            if (!(other is TwoObjects o)) return false;
             return o.obj1 == obj1 && o.obj2 == obj2;
         }
     }

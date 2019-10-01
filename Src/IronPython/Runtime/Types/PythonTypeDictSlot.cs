@@ -27,14 +27,12 @@ namespace IronPython.Runtime.Types {
                 return true;
             }
 
-            PythonType pt = instance as PythonType;
-            if (pt != null) {
+            if (instance is PythonType pt) {
                 value = new DictProxy(pt);
                 return true;
             }
 
-            IPythonObject sdo = instance as IPythonObject;
-            if (sdo != null && sdo.PythonType.HasDictionary) {
+            if (instance is IPythonObject sdo && sdo.PythonType.HasDictionary) {
                 PythonDictionary res = sdo.Dict;
                 if (res != null || (res = sdo.SetDict(sdo.PythonType.MakeDictionary())) != null) {
                     value = res;
@@ -47,8 +45,7 @@ namespace IronPython.Runtime.Types {
         }
 
         internal override bool TrySetValue(CodeContext context, object instance, PythonType owner, object value) {
-            IPythonObject sdo = instance as IPythonObject;
-            if (sdo != null) {
+            if (instance is IPythonObject sdo) {
                 if (!(value is PythonDictionary))
                     throw PythonOps.TypeError("__dict__ must be set to a dictionary, not '{0}'", owner.Name);
 
@@ -69,8 +66,7 @@ namespace IronPython.Runtime.Types {
         }
 
         internal override bool TryDeleteValue(CodeContext context, object instance, PythonType owner) {
-            IPythonObject sdo = instance as IPythonObject;
-            if (sdo != null) {
+            if (instance is IPythonObject sdo) {
                 if(!sdo.PythonType.HasDictionary) {
                     return false;
                 }

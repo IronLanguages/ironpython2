@@ -95,8 +95,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         internal static IList<byte> CoerceBytes(object obj) {
-            IList<byte> ret = obj as IList<byte>;
-            if (ret == null) {
+            if (!(obj is IList<byte> ret)) {
                 throw PythonOps.TypeError("expected string, got {0} Type", PythonTypeOps.GetName(obj));
             }
             return ret;

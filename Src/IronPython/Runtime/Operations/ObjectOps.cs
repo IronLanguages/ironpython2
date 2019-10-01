@@ -395,8 +395,7 @@ namespace IronPython.Runtime.Operations {
             object getNewArgsCallable;
             if (PythonOps.TryGetBoundAttr(context, myType, "__getnewargs__", out getNewArgsCallable)) {
                 // TypeError will bubble up if __getnewargs__ isn't callable
-                PythonTuple newArgs = PythonOps.CallWithContext(context, getNewArgsCallable, self) as PythonTuple;
-                if (newArgs == null) {
+                if (!(PythonOps.CallWithContext(context, getNewArgsCallable, self) is PythonTuple newArgs)) {
                     throw PythonOps.TypeError("__getnewargs__ should return a tuple");
                 }
                 funcArgs = new object[1 + newArgs.Count];

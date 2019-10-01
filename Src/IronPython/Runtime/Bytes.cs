@@ -922,15 +922,13 @@ namespace IronPython.Runtime {
         #region Equality Members
 
         public override bool Equals(object obj) {
-            IList<byte> bytes = obj as IList<byte>;
-            if (bytes != null) {
+            if (obj is IList<byte> bytes) {
                 return _bytes.Compare(bytes) == 0;
             }
 
             string s = obj as string;
             if (s == null) {
-                Extensible<string> es = obj as Extensible<string>;
-                if (es != null) {
+                if (obj is Extensible<string> es) {
                     s = es.Value;
                 }
             }

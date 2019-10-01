@@ -172,8 +172,7 @@ namespace IronPython.Runtime {
 
             string package = null;
             object attribute;
-            PythonDictionary pyGlobals = globals as PythonDictionary;
-            if (pyGlobals != null) {
+            if (globals is PythonDictionary pyGlobals) {
                 if (pyGlobals._storage.TryGetPackage(out attribute)) {
                     package = attribute as string;
                     if (package == null && attribute != null) {
@@ -320,14 +319,12 @@ namespace IronPython.Runtime {
             // If absent, fall back to absolute import
             object attribute;
 
-            PythonDictionary pyGlobals = globals as PythonDictionary;
-            if (pyGlobals == null || !pyGlobals._storage.TryGetName(out attribute)) {
+            if (!(globals is PythonDictionary pyGlobals) || !pyGlobals._storage.TryGetName(out attribute)) {
                 return false;
             }
 
             // And the __name__ needs to be string
-            string modName = attribute as string;
-            if (modName == null) {
+            if (!(attribute is string modName)) {
                 return false;
             }
 
@@ -426,10 +423,9 @@ namespace IronPython.Runtime {
 
             // We created the module and it only contains Python code. If the user changes
             // __file__ we'll reload from that file. 
-            string fileName = module.GetFile() as string;
 
             // built-in module:
-            if (fileName == null) {
+            if (!(module.GetFile() is string fileName)) {
                 ReloadBuiltinModule(context, module);
                 return module;
             }
@@ -594,8 +590,7 @@ namespace IronPython.Runtime {
                     ret = ImportReflected(context, name) ?? ret;
                 }
 
-                NamespaceTracker rp = ret as NamespaceTracker;
-                if (rp != null || ret == context.LanguageContext.ClrModule) {
+                if (ret is NamespaceTracker rp || ret == context.LanguageContext.ClrModule) {
                     context.ShowCls = true;
                 }
 
@@ -632,8 +627,7 @@ namespace IronPython.Runtime {
             string name = parts[current];
             Assert.NotNull(context, scope, name);
             if (scope.__dict__.TryGetValue(name, out nested)) {
-                var pm = nested as PythonModule;
-                if (pm != null) {
+                if (nested is PythonModule pm) {
                     var fullPath = ".".join(SubArray(parts, current));
                     // double check, some packages mess with package namespace
                     // see cp35116
@@ -642,8 +636,7 @@ namespace IronPython.Runtime {
                     }
                 }
                 // This allows from System.Math import *
-                PythonType dt = nested as PythonType;
-                if (dt != null && dt.IsSystemType) {
+                if (nested is PythonType dt && dt.IsSystemType) {
                     return true;
                 }
             }
@@ -717,8 +710,7 @@ namespace IronPython.Runtime {
         }
 
         internal static object MemberTrackerToPython(CodeContext/*!*/ context, object ret) {
-            MemberTracker res = ret as MemberTracker;
-            if (res != null) {
+            if (ret is MemberTracker res) {
                 context.ShowCls = true;
                 object realRes = res;
 
@@ -769,8 +761,7 @@ namespace IronPython.Runtime {
             }
 
             foreach (object dirObj in paths) {
-                string directory = dirObj as string;
-                if (directory == null) continue;  // skip invalid entries
+                if (!(dirObj is string directory)) continue;  // skip invalid entries
 
                 string candidatePath = null;
                 LanguageContext candidateLanguage = null;
@@ -828,9 +819,7 @@ namespace IronPython.Runtime {
         private static object ImportFromPathHook(CodeContext/*!*/ context, string/*!*/ name, string/*!*/ fullName, List/*!*/ path, Func<CodeContext, string, string, string, object> defaultLoader) {
             Assert.NotNull(context, name, fullName, path);
 
-            IDictionary<object, object> importCache = context.LanguageContext.GetSystemStateValue("path_importer_cache") as IDictionary<object, object>;
-
-            if (importCache == null) {
+            if (!(context.LanguageContext.GetSystemStateValue("path_importer_cache") is IDictionary<object, object> importCache)) {
                 return null;
             }
 
@@ -863,8 +852,7 @@ namespace IronPython.Runtime {
 
         internal static bool TryImportMainFromZip(CodeContext/*!*/ context, string/*!*/ path, out object importer) {
             Assert.NotNull(context, path);
-            var importCache = context.LanguageContext.GetSystemStateValue("path_importer_cache") as IDictionary<object, object>;
-            if (importCache == null) {
+            if (!(context.LanguageContext.GetSystemStateValue("path_importer_cache") is IDictionary<object, object> importCache)) {
                 importer = null;
                 return false;
             }
@@ -873,8 +861,7 @@ namespace IronPython.Runtime {
                 return false;
             }
             // for consistency with cpython, insert zip as a first entry into sys.path
-            var syspath = context.LanguageContext.GetSystemStateValue("path") as List;
-            if (syspath != null) {
+            if (context.LanguageContext.GetSystemStateValue("path") is List syspath) {
                 syspath.Insert(0, path);
             }
             object dummy;

@@ -108,8 +108,7 @@ namespace IronPython.Runtime {
 
         [PythonHidden]
         public override bool Equals(object obj) {
-            PythonBuffer b = obj as PythonBuffer;
-            if (b == null) {
+            if (!(obj is PythonBuffer b)) {
                 return false;
             }
 

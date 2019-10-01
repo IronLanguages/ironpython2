@@ -295,8 +295,7 @@ namespace IronPython.Compiler.Ast {
         }
 
         private string FindSelfNames() {
-            SuiteStatement stmts = Body as SuiteStatement;
-            if (stmts == null) return "";
+            if (!(Body is SuiteStatement stmts)) return "";
 
             foreach (Statement stmt in stmts.Statements) {
                 if (stmt is FunctionDefinition def && def.Name == "__init__") {
@@ -331,8 +330,7 @@ namespace IronPython.Compiler.Ast {
             private Dictionary<string, bool> _names = new Dictionary<string, bool>(StringComparer.Ordinal);
 
             private bool IsSelfReference(Expression expr) {
-                NameExpression ne = expr as NameExpression;
-                if (ne == null) return false;
+                if (!(expr is NameExpression ne)) return false;
 
                 PythonVariable variable;
                 if (_function.TryGetVariable(ne.Name, out variable) && variable == _self.PythonVariable) {

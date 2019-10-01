@@ -529,8 +529,7 @@ namespace IronPython.Runtime.Types {
         }
 
         private void SetDict(CodeContext/*!*/ context, object value) {
-            PythonDictionary dict = value as PythonDictionary;
-            if (dict == null) {
+            if (!(value is PythonDictionary dict)) {
                 throw PythonOps.TypeError("__dict__ must be set to a dictionary");
             }
             if (HasFinalizer() && !_class.HasFinalizer) {
@@ -545,8 +544,7 @@ namespace IronPython.Runtime.Types {
         }
 
         private void SetClass(object value) {
-            OldClass oc = value as OldClass;
-            if (oc == null) {
+            if (!(value is OldClass oc)) {
                 throw PythonOps.TypeError("__class__ must be set to class");
             }
             _class = oc;
@@ -613,8 +611,7 @@ namespace IronPython.Runtime.Types {
             object res = InternalCompare(forward, other);
             if (res != NotImplementedType.Value) return res;
 
-            OldInstance oi = other as OldInstance;
-            if (oi != null) {
+            if (other is OldInstance oi) {
                 // comparison operators are reflexive
                 return oi.InternalCompare(reverse, this);
             }
@@ -778,8 +775,8 @@ namespace IronPython.Runtime.Types {
             if (res != NotImplementedType.Value) {
                 return res;
             }
-            OldInstance oi = other as OldInstance;
-            if (oi != null) {
+
+            if (other is OldInstance oi) {
                 res = InvokeOne(oi, this, si);
                 if (res != NotImplementedType.Value) {
                     return res;
@@ -862,8 +859,7 @@ namespace IronPython.Runtime.Types {
 
         private void RecurseAttrHierarchyInt(OldClass oc, IDictionary<string, object> attrs) {
             foreach (KeyValuePair<object, object> kvp in oc._dict._storage.GetItems()) {
-                string strKey = kvp.Key as string;
-                if (strKey != null) {
+                if (kvp.Key is string strKey) {
                     if (!attrs.ContainsKey(strKey)) {
                         attrs.Add(strKey, strKey);
                     }
@@ -976,8 +972,7 @@ namespace IronPython.Runtime.Types {
             }
 
             public object Target(CallSite site, object instance, CodeContext context) {
-                OldInstance oi = instance as OldInstance;
-                if (oi != null) {
+                if (instance is OldInstance oi) {
                     object res;
                     if (oi.TryGetBoundCustomMember(context, _name, out res)) {
                         return res;
@@ -989,8 +984,7 @@ namespace IronPython.Runtime.Types {
             }
 
             public object LightThrowTarget(CallSite site, object instance, CodeContext context) {
-                OldInstance oi = instance as OldInstance;
-                if (oi != null) {
+                if (instance is OldInstance oi) {
                     object res;
                     if (oi.TryGetBoundCustomMember(context, _name, out res)) {
                         return res;
@@ -1002,8 +996,7 @@ namespace IronPython.Runtime.Types {
             }
 
             public object NoThrowTarget(CallSite site, object instance, CodeContext context) {
-                OldInstance oi = instance as OldInstance;
-                if (oi != null) {
+                if (instance is OldInstance oi) {
                     object res;
                     if (oi.TryGetBoundCustomMember(context, _name, out res)) {
                         return res;

@@ -252,8 +252,7 @@ namespace IronPython.Modules {
 
             PlatformAdaptationLayer pal = context.LanguageContext.DomainManager.Platform;
             foreach (object d in path) {
-                string dir = d as string;
-                if (dir == null) continue;  // skip invalid entries
+                if (!(d is string dir)) continue;  // skip invalid entries
 
                 string pathName = Path.Combine(dir, name);
                 if (pal.DirectoryExists(pathName)) {

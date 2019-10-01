@@ -26,16 +26,14 @@ namespace IronPython.Runtime {
         public override ICollection<MemberDoc> GetMembers(object value) {
             List<MemberDoc> res = new List<MemberDoc>();
 
-            PythonModule mod = value as PythonModule;
-            if (mod != null) {
+            if (value is PythonModule mod) {
                 foreach (var kvp in mod.__dict__) {
                     AddMember(res, kvp, false);
                 }
                 return res;
             }
 
-            NamespaceTracker ns = value as NamespaceTracker;
-            if (ns != null) {
+            if (value is NamespaceTracker ns) {
                 foreach (var v in ns) {
                     AddMember(
                         res,
@@ -47,24 +45,21 @@ namespace IronPython.Runtime {
                     );
                 }
             } else {
-                OldInstance oi = value as OldInstance;
-                if (oi != null) {
+                if (value is OldInstance oi) {
                     foreach (var member in oi.Dictionary) {
                         AddMember(res, member, false);
                     }
 
                     AddOldClassMembers(res, oi._class);
                 } else {
-                    PythonType pt = value as PythonType;
-                    if (pt != null) {
+                    if (value is PythonType pt) {
                         foreach (PythonType type in pt.ResolutionOrder) {
                             foreach (var member in type.GetMemberDictionary(_context.SharedContext)) {
                                 AddMember(res, member, true);
                             }
                         }
                     } else {
-                        OldClass oc = value as OldClass;
-                        if (oc != null) {
+                        if (value is OldClass oc) {
                             AddOldClassMembers(res, oc);
                         } else {
                             pt = DynamicHelpers.GetPythonType(value);
@@ -74,8 +69,7 @@ namespace IronPython.Runtime {
                         }
                     }
 
-                    IPythonObject ipo = value as IPythonObject;
-                    if (ipo != null && ipo.Dict != null) {
+                    if (value is IPythonObject ipo && ipo.Dict != null) {
                         foreach (var member in ipo.Dict) {
                             AddMember(res, member, false);
                         }
@@ -97,8 +91,7 @@ namespace IronPython.Runtime {
         }
 
         private static void AddMember(List<MemberDoc> res, KeyValuePair<object, object> member, bool fromClass) {
-            string name = member.Key as string;
-            if (name != null) {
+            if (member.Key is string name) {
                 res.Add(MakeMemberDoc(name, member.Value, fromClass));
             }
         }
@@ -147,18 +140,15 @@ namespace IronPython.Runtime {
         }
 
         public override ICollection<OverloadDoc> GetOverloads(object value) {
-            BuiltinFunction bf = value as BuiltinFunction;
-            if (bf != null) {
+            if (value is BuiltinFunction bf) {
                 return GetBuiltinFunctionOverloads(bf);
             }
 
-            BuiltinMethodDescriptor bmd = value as BuiltinMethodDescriptor;
-            if (bmd != null) {
+            if (value is BuiltinMethodDescriptor bmd) {
                 return GetBuiltinFunctionOverloads(bmd.Template);
             }
 
-            PythonFunction pf = value as PythonFunction;
-            if (pf != null) {
+            if (value is PythonFunction pf) {
                 return new[] { 
                     new OverloadDoc(
                         pf.__name__,
@@ -168,13 +158,11 @@ namespace IronPython.Runtime {
                 };
             }
 
-            Method method = value as Method;
-            if (method != null) {
+            if (value is Method method) {
                 return GetOverloads(method.__func__);
             }
 
-            Delegate dlg = value as Delegate;
-            if (dlg != null) {
+            if (value is Delegate dlg) {
                 return new[] { DocBuilder.GetOverloadDoc(dlg.GetType().GetMethod("Invoke"), dlg.GetType().Name, 0, false) };
             }
 
