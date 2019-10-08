@@ -459,8 +459,8 @@ namespace IronPython.Runtime.Operations {
         #endregion
 
         // These functions make the code generation of other types more regular
-        [PythonHidden] public
-        static BigInteger OnesComplement(BigInteger x) {
+        [PythonHidden]
+        public static BigInteger OnesComplement(BigInteger x) {
             return ~x;
         }
 
