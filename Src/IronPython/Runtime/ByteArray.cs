@@ -1301,6 +1301,10 @@ namespace IronPython.Runtime {
                 return esValue.Value.MakeByteArray();
             }
 
+            if (value is IBufferProtocol buffer) {
+                return buffer.ToBytes(0, null);
+            }
+
             List<byte> ret = new List<byte>();
             IEnumerator ie = PythonOps.GetEnumerator(value);
             while (ie.MoveNext()) {
