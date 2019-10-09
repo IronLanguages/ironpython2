@@ -35,7 +35,13 @@
     <None Update="Lib\**\*.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\StdLib\Lib\__future__.py" Link="Lib\__future__.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\StdLib\Lib\os.py" Link="Lib\os.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\StdLib\Lib\runpy.py" Link="Lib\runpy.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
