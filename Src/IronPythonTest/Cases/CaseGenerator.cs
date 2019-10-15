@@ -1,17 +1,22 @@
-﻿using System;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
+
+using IronPython;
 using IronPythonTest.Util;
+
 using NUnit.Framework;
-using NUnit.Framework.Api;
 
 namespace IronPythonTest.Cases {
-   public class TestInfo {
-       public TestInfo(string path, string baseName, string rootDir, TestManifest testManifest) {
+    public class TestInfo {
+        public TestInfo(string path, string baseName, string rootDir, TestManifest testManifest) {
             this.Path = path;
             this.Text = LoadTest(path);
             this.Name = GetName(path, baseName, rootDir);
@@ -30,7 +35,7 @@ namespace IronPythonTest.Cases {
         private static string GetName(string path, string baseName, string rootDir) {
             var root = CaseExecuter.FindRoot();
             var dir = System.IO.Path.GetDirectoryName(path).Replace(root, string.Empty).Replace(rootDir, string.Empty).Replace('\\', '.').Replace('/', '.').TrimStart('.');
-            if(string.IsNullOrWhiteSpace(dir)) {
+            if (string.IsNullOrWhiteSpace(dir)) {
                 return $"{baseName}.{System.IO.Path.GetFileNameWithoutExtension(path)}";
             }
             return $"{baseName}.{dir}.{System.IO.Path.GetFileNameWithoutExtension(path)}";
@@ -39,9 +44,9 @@ namespace IronPythonTest.Cases {
         public override string ToString() {
             return this.Name;
         }
-   }
+    }
 
-    abstract class CommonCaseGenerator<TCases> : IEnumerable {
+    internal abstract class CommonCaseGenerator<TCases> : IEnumerable {
         protected readonly TestManifest manifest = new TestManifest(typeof(TCases));
         protected static readonly string category = ((TestFixtureAttribute)typeof(TCases).GetCustomAttributes(typeof(TestFixtureAttribute), false)[0]).Category;
 
@@ -49,10 +54,10 @@ namespace IronPythonTest.Cases {
             foreach (var testcase in GetTests()) {
                 var name = testcase.Name;
                 var framework = TestContext.Parameters["FRAMEWORK"];
-                if(!string.IsNullOrWhiteSpace(framework)) {
+                if (!string.IsNullOrWhiteSpace(framework)) {
                     name = $"{framework}.{testcase.Name}";
                 }
-                
+
                 var result = new TestCaseData(testcase)
                     .SetCategory(category)
                     .SetName(name)
@@ -66,7 +71,7 @@ namespace IronPythonTest.Cases {
                     }
                 }
 
-                if(!ConditionMatched(testcase.Options.RunCondition) && string.IsNullOrWhiteSpace(TestContext.Parameters["RUN_IGNORED"])) {
+                if (!ConditionMatched(testcase.Options.RunCondition) && string.IsNullOrWhiteSpace(TestContext.Parameters["RUN_IGNORED"])) {
                     if (!string.IsNullOrWhiteSpace(testcase.Options.Reason)) {
                         result.Ignore($"condition ({testcase.Options.RunCondition}) - {testcase.Options.Reason}");
                     } else {
@@ -82,10 +87,10 @@ namespace IronPythonTest.Cases {
 
         protected bool ConditionMatched(string condition) {
             bool result = true;
-            if(!string.IsNullOrEmpty(condition)) {
+            if (!string.IsNullOrEmpty(condition)) {
                 try {
                     result = EvaluateExpression(condition);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     Console.WriteLine($"Error evaluating test condition '{condition}', will run the test anyway: {ex.Message}");
                     result = true;
                 }
@@ -99,10 +104,15 @@ namespace IronPythonTest.Cases {
             string filter = expression;
             var replacements = new Dictionary<string, string>() {
                 // variables
-                { "$(OS)", Environment.OSVersion.Platform.ToString() },
                 { "$(IS_NETCOREAPP)", IronPython.Runtime.ClrModule.IsNetCoreApp.ToString() },
                 { "$(IS_MONO)", IronPython.Runtime.ClrModule.IsMono.ToString() },
                 { "$(IS_DEBUG)", IronPython.Runtime.ClrModule.IsDebug.ToString() },
+                { "$(IS_POSIX)", (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux)).ToString() },
+                { "$(IS_OSX)", RuntimeInformation.IsOSPlatform(OSPlatform.OSX).ToString() },
+                { "$(IS_LINUX)", RuntimeInformation.IsOSPlatform(OSPlatform.Linux).ToString() },
+                { "$(IS_WINDOWS)", RuntimeInformation.IsOSPlatform(OSPlatform.Windows).ToString() },
+
+                { "$(OS)", Environment.OSVersion.Platform.ToString() },
                 { "$(IS_MACOS)", IronPython.Runtime.ClrModule.IsMacOS.ToString() },
 
                 // operators
@@ -127,7 +137,7 @@ namespace IronPythonTest.Cases {
                 if (ex.Message.StartsWith("The expression contains undefined function call", StringComparison.Ordinal))
                     throw new Exception("A variable used in the filter expression is not defined");
                 throw new Exception($"Invalid filter: {ex.Message}");
-            } catch(SyntaxErrorException ex) {
+            } catch (SyntaxErrorException ex) {
                 throw new Exception($"Invalid filter: {ex.Message}");
             }
 

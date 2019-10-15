@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
@@ -20,7 +21,7 @@ using IronPython.Runtime.Exceptions;
 using IronPythonTest.Util;
 
 namespace IronPythonTest.Cases {
-    class CaseExecuter {
+    internal class CaseExecuter {
         private static string Executable {
             get {
                 var folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -85,9 +86,9 @@ namespace IronPythonTest.Cases {
 
         private static void AddSearchPaths(ScriptEngine engine) {
             var paths = new List<string>(engine.GetSearchPaths());
-            if(!paths.Any(x => x.ToLower().Contains("stdlib"))) {
+            if (!paths.Any(x => x.ToLower().Contains("stdlib"))) {
                 var root = FindRoot();
-                if(!string.IsNullOrEmpty(root)) {
+                if (!string.IsNullOrEmpty(root)) {
                     paths.Insert(0, Path.Combine(root, "Src", "StdLib", "Lib"));
                 }
             }
@@ -95,12 +96,7 @@ namespace IronPythonTest.Cases {
         }
 
         public CaseExecuter() {
-            this.defaultEngine = Python.CreateEngine(new Dictionary<string, object> {
-                {"Debug", false},
-                {"Frames", true},
-                {"FullFrames", false},
-                {"RecursionLimit", 100}
-            });
+            this.defaultEngine = Python.CreateEngine();
 
             this.defaultEngine.SetHostVariables(
                 Path.GetDirectoryName(Executable),
@@ -111,32 +107,19 @@ namespace IronPythonTest.Cases {
 
         public int RunTest(TestInfo testcase) {
             int retryCount = testcase.Options.RetryCount;
-            if(retryCount > 0) {
-                int res = -1;
-                for(int i = 0; i < retryCount; i++) {
-                    try {
-                        res = RunTestImpl(testcase);
-                    } catch(Exception ex) {
-                        res = -1;
-                        if(i == (retryCount - 1)) {
-                            throw ex;
-                        }
-                    }
-                    
-                    if(res != 0) {
-                        NUnit.Framework.TestContext.Progress.WriteLine($"Test {testcase.Name} failed, retrying again. Retry #{i+1}");
-                    } else {
-                        break;
-                    }
-                }
-                return res;
-            } 
-            
+            for (int i = 0; i < retryCount; i++) {
+                try {
+                    var res = RunTestImpl(testcase);
+                    if (res == 0) return res;
+                    NUnit.Framework.TestContext.Progress.WriteLine($"Test {testcase.Name} failed, retrying again. Retry #{i + 1}");
+                } catch { }
+            }
+
             return RunTestImpl(testcase);
         }
-        
+
         private int RunTestImpl(TestInfo testcase) {
-            switch(testcase.Options.IsolationLevel) {
+            switch (testcase.Options.IsolationLevel) {
                 case TestIsolationLevel.DEFAULT:
                     return GetScopeTest(testcase);
 
@@ -163,9 +146,9 @@ namespace IronPythonTest.Cases {
             return string.Empty;
         }
 
-        private string ReplaceVariables(string input, IDictionary<string,string> replacements) {
+        private string ReplaceVariables(string input, IDictionary<string, string> replacements) {
             Regex variableRegex = new Regex(@"\$\(([^}]+)\)", RegexOptions.Compiled);
-            
+
             var result = input;
             var match = variableRegex.Match(input);
             while (match.Success) {
@@ -184,7 +167,7 @@ namespace IronPythonTest.Cases {
             var source = engine.CreateScriptSourceFromString(
                 testcase.Text, testcase.Path, SourceCodeKind.File);
 
-            return GetResult(engine, source, testcase.Path, testcase.Options.WorkingDirectory);
+            return GetResult(testcase, engine, source, testcase.Path, testcase.Options.WorkingDirectory);
         }
 
         private int GetProcessTest(TestInfo testcase) {
@@ -199,9 +182,23 @@ namespace IronPythonTest.Cases {
                 { "TEST_FILE_DIR", Path.GetDirectoryName(testcase.Path) }
             };
 
+            // add the arguments - in the normal case no arguments should be added
+            var arguments = new List<string>();
+            if (testcase.Options.Debug)
+                arguments.Add("-X:Debug");
+            if (!testcase.Options.Frames)
+                arguments.Add("-X:NoFrames");
+            if (testcase.Options.FullFrames)
+                arguments.Add("-X:FullFrames");
+            if (testcase.Options.MaxRecursion != int.MaxValue)
+                arguments.Add($"-X:MaxRecursion {testcase.Options.MaxRecursion}");
+            if (testcase.Options.Tracing)
+                arguments.Add("-X:Tracing");
+            arguments.Add(ReplaceVariables(testcase.Options.Arguments, argReplacements));
+
             using (Process proc = new Process()) {
                 proc.StartInfo.FileName = Executable;
-                proc.StartInfo.Arguments = ReplaceVariables(testcase.Options.Arguments, argReplacements);
+                proc.StartInfo.Arguments = string.Join(" ", arguments);
 
                 if (!string.IsNullOrEmpty(IRONPYTHONPATH)) {
                     proc.StartInfo.EnvironmentVariables["IRONPYTHONPATH"] = IRONPYTHONPATH;
@@ -216,13 +213,13 @@ namespace IronPythonTest.Cases {
                 proc.Start();
 
                 if (testcase.Options.Redirect) {
-                    AsyncStreamReader(proc.StandardOutput, data => Console.Write(data));
-                    AsyncStreamReader(proc.StandardError, data => Console.Error.Write(data));
+                    AsyncStreamReader(proc.StandardOutput, data => NUnit.Framework.TestContext.Out.Write(data));
+                    AsyncStreamReader(proc.StandardError, data => NUnit.Framework.TestContext.Error.Write(data));
                 }
 
                 if (!proc.WaitForExit(testcase.Options.Timeout)) {
                     proc.Kill();
-                    Console.Error.Write($"Timed out after {testcase.Options.Timeout / 1000.0} seconds.");
+                    NUnit.Framework.TestContext.Error.WriteLine($"{testcase.Name} timed out after {testcase.Options.Timeout / 1000.0} seconds.");
                 }
                 exitCode = proc.ExitCode;
             }
@@ -249,13 +246,21 @@ namespace IronPythonTest.Cases {
         }
 
         private int GetScopeTest(TestInfo testcase) {
+            if (testcase.Options.Debug
+                    || !testcase.Options.Frames
+                    || testcase.Options.FullFrames
+                    || testcase.Options.MaxRecursion != int.MaxValue
+                    || testcase.Options.Tracing) {
+                throw new Exception("Options have no effect with IsolationLevel=DEFAULT, use ENGINE or PROCESS instead.");
+            }
+
             var source = this.defaultEngine.CreateScriptSourceFromString(
                 testcase.Text, testcase.Path, SourceCodeKind.File);
 
-            return GetResult(this.defaultEngine, source, testcase.Path, testcase.Options.WorkingDirectory);
+            return GetResult(testcase, this.defaultEngine, source, testcase.Path, testcase.Options.WorkingDirectory);
         }
 
-        private int GetResult(ScriptEngine engine, ScriptSource source, string testPath, string workingDir) {
+        private int GetResult(TestInfo testcase, ScriptEngine engine, ScriptSource source, string testPath, string workingDir) {
             var path = Environment.GetEnvironmentVariable("IRONPYTHONPATH");
             if (string.IsNullOrEmpty(path)) {
                 Environment.SetEnvironmentVariable("IRONPYTHONPATH", IRONPYTHONPATH);
@@ -275,11 +280,18 @@ namespace IronPythonTest.Cases {
                 engine.GetSysModule().SetVariable("argv", List.FromArrayNoCopy(new object[] { source.Path }));
                 var compiledCode = source.Compile(new IronPython.Compiler.PythonCompilerOptions() { ModuleName = "__main__" });
 
-                try {
-                    return engine.Operations.ConvertTo<int>(compiledCode.Execute(scope) ?? 0);
-                } catch (SystemExitException ex) {
-                    return ex.GetExitCode(out _);
+                var task = Task<int>.Run(() => {
+                    try {
+                        return engine.Operations.ConvertTo<int>(compiledCode.Execute(scope) ?? 0);
+                    } catch (SystemExitException ex) {
+                        return ex.GetExitCode(out _);
+                    }
+                });
+                if (!task.Wait(testcase.Options.Timeout)) {
+                    NUnit.Framework.TestContext.Error.WriteLine($"{testcase.Name} timed out after {testcase.Options.Timeout / 1000.0} seconds.");
+                    return -1;
                 }
+                return task.Result;
             } finally {
                 Environment.CurrentDirectory = cwd;
             }
