@@ -27,10 +27,17 @@ namespace IronPython.Modules {
     public static class Wpf {
         [SpecialName]
         public static void PerformModuleReload(PythonContext/*!*/ context, PythonDictionary/*!*/ dict) {
-            context.DomainManager.LoadAssembly(typeof(XamlReader).Assembly);            // PresentationFramework
-            context.DomainManager.LoadAssembly(typeof(Clipboard).Assembly);             // PresentationCore
-            context.DomainManager.LoadAssembly(typeof(DependencyProperty).Assembly);    // WindowsBase
-            context.DomainManager.LoadAssembly(typeof(System.Xaml.XamlReader).Assembly);// System.Xaml
+            try {
+                // loading of assemblies will fail when running with the "Microsoft.NETCore.App" framework
+                LoadAssemblies(context);
+            } catch { }
+
+            static void LoadAssemblies(PythonContext/*!*/ context) {
+                context.DomainManager.LoadAssembly(typeof(XamlReader).Assembly);            // PresentationFramework
+                context.DomainManager.LoadAssembly(typeof(Clipboard).Assembly);             // PresentationCore
+                context.DomainManager.LoadAssembly(typeof(DependencyProperty).Assembly);    // WindowsBase
+                context.DomainManager.LoadAssembly(typeof(System.Xaml.XamlReader).Assembly);// System.Xaml
+            }
         }
 
         /// <summary>
