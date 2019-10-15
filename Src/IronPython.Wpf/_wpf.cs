@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_WPF
+#if FEATURE_WPF || NETCOREAPP3_0
 
-using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -15,7 +14,10 @@ using Microsoft.Scripting.Runtime;
 
 using IronPython.Runtime;
 using IronPython.Runtime.Operations;
-using System.Windows.Threading;
+
+#if NETCOREAPP3_0
+using Microsoft.Internal.Scripting.Runtime; // TODO: get rid of this once DynamicXamlReader is in the DLR
+#endif
 
 [assembly: PythonModule("_wpf", typeof(IronPython.Modules.Wpf), PlatformsAttribute.PlatformFamily.Windows)]
 namespace IronPython.Modules {
