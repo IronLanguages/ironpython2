@@ -256,14 +256,13 @@ namespace IronPythonTest.Cases {
         }
 
         private int GetResult(ScriptEngine engine, ScriptSource source, string testPath, string workingDir) {
-            int res = 0;
             var path = Environment.GetEnvironmentVariable("IRONPYTHONPATH");
-            if(string.IsNullOrEmpty(path)) {
+            if (string.IsNullOrEmpty(path)) {
                 Environment.SetEnvironmentVariable("IRONPYTHONPATH", IRONPYTHONPATH);
             }
 
             var cwd = Environment.CurrentDirectory;
-            if(!string.IsNullOrWhiteSpace(workingDir)) {
+            if (!string.IsNullOrWhiteSpace(workingDir)) {
                 var replacements = new Dictionary<string, string>() {
                     { "ROOT", FindRoot() },
                     { "TEST_FILE_DIR", Path.GetDirectoryName(testPath) }
@@ -277,15 +276,13 @@ namespace IronPythonTest.Cases {
                 var compiledCode = source.Compile(new IronPython.Compiler.PythonCompilerOptions() { ModuleName = "__main__" });
 
                 try {
-                    res = engine.Operations.ConvertTo<int>(compiledCode.Execute(scope) ?? 0);
+                    return engine.Operations.ConvertTo<int>(compiledCode.Execute(scope) ?? 0);
                 } catch (SystemExitException ex) {
-                    object otherCode;
-                    res = ex.GetExitCode(out otherCode);
+                    return ex.GetExitCode(out _);
                 }
             } finally {
                 Environment.CurrentDirectory = cwd;
             }
-            return res;
         }
     }
 }
