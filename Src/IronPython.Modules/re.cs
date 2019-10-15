@@ -211,7 +211,7 @@ namespace IronPython.Modules {
             internal ParsedRegex _pre;
 
             internal RE_Pattern(CodeContext/*!*/ context, object pattern, int flags=0, bool compiled=false) {
-                _pre = PreParseRegex(context, ValidatePatternAsString(pattern));
+                _pre = PreParseRegex(context, ValidatePatternAsString(pattern), (flags & VERBOSE) != 0);
                 try {
                     flags |= OptionToFlags(_pre.Options);
                     RegexOptions opts = FlagsToOption(flags);
@@ -876,13 +876,15 @@ namespace IronPython.Modules {
             public RegexOptions Options = RegexOptions.CultureInvariant;
         }
 
-        private static readonly char[] _preParsedChars = new[] { '(', '{', '[', ']' };
+        private static readonly char[] _endOfLineChars = new[] { '\r', '\n' };
+        private static readonly char[] _preParsedChars = new[] { '(', '{', '[', ']', '#' };
         private const string _mangledNamedGroup = "___PyRegexNameMangled";
+
         /// <summary>
         /// Preparses a regular expression text returning a ParsedRegex class
         /// that can be used for further regular expressions.
         /// </summary>
-        private static ParsedRegex PreParseRegex(CodeContext/*!*/ context, string pattern) {
+        private static ParsedRegex PreParseRegex(CodeContext/*!*/ context, string pattern, bool verbose) {
             ParsedRegex res = new ParsedRegex(pattern);
 
             //string newPattern;
@@ -890,11 +892,20 @@ namespace IronPython.Modules {
             int curGroup = 0;
             bool isCharList = false;
             bool containsNamedGroup = false;
+            bool inComment = false;
 
             int groupCount = 0;
             var namedGroups = new Dictionary<string, int>();
 
             for (; ; ) {
+                if (verbose && inComment) {
+                    // read to end of line
+                    inComment = false;
+                    var idx = pattern.IndexOfAny(_endOfLineChars, cur);
+                    if (idx < 0) break;
+                    cur = idx;
+                }
+
                 nameIndex = pattern.IndexOfAny(_preParsedChars, cur);
                 if (nameIndex > 0 && pattern[nameIndex - 1] == '\\') {
                     int curIndex = nameIndex - 2;
@@ -906,7 +917,7 @@ namespace IronPython.Modules {
                     // odd number of back slashes, this is an optional
                     // paren that we should ignore.
                     if ((backslashCount & 0x01) != 0) {
-                        cur++;
+                        cur = ++nameIndex;
                         continue;
                     }
                 }
@@ -929,6 +940,12 @@ namespace IronPython.Modules {
                     case ']':
                         nameIndex++;
                         isCharList = false;
+                        break;
+                    case '#':
+                        if (verbose && !isCharList) {
+                            inComment = true;
+                        }
+                        nameIndex++;
                         break;
                     case '(':
                         // make sure we're not dealing with [(]
