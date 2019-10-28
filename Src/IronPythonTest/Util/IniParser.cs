@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -7,7 +11,7 @@ namespace IronPythonTest.Util {
     using OptionStore = Dictionary<string, Dictionary<string, string>>;
 
     public class IniParser {
-        OptionStore options;
+        private OptionStore options;
 
         public IniParser(Stream source) {
             this.options = Parse(new StreamReader(source).ReadLines());
@@ -20,19 +24,20 @@ namespace IronPythonTest.Util {
         public string GetValue(string sectionName, string key, string @default) {
             sectionName = string.IsNullOrEmpty(sectionName) ? "DEFAULT" : sectionName;
 
-            Section section;
-            if (!this.options.TryGetValue(sectionName, out section)) {
-                section = this.options["DEFAULT"];
-            }
-
             string value;
-            if (!section.TryGetValue(key, out value)) {
-                if (!this.options["DEFAULT"].TryGetValue(key, out value)) {
-                    return @default;
+            while ((sectionName = GetParentSection(sectionName, out Section section)) != null) {
+                if (section.TryGetValue(key, out value)) {
+                    return value;
                 }
             }
 
-            return value;
+            return options["DEFAULT"].TryGetValue(key, out value) ? value : @default;
+        }
+
+        private string GetParentSection(string sectionName, out Section section) {
+            var idx = sectionName.LastIndexOf('.');
+            var newSectionName = idx == -1 ? null : sectionName.Substring(0, idx);
+            return options.TryGetValue(sectionName, out section) || newSectionName == null ? newSectionName : GetParentSection(newSectionName, out section);
         }
 
         public bool GetBool(string sectionName, string key) {
@@ -87,7 +92,7 @@ namespace IronPythonTest.Util {
         }
     }
 
-    static class TextReaderExtensions {
+    internal static class TextReaderExtensions {
         public static IEnumerable<string> ReadLines(this TextReader tr) {
             string line;
             while ((line = tr.ReadLine()) != null) {
@@ -96,9 +101,9 @@ namespace IronPythonTest.Util {
         }
     }
 
-    static class StringExtensions {
-        static HashSet<string> Truthy = new HashSet<string> { "1", "t", "true", "y", "yes" };
-        static HashSet<string> Falsey = new HashSet<string> { "0", "f", "false", "n", "no" };
+    internal static class StringExtensions {
+        private static HashSet<string> Truthy = new HashSet<string> { "1", "t", "true", "y", "yes" };
+        private static HashSet<string> Falsey = new HashSet<string> { "0", "f", "false", "n", "no" };
 
         public static bool AsBool(this string s) {
             if (s == null) {

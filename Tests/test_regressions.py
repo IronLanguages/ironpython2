@@ -1358,6 +1358,19 @@ class C:
         class Test(BytesIO): pass
         Test().seek(0)
 
+    def test_ipy3_gh546(self):
+        """https://github.com/IronLanguages/ironpython3/issues/546"""
+        import re
+        _SECT_TMPL = r"""
+            \[                                 # [
+            (?P<header>[^]]+)                  # very permissive!
+            \]                                 # ]
+            """
+        SECTCRE = re.compile(_SECT_TMPL, re.VERBOSE)
+        string = "[some header]"
+        match = SECTCRE.match(string)
+        self.assertEqual(match.span(), (0, len(string)))
+
     def test_ipy2_gh655(self):
         """https://github.com/IronLanguages/ironpython2/issues/655"""
         import pyexpat
