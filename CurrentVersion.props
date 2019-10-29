@@ -5,9 +5,8 @@
     <MinorVersion>7</MinorVersion>
     <MicroVersion>10</MicroVersion>
     <!-- Allowed: alpha,beta,candidate,final -->
-    <ReleaseLevel>alpha</ReleaseLevel>
-    <ReleaseSerial>1</ReleaseSerial>
-
+    <ReleaseLevel>candidate</ReleaseLevel>
+    <ReleaseSerial>1</ReleaseSerial><!-- this should only be 0 when final -->
     <AssemblyRevision>0</AssemblyRevision>
   </PropertyGroup>
 </Project>
