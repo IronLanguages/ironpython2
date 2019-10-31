@@ -39,11 +39,14 @@ namespace IronPythonTest.Cases {
                     if (File.Exists(runner)) return runner;
                 }
 #else
+                if (Environment.Is64BitOperatingSystem && IntPtr.Size == 4) {
+                    runner = Path.Combine(folder, "ipy32.exe");
+                    if (File.Exists(runner)) return runner;
+                }
                 runner = Path.Combine(folder, "ipy.exe");
                 if (File.Exists(runner)) return runner;
 #endif
                 throw new FileNotFoundException();
-
             }
         }
 

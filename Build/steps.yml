@@ -86,7 +86,7 @@ steps:
 
     # 32-bit tests on Windows only
   - ${{ if eq(parameters.os, 'Windows') }}:
-    - powershell: ./make.ps1 -platform x86 test-all
+    - powershell: ./make.ps1 -frameworks net45 -platform x86 test-all
       displayName: Test 32-bit
 
   - task: PublishTestResults@2
