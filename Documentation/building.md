@@ -1,12 +1,12 @@
 # Building IronPython2
 
-To build IronPython2 you will need the .NET SDK (minimum 4.5), a .NET Core SDK (minimum 2.0) and if building on Linux/macOS you will need [Mono](https://mono-project.com).
+To build IronPython2 you will need the .NET SDK (minimum 4.5), a [.NET Core SDK (minimum 3.1)](https://dotnet.microsoft.com/download/visual-studio-sdks) and if building on Linux/macOS you will need [Mono](https://mono-project.com).
 
 See [Getting the Sources](getting-the-sources.md) for information on getting the source for IronPython2.
 
 ## Building from Visual Studio
 
-Visual Studio 15.2 or above is required to build IronPython2
+Visual Studio 16.4(2019) or above is required to build IronPython2
 
  * Open `c:\path\to\ironpython2\IronPython.sln` solution file
  * Select the configuration options (Release,Debug, etc)
