@@ -5,7 +5,7 @@
 import os
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_netcoreapp30, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_netcoreapp31, run_test, skipUnlessIronPython
 
 class A:
     def __str__(self):
@@ -59,7 +59,7 @@ class FormattingTest(IronPythonTestCase):
 
         # More than 12 significant digits near the decimal point, with rounding up
 
-        if is_cli and not is_netcoreapp30: # https://github.com/IronLanguages/ironpython2/issues/634
+        if is_cli and not is_netcoreapp31: # https://github.com/IronLanguages/ironpython2/issues/634
             self.assertEqual(str(12345678901.25), "12345678901.3")
             self.assertEqual(str(123456789012.5), "123456789013.0")
         else:
@@ -69,7 +69,7 @@ class FormattingTest(IronPythonTestCase):
             else:
                 self.assertEqual(str(123456789012.5), "1.23456789012e+11")
 
-        if is_cli and not is_netcoreapp30: # https://github.com/IronLanguages/ironpython2/issues/634
+        if is_cli and not is_netcoreapp31: # https://github.com/IronLanguages/ironpython2/issues/634
             self.assertEqual(str(1.234567890125), "1.23456789013")
         else:
             self.assertEqual(str(1.234567890125), "1.23456789012")
@@ -135,7 +135,7 @@ class FormattingTest(IronPythonTestCase):
                 (1000000.0, "1e+06"),
                 (0.0001, "0.0001"),
                 (0.00001, "1e-05")]
-        if is_cli and not is_netcoreapp30: # https://github.com/IronLanguages/ironpython2/issues/634
+        if is_cli and not is_netcoreapp31: # https://github.com/IronLanguages/ironpython2/issues/634
             values.append((123456.5, "123457"))
         else:
             values.append((123456.5, "123456"))
