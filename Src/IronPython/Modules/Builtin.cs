@@ -1045,8 +1045,8 @@ namespace IronPython.Modules {
             return collection.Count;
         }
 
-        public static int len(object o) {
-            return PythonOps.Length(o);
+        public static object len(object o) {
+            return PythonOps.Length(o, out int res, out BigInteger bigRes) ? (object)res : bigRes;
         }
 
         public static PythonType set {

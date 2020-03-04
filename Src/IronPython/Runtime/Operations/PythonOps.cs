@@ -900,29 +900,52 @@ namespace IronPython.Runtime.Operations {
             throw TypeError("'{0}' object cannot be interpreted as an index", PythonTypeOps.GetName(o));
         }
 
-        public static int Length(object o) {
+        private static bool ObjectToInt(object o, out int res, out BigInteger longRes) {
+            if (o is BigInteger bi) {
+                if (!bi.AsInt32(out res)) {
+                    longRes = bi;
+                    return false;
+                }
+            } else if (o is int i) {
+                res = i;
+            } else {
+                res = Converter.ConvertToInt32(o);
+            }
+
+            longRes = default;
+            return true;
+        }
+
+        internal static bool Length(object o, out int res, out BigInteger bigRes) {
             if (o is string s) {
-                return s.Length;
+                res = s.Length;
+                bigRes = default;
+                return true;
             }
 
             if (o is object[] os) {
-                return os.Length;
+                res = os.Length;
+                bigRes = default;
+                return true;
             }
 
-            object len = PythonContext.InvokeUnaryOperator(DefaultContext.Default, UnaryOperators.Length, o, 
+            object len = PythonContext.InvokeUnaryOperator(DefaultContext.Default, UnaryOperators.Length, o,
                 string.Format("object of type '{0}' has no len()", PythonOps.GetPythonTypeName(o)));
 
-            int res;
-            if (len is int) {
-                res = (int)len;
+            if (ObjectToInt(len, out res, out bigRes)) {
+                if (res < 0) throw PythonOps.ValueError("__len__ should return >= 0, got {0}", res);
+                return true;
             } else {
-                res = Converter.ConvertToInt32(len);
+                if (bigRes < 0) throw PythonOps.ValueError("__len__ should return >= 0, got {0}", bigRes);
+                return false;
             }
+        }
 
-            if (res < 0) {
-                throw PythonOps.ValueError("__len__ should return >= 0, got {0}", res);
+        public static int Length(object o) {
+            if (Length(o, out int res, out _)) {
+                return res;
             }
-            return res;
+            throw new OverflowException();
         }
 
         public static object CallWithContext(CodeContext/*!*/ context, object func, params object[] args) {
