@@ -5,7 +5,7 @@
 import sys
 import unittest
 
-from iptest import IronPythonTestCase, is_cli, is_cpython, run_test, skipUnlessIronPython
+from iptest import IronPythonTestCase, is_cli, is_cpython, is_netcoreapp21, run_test, skipUnlessIronPython
 
 allChars = ''
 for y in [chr(x) for x in xrange(256) if chr(x) != '[' and chr(x) != '.']:
@@ -524,6 +524,8 @@ class StrFormatTest(IronPythonTestCase):
 
         for value, spec, result in tests:
             self.assertEqual(value.__format__(spec), result)
+
+        if is_netcoreapp21: return # https://github.com/IronLanguages/ironpython3/issues/751
 
         # check locale specific formatting
         import _locale
