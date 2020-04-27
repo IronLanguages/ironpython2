@@ -108,7 +108,7 @@ def check_package(package_name):
     
     #First check that the root package can be imported 
     try:
-        import_helper(package_name)    
+        import_helper(root_name)
         log_ok(root_name)
         
     except (Exception, SystemExit), e:
