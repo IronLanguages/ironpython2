@@ -643,7 +643,7 @@ class UrlParseTestCase(unittest.TestCase):
 
         # https://github.com/IronLanguages/ironpython3/issues/614
         is_mono = False
-        mono_issue_chars = ("\ufe13", "\ufe16", "\ufe5f")
+        mono_issue_chars = (u"\ufe13", u"\ufe16", u"\ufe5f")
         if sys.platform == "cli":
             import clr
             is_mono = clr.IsMono
@@ -653,6 +653,8 @@ class UrlParseTestCase(unittest.TestCase):
         urlparse.urlsplit(u'http://\u30d5\u309a:80')
         with self.assertRaises(ValueError):
             urlparse.urlsplit(u'http://\u30d5\u309a\ufe1380')
+            if is_mono: raise ValueError
+        if is_mono: urlparse.urlsplit(u'http://\u30d5\u309a\ufe1380') # ensure we fail if this ever gets fixed
 
         for scheme in [u"http", u"https", u"ftp"]:
             for netloc in [u"netloc{}false.netloc", u"n{}user@netloc"]:
@@ -661,7 +663,7 @@ class UrlParseTestCase(unittest.TestCase):
                     if test_support.verbose:
                         print "Checking %r" % url
                     if is_mono and c in mono_issue_chars:
-                        urllib.parse.urlsplit(url) # ensure we fail if this ever gets fixed
+                        urlparse.urlsplit(url) # ensure we fail if this ever gets fixed
                         continue
                     with self.assertRaises(ValueError):
                         urlparse.urlsplit(url)
