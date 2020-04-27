@@ -149,6 +149,7 @@ class ArrayTestCase(unittest.TestCase):
         obj = (EmptyArray * 2)()  # bpo37188: Floating point exception
         self.assertEqual(sizeof(obj), 0)
 
+    @unittest.skipIf(sys.platform=='cli', 'TODO: debug this test on IronPython - https://github.com/IronLanguages/ironpython2/issues/457')
     def test_bpo36504_signed_int_overflow(self):
         # The overflow check in PyCArrayType_new() could cause signed integer
         # overflow.
