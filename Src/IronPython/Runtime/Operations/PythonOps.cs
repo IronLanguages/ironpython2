@@ -1415,13 +1415,15 @@ namespace IronPython.Runtime.Operations {
             object ret;
             if (dict.TryGetValue("__metaclass__", out ret) && ret != null) return ret;
 
+            bool oldClass = false;
             // Otherwise, if there is at least one base class, its metaclass is used
             for (int i = 0; i < bases.__len__(); i++) {
                 if (!(bases[i] is OldClass)) return DynamicHelpers.GetPythonType(bases[i]);
+                oldClass = true;
             }
 
             // Otherwise, if there's a global variable named __metaclass__, it is used.
-            if (context.TryGetGlobalVariable("__metaclass__", out ret) && ret != null) {
+            if (!oldClass && context.TryGetGlobalVariable("__metaclass__", out ret) && ret != null) {
                 return ret;
             }
 
