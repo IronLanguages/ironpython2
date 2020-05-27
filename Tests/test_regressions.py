@@ -1383,4 +1383,21 @@ class C:
             result = ET.tostring(ET.fromstring(txt))
             self.assertEqual(txt, result)
 
+    def test_ipy2_gh624(self):
+        """https://github.com/IronLanguages/ironpython2/issues/624"""
+        global __metaclass__
+
+        with self.assertRaises(NameError):
+            __metaclass__ # ensure it's not defined otherwise Test may not be an old-style class
+
+        class Test: pass
+
+        __metaclass__ = type
+        try:
+            class Test2(Test): pass
+
+            self.assertEqual(type(Test), type(Test2))
+        finally:
+            del __metaclass__
+
 run_test(__name__)
