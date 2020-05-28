@@ -255,7 +255,7 @@ namespace IronPython.Runtime {
             }
         }
         
-        public string decode(CodeContext/*!*/ context, [Optional]object encoding, [DefaultParameterValue("strict")]string errors) {
+        public string decode(CodeContext/*!*/ context, [Optional]object encoding, [DefaultParameterValue("strict")][NotNull]string errors) {
             return StringOps.decode(context, _bytes.MakeString(), encoding, errors);
         }
 
