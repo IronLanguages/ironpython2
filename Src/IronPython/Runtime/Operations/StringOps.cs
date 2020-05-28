@@ -1776,7 +1776,7 @@ namespace IronPython.Runtime.Operations {
                 case "replace": e.DecoderFallback = ReplacementFallback; break;
                 case "ignore": e.DecoderFallback = new PythonDecoderFallback(encoding, s, null); break;
                 default:
-                    e.DecoderFallback = new PythonDecoderFallback(encoding, s, LightExceptions.CheckAndThrow(PythonOps.LookupEncodingError(context, errors)));
+                    e.DecoderFallback = new PythonDecoderFallback(encoding, s, () => LightExceptions.CheckAndThrow(PythonOps.LookupEncodingError(context, errors)));
                     break;
             }
 #endif
@@ -1865,7 +1865,7 @@ namespace IronPython.Runtime.Operations {
                 case "xmlcharrefreplace": e.EncoderFallback = new XmlCharRefEncoderReplaceFallback(); break;
                 case "ignore": e.EncoderFallback = new PythonEncoderFallback(encoding, s, null); break;
                 default:
-                    e.EncoderFallback = new PythonEncoderFallback(encoding, s, LightExceptions.CheckAndThrow(PythonOps.LookupEncodingError(context, errors)));
+                    e.EncoderFallback = new PythonEncoderFallback(encoding, s, () => LightExceptions.CheckAndThrow(PythonOps.LookupEncodingError(context, errors)));
                     break;
             }
 #endif
@@ -2427,14 +2427,18 @@ namespace IronPython.Runtime.Operations {
             private object _function;
             private string _str;
             private string _enc;
+            private readonly Func<object> lookup;
 
-            public PythonEncoderFallback(string encoding, string data, object callable) {
-                _function = callable;
+            public PythonEncoderFallback(string encoding, string data, Func<object> lookup) {
                 _str = data;
                 _enc = encoding;
+                this.lookup = lookup;
             }
 
             public override EncoderFallbackBuffer CreateFallbackBuffer() {
+                if (_function == null && lookup != null) {
+                    _function = lookup.Invoke();
+                }
                 return new PythonEncoderFallbackBuffer(_enc, _str, _function);
             }
 
@@ -2527,14 +2531,18 @@ namespace IronPython.Runtime.Operations {
             private object function;
             private string str;
             private string enc;
+            private readonly Func<object> lookup;
 
-            public PythonDecoderFallback(string encoding, string data, object callable) {
-                function = callable;
+            public PythonDecoderFallback(string encoding, string data, Func<object> lookup) {
                 str = data;
                 enc = encoding;
+                this.lookup = lookup;
             }
 
             public override DecoderFallbackBuffer CreateFallbackBuffer() {
+                if (function == null && lookup != null) {
+                    function = lookup.Invoke();
+                }
                 return new PythonDecoderFallbackBuffer(enc, str, function);
             }
 
