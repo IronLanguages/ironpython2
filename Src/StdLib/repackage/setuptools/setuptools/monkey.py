@@ -98,7 +98,7 @@ def patch_all():
             setuptools.extension.Extension
         )
 
-    patch_for_msvc_specialized_compiler()
+    #patch_for_msvc_specialized_compiler()
 
 
 def _patch_distribution_metadata():
