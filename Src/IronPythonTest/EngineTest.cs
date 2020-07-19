@@ -2281,7 +2281,10 @@ instOC = TestOC()
             info.ApplicationName = "Test";
 
             Evidence evidence = new Evidence();
-            evidence.AddHostEvidence(new Zone(SecurityZone.Internet));
+            // TODO:
+#pragma warning disable 612, 618 // obsolete API
+            evidence.AddHost(new Zone(SecurityZone.Internet));
+#pragma warning restore 612, 618
 
             System.Security.PermissionSet permSet = SecurityManager.GetStandardSandbox(evidence);
             AppDomain newDomain = AppDomain.CreateDomain("test", evidence, info, permSet, null);
