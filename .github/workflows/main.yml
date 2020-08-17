@@ -16,10 +16,10 @@ jobs:
     - name: Install tools
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get -yq install mono-vbnc dos2unix
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         submodules: true
-    - uses: actions/setup-dotnet@v1.5.0
+    - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.302'
     - name: Set Mono Version
@@ -34,7 +34,7 @@ jobs:
       run: pwsh make.ps1
     - name: Package
       run: pwsh make.ps1 package
-    - uses: actions/upload-artifact@master
+    - uses: actions/upload-artifact@v2
       with:
         name: packages
         path: Package/Release/Packages
