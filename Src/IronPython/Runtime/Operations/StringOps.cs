@@ -1941,7 +1941,9 @@ namespace IronPython.Runtime.Operations {
                     // publish under normalized name (all lower cases, -s replaced with _s)
                     d[normalizedName] = enc;
                     // publish under Windows code page as well...
-                    d["windows-" + enc.GetEncoding().WindowsCodePage.ToString()] = enc;
+                    try {
+                        d["windows-" + enc.GetEncoding().WindowsCodePage.ToString()] = enc;
+                    } catch (NotSupportedException) { } // Encoding.WindowsCodePage can throw NotSupportedException on .NET Core - https://github.com/IronLanguages/ironpython2/issues/731
                     // publish under code page number as well...
                     d["cp" + enc.CodePage.ToString()] = d[enc.CodePage.ToString()] = enc;
                 }
