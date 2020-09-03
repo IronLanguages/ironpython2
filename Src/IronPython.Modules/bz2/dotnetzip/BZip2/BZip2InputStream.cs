@@ -129,8 +129,7 @@ namespace Ionic.BZip2
         /// </remarks>
         /// <param name='input'>The stream from which to read compressed data</param>
         public BZip2InputStream(Stream input)
-            : this(input, false)
-        {}
+            : this(input, false) { }
 
 
         /// <summary>
@@ -169,12 +168,14 @@ namespace Ionic.BZip2
         ///   </code>
         /// </example>
         public BZip2InputStream(Stream input, bool leaveOpen)
-            : base()
-        {
+            : this(input, leaveOpen: leaveOpen, lazyInitialize: false) { }
+
+        internal BZip2InputStream(Stream input, bool leaveOpen = false, bool lazyInitialize = false)
+            : base() {
 
             this.input = input;
             this._leaveOpen = leaveOpen;
-            init();
+            if (!lazyInitialize) init();
         }
 
         /// <summary>
@@ -200,6 +201,8 @@ namespace Ionic.BZip2
         /// <returns>the number of bytes actually read</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
+            init();
+
             if (offset < 0)
                 throw new IndexOutOfRangeException(String.Format("offset ({0}) must be > 0", offset));
 
@@ -246,6 +249,8 @@ namespace Ionic.BZip2
         /// <returns>the byte read from the stream, or -1 if EOF</returns>
         public override int ReadByte()
         {
+            init();
+
             int retChar = this.currentChar;
             totalBytesRead++;
             switch (this.currentState)
@@ -429,8 +434,12 @@ namespace Ionic.BZip2
             base.Dispose(disposing);
         }
 
+        internal bool Initialized { get; private set; }
+
         void init()
         {
+            if (Initialized) return;
+
             if (null == this.input)
                 throw new IOException("No input Stream");
 
@@ -451,6 +460,8 @@ namespace Ionic.BZip2
 
             InitBlock();
             SetupBlock();
+
+            Initialized = true;
         }
 
 
