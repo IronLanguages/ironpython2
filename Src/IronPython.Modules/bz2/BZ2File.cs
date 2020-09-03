@@ -60,7 +60,7 @@ is given, must be a number between 1 and 9.
                         this.bz2Stream = new BZip2OutputStream(underlyingStream);
                     }
                 } else {
-                    this.bz2Stream = new BZip2InputStream(File.OpenRead(filename));
+                    this.bz2Stream = new BZip2InputStream(File.OpenRead(filename), lazyInitialize: true);
                 }
 
                 this.__init__(bz2Stream, pythonContext.DefaultEncoding, filename, mode);
@@ -156,6 +156,7 @@ the operation may be extremely slow.
 Return the current file position, an integer (may be a long integer).
 ")]
             public new object tell() {
+                if (base._stream is BZip2InputStream bZip2InputStream && !bZip2InputStream.Initialized) return 0; // hack to make tarfile.bz2open happy
                 throw new NotImplementedException();
 
                 //if (this.closed) throw PythonOps.ValueError("I/O operation on closed file");
