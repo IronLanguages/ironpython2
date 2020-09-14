@@ -3,10 +3,10 @@
   <PropertyGroup>
     <MajorVersion>2</MajorVersion>
     <MinorVersion>7</MinorVersion>
-    <MicroVersion>10</MicroVersion>
+    <MicroVersion>11</MicroVersion>
     <!-- Allowed: alpha,beta,candidate,final -->
-    <ReleaseLevel>final</ReleaseLevel>
-    <ReleaseSerial>0</ReleaseSerial><!-- this should only be 0 when final -->
+    <ReleaseLevel>candidate</ReleaseLevel>
+    <ReleaseSerial>1</ReleaseSerial><!-- this should only be 0 when final -->
     <AssemblyRevision>0</AssemblyRevision>
   </PropertyGroup>
 </Project>
