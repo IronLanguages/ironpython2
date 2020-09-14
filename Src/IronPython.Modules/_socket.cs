@@ -1234,7 +1234,7 @@ namespace IronPython.Modules {
         [Documentation("")]
         public static List getaddrinfo(
             CodeContext/*!*/ context,
-            string host,
+            [BytesConversion]string host,
             object port,
             int family=(int)AddressFamily.Unspecified,
             int socktype=0,
@@ -2816,6 +2816,22 @@ of bytes written.")]
                 EnsureSslStream(true);
 
                 byte[] buffer = data.MakeByteArray();
+                try {
+                    _sslStream.Write(buffer);
+                    return buffer.Length;
+                } catch (Exception e) {
+                    throw PythonSocket.MakeException(context, e);
+                }
+            }
+
+            [Documentation(@"write(s) -> len
+
+Writes the string s into the SSL object.  Returns the number
+of bytes written.")]
+            public int write(CodeContext/*!*/ context, Bytes data) {
+                EnsureSslStream(true);
+
+                byte[] buffer = data.GetUnsafeByteArray();
                 try {
                     _sslStream.Write(buffer);
                     return buffer.Length;
