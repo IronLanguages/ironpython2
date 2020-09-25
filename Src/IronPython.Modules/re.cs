@@ -367,18 +367,17 @@ namespace IronPython.Modules {
                     }
                 }
 
-                Match prev = null;
+                int prevEnd = -1;
                 string input = ValidateString(@string, "string");
                 return _re.Replace(
                     input,
                     delegate(Match match) {
                         //  from the docs: Empty matches for the pattern are replaced 
                         //  only when not adjacent to a previous match
-                        if (String.IsNullOrEmpty(match.Value) && prev != null &&
-                                        (prev.Index + prev.Length) == match.Index) {
+                        if (string.IsNullOrEmpty(match.Value) && match.Index == prevEnd) {
                             return "";
                         };
-                        prev = match;
+                        prevEnd = match.Index + match.Length;
 
                         if (replacement != null) return UnescapeGroups(match, replacement);
                         return PythonCalls.Call(context, repl, RE_Match.make(match, this, input)) as string;
@@ -403,18 +402,17 @@ namespace IronPython.Modules {
                     }
                 }
 
-                Match prev = null;
+                int prevEnd = -1;
                 string input = ValidateString(@string, "string");
                 res = _re.Replace(
                     input,
                     delegate(Match match) {
                         //  from the docs: Empty matches for the pattern are replaced 
                         //  only when not adjacent to a previous match
-                        if (String.IsNullOrEmpty(match.Value) && prev != null &&
-                            (prev.Index + prev.Length) == match.Index) {
+                        if (string.IsNullOrEmpty(match.Value) && match.Index == prevEnd) {
                             return "";
                         };
-                        prev = match;
+                        prevEnd = match.Index + match.Length;
 
                         totalCount++;
                         if (replacement != null) return UnescapeGroups(match, replacement);

@@ -97,8 +97,8 @@ namespace IronPython.Modules {
 
         [PythonType("mmap.mmap"), PythonHidden]
         public class MmapUnix : MmapDefault{
-            public MmapUnix(CodeContext/*!*/ context, int fileno, long length, string tagname = null, int access = ACCESS_WRITE, long offset = 0, int flags = MAP_SHARED, int prot = PROT_WRITE | PROT_READ)
-                : base(context, fileno, length, tagname, access, offset) { }
+            public MmapUnix(CodeContext/*!*/ context, int fileno, long length, int flags = MAP_SHARED, int prot = PROT_WRITE | PROT_READ, int access = ACCESS_WRITE, long offset = 0)
+                : base(context, fileno, length, null, access, offset) { }
         }
 
         [PythonType("mmap.mmap"), PythonHidden]
@@ -155,11 +155,12 @@ namespace IronPython.Modules {
                     _sourceStream = null;
 
                     // work around the .NET bug whereby CreateOrOpen throws on a null mapName
-                    if (_mapName == null) {
-                        _mapName = Guid.NewGuid().ToString();
+                    if (_mapName is null) {
+                        _file = MemoryMappedFile.CreateNew(null, length, _fileAccess);
+                    } else {
+                        Debug.Assert(RuntimeInformation.IsOSPlatform(OSPlatform.Windows));
+                        _file = MemoryMappedFile.CreateOrOpen(_mapName, length, _fileAccess);
                     }
-
-                    _file = MemoryMappedFile.CreateOrOpen(_mapName, length, _fileAccess);
                 } else {
                     // Memory-map an actual file
                     _offset = offset;

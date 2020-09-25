@@ -196,7 +196,7 @@ namespace IronPython.Modules {
             return res.ToPython();
         }
 
-        // Provided for Posix compat.
+        [PythonHidden(PlatformsAttribute.PlatformFamily.Windows)]
         public static object dlopen(string library, [DefaultParameterValue(0)]int mode) {
             return LoadLibrary(library, mode);
         }
