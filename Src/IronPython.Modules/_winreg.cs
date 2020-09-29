@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_REGISTRY //Registry not available in silverlight and we require .NET 4.0 APIs for implementing this.
+#if FEATURE_REGISTRY
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -418,10 +418,8 @@ namespace IronPython.Modules {
             HKEYType rootKey = null;
             //The key can also be a handle. If it is, then retrieve it from the cache.
             if (key is int) {
-                if (HKeyHandleCache.cache.ContainsKey((int)key)) {
-                    if (HKeyHandleCache.cache[(int)key].IsAlive) {
-                        rootKey = HKeyHandleCache.cache[(int)key].Target as HKEYType;
-                    }
+                if (HKEYType.cache.TryGetValue((int)key, out var value)) {
+                    value.TryGetTarget(out rootKey);
                 }
             } else {
                 rootKey = GetRootKey(key);
@@ -611,10 +609,15 @@ namespace IronPython.Modules {
 
         [PythonType]
         public class HKEYType : IDisposable {
+            //CPython exposes the native handle for the registry keys as well. Since there is no .NET API to
+            //expose the native handle, we return the hashcode of the key as the "handle". To track these handles
+            //and return the right RegistryKey we maintain this cache of the generated handles.
+            internal static readonly ConcurrentDictionary<int, WeakReference<HKEYType>> cache = new ConcurrentDictionary<int, WeakReference<HKEYType>>();
+
             private RegistryKey key;
             internal HKEYType(RegistryKey key) {
                 this.key = key;
-                HKeyHandleCache.cache[key.GetHashCode()] = new WeakReference(this);
+                cache[key.GetHashCode()] = new WeakReference<HKEYType>(this);
             }
 
             internal readonly BigInteger hkey = 0;
@@ -625,7 +628,7 @@ namespace IronPython.Modules {
             public void Close() {
                 lock (this) {
                     if (key != null) {
-                        HKeyHandleCache.cache.Remove(key.GetHashCode());
+                        cache.TryRemove(key.GetHashCode(), out _);
                         key.Dispose();
                         key = null;
                     }
@@ -674,15 +677,6 @@ namespace IronPython.Modules {
 #endregion
         }
     }
-
-    //CPython exposes the native handle for the registry keys as well. Since there is no .NET API to
-    //expose the native handle, we return the hashcode of the key as the "handle". To track these handles 
-    //and return the right RegistryKey we maintain this cache of the generated handles.
-    internal static class HKeyHandleCache {
-        internal static Dictionary<int, WeakReference> cache = new Dictionary<int, WeakReference>();
-
-    }
-
 }
 
 #endif

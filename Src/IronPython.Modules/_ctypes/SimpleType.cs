@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -344,6 +345,8 @@ namespace IronPython.Modules {
                 throw new InvalidOperationException();
             }
 
+            private static readonly MethodInfo StringGetPinnableReference = typeof(string).GetMethod("GetPinnableReference");
+
             MarshalCleanup INativeType.EmitMarshalling(ILGenerator/*!*/ method, LocalOrArg argIndex, List<object>/*!*/ constantPool, int constantPoolArgument) {
                 MarshalCleanup cleanup = null;
                 Label marshalled = method.DefineLabel();
@@ -415,12 +418,18 @@ namespace IronPython.Modules {
                         method.Emit(OpCodes.Dup);
                         method.Emit(OpCodes.Brfalse, nextTry);
 
-                        LocalBuilder lb = method.DeclareLocal(typeof(string), true);
-                        method.Emit(OpCodes.Stloc, lb);
-                        method.Emit(OpCodes.Ldloc, lb);
-                        method.Emit(OpCodes.Conv_I);
-                        method.Emit(OpCodes.Ldc_I4, RuntimeHelpers.OffsetToStringData);
-                        method.Emit(OpCodes.Add);
+                        if (StringGetPinnableReference is null) {
+                            LocalBuilder lb = method.DeclareLocal(typeof(string), true);
+                            method.Emit(OpCodes.Stloc, lb);
+                            method.Emit(OpCodes.Ldloc, lb);
+                            method.Emit(OpCodes.Conv_I);
+#pragma warning disable CS0618 // Type or member is obsolete
+                            method.Emit(OpCodes.Ldc_I4, RuntimeHelpers.OffsetToStringData);
+#pragma warning restore CS0618 // Type or member is obsolete
+                            method.Emit(OpCodes.Add);
+                        } else {
+                            method.Emit(OpCodes.Call, StringGetPinnableReference);
+                        }
                         method.Emit(OpCodes.Br, done);
 
                         method.MarkLabel(nextTry);
@@ -518,7 +527,6 @@ namespace IronPython.Modules {
                 Type argumentType = argIndex.Type;
                 Label isNull;
                 Label done;
-                LocalBuilder lb;
                 isNull = method.DefineLabel();
                 done = method.DefineLabel();
                 method.Emit(OpCodes.Brfalse, isNull);
@@ -527,12 +535,18 @@ namespace IronPython.Modules {
                     method.Emit(OpCodes.Box, argumentType);
                 }
 
-                lb = method.DeclareLocal(typeof(string), true);
-                method.Emit(OpCodes.Stloc, lb);
-                method.Emit(OpCodes.Ldloc, lb);
-                method.Emit(OpCodes.Conv_I);
-                method.Emit(OpCodes.Ldc_I4, RuntimeHelpers.OffsetToStringData);
-                method.Emit(OpCodes.Add);
+                if (StringGetPinnableReference is null) {
+                    LocalBuilder lb = method.DeclareLocal(typeof(string), true);
+                    method.Emit(OpCodes.Stloc, lb);
+                    method.Emit(OpCodes.Ldloc, lb);
+                    method.Emit(OpCodes.Conv_I);
+#pragma warning disable CS0618 // Type or member is obsolete
+                    method.Emit(OpCodes.Ldc_I4, RuntimeHelpers.OffsetToStringData);
+#pragma warning restore CS0618 // Type or member is obsolete
+                    method.Emit(OpCodes.Add);
+                } else {
+                    method.Emit(OpCodes.Call, StringGetPinnableReference);
+                }
                 method.Emit(OpCodes.Br, done);
 
                 method.MarkLabel(isNull);

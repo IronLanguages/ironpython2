@@ -1964,9 +1964,9 @@ namespace IronPython.Runtime
         }
 
         private static string GetInitialPrefix() {
-#if FEATURE_ASSEMBLY_CODEBASE
+#if FEATURE_ASSEMBLY_LOCATION
             try {
-                return typeof(PythonContext).Assembly.CodeBase;
+                return typeof(PythonContext).Assembly.Location;
             } catch (SecurityException) {
                 // we don't have permissions to get paths...
                 return String.Empty;
