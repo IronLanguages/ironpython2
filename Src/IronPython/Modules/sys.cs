@@ -268,7 +268,7 @@ Handle an exception by displaying it with a traceback on sys.stderr._")]
                 throw PythonOps.LookupError("'{0}' does not match any available encodings", strName);
             }
 
-            pc.DefaultEncoding = enc;
+            pc.SetDefaultEncoding(enc);
         }
 
 #if PROFILE_SUPPORT
