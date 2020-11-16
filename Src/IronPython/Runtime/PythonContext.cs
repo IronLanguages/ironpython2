@@ -1781,9 +1781,10 @@ namespace IronPython.Runtime
         /// <summary>
         /// Gets or sets the default encoding for this system state / engine.
         /// </summary>
-        public Encoding DefaultEncoding {
-            get { return _defaultEncoding; }
-            set { _defaultEncoding = value; }
+        public override Encoding DefaultEncoding => _defaultEncoding;
+
+        public void SetDefaultEncoding(Encoding encoding) {
+            _defaultEncoding = encoding;
         }
 
         public string GetDefaultEncodingName() {
