@@ -37,32 +37,39 @@ namespace IronPython.Runtime.Types {
         }
 
         internal object GetValue(CodeContext context, object instance, PythonType owner) {
-            if (_descVersion == UserDescriptorFalse) {
-                return Value;
-            } else if (_descVersion != DynamicHelpers.GetPythonType(Value).Version) {
-                CalculateDescriptorInfo();
-                if (_descVersion == UserDescriptorFalse) {
-                    return Value;
-                }
+            // capture the state to avoid concurrency issues
+            var value = Value;
+            var desc = _desc;
+            var descVersion = _descVersion;
+
+            if (descVersion == UserDescriptorFalse) {
+                return value;
             }
 
-            object res;
-            Debug.Assert(_desc.GetAlwaysSucceeds);
-            _desc.TryGetValue(context, Value, DynamicHelpers.GetPythonType(Value), out res);
+            var pt = DynamicHelpers.GetPythonType(value);
+            if (descVersion != pt.Version) {
+                desc = UpdateDescriptorInfo(value);
+            }
+            if (desc is null) {
+                return value;
+            }
+
+            Debug.Assert(desc.GetAlwaysSucceeds);
+            desc.TryGetValue(context, value, pt, out object res);
             return context.LanguageContext.Call(context, res, instance, owner);
         }
 
-        private void CalculateDescriptorInfo() {
-            PythonType pt = DynamicHelpers.GetPythonType(Value);
-            if (!pt.IsSystemType) {
-                if (pt.TryResolveSlot(pt.Context.SharedClsContext, "__get__", out _desc)) {
-                    _descVersion = pt.Version;
-                } else {
-                    _descVersion = UserDescriptorFalse;
-                }
-            } else {
-                _descVersion = UserDescriptorFalse;
+        private PythonTypeSlot UpdateDescriptorInfo(object value) {
+            PythonType pt = DynamicHelpers.GetPythonType(value);
+            if (!pt.IsSystemType && pt.TryResolveSlot(pt.Context.SharedClsContext, "__get__", out var desc)) {
+                _desc = desc;
+                _descVersion = pt.Version;
+                return desc;
             }
+
+            _desc = null;
+            _descVersion = UserDescriptorFalse;
+            return null;
         }
 
         internal override bool TryDeleteValue(CodeContext context, object instance, PythonType owner) {
