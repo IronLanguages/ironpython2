@@ -1,4 +1,5 @@
-## IronPython 3 has been released and is now available at https://github.com/IronLanguages/ironpython3!
+| **IronPython 3 has been released and is now available for download at https://github.com/IronLanguages/ironpython3!** |
+| --- |
 
 IronPython
 ===
