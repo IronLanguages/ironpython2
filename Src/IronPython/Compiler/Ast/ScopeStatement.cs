@@ -383,7 +383,8 @@ namespace IronPython.Compiler.Ast {
             List<ClosureInfo> closureVariables = null;
             
             if (FreeVariables != null && FreeVariables.Count > 0) {
-                _localParentTuple = Ast.Parameter(Parent.GetClosureTupleType(), "$tuple");
+                var tupleType = Parent.GetClosureTupleType();
+                _localParentTuple = Ast.Parameter(tupleType, "$tuple");
 
                 foreach (var variable in _freeVars) {
                     var parentClosure = Parent._closureVariables;                    
@@ -391,7 +392,11 @@ namespace IronPython.Compiler.Ast {
                     
                     for (int i = 0; i < parentClosure.Length; i++) {
                         if (parentClosure[i].Variable == variable) {
-                            _variableMapping[variable] = new ClosureExpression(variable, Ast.Property(_localParentTuple, String.Format("Item{0:D3}", i)), null);
+                            Ast prop = LocalParentTuple;
+                            foreach (PropertyInfo pi in MutableTuple.GetAccessPath(tupleType, parentClosure.Length, i)) {
+                                prop = Ast.Property(prop, pi);
+                            }
+                            _variableMapping[variable] = new ClosureExpression(variable, prop, null);
                             break;
                         }
                     }

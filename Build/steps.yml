@@ -25,16 +25,28 @@ steps:
     displayName: Grab Package Version
 
   - task: UseDotNet@2
-    displayName: Install .NET Core 2.1 runtime for running tests
+    displayName: Install .NET Core 2.1 runtime for testing
     inputs:
       packageType: 'runtime'
       version: '2.1.x'
 
   - task: UseDotNet@2
-    displayName: Install .NET Core 3.1 SDK for build
+    displayName: Install .NET Core 3.1 runtime for testing
+    inputs:
+      packageType: 'runtime'
+      version: '3.1.x'
+
+  - task: UseDotNet@2
+    displayName: Install .NET Core 5.0 runtime for testing
+    inputs:
+      packageType: 'runtime'
+      version: '5.0.x'
+
+  - task: UseDotNet@2
+    displayName: Install .NET Core 6.0 SDK for build
     inputs:
       packageType: 'sdk'
-      version: '3.1.x'
+      version: '6.0.x'
 
   # Set Mono version on macOS
   - ${{ if eq(parameters.os, 'macOS') }}:

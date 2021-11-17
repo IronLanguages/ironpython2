@@ -697,7 +697,7 @@ namespace IronPython.Modules {
             /// Walks the queue calling back to the specified delegate for
             /// each populated index in the queue.
             /// </summary>
-            private void WalkDeque(DequeWalker walker) {
+            private bool WalkDeque(DequeWalker walker) {
                 if (_itemCnt != 0) {
                     int end;
                     if (_head >= _tail) {
@@ -708,17 +708,19 @@ namespace IronPython.Modules {
 
                     for (int i = _head; i < end; i++) {
                         if (!walker(i)) {
-                            return;
+                            return false;
                         }
                     }
                     if (_head >= _tail) {
                         for (int i = 0; i < _tail; i++) {
                             if (!walker(i)) {
-                                return;
+                                return false;
                             }
                         }
                     }
                 }
+
+                return true;
             }
             #endregion
 
@@ -808,7 +810,8 @@ namespace IronPython.Modules {
 
                 CompareUtil.Push(this);
                 try {
-                    for (int otherIndex = otherDeque._head, ourIndex = _head; ourIndex != _tail; ) {
+                    int otherIndex = otherDeque._head;
+                    return WalkDeque(ourIndex => {
                         bool result;
                         if (comparer == null) {
                             result = PythonOps.EqualRetBool(_data[ourIndex], otherDeque._data[otherIndex]);
@@ -819,20 +822,13 @@ namespace IronPython.Modules {
                             return false;
                         }
 
-                        // advance both indices
                         otherIndex++;
                         if (otherIndex == otherDeque._data.Length) {
                             otherIndex = 0;
                         }
 
-                        ourIndex++;
-                        if (ourIndex == _data.Length) {
-                            ourIndex = 0;
-                        }
-                    }
-
-                    // same # of items, all items are equal
-                    return true;
+                        return true;
+                    });
                 } finally {
                     CompareUtil.Pop(this);
                 }
