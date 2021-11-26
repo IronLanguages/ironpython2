@@ -28,6 +28,7 @@ if is_ironpython:
     is_netcoreapp21 = clr.FrameworkDescription.startswith(".NET Core 2.x")
     is_netcoreapp31 = clr.FrameworkDescription.startswith(".NET Core 3.1")
     is_net50 = clr.FrameworkDescription.startswith(".NET 5.0")
+    is_net60 = clr.FrameworkDescription.startswith(".NET 6.0")
     if is_netcoreapp: clr.AddReference("System.Runtime.Extensions")
     is_posix = sys.platform == 'posix' or System.Environment.OSVersion.Platform == System.PlatformID.Unix
     is_osx = os.path.exists('/System/Library/CoreServices/SystemVersion.plist')
