@@ -122,7 +122,6 @@ namespace IronPython.Runtime {
                             }
                         }
 
-#if FEATURE_ASSEMBLY_GETFORWARDEDTYPES
                         Type[] forwardedTypes;
                         try {
                             forwardedTypes = _asm.GetForwardedTypes();
@@ -134,7 +133,6 @@ namespace IronPython.Runtime {
                                 loadedTypes.Add(DynamicHelpers.GetPythonTypeFromType(type));
                             }
                         }
-#endif
                     }
 
                     var info = new AssemblyLoadInfo(_asm);
@@ -488,4 +486,26 @@ namespace IronPython.Runtime {
         }
 #endif
     }
+
+#if !FEATURE_ASSEMBLY_GETFORWARDEDTYPES
+    internal static class AssemblyExtensions {
+#if NETSTANDARD2_0
+        private static readonly MethodInfo GetForwardedTypesMethodInfo = typeof(Assembly).GetMethod("GetForwardedTypes", Array.Empty<Type>());
+
+        internal static Type[] GetForwardedTypes(this Assembly assembly) {
+            if (GetForwardedTypesMethodInfo is not null) {
+                // just in case we're running on .NET Core 2.1...
+                try {
+                    return GetForwardedTypesMethodInfo.Invoke(assembly, null) as Type[] ?? Array.Empty<Type>();
+                } catch (TargetInvocationException ex) {
+                    throw ex.InnerException;
+                }
+            }
+            return Array.Empty<Type>();
+        }
+#else
+        internal static Type[] GetForwardedTypes(this Assembly assembly) => ReflectionUtils.EmptyTypes;
+#endif
+    }
+#endif
 }

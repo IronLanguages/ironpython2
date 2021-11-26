@@ -45,8 +45,10 @@ namespace IronPython.Runtime {
     public static class ClrModule {
 #if NETCOREAPP
         public static readonly bool IsNetCoreApp = true;
-#else
+#elif NETFRAMEWORK
         public static readonly bool IsNetCoreApp = false;
+#else
+        public static readonly bool IsNetCoreApp = FrameworkDescription.StartsWith(".NET", StringComparison.Ordinal) && !FrameworkDescription.StartsWith(".NET Framework", StringComparison.Ordinal);
 #endif
 
         public static string TargetFramework => typeof(ClrModule).Assembly.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
@@ -59,7 +61,7 @@ namespace IronPython.Runtime {
         public static readonly bool IsDebug = false;
 #endif
 
-        internal static string FrameworkDescription {
+        public static string FrameworkDescription {
             get {
 #if FEATURE_RUNTIMEINFORMATION
                 var frameworkDescription = RuntimeInformation.FrameworkDescription;
