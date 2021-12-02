@@ -3,7 +3,7 @@
   <PropertyGroup>
     <MajorVersion>2</MajorVersion>
     <MinorVersion>7</MinorVersion>
-    <MicroVersion>11</MicroVersion>
+    <MicroVersion>12</MicroVersion>
     <!-- Allowed: alpha,beta,candidate,final -->
     <ReleaseLevel>final</ReleaseLevel>
     <ReleaseSerial>0</ReleaseSerial><!-- this should only be 0 when final -->
