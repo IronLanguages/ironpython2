@@ -6,7 +6,7 @@ import re
 
 __all__ = ["getcaps","findmatch"]
 
-_find_unsafe = re.compile(r'[^\xa1-\U0010FFFF\w@+=:,./-]').search
+_find_unsafe = re.compile(r'[^\w@%+=:,./-]').search
 
 class UnsafeMailcapInput(Warning):
     """Warning raised when refusing unsafe input"""
