@@ -24,7 +24,7 @@ namespace IronPython.Runtime.Binding {
         public override MemberGroup GetMember(MemberRequestKind actionKind, Type type, string name) {
             var res = base.GetMember(actionKind, type, name);
             if (res.Count == 0) {
-                List<MemberTracker> trackers = new List<MemberTracker>();
+                HashSet<MemberTracker> trackers = new HashSet<MemberTracker>();
 
                 foreach (var method in _extMethodSet.GetExtensionMethods(name)) {
                     var parameters = method.GetParameters();
@@ -35,11 +35,11 @@ namespace IronPython.Runtime.Binding {
                     var paramType = parameters[0].ParameterType;
 
                     if (IsApplicableExtensionMethod(type, paramType)) {
-                        trackers.Add(MemberTracker.FromMemberInfo(method, paramType));
+                        (trackers ??= new HashSet<MemberTracker>()).Add(MemberTracker.FromMemberInfo(method, paramType));
                     }
                 }
 
-                if (trackers.Count > 0) {
+                if (trackers is not null) {
                     return new MemberGroup(trackers.ToArray());
                 }
             }
