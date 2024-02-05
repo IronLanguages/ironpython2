@@ -41,7 +41,7 @@ namespace IronPython.Runtime.Operations {
         public static object __new__(CodeContext/*!*/ context, PythonType cls, IList<byte> s) {
             return __new__(context, cls, s, 10);
         }
-        
+
         [StaticExtensionMethod]
         public static object __new__(CodeContext/*!*/ context, PythonType cls, IList<byte> s, int redix) {
             object value;
@@ -86,7 +86,7 @@ namespace IronPython.Runtime.Operations {
             if (x is double) return ReturnObject(context, cls, DoubleOps.__long__((double)x));
             if (x is int) return ReturnObject(context, cls, (BigInteger)(int)x);
             if (x is BigInteger) return ReturnObject(context, cls, x);
-            
+
             if (x is Complex) throw PythonOps.TypeError("can't convert complex to long; use long(abs(z))");
 
             if (x is decimal) {
@@ -331,7 +331,7 @@ namespace IronPython.Runtime.Operations {
             // otherwise give the user the truncated result if the result fits in a float
             BigInteger rem;
             BigInteger res = BigInteger.DivRem(x, y, out rem);
-            if (res.TryToFloat64(out fRes)) {                
+            if (res.TryToFloat64(out fRes)) {
                 if(rem != BigInteger.Zero) {
                     // try and figure out the fractional portion
                     BigInteger fraction = y / rem;
@@ -343,7 +343,7 @@ namespace IronPython.Runtime.Operations {
                 }
 
                 return fRes;
-            }            
+            }
 
             // otherwise report an error
             throw PythonOps.OverflowError("long/long too large for a float");
@@ -444,7 +444,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         public static string __hex__(BigInteger x) {
-            // CPython 2.5 prints letters in lowercase, with a capital L. 
+            // CPython 2.5 prints letters in lowercase, with a capital L.
             if (x < 0) {
                 return "-0x" + (-x).ToString(16).ToLower() + "L";
             } else {
@@ -540,7 +540,7 @@ namespace IronPython.Runtime.Operations {
         [SpecialName]
         public static int Compare(BigInteger x, int y) {
             int ix;
-            if (x.AsInt32(out ix)) {                
+            if (x.AsInt32(out ix)) {
                 return ix == y ? 0 : ix > y ? 1 : -1;
             }
 
@@ -568,7 +568,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         [SpecialName]
-        public static int Compare(BigInteger x, decimal y) {            
+        public static int Compare(BigInteger x, decimal y) {
             return DecimalOps.__cmp__(x, y);
         }
 
@@ -604,7 +604,7 @@ namespace IronPython.Runtime.Operations {
             }
 
             // Call the DLR's BigInteger hash function, which will return an int32 representation of
-            // b if b is within the int32 range. We use that as an optimization for hashing, and 
+            // b if b is within the int32 range. We use that as an optimization for hashing, and
             // assert the assumption below.
             int hash = self.GetHashCode();
 #if DEBUG
@@ -637,7 +637,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         #region Binary Ops
-        
+
         [PythonHidden]
         public static BigInteger Xor(BigInteger x, BigInteger y) {
             return x ^ y;
@@ -706,7 +706,7 @@ namespace IronPython.Runtime.Operations {
         public static bool AsUInt64(BigInteger self, out ulong res) {
             return self.AsUInt64(out res);
         }
-        
+
         #endregion
 
         #region Direct Conversions
@@ -907,18 +907,17 @@ namespace IronPython.Runtime.Operations {
         public static string/*!*/ __format__(CodeContext/*!*/ context, BigInteger/*!*/ self, [NotNull]string/*!*/ formatSpec) {
             StringFormatSpec spec = StringFormatSpec.FromString(formatSpec);
 
-            if (spec.Precision != null) {
-                throw PythonOps.ValueError("Precision not allowed in integer format specifier");
-            }
-
             BigInteger val = self;
             if (self < 0) {
                 val = -self;
             }
             string digits;
-            
+
             switch (spec.Type) {
                 case 'n':
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     CultureInfo culture = context.LanguageContext.NumericCulture;
 
                     if (culture == CultureInfo.InvariantCulture) {
@@ -931,6 +930,9 @@ namespace IronPython.Runtime.Operations {
                     break;
                 case null:
                 case 'd':
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     if (spec.ThousandsComma) {
                         var width = spec.Width ?? 0;
                         // If we're inserting commas, and we're padding with leading zeros.
@@ -995,22 +997,41 @@ namespace IronPython.Runtime.Operations {
                     }
                     break;
                 case 'X':
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     digits = AbsToHex(val, false);
                     break;
                 case 'x':
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     digits = AbsToHex(val, true);
                     break;
                 case 'o': // octal
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     digits = ToOctal(val, true);
                     break;
                 case 'b': // binary
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     digits = ToBinary(val, false, true);
                     break;
                 case 'c': // single char
-                    int iVal;
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     if (spec.Sign != null) {
                         throw PythonOps.ValueError("Sign not allowed with integer format specifier 'c'");
-                    } else if (!self.AsInt32(out iVal)) {
+                    }
+                    int iVal;
+                    if (!self.AsInt32(out iVal)) {
                         throw PythonOps.OverflowError("long int too large to convert to int");
                     } else if(iVal < 0 || iVal > 0xFF) {
                         throw PythonOps.OverflowError("%c arg not in range(0x10000)");
@@ -1035,7 +1056,7 @@ namespace IronPython.Runtime.Operations {
             return ToDigits(val, 8, lowercase);
         }
 
-        internal static string ToBinary(BigInteger val) {            
+        internal static string ToBinary(BigInteger val) {
             string res = ToBinary(val.Abs(), true, true);
             if (val.IsNegative()) {
                 res = "-" + res;
@@ -1047,7 +1068,7 @@ namespace IronPython.Runtime.Operations {
             Debug.Assert(!val.IsNegative());
 
             string digits = ToDigits(val, 2, lowercase);
-            
+
             if (includeType) {
                 digits = (lowercase ? "0b" : "0B") + digits;
             }
@@ -1062,7 +1083,7 @@ namespace IronPython.Runtime.Operations {
 
             StringBuilder tmp = new StringBuilder();
             tmp.Append(digits[0]);
-            
+
             for (int i = 1; i < maxPrecision && i < digits.Length; i++) {
                 // append if we have a significant digit or if we are forcing a minimum precision
                 if (digits[i] != '0' || i <= minPrecision) {
@@ -1129,7 +1150,7 @@ namespace IronPython.Runtime.Operations {
             for (int i = str.Length - 1; i >= 0; i--) {
                 res.Append(str[i]);
             }
-            
+
             return res.ToString();
         }
     }

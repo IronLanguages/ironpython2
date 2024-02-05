@@ -232,7 +232,7 @@ namespace IronPython.Runtime.Operations {
         }
 
         #region Binary Operators
-        
+
         [SpecialName]
         public static object FloorDivide(int x, int y) {
             if (y == -1 && x == Int32.MinValue) {
@@ -414,15 +414,14 @@ namespace IronPython.Runtime.Operations {
         public static string __format__(CodeContext/*!*/ context, int self, [NotNull]string/*!*/ formatSpec) {
             StringFormatSpec spec = StringFormatSpec.FromString(formatSpec);
 
-            if (spec.Precision != null) {
-                throw PythonOps.ValueError("Precision not allowed in integer format specifier");
-            }
-
             string digits;
             int width = 0;
 
             switch (spec.Type) {
                 case 'n':
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     CultureInfo culture = context.LanguageContext.NumericCulture;
 
                     if (culture == CultureInfo.InvariantCulture) {
@@ -444,6 +443,9 @@ namespace IronPython.Runtime.Operations {
                     break;
                 case null:
                 case 'd':
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     if (spec.ThousandsComma) {
                         width = spec.Width ?? 0;
 
@@ -511,22 +513,36 @@ namespace IronPython.Runtime.Operations {
                     }
                     break;
                 case 'X':
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     digits = ToHex(self, false);
                     break;
                 case 'x':
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     digits = ToHex(self, true);
                     break;
                 case 'o': // octal
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     digits = ToOctal(self, true);
                     break;
                 case 'b': // binary
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     digits = ToBinary(self, false);
                     break;
                 case 'c': // single char
+                    if (spec.Precision != null) {
+                        throw PythonOps.ValueError("Precision not allowed in integer format specifier");
+                    }
                     if (spec.Sign != null) {
                         throw PythonOps.ValueError("Sign not allowed with integer format specifier 'c'");
                     }
-                    
                     if (self < 0 || self > 0xFF) {
                         throw PythonOps.OverflowError("%c arg not in range(0x10000)");
                     }
@@ -588,7 +604,7 @@ namespace IronPython.Runtime.Operations {
             if (self == Int32.MinValue) {
                 return "-0b10000000000000000000000000000000";
             }
-            
+
             string res = ToBinary(self, true);
             if (self < 0) {
                 res = "-" + res;
@@ -619,7 +635,7 @@ namespace IronPython.Runtime.Operations {
             } else {
                 digits = "10000000000000000000000000000000";
             }
-            
+
             if (includeType) {
                 digits = "0b" + digits;
             }
