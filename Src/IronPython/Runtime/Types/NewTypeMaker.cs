@@ -540,6 +540,7 @@ namespace IronPython.Runtime.Types {
             ImplementInterface(typeof(ICustomTypeDescriptor));
 
             foreach (MethodInfo m in typeof(ICustomTypeDescriptor).GetMethods()) {
+                if (!m.IsAbstract) continue;
                 ImplementCTDOverride(m);
             }
         }
