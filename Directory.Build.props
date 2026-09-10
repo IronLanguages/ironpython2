@@ -103,7 +103,7 @@
     <BaseOutputPath>$(RootDir)bin\$(Configuration)</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsNotAsErrors>618;429;219;1717;162;414</WarningsNotAsErrors>
+    <WarningsNotAsErrors>618;429;219;1717;162;414;NU1900;CA1859;CA1861</WarningsNotAsErrors>
     <NoWarn>1591;1584;1574;1685;1573</NoWarn>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
