@@ -44,6 +44,15 @@ namespace IronPython.Runtime
     public delegate int HashDelegate(object o, ref HashDelegate dlg);
 
     public sealed partial class PythonContext : LanguageContext {
+        static PythonContext() {
+            try {
+#if NETCOREAPP || NETSTANDARD
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
+            } catch {
+            }
+        }
+
         internal static readonly string/*!*/ IronPythonDisplayName = CurrentVersion.DisplayName;
         internal const string/*!*/ IronPythonNames = "IronPython;Python;py";
         internal const string/*!*/ IronPythonFileExtensions = ".py";
